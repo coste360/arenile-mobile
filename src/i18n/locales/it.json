@@ -1,0 +1,208 @@
+{
+  "common": {
+    "appName": "Arenile",
+    "back": "Indietro",
+    "cancel": "Annulla",
+    "retry": "Riprova",
+    "loading": "Caricamento in corso"
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français"
+  },
+  "roles": {
+    "owner": "Proprietario",
+    "manager": "Gestore",
+    "cashier": "Cassiere",
+    "beach_staff": "Personale di spiaggia",
+    "viewer": "Sola lettura"
+  },
+  "connect": {
+    "title": "Collega a un'istanza",
+    "description": "Collega l'app al tuo stabilimento con il QR code del pannello: Configurazione → Dispositivi → Abbina un dispositivo.",
+    "scan": "Inquadra il QR code",
+    "manual": "Inserisci indirizzo e codice",
+    "privacy": "L'app parla solo con la tua istanza Arenile: nessun dato passa da Coste360, nessuna telemetria.",
+    "revoked": {
+      "title": "Dispositivo scollegato",
+      "description": "L'accesso di questo dispositivo è stato revocato dal pannello o è scaduto. Abbinalo di nuovo con un nuovo codice."
+    },
+    "unpaired": {
+      "title": "Dispositivo scollegato",
+      "description": "Questo dispositivo non ha più accesso allo stabilimento."
+    }
+  },
+  "scan": {
+    "title": "Inquadra il QR code",
+    "hint": "Inquadra il QR code mostrato nel pannello, in Configurazione → Dispositivi.",
+    "cameraLabel": "Anteprima della fotocamera per il QR code",
+    "invalid": "Questo non è un QR code di abbinamento di Arenile.",
+    "manualInstead": "Inserisci indirizzo e codice",
+    "permission": {
+      "title": "Serve la fotocamera",
+      "description": "Per leggere il QR code di abbinamento l'app usa la fotocamera. Le immagini non vengono salvate né inviate.",
+      "grant": "Consenti la fotocamera",
+      "denied": "L'accesso alla fotocamera è negato. Consentilo dalle impostazioni del dispositivo oppure inserisci indirizzo e codice a mano.",
+      "openSettings": "Apri le impostazioni"
+    }
+  },
+  "manual": {
+    "title": "Indirizzo e codice",
+    "description": "Trovi indirizzo e codice nel pannello, in Configurazione → Dispositivi → Abbina un dispositivo.",
+    "url": {
+      "label": "Indirizzo dell'istanza",
+      "placeholder": "lido.esempio.it"
+    },
+    "code": {
+      "label": "Codice di abbinamento",
+      "placeholder": "ABCD-EFGH",
+      "hint": "8 caratteri: vale una sola volta e scade dopo 5 minuti."
+    },
+    "submit": "Collega",
+    "errors": {
+      "urlRequired": "Inserisci l'indirizzo dell'istanza.",
+      "urlInvalid": "Indirizzo non valido. Esempio: lido.esempio.it",
+      "urlInsecure": "L'indirizzo deve usare https: il token del dispositivo non viaggia mai in chiaro.",
+      "codeInvalid": "Il codice ha 8 caratteri, ad esempio ABCD-EFGH."
+    }
+  },
+  "pair": {
+    "title": "Collegamento",
+    "progress": "Collegamento a {{target}} in corso",
+    "actions": {
+      "retry": "Riprova",
+      "scanAgain": "Inquadra un nuovo QR code",
+      "manual": "Inserisci indirizzo e codice",
+      "start": "Torna all'inizio",
+      "home": "Vai alla schermata principale"
+    },
+    "errors": {
+      "lan_unsupported": {
+        "title": "Rete locale del desktop: in arrivo",
+        "description": "Questo QR code viene dall'app desktop in modalità rete locale, che usa un certificato di sicurezza proprio. Il collegamento dell'app a questa modalità è in arrivo: per ora usa il pannello dal browser."
+      },
+      "unreachable": {
+        "title": "Istanza non raggiungibile",
+        "description": "Controlla la connessione del dispositivo e l'indirizzo dell'istanza, poi riprova."
+      },
+      "not_arenile": {
+        "title": "Non è un'istanza Arenile",
+        "description": "A questo indirizzo non risponde Arenile. Controlla l'indirizzo nel pannello."
+      },
+      "instance_too_old": {
+        "title": "Arenile da aggiornare",
+        "description": "L'istanza usa una versione di Arenile troppo vecchia per questa app: serve almeno la {{min}}. Chiedi a chi la gestisce di aggiornarla."
+      },
+      "app_too_old": {
+        "title": "Aggiorna l'app",
+        "description": "L'istanza richiede una versione più recente dell'app Arenile. Aggiornala dall'App Store o da Google Play."
+      },
+      "pairing_unavailable": {
+        "title": "Abbinamento non disponibile",
+        "description": "L'istanza ora non accetta nuovi dispositivi. Se usi l'app desktop, attiva la modalità rete locale."
+      },
+      "code_invalid": {
+        "title": "Codice non valido",
+        "description": "Il codice non è valido, è scaduto o è già stato usato. Generane uno nuovo nel pannello."
+      },
+      "rate_limited": {
+        "title": "Troppi tentativi",
+        "description": "Per sicurezza i tentativi sono limitati. Attendi un minuto e riprova."
+      },
+      "unexpected": {
+        "title": "Qualcosa è andato storto",
+        "description": "L'istanza ha risposto in modo inatteso. Riprova tra poco."
+      },
+      "invalid_input": {
+        "title": "Collegamento non valido",
+        "description": "Il QR code o il link non contengono un indirizzo e un codice validi. Inquadra il QR code del pannello."
+      },
+      "insecure_url": {
+        "title": "Indirizzo non sicuro",
+        "description": "L'indirizzo deve usare https: il token del dispositivo non viaggia mai in chiaro."
+      },
+      "already_paired": {
+        "title": "Dispositivo già collegato",
+        "description": "Questo dispositivo è già collegato a {{name}}. Per collegarlo a un'altra istanza scollegalo prima dalle Impostazioni."
+      },
+      "storage": {
+        "title": "Accesso non salvato",
+        "description": "Il portachiavi del dispositivo non è disponibile. Sblocca il dispositivo e riprova."
+      }
+    }
+  },
+  "nav": {
+    "home": "Inizio",
+    "settings": "Impostazioni"
+  },
+  "home": {
+    "establishmentFallback": "Stabilimento",
+    "connectedAs": "{{name}} · {{role}}",
+    "connection": {
+      "title": "Connessione",
+      "checking": "Verifica in corso",
+      "online": "Connesso",
+      "offline": "Istanza non raggiungibile",
+      "offlineHint": "Controlla la connessione. L'app riprova appena l'istanza torna raggiungibile.",
+      "checkedAt": "Ultima verifica alle {{time}}",
+      "refresh": "Verifica di nuovo"
+    },
+    "instance": {
+      "title": "Istanza",
+      "address": "Indirizzo",
+      "version": "Versione di Arenile",
+      "edition": "Edizione"
+    },
+    "editions": {
+      "server": "Server",
+      "desktop": "Desktop"
+    }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "instance": {
+      "title": "Istanza",
+      "address": "Indirizzo",
+      "establishment": "Stabilimento"
+    },
+    "device": {
+      "title": "Questo dispositivo",
+      "name": "Nome nel pannello",
+      "user": "Utente",
+      "role": "Ruolo",
+      "pairedAt": "Collegato il"
+    },
+    "language": {
+      "title": "Lingua",
+      "system": "Lingua del dispositivo"
+    },
+    "theme": {
+      "title": "Tema",
+      "system": "Sistema",
+      "light": "Chiaro",
+      "dark": "Scuro"
+    },
+    "about": {
+      "title": "Informazioni",
+      "version": "Versione dell'app",
+      "privacy": "L'app parla solo con la tua istanza: nessuna telemetria, nessun aggiornamento remoto."
+    },
+    "unpair": {
+      "button": "Scollega questo dispositivo",
+      "title": "Scollegare questo dispositivo?",
+      "description": "Il dispositivo perde subito l'accesso a {{name}}. Per usarlo di nuovo servirà un nuovo codice dal pannello.",
+      "confirm": "Scollega",
+      "working": "Scollegamento in corso",
+      "offlineTitle": "Istanza non raggiungibile",
+      "offlineDescription": "Non è stato possibile avvisare l'istanza. Puoi scollegare solo questo dispositivo: l'accesso resterà nel pannello finché non lo revochi da Configurazione → Dispositivi.",
+      "forceConfirm": "Scollega solo qui"
+    }
+  },
+  "errorBoundary": {
+    "title": "Qualcosa è andato storto",
+    "description": "Si è verificato un errore imprevisto nell'app.",
+    "retry": "Riprova"
+  }
+}

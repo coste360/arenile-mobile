@@ -1,0 +1,208 @@
+{
+  "common": {
+    "appName": "Arenile",
+    "back": "Back",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "loading": "Loading"
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français"
+  },
+  "roles": {
+    "owner": "Owner",
+    "manager": "Manager",
+    "cashier": "Cashier",
+    "beach_staff": "Beach staff",
+    "viewer": "Read only"
+  },
+  "connect": {
+    "title": "Connect to an instance",
+    "description": "Connect the app to your establishment with the QR code in the panel: Configuration → Devices → Pair a device.",
+    "scan": "Scan the QR code",
+    "manual": "Enter address and code",
+    "privacy": "The app talks only to your Arenile instance: no data goes through Coste360, no telemetry.",
+    "revoked": {
+      "title": "Device disconnected",
+      "description": "This device's access was revoked from the panel or has expired. Pair it again with a new code."
+    },
+    "unpaired": {
+      "title": "Device disconnected",
+      "description": "This device no longer has access to the establishment."
+    }
+  },
+  "scan": {
+    "title": "Scan the QR code",
+    "hint": "Point the camera at the QR code shown in the panel, under Configuration → Devices.",
+    "cameraLabel": "Camera preview for the QR code",
+    "invalid": "This is not an Arenile pairing QR code.",
+    "manualInstead": "Enter address and code",
+    "permission": {
+      "title": "Camera needed",
+      "description": "The app uses the camera to read the pairing QR code. Images are neither saved nor sent.",
+      "grant": "Allow the camera",
+      "denied": "Camera access is denied. Allow it in the device settings or enter the address and code by hand.",
+      "openSettings": "Open settings"
+    }
+  },
+  "manual": {
+    "title": "Address and code",
+    "description": "You find the address and code in the panel, under Configuration → Devices → Pair a device.",
+    "url": {
+      "label": "Instance address",
+      "placeholder": "beach.example.com"
+    },
+    "code": {
+      "label": "Pairing code",
+      "placeholder": "ABCD-EFGH",
+      "hint": "8 characters: valid once, expires after 5 minutes."
+    },
+    "submit": "Connect",
+    "errors": {
+      "urlRequired": "Enter the instance address.",
+      "urlInvalid": "Invalid address. Example: beach.example.com",
+      "urlInsecure": "The address must use https: the device token never travels in clear text.",
+      "codeInvalid": "The code has 8 characters, for example ABCD-EFGH."
+    }
+  },
+  "pair": {
+    "title": "Connecting",
+    "progress": "Connecting to {{target}}",
+    "actions": {
+      "retry": "Try again",
+      "scanAgain": "Scan a new QR code",
+      "manual": "Enter address and code",
+      "start": "Back to start",
+      "home": "Go to the home screen"
+    },
+    "errors": {
+      "lan_unsupported": {
+        "title": "Desktop local network: coming soon",
+        "description": "This QR code comes from the desktop app in local network mode, which uses its own security certificate. Connecting the app to this mode is coming soon: for now use the panel in the browser."
+      },
+      "unreachable": {
+        "title": "Instance unreachable",
+        "description": "Check the device connection and the instance address, then try again."
+      },
+      "not_arenile": {
+        "title": "Not an Arenile instance",
+        "description": "Arenile does not answer at this address. Check the address in the panel."
+      },
+      "instance_too_old": {
+        "title": "Arenile needs an update",
+        "description": "The instance runs a version of Arenile too old for this app: at least {{min}} is required. Ask whoever runs it to update it."
+      },
+      "app_too_old": {
+        "title": "Update the app",
+        "description": "The instance requires a newer version of the Arenile app. Update it from the App Store or Google Play."
+      },
+      "pairing_unavailable": {
+        "title": "Pairing not available",
+        "description": "The instance does not accept new devices right now. If you use the desktop app, turn on local network mode."
+      },
+      "code_invalid": {
+        "title": "Invalid code",
+        "description": "The code is invalid, expired or already used. Generate a new one in the panel."
+      },
+      "rate_limited": {
+        "title": "Too many attempts",
+        "description": "Attempts are limited for security. Wait a minute and try again."
+      },
+      "unexpected": {
+        "title": "Something went wrong",
+        "description": "The instance gave an unexpected answer. Try again shortly."
+      },
+      "invalid_input": {
+        "title": "Invalid link",
+        "description": "The QR code or link does not contain a valid address and code. Scan the QR code in the panel."
+      },
+      "insecure_url": {
+        "title": "Insecure address",
+        "description": "The address must use https: the device token never travels in clear text."
+      },
+      "already_paired": {
+        "title": "Device already connected",
+        "description": "This device is already connected to {{name}}. To connect it to another instance, disconnect it first in Settings."
+      },
+      "storage": {
+        "title": "Access not saved",
+        "description": "The device keychain is not available. Unlock the device and try again."
+      }
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "settings": "Settings"
+  },
+  "home": {
+    "establishmentFallback": "Establishment",
+    "connectedAs": "{{name}} · {{role}}",
+    "connection": {
+      "title": "Connection",
+      "checking": "Checking",
+      "online": "Connected",
+      "offline": "Instance unreachable",
+      "offlineHint": "Check the connection. The app retries as soon as the instance is reachable again.",
+      "checkedAt": "Last checked at {{time}}",
+      "refresh": "Check again"
+    },
+    "instance": {
+      "title": "Instance",
+      "address": "Address",
+      "version": "Arenile version",
+      "edition": "Edition"
+    },
+    "editions": {
+      "server": "Server",
+      "desktop": "Desktop"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "instance": {
+      "title": "Instance",
+      "address": "Address",
+      "establishment": "Establishment"
+    },
+    "device": {
+      "title": "This device",
+      "name": "Name in the panel",
+      "user": "User",
+      "role": "Role",
+      "pairedAt": "Connected on"
+    },
+    "language": {
+      "title": "Language",
+      "system": "Device language"
+    },
+    "theme": {
+      "title": "Theme",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "about": {
+      "title": "About",
+      "version": "App version",
+      "privacy": "The app talks only to your instance: no telemetry, no remote updates."
+    },
+    "unpair": {
+      "button": "Disconnect this device",
+      "title": "Disconnect this device?",
+      "description": "The device immediately loses access to {{name}}. To use it again you will need a new code from the panel.",
+      "confirm": "Disconnect",
+      "working": "Disconnecting",
+      "offlineTitle": "Instance unreachable",
+      "offlineDescription": "The instance could not be notified. You can disconnect this device only: its access stays in the panel until you revoke it under Configuration → Devices.",
+      "forceConfirm": "Disconnect here only"
+    }
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred in the app.",
+    "retry": "Try again"
+  }
+}

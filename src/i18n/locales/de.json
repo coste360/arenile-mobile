@@ -1,0 +1,208 @@
+{
+  "common": {
+    "appName": "Arenile",
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "retry": "Erneut versuchen",
+    "loading": "Wird geladen"
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français"
+  },
+  "roles": {
+    "owner": "Inhaber",
+    "manager": "Manager",
+    "cashier": "Kassierer",
+    "beach_staff": "Strandpersonal",
+    "viewer": "Nur Lesen"
+  },
+  "connect": {
+    "title": "Mit einer Instanz verbinden",
+    "description": "Verbinde die App mit deinem Strandbad über den QR-Code im Panel: Konfiguration → Geräte → Gerät koppeln.",
+    "scan": "QR-Code scannen",
+    "manual": "Adresse und Code eingeben",
+    "privacy": "Die App spricht nur mit deiner Arenile-Instanz: Keine Daten laufen über Coste360, keine Telemetrie.",
+    "revoked": {
+      "title": "Gerät getrennt",
+      "description": "Der Zugang dieses Geräts wurde im Panel widerrufen oder ist abgelaufen. Kopple es mit einem neuen Code erneut."
+    },
+    "unpaired": {
+      "title": "Gerät getrennt",
+      "description": "Dieses Gerät hat keinen Zugang mehr zum Strandbad."
+    }
+  },
+  "scan": {
+    "title": "QR-Code scannen",
+    "hint": "Richte die Kamera auf den QR-Code im Panel unter Konfiguration → Geräte.",
+    "cameraLabel": "Kameravorschau für den QR-Code",
+    "invalid": "Das ist kein Kopplungs-QR-Code von Arenile.",
+    "manualInstead": "Adresse und Code eingeben",
+    "permission": {
+      "title": "Kamera erforderlich",
+      "description": "Die App verwendet die Kamera, um den Kopplungs-QR-Code zu lesen. Bilder werden weder gespeichert noch gesendet.",
+      "grant": "Kamera erlauben",
+      "denied": "Der Kamerazugriff ist verweigert. Erlaube ihn in den Geräteeinstellungen oder gib Adresse und Code von Hand ein.",
+      "openSettings": "Einstellungen öffnen"
+    }
+  },
+  "manual": {
+    "title": "Adresse und Code",
+    "description": "Adresse und Code findest du im Panel unter Konfiguration → Geräte → Gerät koppeln.",
+    "url": {
+      "label": "Adresse der Instanz",
+      "placeholder": "strandbad.beispiel.de"
+    },
+    "code": {
+      "label": "Kopplungscode",
+      "placeholder": "ABCD-EFGH",
+      "hint": "8 Zeichen: einmal gültig, läuft nach 5 Minuten ab."
+    },
+    "submit": "Verbinden",
+    "errors": {
+      "urlRequired": "Gib die Adresse der Instanz ein.",
+      "urlInvalid": "Ungültige Adresse. Beispiel: strandbad.beispiel.de",
+      "urlInsecure": "Die Adresse muss https verwenden: Das Geräte-Token wird nie im Klartext übertragen.",
+      "codeInvalid": "Der Code hat 8 Zeichen, zum Beispiel ABCD-EFGH."
+    }
+  },
+  "pair": {
+    "title": "Verbindung",
+    "progress": "Verbindung mit {{target}} wird hergestellt",
+    "actions": {
+      "retry": "Erneut versuchen",
+      "scanAgain": "Neuen QR-Code scannen",
+      "manual": "Adresse und Code eingeben",
+      "start": "Zurück zum Start",
+      "home": "Zum Startbildschirm"
+    },
+    "errors": {
+      "lan_unsupported": {
+        "title": "Lokales Netzwerk des Desktops: demnächst",
+        "description": "Dieser QR-Code stammt von der Desktop-App im lokalen Netzwerkmodus, die ein eigenes Sicherheitszertifikat verwendet. Die Verbindung der App mit diesem Modus kommt demnächst: Nutze bis dahin das Panel im Browser."
+      },
+      "unreachable": {
+        "title": "Instanz nicht erreichbar",
+        "description": "Prüfe die Verbindung des Geräts und die Adresse der Instanz und versuche es dann erneut."
+      },
+      "not_arenile": {
+        "title": "Keine Arenile-Instanz",
+        "description": "Unter dieser Adresse antwortet kein Arenile. Prüfe die Adresse im Panel."
+      },
+      "instance_too_old": {
+        "title": "Arenile muss aktualisiert werden",
+        "description": "Die Instanz verwendet eine für diese App zu alte Arenile-Version: Mindestens {{min}} ist erforderlich. Bitte die verantwortliche Person, sie zu aktualisieren."
+      },
+      "app_too_old": {
+        "title": "App aktualisieren",
+        "description": "Die Instanz erfordert eine neuere Version der Arenile-App. Aktualisiere sie im App Store oder bei Google Play."
+      },
+      "pairing_unavailable": {
+        "title": "Koppeln nicht verfügbar",
+        "description": "Die Instanz nimmt derzeit keine neuen Geräte an. Wenn du die Desktop-App nutzt, aktiviere den lokalen Netzwerkmodus."
+      },
+      "code_invalid": {
+        "title": "Ungültiger Code",
+        "description": "Der Code ist ungültig, abgelaufen oder wurde bereits verwendet. Erzeuge im Panel einen neuen."
+      },
+      "rate_limited": {
+        "title": "Zu viele Versuche",
+        "description": "Aus Sicherheitsgründen sind die Versuche begrenzt. Warte eine Minute und versuche es erneut."
+      },
+      "unexpected": {
+        "title": "Etwas ist schiefgelaufen",
+        "description": "Die Instanz hat unerwartet geantwortet. Versuche es gleich noch einmal."
+      },
+      "invalid_input": {
+        "title": "Ungültiger Link",
+        "description": "Der QR-Code oder Link enthält keine gültige Adresse und keinen gültigen Code. Scanne den QR-Code im Panel."
+      },
+      "insecure_url": {
+        "title": "Unsichere Adresse",
+        "description": "Die Adresse muss https verwenden: Das Geräte-Token wird nie im Klartext übertragen."
+      },
+      "already_paired": {
+        "title": "Gerät bereits verbunden",
+        "description": "Dieses Gerät ist bereits mit {{name}} verbunden. Um es mit einer anderen Instanz zu verbinden, trenne es zuerst in den Einstellungen."
+      },
+      "storage": {
+        "title": "Zugang nicht gespeichert",
+        "description": "Der Schlüsselbund des Geräts ist nicht verfügbar. Entsperre das Gerät und versuche es erneut."
+      }
+    }
+  },
+  "nav": {
+    "home": "Start",
+    "settings": "Einstellungen"
+  },
+  "home": {
+    "establishmentFallback": "Strandbad",
+    "connectedAs": "{{name}} · {{role}}",
+    "connection": {
+      "title": "Verbindung",
+      "checking": "Wird geprüft",
+      "online": "Verbunden",
+      "offline": "Instanz nicht erreichbar",
+      "offlineHint": "Prüfe die Verbindung. Die App versucht es erneut, sobald die Instanz wieder erreichbar ist.",
+      "checkedAt": "Zuletzt geprüft um {{time}}",
+      "refresh": "Erneut prüfen"
+    },
+    "instance": {
+      "title": "Instanz",
+      "address": "Adresse",
+      "version": "Arenile-Version",
+      "edition": "Edition"
+    },
+    "editions": {
+      "server": "Server",
+      "desktop": "Desktop"
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "instance": {
+      "title": "Instanz",
+      "address": "Adresse",
+      "establishment": "Strandbad"
+    },
+    "device": {
+      "title": "Dieses Gerät",
+      "name": "Name im Panel",
+      "user": "Benutzer",
+      "role": "Rolle",
+      "pairedAt": "Verbunden am"
+    },
+    "language": {
+      "title": "Sprache",
+      "system": "Sprache des Geräts"
+    },
+    "theme": {
+      "title": "Design",
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
+    "about": {
+      "title": "Info",
+      "version": "App-Version",
+      "privacy": "Die App spricht nur mit deiner Instanz: keine Telemetrie, keine Fernaktualisierungen."
+    },
+    "unpair": {
+      "button": "Dieses Gerät trennen",
+      "title": "Dieses Gerät trennen?",
+      "description": "Das Gerät verliert sofort den Zugang zu {{name}}. Um es wieder zu verwenden, brauchst du einen neuen Code aus dem Panel.",
+      "confirm": "Trennen",
+      "working": "Wird getrennt",
+      "offlineTitle": "Instanz nicht erreichbar",
+      "offlineDescription": "Die Instanz konnte nicht benachrichtigt werden. Du kannst nur dieses Gerät trennen: Der Zugang bleibt im Panel, bis du ihn unter Konfiguration → Geräte widerrufst.",
+      "forceConfirm": "Nur hier trennen"
+    }
+  },
+  "errorBoundary": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "In der App ist ein unerwarteter Fehler aufgetreten.",
+    "retry": "Erneut versuchen"
+  }
+}

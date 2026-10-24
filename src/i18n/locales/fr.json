@@ -1,0 +1,208 @@
+{
+  "common": {
+    "appName": "Arenile",
+    "back": "Retour",
+    "cancel": "Annuler",
+    "retry": "Réessayer",
+    "loading": "Chargement en cours"
+  },
+  "languages": {
+    "it": "Italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français"
+  },
+  "roles": {
+    "owner": "Propriétaire",
+    "manager": "Gérant",
+    "cashier": "Caissier",
+    "beach_staff": "Personnel de plage",
+    "viewer": "Lecture seule"
+  },
+  "connect": {
+    "title": "Se connecter à une instance",
+    "description": "Connectez l'application à votre établissement avec le QR code du panneau : Configuration → Appareils → Associer un appareil.",
+    "scan": "Scanner le QR code",
+    "manual": "Saisir l'adresse et le code",
+    "privacy": "L'application ne parle qu'à votre instance Arenile : aucune donnée ne passe par Coste360, aucune télémétrie.",
+    "revoked": {
+      "title": "Appareil déconnecté",
+      "description": "L'accès de cet appareil a été révoqué depuis le panneau ou a expiré. Associez-le de nouveau avec un nouveau code."
+    },
+    "unpaired": {
+      "title": "Appareil déconnecté",
+      "description": "Cet appareil n'a plus accès à l'établissement."
+    }
+  },
+  "scan": {
+    "title": "Scanner le QR code",
+    "hint": "Visez le QR code affiché dans le panneau, sous Configuration → Appareils.",
+    "cameraLabel": "Aperçu de l'appareil photo pour le QR code",
+    "invalid": "Ce n'est pas un QR code d'association Arenile.",
+    "manualInstead": "Saisir l'adresse et le code",
+    "permission": {
+      "title": "Appareil photo nécessaire",
+      "description": "L'application utilise l'appareil photo pour lire le QR code d'association. Les images ne sont ni enregistrées ni envoyées.",
+      "grant": "Autoriser l'appareil photo",
+      "denied": "L'accès à l'appareil photo est refusé. Autorisez-le dans les réglages de l'appareil ou saisissez l'adresse et le code à la main.",
+      "openSettings": "Ouvrir les réglages"
+    }
+  },
+  "manual": {
+    "title": "Adresse et code",
+    "description": "L'adresse et le code se trouvent dans le panneau, sous Configuration → Appareils → Associer un appareil.",
+    "url": {
+      "label": "Adresse de l'instance",
+      "placeholder": "plage.exemple.fr"
+    },
+    "code": {
+      "label": "Code d'association",
+      "placeholder": "ABCD-EFGH",
+      "hint": "8 caractères : valable une seule fois, expire après 5 minutes."
+    },
+    "submit": "Connecter",
+    "errors": {
+      "urlRequired": "Saisissez l'adresse de l'instance.",
+      "urlInvalid": "Adresse non valide. Exemple : plage.exemple.fr",
+      "urlInsecure": "L'adresse doit utiliser https : le jeton de l'appareil ne circule jamais en clair.",
+      "codeInvalid": "Le code comporte 8 caractères, par exemple ABCD-EFGH."
+    }
+  },
+  "pair": {
+    "title": "Connexion",
+    "progress": "Connexion à {{target}} en cours",
+    "actions": {
+      "retry": "Réessayer",
+      "scanAgain": "Scanner un nouveau QR code",
+      "manual": "Saisir l'adresse et le code",
+      "start": "Retour au début",
+      "home": "Aller à l'écran d'accueil"
+    },
+    "errors": {
+      "lan_unsupported": {
+        "title": "Réseau local du bureau : bientôt disponible",
+        "description": "Ce QR code provient de l'application de bureau en mode réseau local, qui utilise son propre certificat de sécurité. La connexion de l'application à ce mode arrive bientôt : en attendant, utilisez le panneau dans le navigateur."
+      },
+      "unreachable": {
+        "title": "Instance injoignable",
+        "description": "Vérifiez la connexion de l'appareil et l'adresse de l'instance, puis réessayez."
+      },
+      "not_arenile": {
+        "title": "Ce n'est pas une instance Arenile",
+        "description": "Arenile ne répond pas à cette adresse. Vérifiez l'adresse dans le panneau."
+      },
+      "instance_too_old": {
+        "title": "Arenile doit être mis à jour",
+        "description": "L'instance utilise une version d'Arenile trop ancienne pour cette application : la version {{min}} au minimum est requise. Demandez à la personne qui la gère de la mettre à jour."
+      },
+      "app_too_old": {
+        "title": "Mettez à jour l'application",
+        "description": "L'instance exige une version plus récente de l'application Arenile. Mettez-la à jour depuis l'App Store ou Google Play."
+      },
+      "pairing_unavailable": {
+        "title": "Association indisponible",
+        "description": "L'instance n'accepte pas de nouveaux appareils pour le moment. Si vous utilisez l'application de bureau, activez le mode réseau local."
+      },
+      "code_invalid": {
+        "title": "Code non valide",
+        "description": "Le code n'est pas valide, a expiré ou a déjà été utilisé. Générez-en un nouveau dans le panneau."
+      },
+      "rate_limited": {
+        "title": "Trop de tentatives",
+        "description": "Les tentatives sont limitées par sécurité. Attendez une minute et réessayez."
+      },
+      "unexpected": {
+        "title": "Un problème est survenu",
+        "description": "L'instance a répondu de façon inattendue. Réessayez dans un instant."
+      },
+      "invalid_input": {
+        "title": "Lien non valide",
+        "description": "Le QR code ou le lien ne contient pas d'adresse et de code valides. Scannez le QR code du panneau."
+      },
+      "insecure_url": {
+        "title": "Adresse non sécurisée",
+        "description": "L'adresse doit utiliser https : le jeton de l'appareil ne circule jamais en clair."
+      },
+      "already_paired": {
+        "title": "Appareil déjà connecté",
+        "description": "Cet appareil est déjà connecté à {{name}}. Pour le connecter à une autre instance, déconnectez-le d'abord dans les Réglages."
+      },
+      "storage": {
+        "title": "Accès non enregistré",
+        "description": "Le trousseau de l'appareil n'est pas disponible. Déverrouillez l'appareil et réessayez."
+      }
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "settings": "Réglages"
+  },
+  "home": {
+    "establishmentFallback": "Établissement",
+    "connectedAs": "{{name}} · {{role}}",
+    "connection": {
+      "title": "Connexion",
+      "checking": "Vérification en cours",
+      "online": "Connecté",
+      "offline": "Instance injoignable",
+      "offlineHint": "Vérifiez la connexion. L'application réessaie dès que l'instance est de nouveau joignable.",
+      "checkedAt": "Dernière vérification à {{time}}",
+      "refresh": "Vérifier à nouveau"
+    },
+    "instance": {
+      "title": "Instance",
+      "address": "Adresse",
+      "version": "Version d'Arenile",
+      "edition": "Édition"
+    },
+    "editions": {
+      "server": "Serveur",
+      "desktop": "Bureau"
+    }
+  },
+  "settings": {
+    "title": "Réglages",
+    "instance": {
+      "title": "Instance",
+      "address": "Adresse",
+      "establishment": "Établissement"
+    },
+    "device": {
+      "title": "Cet appareil",
+      "name": "Nom dans le panneau",
+      "user": "Utilisateur",
+      "role": "Rôle",
+      "pairedAt": "Connecté le"
+    },
+    "language": {
+      "title": "Langue",
+      "system": "Langue de l'appareil"
+    },
+    "theme": {
+      "title": "Thème",
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "about": {
+      "title": "À propos",
+      "version": "Version de l'application",
+      "privacy": "L'application ne parle qu'à votre instance : aucune télémétrie, aucune mise à jour à distance."
+    },
+    "unpair": {
+      "button": "Déconnecter cet appareil",
+      "title": "Déconnecter cet appareil ?",
+      "description": "L'appareil perd immédiatement l'accès à {{name}}. Pour l'utiliser de nouveau, il faudra un nouveau code depuis le panneau.",
+      "confirm": "Déconnecter",
+      "working": "Déconnexion en cours",
+      "offlineTitle": "Instance injoignable",
+      "offlineDescription": "L'instance n'a pas pu être prévenue. Vous pouvez déconnecter uniquement cet appareil : son accès reste dans le panneau jusqu'à ce que vous le révoquiez sous Configuration → Appareils.",
+      "forceConfirm": "Déconnecter ici seulement"
+    }
+  },
+  "errorBoundary": {
+    "title": "Un problème est survenu",
+    "description": "Une erreur inattendue s'est produite dans l'application.",
+    "retry": "Réessayer"
+  }
+}
