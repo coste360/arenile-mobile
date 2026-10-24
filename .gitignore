@@ -41,3 +41,9 @@ example
 # generated native folders
 /ios
 /android
+
+coverage/
+
+# Claude Code personal settings
+CLAUDE.local.md
+.claude/settings.local.json

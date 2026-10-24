@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Arenile",
+    "NSCameraUsageDescription": "Arenile verwendet die Kamera, um den Kopplungs-QR-Code und die QR-Codes der Buchungen zu scannen.",
+    "NSMicrophoneUsageDescription": "Arenile nimmt keinen Ton auf.",
+    "NSFaceIDUsageDescription": "Arenile verwendet Face ID nicht."
+  },
+  "android": {
+    "app_name": "Arenile"
+  }
+}
