@@ -53,6 +53,16 @@ describe('request error mapping', () => {
   });
 
   it.each([
+    ['an HTML page (captive portal)', () => new Response('<html>Login</html>', { status: 401 })],
+    ['an empty body (proxy auth)', () => new Response(null, { status: 401 })],
+    ['another problem type', () => problem(401, 'invalid_credentials')],
+  ])('does not treat a 401 with %s as a revoked token', async (_name, handler) => {
+    const err = await call(handler).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(ProblemError);
+    expect(err).not.toBeInstanceOf(UnauthorizedError);
+  });
+
+  it.each([
     [400, 'pairing_code_invalid'],
     [429, 'rate_limited'],
     [501, 'not_implemented'],

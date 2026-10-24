@@ -36,7 +36,7 @@ export class ProblemError extends Error {
   }
 }
 
-/** HTTP 401: the device token is missing, revoked or expired. */
+/** HTTP 401 problem+json "unauthorized" from the instance: the device token is revoked or expired. */
 export class UnauthorizedError extends ProblemError {
   override readonly name = 'UnauthorizedError';
 }
@@ -58,10 +58,15 @@ function isProblem(body: unknown): body is Problem {
   return typeof b.type === 'string' && typeof b.status === 'number';
 }
 
-/** Builds the typed error for a non-2xx response and its (already parsed) body. */
+/**
+ * Builds the typed error for a non-2xx response and its (already parsed) body.
+ * Only the core's own answer (401 problem+json with type "unauthorized") means
+ * the device token is revoked or expired: a 401 from a captive portal, a proxy
+ * or another host on the network must not wipe the token.
+ */
 export function errorForStatus(status: number, body: unknown): ProblemError {
   const problem = isProblem(body) ? body : null;
-  return status === 401
+  return status === 401 && problem?.type === 'unauthorized'
     ? new UnauthorizedError(status, problem)
     : new ProblemError(status, problem);
 }

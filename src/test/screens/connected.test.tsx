@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { fireEvent, waitFor } from 'expo-router/testing-library';
 
 import { PREFERENCES_KEY } from '@/features/preferences/preferences';
@@ -60,6 +61,19 @@ describe('launch with a stored session', () => {
     await waitFor(() => expect(kv.snapshot()[SESSION_KEY]).toBeUndefined());
   });
 
+  it('keeps the session on a 401 that does not come from Arenile (captive portal)', async () => {
+    const { screen, kv } = await renderApp({
+      session: SESSION,
+      routes: {
+        ...ONLINE,
+        'GET /api/device/v1/self': () => new Response('<html>Wi-Fi login</html>', { status: 401 }),
+      },
+    });
+
+    expect(await screen.findByText('Istanza non raggiungibile')).toBeOnTheScreen();
+    expect(kv.snapshot()[SESSION_KEY]).toBeDefined();
+  });
+
   it('keeps the session and says so when the instance is unreachable', async () => {
     const { screen, kv } = await renderApp({
       session: SESSION,
@@ -120,6 +134,8 @@ describe('settings', () => {
     expect(getPathname()).toBe('/connect');
     expect(requestsOf(network.calls)).toContain('DELETE /api/device/v1/self');
     await waitFor(() => expect(kv.snapshot()[SESSION_KEY]).toBeUndefined());
+    // The connected area is gone from the history.
+    expect(router.canGoBack()).toBe(false);
   });
 
   it('offers to unpair on this device only when the instance is unreachable', async () => {
