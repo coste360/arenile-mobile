@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.expo/
+coverage/
+src/api/generated/
+package-lock.json
+api/openapi.yaml
