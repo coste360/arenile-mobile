@@ -1,0 +1,47 @@
+name: Richiesta di funzionalità
+description: Proponi una nuova funzionalità o un miglioramento dell'app.
+title: '[Funzionalità]: '
+labels: ['enhancement', 'da-valutare']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Grazie per la proposta. Controlla prima il [piano dell'app](https://github.com/coste360/arenile-mobile/blob/main/docs/spec/README.md): la funzionalità potrebbe essere già prevista in una fase successiva.
+        L'app è pensata per lo staff in spiaggia e per il gestore in movimento: configurazione, prezzi, mappe, utenti, rimborsi ed esportazioni restano nel pannello web.
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema
+      description: Quale problema concreto incontri in spiaggia o in cassa? Descrivi la situazione reale.
+      placeholder: 'Al mattino il personale deve controllare gli arrivi e oggi deve...'
+    validations:
+      required: true
+  - type: textarea
+    id: soluzione
+    attributes:
+      label: Soluzione proposta
+      description: Come immagini che funzioni? Chi la usa (titolare, gestore, cassiere, personale di spiaggia)?
+    validations:
+      required: true
+  - type: dropdown
+    id: connessione
+    attributes:
+      label: Deve funzionare senza rete?
+      options:
+        - Sì, anche offline
+        - No, solo online
+        - Non so
+  - type: dropdown
+    id: ruolo
+    attributes:
+      label: Chi sei
+      options:
+        - Gestore o personale di uno stabilimento
+        - Sviluppatore / integratore
+        - Altro
+  - type: checkboxes
+    id: contributo
+    attributes:
+      label: Contributo
+      options:
+        - label: Sono disponibile a contribuire all'implementazione.

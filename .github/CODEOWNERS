@@ -1,0 +1,17 @@
+# CODEOWNERS — revisori obbligatori (https://docs.github.com/articles/about-code-owners).
+# L'ultima regola che corrisponde a un file prevale. Tenere le voci esplicite sotto il default.
+
+# Default: tutto il repository.
+*                                   @massimo-me
+
+# Contratto API fissato a una release del core (ADR 0002).
+/api/                               @massimo-me
+
+# Sicurezza: client, trasporto, sessione e abbinamento (ADR 0003, 0006).
+/src/api/                           @massimo-me
+/src/features/session/              @massimo-me
+/src/features/pairing/              @massimo-me
+
+# Configurazione nativa, permessi e marchio.
+/app.json                           @massimo-me
+/assets/brand/                      @massimo-me

@@ -1,0 +1,97 @@
+name: Segnalazione bug
+description: Qualcosa non funziona come previsto nell'app Arenile.
+title: '[Bug]: '
+labels: ['bug', 'da-valutare']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Grazie per la segnalazione. Prima di inviarla cerca tra le [issue esistenti](https://github.com/coste360/arenile-mobile/issues?q=is%3Aissue).
+        **Vulnerabilità di sicurezza:** non usare questo modulo, segui [SECURITY.md](https://github.com/coste360/arenile-mobile/blob/main/SECURITY.md).
+        **Non incollare dati personali reali** (nomi, email, telefoni dei clienti), token del dispositivo, codici di abbinamento né indirizzi di istanze private se non necessari.
+  - type: textarea
+    id: descrizione
+    attributes:
+      label: Descrizione
+      description: Cosa succede? Descrivi il problema in modo chiaro e conciso.
+    validations:
+      required: true
+  - type: textarea
+    id: passi
+    attributes:
+      label: Passi per riprodurre
+      placeholder: |
+        1. Apri l'app e scegli "Inquadra il QR code"
+        2. Inquadra il QR del pannello
+        3. Compare l'errore ...
+    validations:
+      required: true
+  - type: textarea
+    id: atteso
+    attributes:
+      label: Comportamento atteso
+    validations:
+      required: true
+  - type: textarea
+    id: osservato
+    attributes:
+      label: Comportamento osservato
+      description: Includi il messaggio mostrato dall'app e, se possibile, uno screenshot senza dati personali.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - Collegamento (QR, indirizzo e codice)
+        - Schermata principale e connessione
+        - Impostazioni (lingua, tema, scollega)
+        - Layout tablet / iPad
+        - Accessibilità
+        - Altro
+    validations:
+      required: true
+  - type: input
+    id: versione-app
+    attributes:
+      label: Versione dell'app
+      description: Impostazioni → Informazioni → Versione dell'app.
+      placeholder: '1.0.0'
+    validations:
+      required: true
+  - type: input
+    id: versione-istanza
+    attributes:
+      label: Versione di Arenile dell'istanza
+      description: Schermata principale → Istanza → Versione di Arenile.
+      placeholder: '1.0.1'
+    validations:
+      required: true
+  - type: dropdown
+    id: edizione
+    attributes:
+      label: Edizione dell'istanza
+      options:
+        - Server (VPS, Docker, hosting)
+        - Desktop in rete locale
+        - Non so
+    validations:
+      required: true
+  - type: input
+    id: dispositivo
+    attributes:
+      label: Dispositivo e sistema
+      placeholder: 'iPhone 15, iOS 26 / Samsung Galaxy Tab S9, Android 16'
+    validations:
+      required: true
+  - type: checkboxes
+    id: verifiche
+    attributes:
+      label: Verifiche
+      options:
+        - label: Ho cercato tra le issue esistenti e non ho trovato duplicati.
+          required: true
+        - label: La segnalazione non contiene dati personali reali, token né codici di abbinamento.
+          required: true

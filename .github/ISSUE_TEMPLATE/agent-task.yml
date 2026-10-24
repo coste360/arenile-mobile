@@ -1,0 +1,77 @@
+name: Task per agente
+description: Task piccolo e verificabile, pronto per un agente di coding o per un contributore.
+title: '[Task]: '
+labels: ['agent-task']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Un task tocca al massimo **un'area** (`src/features/<area>`) e le schermate collegate. Se serve un endpoint nuovo, il task parte nel repository del core.
+        Ogni criterio di accettazione deve essere traducibile in un test. Vedi `AGENTS.md`.
+  - type: textarea
+    id: obiettivo
+    attributes:
+      label: Obiettivo
+      description: Una frase sul risultato atteso.
+      placeholder: 'Mostrare nella schermata principale il numero di arrivi del giorno.'
+    validations:
+      required: true
+  - type: textarea
+    id: contesto
+    attributes:
+      label: Contesto
+      description: Sezioni del piano dell'app, della specifica del core e ADR da leggere.
+      placeholder: |
+        - docs/spec/02-fase-1-prima-versione.md
+        - core docs/spec/29-edizione-desktop-e-app-mobile.md §29.2
+        - docs/adr/0002-repository-separato-e-contratto-api.md
+    validations:
+      required: true
+  - type: textarea
+    id: perimetro
+    attributes:
+      label: Perimetro
+      description: File e cartelle che si prevede di toccare.
+      placeholder: |
+        - src/features/today/
+        - src/app/(connected)/home.tsx
+        - src/i18n/locales/*.json
+    validations:
+      required: true
+  - type: textarea
+    id: fuori-perimetro
+    attributes:
+      label: Fuori perimetro
+      description: Cosa non va modificato.
+      placeholder: |
+        - api/ e src/api/generated/ (contratto fissato)
+        - src/api/transport.ts
+    validations:
+      required: true
+  - type: textarea
+    id: criteri
+    attributes:
+      label: Criteri di accettazione
+      description: Elenco verificabile, ognuno traducibile in un test.
+      placeholder: |
+        - [ ] Mostra il numero restituito dall'API per la data di oggi nel fuso dello stabilimento
+        - [ ] Funziona su telefono e tablet
+        - [ ] Testi in italiano, inglese, tedesco e francese
+    validations:
+      required: true
+  - type: checkboxes
+    id: test
+    attributes:
+      label: Test richiesti
+      options:
+        - label: Unit (logica pura, tabellari)
+        - label: Schermate (telefono e tablet)
+  - type: dropdown
+    id: verifica
+    attributes:
+      label: Comando di verifica
+      options:
+        - make check
+        - make check-full
+    validations:
+      required: true

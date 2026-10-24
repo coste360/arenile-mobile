@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Segnalare una vulnerabilità di sicurezza
+    url: https://github.com/coste360/arenile-mobile/security/advisories/new
+    about: Segnalazione privata. Non aprire issue pubbliche per le vulnerabilità (vedi SECURITY.md, security@coste360.it).
+  - name: Problemi del pannello o del server
+    url: https://github.com/coste360/arenile/issues
+    about: Pannello web, API, installazione e aggiornamento dell'istanza si segnalano nel repository del core.
