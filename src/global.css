@@ -1,9 +1,74 @@
-:root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+/*
+ * Arenile mobile theme: the ONLY stylesheet of the app (ADR 0004).
+ * shadcn / React Native Reusables CSS variables for light and dark, read by
+ * NativeWind through tailwind.config.js. Components are styled with Reusables
+ * variants and Tailwind utilities on these tokens only; `npm run lint`
+ * (scripts/style-guard.mjs) rejects raw colours and arbitrary values elsewhere.
+ *
+ * Colours mirror the core panel theme (arenile web/shared/src/styles/globals.css,
+ * Coste360 design system, core ADR 0018), converted to HSL triplets so that
+ * Tailwind opacity modifiers (bg-primary/90) work. The source hex is in the
+ * comment of each line; translucent core values (border) are pre-blended on
+ * the background. src/lib/theme.test.ts keeps src/lib/theme.ts (React Navigation) in sync.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    --background: 210 40% 98%; /* #f8fafc */
+    --foreground: 222.2 47.4% 11.2%; /* #0f172a */
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 222.2 47.4% 11.2%; /* #0f172a */
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 222.2 47.4% 11.2%; /* #0f172a */
+    --primary: 211.6 71.4% 15.1%; /* #0b2542 Coste360 navy */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
+    --primary-on-surface: 206 68.8% 30.2%; /* #185482 links on surfaces */
+    --secondary: 210 40% 96.1%; /* #f1f5f9 */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* #0f172a */
+    --muted: 210 40% 96.1%; /* #f1f5f9 */
+    --muted-foreground: 215.3 19.3% 34.5%; /* #475569 */
+    --accent: 210 41.2% 93.3%; /* #e7eef5 */
+    --accent-foreground: 211.6 71.4% 15.1%; /* #0b2542 */
+    --highlight: 38.2 85.7% 68.6%; /* oklch(0.84 0.12 80) sand/amber */
+    --highlight-foreground: 28.2 64.1% 14%; /* oklch(0.28 0.05 60) */
+    --destructive: 0 73.7% 41.8%; /* #b91c1c */
+    --destructive-foreground: 0 0% 100%; /* #ffffff */
+    --success: 142.4 71.8% 29.2%; /* #15803d */
+    --warning: 37.7 92.1% 50.2%; /* #f59e0b */
+    --border: 214.1 22.1% 86.5%; /* rgb(148 163 184 / 0.35) on #f8fafc */
+    --input: 215.4 16.3% 53.1%; /* #74849b */
+    --ring: 206 68.8% 30.2%; /* #185482 */
+  }
+
+  .dark:root {
+    --background: 211.6 73.1% 10.2%; /* #07192d */
+    --foreground: 210 40% 98%; /* #f8fafc */
+    --card: 211.6 71.4% 15.1%; /* #0b2542 */
+    --card-foreground: 210 40% 98%; /* #f8fafc */
+    --popover: 211.6 71.4% 15.1%; /* #0b2542 */
+    --popover-foreground: 210 40% 98%; /* #f8fafc */
+    --primary: 198.4 93.2% 59.6%; /* #38bdf8 Coste360 sky */
+    --primary-foreground: 211.6 71.4% 15.1%; /* #0b2542 */
+    --primary-on-surface: 198.4 93.2% 59.6%; /* #38bdf8 */
+    --secondary: 211.9 68.1% 22.2%; /* #12365f */
+    --secondary-foreground: 210 40% 98%; /* #f8fafc */
+    --muted: 211.9 66.7% 18.8%; /* #102e50 */
+    --muted-foreground: 214.8 21.4% 71.6%; /* #a7b4c6 */
+    --accent: 211.9 68.1% 22.2%; /* #12365f */
+    --accent-foreground: 210 40% 98%; /* #f8fafc */
+    --highlight: 37.8 74.4% 59.7%; /* oklch(0.78 0.13 78) */
+    --highlight-foreground: 26.6 85% 7.4%; /* oklch(0.2 0.04 60) */
+    --destructive: 0 95.1% 76.1%; /* #fc8888 */
+    --destructive-foreground: 211.6 71.4% 15.1%; /* #0b2542 */
+    --success: 141.9 69.2% 58%; /* #4ade80 */
+    --warning: 43.3 96.4% 56.3%; /* #fbbf24 */
+    --border: 211.6 35% 19.2%; /* oklch(1 0 0 / 10%) on #07192d */
+    --input: 212.5 27.2% 57.5%; /* #7590b0 */
+    --ring: 198.4 93.2% 59.6%; /* #38bdf8 */
+  }
 }
