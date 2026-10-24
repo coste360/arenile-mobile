@@ -13,8 +13,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 - Fase 0 — fondamenta dell'app (Expo SDK 58, React Native 0.88, expo-router, TypeScript strict).
 - Collegamento a un'istanza con il QR del pannello (anche dalla fotocamera di sistema con il link
-  `arenile://pair?d=…`) o con indirizzo e codice di abbinamento; decodificatore del QR con le stesse
-  regole del core; `http` accettato solo su loopback.
+  `arenile://pair?d=…`, che chiede conferma dell'indirizzo dell'istanza) o con indirizzo e codice di
+  abbinamento; decodificatore del QR con le stesse regole del core; `http` accettato solo su loopback.
 - Verifica della compatibilità con `GET /api/admin/v1/meta`: versione minima di Arenile supportata
   **1.0.0**, avviso quando l'istanza richiede un'app più recente (`min_client_versions.mobile`).
 - Token del dispositivo nel portachiavi (Keychain / Keystore, solo questo dispositivo); verifica

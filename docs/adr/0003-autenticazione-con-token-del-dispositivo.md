@@ -23,13 +23,19 @@ sono cookie, quindi nemmeno CSRF né CORS per l'app.
    vale per **un solo stabilimento**: nessun selettore di stabilimento in fase 0.
 3. Un unico punto costruisce i client (`createApiClient`): base URL dell'istanza, bearer, nessuna
    credenziale implicita (`credentials: 'omit'`), timeout.
-4. Qualsiasi `401` (revoca, inattività) cancella la sessione e riporta a _Collega_ con la spiegazione:
-   lo fa solo `SessionProvider`, osservando le query e le mutation; le schermate non gestiscono il 401.
-5. **Scollega** chiama `DELETE /api/device/v1/self` e poi cancella la sessione; se l'istanza non risponde
+4. Un `401` dell'istanza (`application/problem+json` di tipo `unauthorized`: revoca, inattività)
+   cancella la sessione e riporta a _Collega_ con la spiegazione: lo fa solo `SessionProvider`,
+   osservando le query e le mutation; le schermate non gestiscono il 401. Un `401` senza quel corpo
+   (portale captive di un Wi-Fi, proxy, altro host in rete) è un errore qualsiasi e non cancella il token.
+5. Un link di abbinamento aperto da fuori dell'app (`arenile://pair?d=…`) mostra l'indirizzo dell'istanza
+   e parte solo dopo la conferma dell'utente: qualsiasi pagina web, app o tag NFC può aprire quel link, e
+   un'istanza estranea con il nome di un lido vero riceverebbe i dati dei clienti. Il codice è monouso:
+   dopo un errore del portachiavi si riprova solo il salvataggio, mai lo scambio.
+6. **Scollega** chiama `DELETE /api/device/v1/self` e poi cancella la sessione; se l'istanza non risponde
    l'utente può scollegare solo il dispositivo, avvisato che l'accesso resta nel pannello.
-6. L'indirizzo dell'istanza deve usare `https`; `http` solo su loopback (sviluppo), come il client
+7. L'indirizzo dell'istanza deve usare `https`; `http` solo su loopback (sviluppo), come il client
    desktop del core: il token non viaggia mai in chiaro, nemmeno in VPN.
-7. Token, email e telefoni non finiscono mai nei log né negli URL.
+8. Token, email e telefoni non finiscono mai nei log né negli URL.
 
 ## Conseguenze
 

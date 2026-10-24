@@ -20,8 +20,13 @@ paths:
 - Every call goes through `request()`, which maps failures to typed errors (`NetworkError`,
   `UnexpectedResponseError`, `ProblemError` with the stable problem `type` slug, `UnauthorizedError`).
   Branch on types and slugs, never on `title`/`detail` text.
-- A 401 anywhere means the device token is revoked or expired: `SessionProvider` signs out and the
-  layouts show "Collega" with the reason. Do not handle 401 locally.
+- A 401 problem+json of type `unauthorized` (`UnauthorizedError`) means the device token is revoked
+  or expired: `SessionProvider` signs out and the layouts show "Collega" with the reason. Do not
+  handle 401 locally. A 401 without the core's problem body (captive portal, proxy) is a plain
+  `ProblemError` and never wipes the token.
+- Pairing links from outside the app (`arenile://pair?d=…`) always need the user's confirmation of
+  the instance address; in-app targets (scanner, manual form) go through `usePairingIntent()`, never
+  through route parameters. A pairing code is single use: never send it twice.
 - The device token lives only in the keychain (`createSecureKeyValueStore`, AFTER_FIRST_UNLOCK,
   this device only) via `SessionStore`. Never log it, never put it in a URL, never show it.
 - Never log emails, phone numbers, tokens or secrets. `console.warn` messages carry no payloads.

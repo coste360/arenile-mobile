@@ -10,7 +10,11 @@ finta o segnaposto "in arrivo" nelle schermate.
 - **QR code.** Il pannello (_Configurazione → Dispositivi → Abbina un dispositivo_) mostra un QR con il
   testo `arenile://pair?d=<base64url(JSON)>`, JSON `{v:1, url, code, fingerprint?, establishment_name?}`
   (core `internal/domain/device/qr.go`). L'app lo legge con la fotocamera; inquadrandolo con la
-  fotocamera di sistema si apre direttamente l'app sulla schermata di collegamento (schema `arenile`).
+  fotocamera di sistema si apre l'app sulla schermata di collegamento (schema `arenile`). Un link
+  aperto da fuori dell'app (fotocamera di sistema, un'altra app, una pagina web, un tag NFC) mostra
+  prima l'indirizzo dell'istanza e chiede conferma: nessuna richiesta parte senza il consenso
+  dell'utente. Il link accetta solo il parametro `d`; QR inquadrato nell'app e modulo manuale passano
+  l'indirizzo in memoria.
   Regole del decodificatore uguali al core: `v` deve essere 1, `code` non vuoto, `url` http o https con
   host; un QR che non è di Arenile mostra un avviso e la scansione continua.
 - **Indirizzo e codice a mano.** In alternativa l'utente digita l'indirizzo dell'istanza e il codice di
@@ -30,7 +34,8 @@ finta o segnaposto "in arrivo" nelle schermate.
 
 - Il token si conserva nel **portachiavi del dispositivo** (Keychain iOS, Keystore Android), accessibile
   dopo il primo sblocco e mai migrato su un altro dispositivo con i backup (ADR 0003). Nessun cookie.
-- All'avvio, se c'è un token, l'app verifica `GET /api/device/v1/self` e `/meta`. Un `401` (dispositivo
+- All'avvio, se c'è un token, l'app verifica `GET /api/device/v1/self` e `/meta`. Un `401` dell'istanza
+  (`application/problem+json` di tipo `unauthorized`: dispositivo
   revocato dal pannello o inattivo da 90 giorni) cancella la sessione e riporta a _Collega_ con la
   spiegazione. Se l'istanza non è raggiungibile la sessione resta e la schermata principale lo dice.
 - **Scollega dispositivo** (Impostazioni) chiede conferma in una finestra di dialogo, revoca il token con

@@ -42,7 +42,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`); `src/api/generated/` generated types
 - `src/features/<area>` logic per area: `pairing` (QR decoder, target normalisation, pairing flow,
-  manual form schema), `session` (session store, provider, queries), `instance` (compatibility),
+  manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme)
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
   `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers)
@@ -73,7 +73,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - One API client factory (`createApiClient`) and one transport selection (`selectTransport`). Never
   disable or weaken TLS; self-signed desktop LAN instances wait for the pinned transport (ADR 0006).
 - The device token lives only in the keychain through `SessionStore` (ADR 0003): never logged,
-  never in a URL, never shown. A 401 is handled only by `SessionProvider` (sign-out + explanation).
+  never in a URL, never shown. A 401 problem+json `unauthorized` is handled only by `SessionProvider`
+  (sign-out + explanation). External pairing links need the user's confirmation; a code is single use.
 - Never log emails, phone numbers, tokens or secrets.
 - UI = React Native Reusables + NativeWind theme tokens only (ADR 0004): no `StyleSheet`, no
   `style={}`, no raw colours, no default Tailwind palette, no arbitrary values, no native `Alert`.
