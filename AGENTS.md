@@ -93,7 +93,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   BSL 1.1 and AGPL-3.0 (MIT, BSD, Apache-2.0...).
 - Code comments and identifiers in English.
 - Licence: pending a Coste360 decision (core spec 29.2: BSL 1.1 like the core unless decided
-  otherwise). Never add a `LICENSE` file, never call the project "open source" (use "source available").
+  otherwise). Do not add a `LICENSE` file until Coste360 decides; never call the project "open source" (use "source available").
 
 ## Tests
 
