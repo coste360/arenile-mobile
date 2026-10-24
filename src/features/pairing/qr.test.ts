@@ -99,6 +99,9 @@ describe('hasHttpHost', () => {
     ['https://user@a.it', true],
     ['https://:443', true],
     ['https://user@', false],
+    ['https://a.it:abc', false],
+    ['https://[::1', false],
+    ['https://[::1]:8443', true],
     ['mailto:a@b.it', false],
   ])('%j -> %j', (url, expected) => {
     expect(hasHttpHost(url)).toBe(expected);

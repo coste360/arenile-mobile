@@ -14,10 +14,12 @@ import {
   DEFAULT_PREFERENCES,
   type Preferences,
 } from '@/features/preferences/preferences';
+import { PairingIntentProvider } from '@/features/pairing/pairing-intent';
 import { PreferencesProvider } from '@/features/preferences/preferences-provider';
 import { createSessionStore, type Session } from '@/features/session/session';
 import { SessionProvider } from '@/features/session/session-provider';
 import { createI18n, resolveLocale } from '@/i18n';
+import { errorKind } from '@/lib/log';
 
 import { DependenciesProvider, type Dependencies } from './dependencies';
 import { bindAppStateFocus, createQueryClient } from './query-client';
@@ -54,7 +56,7 @@ export function AppProviders({
     let cancelled = false;
     const safely = <T,>(p: Promise<T>, fallback: T) =>
       p.catch((e: unknown) => {
-        console.warn('boot: keychain read failed', e instanceof Error ? e.message : e);
+        console.warn('boot: keychain read failed', errorKind(e));
         return fallback;
       });
     void Promise.all([
@@ -88,8 +90,10 @@ export function AppProviders({
               deviceLocales={dependencies.deviceLocales}
             >
               <SessionProvider initial={boot.session} store={stores.session}>
-                {children}
-                <PortalHost />
+                <PairingIntentProvider>
+                  {children}
+                  <PortalHost />
+                </PairingIntentProvider>
               </SessionProvider>
             </PreferencesProvider>
           </I18nextProvider>

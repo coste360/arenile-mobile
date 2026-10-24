@@ -71,6 +71,12 @@
   "pair": {
     "title": "Connecting",
     "progress": "Connecting to {{target}}",
+    "confirm": {
+      "title": "Connect this device?",
+      "description": "The link asks to connect the app to the instance {{host}}. Continue only if it is your establishment's address.",
+      "establishment": "Establishment named in the QR code: {{name}}",
+      "accept": "Connect"
+    },
     "actions": {
       "retry": "Try again",
       "scanAgain": "Scan a new QR code",

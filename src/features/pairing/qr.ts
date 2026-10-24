@@ -8,6 +8,8 @@
 import type { DevicePairingQRPayload } from '@/api/types';
 import { decodeBase64Url, decodeUtf8 } from '@/lib/base64url';
 
+import { parseAuthority } from './authority';
+
 export const QR_VERSION = 1;
 export const QR_PREFIX = 'arenile://pair?d=';
 
@@ -21,9 +23,8 @@ export function hasHttpHost(raw: string): boolean {
   if (/[\s\u0000-\u001f\u007f]/.test(raw)) return false;
   const m = /^(https?):\/\/([^/?#]*)/i.exec(raw);
   if (!m) return false;
-  const authority = m[2] ?? '';
-  const host = authority.slice(authority.lastIndexOf('@') + 1);
-  return host.length > 0;
+  const a = parseAuthority(m[2] ?? '');
+  return a !== null && a.host.length > 0;
 }
 
 /**

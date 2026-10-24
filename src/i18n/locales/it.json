@@ -71,6 +71,12 @@
   "pair": {
     "title": "Collegamento",
     "progress": "Collegamento a {{target}} in corso",
+    "confirm": {
+      "title": "Collegare questo dispositivo?",
+      "description": "Il link chiede di collegare l'app all'istanza {{host}}. Continua solo se è l'indirizzo del tuo stabilimento.",
+      "establishment": "Stabilimento indicato nel QR: {{name}}",
+      "accept": "Collega"
+    },
     "actions": {
       "retry": "Riprova",
       "scanAgain": "Inquadra un nuovo QR code",

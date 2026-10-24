@@ -1,9 +1,10 @@
+import { router } from 'expo-router';
 import { fireEvent, waitFor } from 'expo-router/testing-library';
 
 import { SESSION_KEY } from '@/features/session/session';
-import { DEVICE, json, meta, networkDown, problem } from '@/test/fake-fetch';
+import { DEVICE, json, meta, networkDown, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
-import { renderApp, requestsOf } from '@/test/render-app';
+import { renderApp, requestsOf, type RenderAppOptions } from '@/test/render-app';
 
 const d = (payload: unknown) => Buffer.from(JSON.stringify(payload)).toString('base64url');
 const QR = {
@@ -13,7 +14,7 @@ const QR = {
   establishment_name: 'Lido Azzurro',
 };
 
-const PAIRED_ROUTES = {
+const PAIRED_ROUTES: Record<string, Handler> = {
   'GET /api/admin/v1/meta': () => json(200, meta()),
   'POST /api/device/v1/pair': () =>
     json(201, {
@@ -26,16 +27,48 @@ const PAIRED_ROUTES = {
     json(200, { id: DEVICE.establishment_id, name: 'Lido Azzurro' }),
 };
 
-describe('pairing from the deep link arenile://pair?d=…', () => {
-  it('pairs, stores the token in the keychain and opens the home screen', async () => {
-    const { screen, kv, network, getPathname } = await renderApp({
+const posts = (calls: Request[]) =>
+  requestsOf(calls).filter((r) => r === 'POST /api/device/v1/pair').length;
+
+/** Opens arenile://pair?d=… as an external link and confirms the instance. */
+async function openLink(options: RenderAppOptions & { payload?: unknown }) {
+  const app = await renderApp({ initialUrl: `/pair?d=${d(options.payload ?? QR)}`, ...options });
+  expect(await app.screen.findByText('Collegare questo dispositivo?')).toBeOnTheScreen();
+  await fireEvent.press(app.screen.getByRole('button', { name: 'Collega' }));
+  return app;
+}
+
+describe('pairing from the link arenile://pair?d=… (system camera, other apps)', () => {
+  it('asks to confirm the instance address before any request', async () => {
+    const { screen, network } = await renderApp({
       initialUrl: `/pair?d=${d(QR)}`,
       routes: PAIRED_ROUTES,
     });
 
-    expect(await screen.findByText('Lido Azzurro')).toBeOnTheScreen();
-    await waitFor(() => expect(getPathname()).toBe('/home'));
+    expect(await screen.findByText('Collegare questo dispositivo?')).toBeOnTheScreen();
+    expect(screen.getByText(/all'istanza lido\.example\.it\./)).toBeOnTheScreen();
+    expect(screen.getByText('Stabilimento indicato nel QR: Lido Azzurro')).toBeOnTheScreen();
+    expect(network.calls).toHaveLength(0);
+  });
+
+  it('goes back to "Collega" without any request when cancelled', async () => {
+    const { screen, network, getPathname } = await renderApp({
+      initialUrl: `/pair?d=${d(QR)}`,
+      routes: PAIRED_ROUTES,
+    });
+
+    await fireEvent.press(await screen.findByRole('button', { name: 'Annulla' }));
+
+    expect(await screen.findByText("Collega a un'istanza")).toBeOnTheScreen();
+    expect(getPathname()).toBe('/connect');
+    expect(network.calls).toHaveLength(0);
+  });
+
+  it('pairs after confirmation, stores the token in the keychain and opens home', async () => {
+    const { screen, kv, network, getPathname } = await openLink({ routes: PAIRED_ROUTES });
+
     expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
+    expect(getPathname()).toBe('/home');
     expect(JSON.parse(kv.snapshot()[SESSION_KEY] ?? '{}')).toMatchObject({
       instanceUrl: 'https://lido.example.it',
       token: 'ar_dev_abcd1234_secret',
@@ -86,7 +119,7 @@ describe('pairing from the deep link arenile://pair?d=…', () => {
       "Torna all'inizio",
     ],
   ])('shows a clear error: %s', async (_name, routes, title, action) => {
-    const { screen, kv } = await renderApp({ initialUrl: `/pair?d=${d(QR)}`, routes });
+    const { screen, kv } = await openLink({ routes });
 
     expect(await screen.findByText(title)).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: action })).toBeOnTheScreen();
@@ -95,8 +128,7 @@ describe('pairing from the deep link arenile://pair?d=…', () => {
 
   it('retries after a network failure', async () => {
     let up = false;
-    const { screen, getPathname } = await renderApp({
-      initialUrl: `/pair?d=${d(QR)}`,
+    const { screen, getPathname } = await openLink({
       routes: {
         ...PAIRED_ROUTES,
         'GET /api/admin/v1/meta': (req) => (up ? json(200, meta()) : networkDown(req)),
@@ -111,8 +143,32 @@ describe('pairing from the deep link arenile://pair?d=…', () => {
     expect(getPathname()).toBe('/home');
   });
 
+  it('retries only the keychain save after a keychain failure (the code is single use)', async () => {
+    const { screen, network, kv } = await openLink({
+      routes: PAIRED_ROUTES,
+      keychainWriteFailures: 1,
+    });
+    expect(await screen.findByText('Accesso non salvato')).toBeOnTheScreen();
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Riprova' }));
+
+    expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
+    expect(posts(network.calls)).toBe(1);
+    expect(kv.snapshot()[SESSION_KEY]).toBeDefined();
+  });
+
   it('rejects a link that is not a pairing payload', async () => {
     const { screen, network } = await renderApp({ initialUrl: '/pair?d=nope' });
+
+    expect(await screen.findByText('Collegamento non valido')).toBeOnTheScreen();
+    expect(network.calls).toHaveLength(0);
+  });
+
+  it('ignores address and code passed as link parameters', async () => {
+    const { screen, network } = await renderApp({
+      initialUrl: '/pair?url=https%3A%2F%2Fevil.example&code=ABCDEFGH',
+      routes: PAIRED_ROUTES,
+    });
 
     expect(await screen.findByText('Collegamento non valido')).toBeOnTheScreen();
     expect(network.calls).toHaveLength(0);
@@ -126,16 +182,19 @@ describe('pairing from the deep link arenile://pair?d=…', () => {
     });
 
     expect(await screen.findByText('Dispositivo già collegato')).toBeOnTheScreen();
-    expect(requestsOf(network.calls)).not.toContain('POST /api/device/v1/pair');
+    expect(posts(network.calls)).toBe(0);
   });
 });
 
 describe('manual pairing form', () => {
-  it('validates the fields and pairs with address and code', async () => {
-    const { screen, getPathname } = await renderApp({
-      initialUrl: '/manual',
+  it('validates the fields and pairs with address and code, without confirmation', async () => {
+    const { screen, getPathname, network } = await renderApp({
+      initialUrl: '/connect',
       routes: PAIRED_ROUTES,
     });
+    await fireEvent.press(
+      await screen.findByRole('button', { name: 'Inserisci indirizzo e codice' }),
+    );
 
     await fireEvent.press(await screen.findByRole('button', { name: 'Collega' }));
     expect(await screen.findByText("Inserisci l'indirizzo dell'istanza.")).toBeOnTheScreen();
@@ -154,5 +213,8 @@ describe('manual pairing form', () => {
 
     expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
     expect(getPathname()).toBe('/home');
+    expect(posts(network.calls)).toBe(1);
+    // "Collega" and the form are gone from the history: back never returns to them.
+    await waitFor(() => expect(router.canGoBack()).toBe(false));
   });
 });

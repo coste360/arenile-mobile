@@ -48,6 +48,11 @@ describe('normalizeInstanceUrl', () => {
     ['http://lido.example.it', 'insecure_url'],
     ['http://192.168.1.20:8080', 'insecure_url'],
     ['http://127.0.0.1.nip.io', 'insecure_url'],
+    ['https://a.it:abc', 'invalid_input'],
+    ['https://a.it:80:90', 'invalid_input'],
+    ['https://[::1', 'invalid_input'],
+    ['https://[::1]x', 'invalid_input'],
+    ['https://a[b].it', 'invalid_input'],
   ])('%j -> %s', (input, error) => {
     expect(normalizeInstanceUrl(input)).toEqual({ ok: false, error });
   });

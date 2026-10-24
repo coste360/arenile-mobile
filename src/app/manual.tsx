@@ -8,11 +8,14 @@ import { Screen } from '@/components/layout/screen';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { manualPairingSchema, type ManualPairingValues } from '@/features/pairing/manual-form';
+import { usePairingIntent } from '@/features/pairing/pairing-intent';
+import { targetFromManual } from '@/features/pairing/target';
 
 /** Pairing by hand: instance address + pairing code shown by the panel. */
 export default function ManualScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ url?: string }>();
+  const intent = usePairingIntent();
   const { control, handleSubmit, formState } = useForm<ManualPairingValues>({
     resolver: zodResolver(manualPairingSchema),
     defaultValues: { url: params.url ?? '', code: '' },
@@ -21,7 +24,8 @@ export default function ManualScreen() {
 
   const onSubmit = () =>
     void handleSubmit((values) => {
-      router.replace({ pathname: '/pair', params: { url: values.url, code: values.code } });
+      intent.set(targetFromManual(values.url, values.code));
+      router.replace('/pair');
     })();
 
   return (

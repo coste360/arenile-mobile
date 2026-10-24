@@ -11,7 +11,9 @@ import { StateView } from '@/components/state-view';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { QR_PREFIX, decodeQR } from '@/features/pairing/qr';
+import { usePairingIntent } from '@/features/pairing/pairing-intent';
+import { decodeQR } from '@/features/pairing/qr';
+import { targetFromQR } from '@/features/pairing/target';
 import { useDependencies } from '@/providers/dependencies';
 
 cssInterop(CameraView, { className: 'style' });
@@ -20,6 +22,7 @@ cssInterop(CameraView, { className: 'style' });
 export default function ScanScreen() {
   const { t } = useTranslation();
   const { openSystemSettings } = useDependencies();
+  const intent = usePairingIntent();
   const [permission, requestPermission] = useCameraPermissions();
   const [invalid, setInvalid] = useState(false);
   const handled = useRef(false);
@@ -31,7 +34,8 @@ export default function ScanScreen() {
       return;
     }
     handled.current = true;
-    router.replace({ pathname: '/pair', params: { d: data.slice(QR_PREFIX.length) } });
+    intent.set(targetFromQR(data));
+    router.replace('/pair');
   };
 
   const manual = (

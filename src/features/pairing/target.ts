@@ -2,6 +2,7 @@
 // typed by hand. Same rules as ParseInput / NormalizeInstanceURL of the core
 // desktop client (internal/desktop/remote/pair.go) and NormalizePairingCode
 // (internal/domain/device/token.go).
+import { parseAuthority } from './authority';
 import { decodeQR, decodeQRData, type QRPayload } from './qr';
 
 export interface PairingTarget {
@@ -58,12 +59,11 @@ export function normalizeInstanceUrl(
   const m = /^([a-z][a-z0-9+.-]*):\/\/([^/?#]*)/i.exec(s);
   if (!m) return { ok: false, error: 'invalid_input' };
   const scheme = (m[1] ?? '').toLowerCase();
-  const host = m[2] ?? '';
-  if (host === '' || host.includes('@')) return { ok: false, error: 'invalid_input' };
-  const hostname = host.startsWith('[')
-    ? host.slice(1, host.indexOf(']'))
-    : host.replace(/:\d*$/, '');
-  if (hostname === '') return { ok: false, error: 'invalid_input' };
+  const authority = parseAuthority(m[2] ?? '');
+  if (!authority || authority.hasUserInfo || authority.hostname === '') {
+    return { ok: false, error: 'invalid_input' };
+  }
+  const { host, hostname } = authority;
   if (scheme === 'https') return { ok: true, url: `${scheme}://${host}` };
   if (scheme === 'http') {
     return isLoopbackHost(hostname)

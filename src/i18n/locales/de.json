@@ -71,6 +71,12 @@
   "pair": {
     "title": "Verbindung",
     "progress": "Verbindung mit {{target}} wird hergestellt",
+    "confirm": {
+      "title": "Dieses Gerät verbinden?",
+      "description": "Der Link möchte die App mit der Instanz {{host}} verbinden. Fahre nur fort, wenn das die Adresse deines Strandbads ist.",
+      "establishment": "Im QR-Code genanntes Strandbad: {{name}}",
+      "accept": "Verbinden"
+    },
     "actions": {
       "retry": "Erneut versuchen",
       "scanAgain": "Neuen QR-Code scannen",

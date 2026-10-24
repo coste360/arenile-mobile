@@ -45,6 +45,8 @@ export interface RenderAppOptions {
   preferences?: Preferences;
   routes?: Record<string, Handler>;
   size?: WindowSize;
+  /** Number of keychain writes that fail before the keychain works again. */
+  keychainWriteFailures?: number;
 }
 
 export async function renderApp({
@@ -53,12 +55,22 @@ export async function renderApp({
   preferences,
   routes = {},
   size = 'phone',
+  keychainWriteFailures = 0,
 }: RenderAppOptions = {}) {
   setWindow(size);
   const kv = createMemoryKeyValueStore({
     ...(session ? { [SESSION_KEY]: JSON.stringify(session) } : {}),
     ...(preferences ? { [PREFERENCES_KEY]: JSON.stringify(preferences) } : {}),
   });
+  let failures = keychainWriteFailures;
+  const setItem = kv.setItem;
+  kv.setItem = (key, value) => {
+    if (failures > 0) {
+      failures -= 1;
+      return Promise.reject(new Error('keychain unavailable'));
+    }
+    return setItem(key, value);
+  };
   const network = fakeFetch(routes);
   const dependencies: Dependencies = {
     kv,
