@@ -1,41 +1,120 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+# AGENTS.md
+
+Arenile mobile is the staff app of [Arenile](https://github.com/coste360/arenile), the source-available
+management system for beach establishments (stabilimenti balneari) maintained by Coste360 SRL. One app,
+published by Coste360 on the App Store and Google Play, that each establishment pairs with **its own**
+Arenile instance (VPS, managed hosting, or the desktop edition in LAN mode): it has no default server.
+Expo + React Native + TypeScript, phone and tablet/iPad. The product plan (Italian) lives in
+`docs/spec/`; the authoritative specification is the core's `docs/spec/` (section 29.2 for the app,
+16 for roles, 21.2 for offline). Decisions are in `docs/adr/`.
 
 ## Expo has changed — do not trust your training data
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed.
+Before writing code that touches an Expo, EAS, or React Native API:
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+1. Read the major version of the `expo` package in `package.json` (currently SDK 58).
+2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v58.0.0/` (append `.md` to a
+   page for Markdown).
+3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections
+   to common LLM misconceptions. Follow its links; never answer from memory.
 
-## Commands
+The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: check their current docs.
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+## Commands (always use make)
 
-```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
-```
+- `make setup` once, `make dev` to run Metro (development build or Expo Go)
+- `make check` after every change (must pass before you say you are done; < 2 min)
+- `make check-full` before opening a pull request (adds `expo-doctor` and the iOS/Android bundle export)
+- `make gen` after changing the pinned core release; `make api-bump VERSION=vX.Y.Z` to pin a new one
+- `make fmt` formats with Prettier; in Claude Code a hook does it
+- Focused runs: `make lint` (ESLint, style guard, Prettier check, `tsc --noEmit`), `make test` (Jest),
+  `npx jest <path>`
+- Add packages only with `npx expo install <package>` (SDK-compatible versions), never `npm install <pkg>`.
+- No Xcode or Android SDK is needed: native builds go through EAS Build (see README).
 
-Run lint and typecheck before declaring any task done.
+## Map of the repository
 
-## Navigation & Routing
+- `src/app/` expo-router routes (every file is a screen; no tests or helpers here):
+  `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
+  its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings; phone stack or
+  tablet master/detail)
+- `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
+  (`errors.ts`), contract type aliases (`types.ts`); `src/api/generated/` generated types
+- `src/features/<area>` logic per area: `pairing` (QR decoder, target normalisation, pairing flow,
+  manual form schema), `session` (session store, provider, queries), `instance` (compatibility),
+  `preferences` (language, theme)
+- `src/components/ui/` React Native Reusables components (vendored by their CLI);
+  `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers)
+- `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
+- `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
+- `src/lib/` shared primitives (version compare, base64url, storage, clock, navigation theme, `cn`)
+- `src/test/` test helpers (`fake-fetch.ts`, `fixtures.ts`, `render-app.tsx`) and screen tests
+- `src/global.css` the only stylesheet (theme tokens); `tailwind.config.js` maps them
+- `api/core-version.json` pinned core release + SHA-256; `api/openapi.yaml` its contract (verbatim)
+- `scripts/` `gen-api.mjs` (contract download/verify/generate), `style-guard.js`, `agents/` hooks
+- `assets/brand/` official Arenile brand assets (not covered by the code licence, see NOTICE.md)
+- `native-locales/` localized native strings (app name, permission prompts)
+- `docs/spec/` functional plan of the app, `docs/adr/` decisions
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
+## Generated code (never edit by hand)
 
-## Building with EAS
+- `src/api/generated/schema.d.ts` from `api/openapi.yaml` via openapi-typescript (`make gen`)
+- `api/openapi.yaml` is the verbatim `openapi.yaml` asset of the core release in `api/core-version.json`
+- `ios/`, `android/` are generated by `expo prebuild` (Continuous Native Generation) and git-ignored
+- `make check` fails if the generated code differs from what is committed (`make gen-check`).
 
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
+## Non-negotiable rules
 
-## Rules
+- The app talks only to the user's instance. No telemetry, no analytics, crash-reporting or ads SDK,
+  no `expo-updates`/EAS Update (it would contact Expo servers), no remote config (ADR 0005).
+- The app never imports core code. API types come only from the generated contract of a pinned core
+  release (ADR 0002); a missing endpoint is a core change first.
+- One API client factory (`createApiClient`) and one transport selection (`selectTransport`). Never
+  disable or weaken TLS; self-signed desktop LAN instances wait for the pinned transport (ADR 0006).
+- The device token lives only in the keychain through `SessionStore` (ADR 0003): never logged,
+  never in a URL, never shown. A 401 is handled only by `SessionProvider` (sign-out + explanation).
+- Never log emails, phone numbers, tokens or secrets.
+- UI = React Native Reusables + NativeWind theme tokens only (ADR 0004): no `StyleSheet`, no
+  `style={}`, no raw colours, no default Tailwind palette, no arbitrary values, no native `Alert`.
+  `npm run lint` (`scripts/style-guard.js` + ESLint) enforces it; exemptions live in the script with
+  their reason.
+- Phone and tablet/iPad from day one: responsive layout helpers, tests at both widths.
+- User-facing strings go through i18n keys; Italian is the source language; `en`, `de`, `fr` kept in
+  parity (tested). Native strings (permission prompts) in `native-locales/`.
+- Side effects (keychain, clock, fetch, device facts, app version) are injected (`Dependencies`):
+  screens and logic never call native modules, `fetch` or `new Date()` directly.
+- Pairing rules mirror the core (`internal/domain/device/qr.go`, `internal/desktop/remote/pair.go`):
+  QR v1, http only on loopback, Crockford pairing codes, semver compatibility both ways.
+- Money, when it arrives (Phase 1), is integer cents formatted only at display time with `Intl`;
+  calendar dates are `YYYY-MM-DD` in the establishment timezone, instants RFC 3339 UTC (as the API).
+- No new runtime dependency without explaining why in the PR; licences must be compatible with both
+  BSL 1.1 and AGPL-3.0 (MIT, BSD, Apache-2.0...).
+- Code comments and identifiers in English.
+- Licence: pending a Coste360 decision (core spec 29.2: BSL 1.1 like the core unless decided
+  otherwise). Never add a `LICENSE` file, never call the project "open source" (use "source available").
 
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+## Tests
+
+- `make test` runs Jest (jest-expo + Testing Library): unit tests must not need network or devices;
+  the global `fetch` throws in tests, inject `fakeFetch()`.
+- Pure logic: table-driven `it.each`, test file next to the module; mirror the core's Go cases where
+  the logic is shared.
+- Screens: `renderApp()` renders the real routes and providers with fake dependencies; await every
+  `fireEvent` and `findBy…`; one render per test; phone and tablet where layout matters.
+- No end-to-end device tests yet (no simulator in CI); `make export-check` proves both bundles build.
+
+## Definition of done
+
+- `make check` passes; `make check-full` passes before a PR
+- New behaviour has tests; bug fixes include a test that fails without the fix
+- Docs updated when behaviour, configuration or decisions change (`docs/`, `CHANGELOG.md` entry,
+  README for commands); a changed decision needs a new ADR
+- The PR description lists what changed, how it was tested and any open question
+
+## Working style
+
+- Keep changes small and scoped to the task; do not refactor unrelated code.
+- Read the relevant `docs/spec/` and `docs/adr/` (and the core spec sections) before writing code.
+- If the task is ambiguous or conflicts with a rule here, stop and ask in the issue or PR.
+- Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`, `build:`, `ci:`).
