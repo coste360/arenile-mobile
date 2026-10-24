@@ -16,6 +16,7 @@ import {
 import { createApiClient, type ApiClient } from '@/api/client';
 import { isUnauthorized } from '@/api/errors';
 import { useDependencies } from '@/providers/dependencies';
+import { errorKind } from '@/lib/log';
 
 import type { Session, SessionStore } from './session';
 
@@ -64,7 +65,7 @@ export function SessionProvider({
       try {
         await store.clear();
       } catch (e) {
-        console.warn('session: keychain entry not removed', e instanceof Error ? e.message : e);
+        console.warn('session: keychain entry not removed', errorKind(e));
       }
     },
     [store, queryClient],

@@ -12,6 +12,7 @@ import {
 } from 'react';
 
 import { resolveLocale, type Locale } from '@/i18n';
+import { errorKind } from '@/lib/log';
 
 import type {
   LanguagePreference,
@@ -35,7 +36,7 @@ export function applyColorScheme(theme: ThemePreference) {
   try {
     colorScheme.set(theme);
   } catch (e) {
-    console.warn('preferences: colour scheme not applied', e instanceof Error ? e.message : e);
+    console.warn('preferences: colour scheme not applied', errorKind(e));
   }
 }
 
@@ -65,15 +66,14 @@ export function PreferencesProvider({
 
   const update = useCallback(
     (patch: Partial<Preferences>) => {
-      setPreferences((prev) => {
-        const next = { ...prev, ...patch };
-        store.save(next).catch((e: unknown) => {
-          console.warn('preferences: not saved', e instanceof Error ? e.message : e);
-        });
-        return next;
+      // The updater stays pure: compute, set, then persist.
+      const next = { ...preferences, ...patch };
+      setPreferences(next);
+      store.save(next).catch((e: unknown) => {
+        console.warn('preferences: not saved', errorKind(e));
       });
     },
-    [store],
+    [preferences, store],
   );
 
   const value = useMemo<PreferencesContextValue>(
