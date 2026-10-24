@@ -8,6 +8,7 @@ describe('style guard', () => {
     ['opacity modifier on a token', '<View className="bg-primary/90 active:bg-accent" />'],
     ['layout arbitrary value', '<View className="max-w-[32rem] h-[60%]" />'],
     ['status bar colour mode', '<StatusBar style={scheme === "dark" ? "light" : "dark"} />'],
+    ['className colour on an icon', '<Icon as={X} className="text-primary" />'],
     ['hash in a URL', "const u = 'https://lido.example.it/#top';"],
     ['the theme stylesheet', "import '../global.css';"],
   ])('accepts %s', (_name, source) => {
@@ -17,6 +18,9 @@ describe('style guard', () => {
   it.each([
     ['inline style', '<View style={{ padding: 4 }} />', 'style={'],
     ['StyleSheet', 'const s = StyleSheet.create({ a: {} });', 'StyleSheet'],
+    ['other style props', '<ScrollView contentContainerStyle={{ padding: 4 }} />', 'Style={'],
+    ['named colour prop', '<Icon color="red" />', 'colour prop'],
+    ['placeholder colour', '<TextInput placeholderTextColor={"white"} />', 'colour prop'],
     ['raw hex colour', "<Icon color='#0b2542' />", 'raw colour'],
     ['colour function', "const c = 'rgba(0,0,0,0.5)';", 'raw colour'],
     ['default palette', '<View className="bg-red-500" />', 'default palette'],
@@ -48,6 +52,11 @@ describe('style guard', () => {
     const source = "<View className='h-[1px] shadow-black/5 bg-black/50' />";
     expect(checkFile('src/components/ui/separator.tsx', source)).toEqual([]);
     expect(checkFile('src/components/separator.tsx', source).length).toBeGreaterThan(0);
+  });
+
+  it('still rejects inline styles and raw colours in vendored components', () => {
+    expect(checkFile('src/components/ui/x.tsx', '<View style={{}} />')).toHaveLength(1);
+    expect(checkFile('src/components/ui/x.tsx', "const c = '#ffffff';")).toHaveLength(1);
   });
 
   it('allows raw colours only in the navigation theme', () => {

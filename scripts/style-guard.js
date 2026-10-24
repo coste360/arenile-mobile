@@ -30,7 +30,7 @@ const VENDORED_RE = /^src\/components\/ui\/[^/]+\.tsx$/;
 /** Raw colour exemptions, with their reason. */
 const RAW_COLOUR_ALLOW = new Set([
   // React Navigation needs concrete colours (it cannot read CSS variables);
-  // src/theme/theme.test.ts keeps them equal to src/global.css.
+  // src/lib/theme.test.ts keeps them equal to src/global.css.
   'src/lib/theme.ts',
 ]);
 
@@ -60,7 +60,11 @@ const SOURCE_RE = /\.(ts|tsx|js|jsx|mjs|cjs)$/;
 const TEST_RE = /\.test\.(ts|tsx|js)$/;
 const IMPORT_RE = /(?:import\s[^'"]*?from\s*|import\s*\(?\s*|require\(\s*)['"]([^'"]+)['"]/g;
 // expo-status-bar's `<StatusBar style="light">` is a colour mode, not a style object.
-const STYLE_RE = /(?<!<StatusBar\s[^>]*)\bstyle=\{|\bStyleSheet\b|\bstyle:\s*\{|\bstyle:\s*\[/g;
+// Any style prop (style, contentContainerStyle, imageStyle...), StyleSheet, style objects.
+const STYLE_RE =
+  /(?<!<StatusBar\s[^>]*)\b\w*[sS]tyle=\{|\bStyleSheet\b|\b\w*[sS]tyle:\s*\{|\b\w*[sS]tyle:\s*\[/g;
+// Colour props with a literal value (color="red", placeholderTextColor={'white'}).
+const COLOUR_PROP_RE = /\b\w*[cC]olor=\s*(?:["']|\{\s*["'`])/g;
 const RAW_COLOUR_RE =
   /['"`]#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})['"`]|\b(?:rgba?|hsla?|oklch|oklab|lab|lch|hwb)\(/g;
 const PALETTE =
@@ -121,12 +125,18 @@ function checkFile(path, text) {
     }
   }
 
-  // Vendored Reusables components and tests may use what the generator emits.
-  if (VENDORED_RE.test(path) || TEST_RE.test(path)) return errors;
+  // Tests may contain the fragments the guard must reject.
+  if (TEST_RE.test(path)) return errors;
 
   if (!STYLE_ALLOW.has(path)) {
     for (const m of text.matchAll(STYLE_RE)) {
       fail(m.index, `"${m[0].trim()}" not allowed (use className with theme utilities)`);
+    }
+    for (const m of text.matchAll(COLOUR_PROP_RE)) {
+      fail(
+        m.index,
+        `colour prop "${m[0].trim()}" with a literal value (use className with a theme token)`,
+      );
     }
   }
   if (!RAW_COLOUR_ALLOW.has(path)) {
@@ -134,6 +144,9 @@ function checkFile(path, text) {
       fail(m.index, `raw colour ${m[0]} not allowed (use a theme token)`);
     }
   }
+  // Vendored Reusables components keep the palette shades and arbitrary values
+  // their generator emits (shadow-black/5, bg-black/50, h-[1px], ring-[3px]).
+  if (VENDORED_RE.test(path)) return errors;
   for (const m of text.matchAll(PALETTE_RE)) {
     fail(m.index, `default palette colour "${m[0]}" not allowed (use a semantic theme token)`);
   }
