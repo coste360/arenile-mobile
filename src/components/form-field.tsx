@@ -17,6 +17,7 @@ export function FormField<T extends FieldValues>({
   name,
   label,
   hint,
+  className,
   ...inputProps
 }: {
   control: Control<T>;
@@ -39,7 +40,7 @@ export function FormField<T extends FieldValues>({
         accessibilityLabelledBy={nativeID}
         accessibilityLabel={label}
         aria-invalid={!!error}
-        className={cn(error && 'border-destructive')}
+        className={cn(className, error && 'border-destructive')}
       />
       {error ? (
         <Text variant="small" className="text-destructive" accessibilityLiveRegion="polite">
