@@ -28,6 +28,7 @@ import PairScreen from '@/app/pair';
 import ScanScreen from '@/app/scan';
 import { RootNavigator } from '@/components/root-navigator';
 import { PREFERENCES_KEY, type Preferences } from '@/features/preferences/preferences';
+import type { PushNative } from '@/features/push/native';
 import { SESSION_KEY, type Session } from '@/features/session/session';
 import { fixedClock } from '@/lib/clock';
 import { createFakeNetworkMonitor } from '@/lib/network';
@@ -69,6 +70,8 @@ export interface RenderAppOptions {
   offlineData?: Record<string, string>;
   /** Device connectivity at start (the returned `connectivity` changes it). */
   connected?: boolean;
+  /** Native push of the build (phase 2); absent means no push module. */
+  push?: PushNative;
 }
 
 export async function renderApp({
@@ -80,6 +83,7 @@ export async function renderApp({
   keychainWriteFailures = 0,
   offlineData = {},
   connected = true,
+  push,
 }: RenderAppOptions = {}) {
   setWindow(size);
   const kv = createMemoryKeyValueStore({
@@ -111,6 +115,7 @@ export async function renderApp({
     deviceLocales: () => ['it-IT'],
     openSystemSettings: jest.fn(),
     widget,
+    push,
   };
 
   function TestRootLayout() {

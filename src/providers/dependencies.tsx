@@ -9,6 +9,7 @@ import { Linking, Platform } from 'react-native';
 
 import { APP_VERSION } from '@/config/app';
 import type { DeviceInfo } from '@/features/pairing/pair';
+import { createExpoPushNative, type PushNative } from '@/features/push/native';
 import { createExpoWidgetBridge, type WidgetBridge } from '@/features/widget/bridge';
 import { systemClock, type Clock } from '@/lib/clock';
 import { createExpoNetworkMonitor, type NetworkMonitor } from '@/lib/network';
@@ -35,6 +36,8 @@ export interface Dependencies {
   openSystemSettings: () => void;
   /** Home screen widget (app group / shared preferences); absent means no widget. */
   widget?: WidgetBridge;
+  /** Native push token and permission (phase 2, opt-in); absent means no push. */
+  push?: PushNative;
 }
 
 function platform(): DeviceInfo['platform'] {
@@ -60,6 +63,7 @@ export function createDefaultDependencies(): Dependencies {
       void Linking.openSettings();
     },
     widget: createExpoWidgetBridge(),
+    push: createExpoPushNative(),
   };
 }
 

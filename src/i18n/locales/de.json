@@ -1164,5 +1164,37 @@
       "notFound": "Der Eintrag existiert nicht mehr.",
       "default": "Vorgang fehlgeschlagen. Versuche es erneut."
     }
+  },
+  "push": {
+    "title": "Push-Benachrichtigungen",
+    "privacy": "Optional. Sie laufen über das Relay von Coste360, das nur die von Apple oder Google vergebene Telefonkennung und einen allgemeinen Text (z. B. \"Neue Online-Buchung\") erhält, nie Kundendaten. Beim Antippen liest die App die Daten erneut von der Instanz.",
+    "onlineOnly": "Zum Verwalten der Benachrichtigungen ist die Verbindung zur Instanz nötig.",
+    "blocked": {
+      "relay": "Diese Instanz hat kein Benachrichtigungs-Relay eingerichtet: Der Serverbetreiber kann es aktivieren.",
+      "establishment": "Der Betreiber hat die Benachrichtigungen des Strandbads nicht aktiviert: Sie werden im Panel unter Konfiguration → Geräte aktiviert."
+    },
+    "on": "Auf diesem Gerät aktiv",
+    "off": "Auf diesem Gerät aus",
+    "topicsLabel": "Benachrichtige mich bei",
+    "topics": {
+      "booking_new_online": "Neuen Online-Buchungen",
+      "booking_approval_requested": "Freizugebenden Buchungen",
+      "payment_failed": "Fehlgeschlagenen Zahlungen"
+    },
+    "noTopics": "Deine Rolle erhält keine der im Strandbad aktiven Benachrichtigungen.",
+    "pickTopic": "Wähle mindestens eine Art von Benachrichtigung.",
+    "turnOn": "Benachrichtigungen aktivieren",
+    "turnOff": "Benachrichtigungen deaktivieren",
+    "saveTopics": "Gewählte Benachrichtigungen speichern",
+    "openSettings": "Telefoneinstellungen öffnen",
+    "channel": "Benachrichtigungen des Strandbads",
+    "errors": {
+      "permission": "Benachrichtigungen sind für Arenile in den Telefoneinstellungen blockiert.",
+      "unavailable": "Benachrichtigungen sind auf der Instanz oder im Strandbad nicht aktiv.",
+      "offline": "Instanz nicht erreichbar: Versuche es erneut, sobald die Verbindung zurück ist.",
+      "forbidden": "Für deine Rolle nicht erlaubt.",
+      "token": "Das Telefon hat keine Benachrichtigungskennung geliefert: Diese App-Version unterstützt sie möglicherweise nicht.",
+      "default": "Vorgang fehlgeschlagen. Versuche es erneut."
+    }
   }
 }
