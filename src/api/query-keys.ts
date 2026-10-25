@@ -11,7 +11,8 @@ import type { CalendarDate } from '@/lib/calendar';
 import type { Slots } from './types';
 
 /** Areas of the establishment data (second element after the id). */
-export type EstablishmentArea = 'operations' | 'bookings' | 'maps' | 'season-passes' | 'payments';
+export type EstablishmentArea =
+  'operations' | 'bookings' | 'maps' | 'season-passes' | 'payments' | 'cash';
 
 export const estKeys = {
   /** Every query of the establishment. */
@@ -35,6 +36,9 @@ export const estKeys = {
   /** GET maps/{id}: the full map document (spots and decorations). */
   map: (establishmentId: string, mapId: string) =>
     ['est', establishmentId, 'maps', 'detail', mapId] as const,
+
+  /** GET cash-sessions/current: the open session of the main register (never persisted). */
+  cashSession: (establishmentId: string) => ['est', establishmentId, 'cash', 'current'] as const,
 };
 
 export const authKeys = {

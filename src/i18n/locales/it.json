@@ -147,7 +147,8 @@
     "today": "Oggi",
     "bookings": "Prenotazioni",
     "booking": "Prenotazione",
-    "spots": "Postazioni"
+    "spots": "Postazioni",
+    "operations": "Operazioni"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -654,6 +655,194 @@
       "errorTitle": "Prenotazione non disponibile",
       "errorDescription": "Non è stato possibile leggerla dall'istanza. Controlla la connessione e riprova.",
       "notFound": "La prenotazione non esiste più."
+    }
+  },
+  "operations": {
+    "hub": {
+      "description": "Check-in, note, incassi e blocchi delle postazioni.",
+      "checkInTitle": "Check-in",
+      "scan": "Scansiona un QR code",
+      "scanHint": "QR della prenotazione o del biglietto d'ingresso.",
+      "codeLabel": "Codice della prenotazione o numero del biglietto",
+      "codePlaceholder": "AR-7K3Q9 oppure 37",
+      "codeSubmit": "Cerca",
+      "codeRequired": "Inserisci un codice.",
+      "searching": "Ricerca in corso",
+      "spotsTitle": "Postazioni di oggi",
+      "spotsSearch": "Cerca una postazione",
+      "spotsSearchPlaceholder": "Ad esempio A1",
+      "spotsEmpty": "Nessuna postazione trovata.",
+      "spotsUnavailable": "La mappa di oggi non è disponibile: serve la connessione almeno una volta.",
+      "spotsMore": "Affina la ricerca per vedere le altre postazioni."
+    },
+    "scan": {
+      "cameraLabel": "Anteprima della fotocamera per i QR code di prenotazioni e biglietti",
+      "hint": "Inquadra il QR della prenotazione o del biglietto.",
+      "next": "Scansiona il prossimo",
+      "manual": "Inserisci il codice",
+      "permission": {
+        "title": "Serve la fotocamera",
+        "description": "Per leggere i QR code di prenotazioni e biglietti l'app usa la fotocamera. Le immagini restano sul dispositivo.",
+        "denied": "L'accesso alla fotocamera è negato. Consentilo dalle impostazioni del dispositivo, oppure inserisci il codice a mano.",
+        "grant": "Consenti la fotocamera",
+        "openSettings": "Apri le impostazioni"
+      }
+    },
+    "result": {
+      "unrecognized": "Questo QR code non è di Arenile.",
+      "notFound": "Nessuna prenotazione o biglietto con questo codice.",
+      "needsConnection": "Serve la connessione: questo codice non è tra i dati salvati sul dispositivo.",
+      "error": "Non è stato possibile controllare il codice. Riprova.",
+      "openBooking": "Apri le operazioni"
+    },
+    "gate": {
+      "ticketTitle": "Biglietto d'ingresso {{number}}",
+      "numberTitle": "Biglietto numero {{number}}",
+      "manualDescription": "L'ingresso viene registrato come inserimento manuale dello staff. Controlla il biglietto prima di confermare.",
+      "admit": "Registra l'ingresso",
+      "working": "Registrazione dell'ingresso in corso",
+      "forbidden": "Registrare gli ingressi non è consentito per il tuo ruolo.",
+      "outcome": {
+        "admitted": "Ingresso registrato",
+        "already_entered": "Già entrato: il biglietto è già stato usato",
+        "voided": "Biglietto annullato: non può entrare",
+        "wrong_date": "Biglietto di un altro giorno: non può entrare"
+      }
+    },
+    "booking": {
+      "title": "Prenotazione {{code}}",
+      "unavailableTitle": "Prenotazione non disponibile",
+      "unavailableDescription": "Non è tra i dati salvati sul dispositivo e l'istanza non è raggiungibile.",
+      "status": "Stato",
+      "period": "Periodo",
+      "periodRange": "{{from}} – {{to}}",
+      "spots": "Postazioni",
+      "customer": "Cliente",
+      "anonymous": "Cliente anonimo",
+      "seasonPass": "Abbonamento stagionale",
+      "total": "Totale",
+      "paid": "Pagato",
+      "balance": "Da saldare",
+      "nothingAllowed": "Il tuo ruolo può consultare la prenotazione ma non fare operazioni."
+    },
+    "bookingStatus": {
+      "draft": "Bozza",
+      "held": "In attesa di pagamento",
+      "pending_payment": "Pagamento in corso",
+      "awaiting_approval": "Da approvare",
+      "confirmed": "Confermata",
+      "checked_in": "Check-in fatto",
+      "completed": "Conclusa",
+      "cancelled": "Annullata",
+      "no_show": "Non presentato",
+      "expired": "Scaduta",
+      "rejected": "Rifiutata"
+    },
+    "spotStatus": {
+      "free": "Libera",
+      "booked": "Prenotata",
+      "checked_in": "Occupata",
+      "pass_holder": "Abbonato",
+      "released": "Rilasciata",
+      "held": "In attesa",
+      "renewal_offer": "Rinnovo offerto",
+      "blocked": "Bloccata",
+      "closed": "Chiusa",
+      "inactive": "Non attiva"
+    },
+    "slots": {
+      "FULL": "Giornata intera",
+      "AM": "Mattina",
+      "PM": "Pomeriggio"
+    },
+    "queued": {
+      "sent": "Registrato.",
+      "offline": "Salvato sul dispositivo: partirà appena l'istanza è raggiungibile."
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "action": "Fai il check-in",
+      "done": "Check-in fatto",
+      "outside_stay": "Il check-in è possibile solo durante il soggiorno ({{from}} – {{to}}).",
+      "unavailable": "Check-in non possibile: la prenotazione è «{{status}}»."
+    },
+    "note": {
+      "title": "Note interne",
+      "none": "Nessuna nota.",
+      "label": "Nuova nota",
+      "placeholder": "Ad esempio: ombrellone da sostituire",
+      "hint": "Visibile solo allo staff.",
+      "submit": "Aggiungi la nota",
+      "errors": {
+        "note_empty": "Scrivi il testo della nota.",
+        "note_too_long": "La nota è troppo lunga: al massimo 2000 caratteri."
+      }
+    },
+    "cash": {
+      "title": "Incasso in contanti",
+      "balance": "Da saldare: {{amount}}",
+      "settled": "Saldata: nulla da incassare.",
+      "label": "Importo",
+      "hint": "In euro, ad esempio 12,50.",
+      "submit": "Incassa",
+      "deskClosed": "La cassa è chiusa: apri una sessione di cassa dal pannello prima di incassare in contanti.",
+      "deskUnknown": "Senza connessione non si sa se la cassa è aperta: l'incasso partirà alla riconnessione e verrà rifiutato se la cassa è chiusa.",
+      "confirmTitle": "Incassare {{amount}} in contanti?",
+      "confirmDescription": "Prenotazione {{label}}. L'incasso viene registrato nella sessione di cassa aperta.",
+      "confirm": "Incassa",
+      "errors": {
+        "amount_invalid": "Importo non valido. Esempio: 12,50",
+        "amount_zero": "L'importo deve essere maggiore di zero.",
+        "amount_over_balance": "L'importo supera il saldo da pagare."
+      }
+    },
+    "release": {
+      "title": "Rilascio del giorno",
+      "description": "Il giorno rilasciato torna prenotabile per altri clienti.",
+      "day": "Giorno",
+      "slot": "Fascia",
+      "submit": "Rilascia",
+      "none": "Nessun giorno da rilasciare oggi o domani.",
+      "confirmTitle": "Rilasciare {{date}}?",
+      "confirmDescription": "{{label}}: la postazione diventa prenotabile ({{slot}}).",
+      "confirm": "Rilascia"
+    },
+    "spot": {
+      "title": "Postazione {{label}}",
+      "notFoundTitle": "Postazione non trovata",
+      "notFoundDescription": "La postazione non è nella mappa di oggi salvata sul dispositivo.",
+      "status": "Stato",
+      "blockReason": "Motivo del blocco",
+      "booking": "Prenotazione",
+      "openBooking": "Operazioni sulla prenotazione"
+    },
+    "block": {
+      "title": "Blocca la postazione",
+      "description": "Una postazione bloccata non si può prenotare.",
+      "period": "Periodo",
+      "periods": {
+        "today": "Oggi",
+        "tomorrow": "Domani",
+        "today_and_tomorrow": "Oggi e domani"
+      },
+      "slot": "Fascia",
+      "reason": "Motivo (facoltativo)",
+      "reasonPlaceholder": "Ad esempio: ombrellone rotto",
+      "reasonTooLong": "Al massimo 200 caratteri.",
+      "submit": "Blocca",
+      "done": "Postazione bloccata.",
+      "unblock": "Sblocca la postazione",
+      "unblocked": "Postazione sbloccata.",
+      "unblockTitle": "Sbloccare la postazione {{label}}?",
+      "unblockDescription": "La postazione torna prenotabile.",
+      "onlineOnly": "Bloccare o sbloccare una postazione richiede l'istanza raggiungibile, come creare o spostare una prenotazione."
+    },
+    "errors": {
+      "offline": "Serve la connessione: riprova quando l'istanza è raggiungibile.",
+      "forbidden": "Non consentito per il tuo ruolo.",
+      "spot_unavailable": "La postazione non è libera nel periodo scelto.",
+      "not_found": "Non trovato: i dati potrebbero essere cambiati. Aggiorna e riprova.",
+      "default": "L'istanza ha rifiutato l'operazione."
     }
   }
 }

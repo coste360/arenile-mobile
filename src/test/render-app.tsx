@@ -8,6 +8,10 @@ import BookingScreen from '@/app/(connected)/bookings/[bookingId]';
 import BookingsScreen from '@/app/(connected)/bookings/index';
 import HomeScreen from '@/app/(connected)/home';
 import MapScreen from '@/app/(connected)/map';
+import BookingOperationsScreen from '@/app/(connected)/operations/booking/[bookingId]';
+import OperationsScreen from '@/app/(connected)/operations/index';
+import OperationsScanScreen from '@/app/(connected)/operations/scan';
+import SpotOperationsScreen from '@/app/(connected)/operations/spot/[spotId]';
 import PendingScreen from '@/app/(connected)/pending';
 import SettingsScreen from '@/app/(connected)/settings';
 import SpotsScreen from '@/app/(connected)/spots';
@@ -126,6 +130,10 @@ export async function renderApp({
       '(connected)/bookings/index': BookingsScreen,
       '(connected)/bookings/[bookingId]': BookingScreen,
       '(connected)/spots': SpotsScreen,
+      '(connected)/operations/index': OperationsScreen,
+      '(connected)/operations/scan': OperationsScanScreen,
+      '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,
+      '(connected)/operations/spot/[spotId]': SpotOperationsScreen,
     },
     { initialUrl },
   );

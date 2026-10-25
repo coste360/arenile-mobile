@@ -147,7 +147,8 @@
     "today": "Today",
     "bookings": "Bookings",
     "booking": "Booking",
-    "spots": "Spots"
+    "spots": "Spots",
+    "operations": "Operations"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -654,6 +655,194 @@
       "errorTitle": "Booking not available",
       "errorDescription": "It could not be read from the instance. Check the connection and try again.",
       "notFound": "The booking no longer exists."
+    }
+  },
+  "operations": {
+    "hub": {
+      "description": "Check-in, notes, cash collection and spot blocks.",
+      "checkInTitle": "Check-in",
+      "scan": "Scan a QR code",
+      "scanHint": "QR code of the booking or of the entry ticket.",
+      "codeLabel": "Booking code or ticket number",
+      "codePlaceholder": "AR-7K3Q9 or 37",
+      "codeSubmit": "Search",
+      "codeRequired": "Enter a code.",
+      "searching": "Searching",
+      "spotsTitle": "Today's spots",
+      "spotsSearch": "Search a spot",
+      "spotsSearchPlaceholder": "For example A1",
+      "spotsEmpty": "No spot found.",
+      "spotsUnavailable": "Today's map is not available: a connection is needed at least once.",
+      "spotsMore": "Refine the search to see the other spots."
+    },
+    "scan": {
+      "cameraLabel": "Camera preview for booking and ticket QR codes",
+      "hint": "Frame the QR code of the booking or of the ticket.",
+      "next": "Scan the next one",
+      "manual": "Type the code",
+      "permission": {
+        "title": "Camera needed",
+        "description": "The app uses the camera to read the QR codes of bookings and tickets. Images stay on the device.",
+        "denied": "Camera access is denied. Allow it in the device settings, or type the code by hand.",
+        "grant": "Allow the camera",
+        "openSettings": "Open settings"
+      }
+    },
+    "result": {
+      "unrecognized": "This QR code is not from Arenile.",
+      "notFound": "No booking or ticket has this code.",
+      "needsConnection": "A connection is needed: this code is not among the data saved on the device.",
+      "error": "The code could not be checked. Try again.",
+      "openBooking": "Open the operations"
+    },
+    "gate": {
+      "ticketTitle": "Entry ticket {{number}}",
+      "numberTitle": "Ticket number {{number}}",
+      "manualDescription": "The entry is recorded as a manual entry by the staff. Check the ticket before confirming.",
+      "admit": "Record the entry",
+      "working": "Recording the entry",
+      "forbidden": "Your role is not allowed to record entries.",
+      "outcome": {
+        "admitted": "Entry recorded",
+        "already_entered": "Already entered: the ticket was used",
+        "voided": "Ticket voided: entry refused",
+        "wrong_date": "Ticket for another day: entry refused"
+      }
+    },
+    "booking": {
+      "title": "Booking {{code}}",
+      "unavailableTitle": "Booking not available",
+      "unavailableDescription": "It is not among the data saved on the device and the instance cannot be reached.",
+      "status": "Status",
+      "period": "Period",
+      "periodRange": "{{from}} – {{to}}",
+      "spots": "Spots",
+      "customer": "Customer",
+      "anonymous": "Anonymous customer",
+      "seasonPass": "Season pass",
+      "total": "Total",
+      "paid": "Paid",
+      "balance": "Balance due",
+      "nothingAllowed": "Your role can view the booking but not perform operations."
+    },
+    "bookingStatus": {
+      "draft": "Draft",
+      "held": "Awaiting payment",
+      "pending_payment": "Payment in progress",
+      "awaiting_approval": "Awaiting approval",
+      "confirmed": "Confirmed",
+      "checked_in": "Checked in",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No-show",
+      "expired": "Expired",
+      "rejected": "Rejected"
+    },
+    "spotStatus": {
+      "free": "Free",
+      "booked": "Booked",
+      "checked_in": "Occupied",
+      "pass_holder": "Season pass",
+      "released": "Released",
+      "held": "On hold",
+      "renewal_offer": "Renewal offered",
+      "blocked": "Blocked",
+      "closed": "Closed",
+      "inactive": "Inactive"
+    },
+    "slots": {
+      "FULL": "Full day",
+      "AM": "Morning",
+      "PM": "Afternoon"
+    },
+    "queued": {
+      "sent": "Recorded.",
+      "offline": "Saved on the device: it will be sent as soon as the instance can be reached."
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "action": "Check in",
+      "done": "Checked in",
+      "outside_stay": "Check-in is possible only during the stay ({{from}} – {{to}}).",
+      "unavailable": "Check-in not possible: the booking is “{{status}}”."
+    },
+    "note": {
+      "title": "Internal notes",
+      "none": "No notes.",
+      "label": "New note",
+      "placeholder": "For example: umbrella to replace",
+      "hint": "Visible to the staff only.",
+      "submit": "Add the note",
+      "errors": {
+        "note_empty": "Write the text of the note.",
+        "note_too_long": "The note is too long: at most 2000 characters."
+      }
+    },
+    "cash": {
+      "title": "Cash collection",
+      "balance": "Balance due: {{amount}}",
+      "settled": "Settled: nothing to collect.",
+      "label": "Amount",
+      "hint": "In euro, for example 12,50.",
+      "submit": "Collect",
+      "deskClosed": "The cash desk is closed: open a cash session from the panel before collecting cash.",
+      "deskUnknown": "Without a connection it is unknown whether the cash desk is open: the payment will be sent on reconnection and refused if the cash desk is closed.",
+      "confirmTitle": "Collect {{amount}} in cash?",
+      "confirmDescription": "Booking {{label}}. The payment is recorded in the open cash session.",
+      "confirm": "Collect",
+      "errors": {
+        "amount_invalid": "Invalid amount. Example: 12,50",
+        "amount_zero": "The amount must be greater than zero.",
+        "amount_over_balance": "The amount exceeds the balance due."
+      }
+    },
+    "release": {
+      "title": "Day release",
+      "description": "A released day can be booked by other customers.",
+      "day": "Day",
+      "slot": "Slot",
+      "submit": "Release",
+      "none": "No day to release today or tomorrow.",
+      "confirmTitle": "Release {{date}}?",
+      "confirmDescription": "{{label}}: the spot becomes bookable ({{slot}}).",
+      "confirm": "Release"
+    },
+    "spot": {
+      "title": "Spot {{label}}",
+      "notFoundTitle": "Spot not found",
+      "notFoundDescription": "The spot is not in today's map saved on the device.",
+      "status": "Status",
+      "blockReason": "Reason of the block",
+      "booking": "Booking",
+      "openBooking": "Booking operations"
+    },
+    "block": {
+      "title": "Block the spot",
+      "description": "A blocked spot cannot be booked.",
+      "period": "Period",
+      "periods": {
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "today_and_tomorrow": "Today and tomorrow"
+      },
+      "slot": "Slot",
+      "reason": "Reason (optional)",
+      "reasonPlaceholder": "For example: broken umbrella",
+      "reasonTooLong": "At most 200 characters.",
+      "submit": "Block",
+      "done": "Spot blocked.",
+      "unblock": "Unblock the spot",
+      "unblocked": "Spot unblocked.",
+      "unblockTitle": "Unblock spot {{label}}?",
+      "unblockDescription": "The spot becomes bookable again.",
+      "onlineOnly": "Blocking or unblocking a spot needs the instance to be reachable, like creating or moving a booking."
+    },
+    "errors": {
+      "offline": "A connection is needed: try again when the instance can be reached.",
+      "forbidden": "Not allowed for your role.",
+      "spot_unavailable": "The spot is not free in the chosen period.",
+      "not_found": "Not found: the data may have changed. Refresh and try again.",
+      "default": "The instance refused the operation."
     }
   }
 }

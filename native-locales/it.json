@@ -1,7 +1,7 @@
 {
   "ios": {
     "CFBundleDisplayName": "Arenile",
-    "NSCameraUsageDescription": "Arenile usa la fotocamera per inquadrare il QR di abbinamento e i QR delle prenotazioni.",
+    "NSCameraUsageDescription": "Arenile usa la fotocamera per inquadrare il QR di abbinamento e i QR di prenotazioni e biglietti.",
     "NSMicrophoneUsageDescription": "Arenile non registra audio.",
     "NSFaceIDUsageDescription": "Arenile non usa Face ID."
   },

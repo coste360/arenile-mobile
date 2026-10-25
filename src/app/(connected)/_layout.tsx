@@ -1,6 +1,7 @@
 import { Redirect, router, Stack, usePathname } from 'expo-router';
 import {
   CalendarDaysIcon,
+  ClipboardCheckIcon,
   ClipboardListIcon,
   HouseIcon,
   MapIcon,
@@ -20,8 +21,8 @@ import { useSession } from '@/features/session/session-provider';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
-  href: '/home' | '/map' | '/settings' | '/today' | '/bookings';
-  label: 'nav.home' | 'nav.map' | 'nav.settings' | 'nav.today' | 'nav.bookings';
+  href: '/home' | '/map' | '/operations' | '/settings' | '/today' | '/bookings';
+  label: 'nav.home' | 'nav.map' | 'nav.operations' | 'nav.settings' | 'nav.today' | 'nav.bookings';
   icon: LucideIcon;
 };
 
@@ -30,6 +31,7 @@ const NAV: NavItem[] = [
   { href: '/today', label: 'nav.today', icon: CalendarDaysIcon },
   { href: '/bookings', label: 'nav.bookings', icon: ClipboardListIcon },
   { href: '/map', label: 'nav.map', icon: MapIcon },
+  { href: '/operations', label: 'nav.operations', icon: ClipboardCheckIcon },
   { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
 ];
 
@@ -46,6 +48,20 @@ function dayScreens(
       options={{ title: t('nav.booking') }}
     />,
     <Stack.Screen key="spots" name="spots" options={{ title: t('nav.spots') }} />,
+  ];
+}
+
+/** Titles of the operations screens (the booking and spot screens set their own). */
+function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') => string) {
+  return [
+    <Stack.Screen key="ops" name="operations/index" options={{ title: t('nav.operations') }} />,
+    <Stack.Screen
+      key="scan"
+      name="operations/scan"
+      options={{ title: t('operations.hub.scan') }}
+    />,
+    <Stack.Screen key="booking" name="operations/booking/[bookingId]" options={{ title: '' }} />,
+    <Stack.Screen key="spot" name="operations/spot/[spotId]" options={{ title: '' }} />,
   ];
 }
 
@@ -81,6 +97,7 @@ export default function ConnectedLayout() {
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
             {dayScreens(t)}
+            {operationsScreens(t)}
           </Stack>
         </View>
       </View>
@@ -108,6 +125,15 @@ export default function ConnectedLayout() {
                 onPress={() => router.push('/map')}
               >
                 <Icon as={MapIcon} size={22} />
+                <Icon as={MapIcon} size={22} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                accessibilityLabel={t('nav.operations')}
+                onPress={() => router.push('/operations')}
+              >
+                <Icon as={ClipboardCheckIcon} size={22} />
               </Button>
               <Button
                 variant="ghost"
@@ -125,6 +151,7 @@ export default function ConnectedLayout() {
       <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
       {dayScreens(t)}
+      {operationsScreens(t)}
     </Stack>
   );
 }

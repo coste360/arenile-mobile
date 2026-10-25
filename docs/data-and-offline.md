@@ -79,3 +79,26 @@ await enqueue({ kind: 'day_release', bookingId: passBookingId, date, slots, labe
 
 `<ConnectionIndicator />` (`src/components/connection-indicator.tsx`) is already in every phone header
 and in the tablet navigation pane; it opens `/pending`. New layouts must keep it visible.
+
+## Operations (check-in, cash, notes, releases, blocks)
+
+Built on the blocks above ([ADR 0009](adr/0009-operazioni-check-in-qr-e-azioni-solo-online.md)).
+Other screens reuse them instead of rewriting the actions:
+
+- **Panels** — `src/components/operations/`: `<BookingActionsPanel booking={ref} />` (check-in,
+  cash, pass day release, notes, each gated by `useAbilities()` and `/meta` features) and
+  `<SpotActionsPanel spot={operationalSpot} />` (status, its booking, block/unblock). The booking
+  sheet and the spot sheet of the map can embed them; the routes `/operations/booking/[bookingId]`
+  and `/operations/spot/[spotId]` show them full screen.
+- **Booking facts** — `features/booking-actions`: `useBookingRef(id)` returns a `BookingRef` from
+  the detail when loaded, otherwise from the cached day (works offline after a scan) and stays live
+  as queued operations change the cache. `useBookingOperations(ref)` queues `checkIn()`,
+  `addNote(text)`, `collectCash(cents)`, `releaseDay(date, slots)` with the right label and
+  `If-Match`. The rules (`checkInState`, `canCollect`, `releasableDays`...) mirror the core services.
+  `useCashDesk()` reads the open cash session (not cached offline).
+- **Codes** — `features/check-in`: `parseScanned()` accepts only the core formats
+  (`ARENILE:<booking code>`, a 26-character gate token), `parseTyped()` also a booking code or a
+  ticket number; `useCodeLookup()` resolves them (cache first, then the instance) to a booking, an
+  entry ticket for the gate, or the reason; `<CodeResult />` renders the next step.
+- **Online-only** — gate admission (`useAdmitEntry`) and spot blocks (`useCreateSpotBlock`,
+  `useDeleteSpotBlock`) never enter the queue; show their errors with `onlineErrorKey()`.

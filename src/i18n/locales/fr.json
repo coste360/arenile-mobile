@@ -147,7 +147,8 @@
     "today": "Aujourd'hui",
     "bookings": "Réservations",
     "booking": "Réservation",
-    "spots": "Emplacements"
+    "spots": "Emplacements",
+    "operations": "Opérations"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -654,6 +655,194 @@
       "errorTitle": "Réservation indisponible",
       "errorDescription": "Impossible de la lire depuis l'instance. Vérifiez la connexion et réessayez.",
       "notFound": "La réservation n'existe plus."
+    }
+  },
+  "operations": {
+    "hub": {
+      "description": "Arrivées, notes, encaissements et blocages des emplacements.",
+      "checkInTitle": "Arrivée",
+      "scan": "Scanner un QR code",
+      "scanHint": "QR code de la réservation ou du billet d'entrée.",
+      "codeLabel": "Code de réservation ou numéro de billet",
+      "codePlaceholder": "AR-7K3Q9 ou 37",
+      "codeSubmit": "Rechercher",
+      "codeRequired": "Saisissez un code.",
+      "searching": "Recherche en cours",
+      "spotsTitle": "Emplacements du jour",
+      "spotsSearch": "Rechercher un emplacement",
+      "spotsSearchPlaceholder": "Par exemple A1",
+      "spotsEmpty": "Aucun emplacement trouvé.",
+      "spotsUnavailable": "Le plan du jour n'est pas disponible : une connexion est nécessaire au moins une fois.",
+      "spotsMore": "Affinez la recherche pour voir les autres emplacements."
+    },
+    "scan": {
+      "cameraLabel": "Aperçu de la caméra pour les QR codes des réservations et des billets",
+      "hint": "Cadrez le QR code de la réservation ou du billet.",
+      "next": "Scanner le suivant",
+      "manual": "Saisir le code",
+      "permission": {
+        "title": "Caméra nécessaire",
+        "description": "L'app utilise la caméra pour lire les QR codes des réservations et des billets. Les images restent sur l'appareil.",
+        "denied": "L'accès à la caméra est refusé. Autorisez-le dans les réglages de l'appareil, ou saisissez le code à la main.",
+        "grant": "Autoriser la caméra",
+        "openSettings": "Ouvrir les réglages"
+      }
+    },
+    "result": {
+      "unrecognized": "Ce QR code ne vient pas d'Arenile.",
+      "notFound": "Aucune réservation ni aucun billet avec ce code.",
+      "needsConnection": "Une connexion est nécessaire : ce code ne fait pas partie des données enregistrées sur l'appareil.",
+      "error": "Le code n'a pas pu être vérifié. Réessayez.",
+      "openBooking": "Ouvrir les opérations"
+    },
+    "gate": {
+      "ticketTitle": "Billet d'entrée {{number}}",
+      "numberTitle": "Billet numéro {{number}}",
+      "manualDescription": "L'entrée est enregistrée comme saisie manuelle du personnel. Vérifiez le billet avant de confirmer.",
+      "admit": "Enregistrer l'entrée",
+      "working": "Enregistrement de l'entrée en cours",
+      "forbidden": "Votre rôle ne permet pas d'enregistrer les entrées.",
+      "outcome": {
+        "admitted": "Entrée enregistrée",
+        "already_entered": "Déjà entré : le billet a déjà été utilisé",
+        "voided": "Billet annulé : entrée refusée",
+        "wrong_date": "Billet d'un autre jour : entrée refusée"
+      }
+    },
+    "booking": {
+      "title": "Réservation {{code}}",
+      "unavailableTitle": "Réservation non disponible",
+      "unavailableDescription": "Elle ne fait pas partie des données enregistrées sur l'appareil et l'instance est injoignable.",
+      "status": "État",
+      "period": "Période",
+      "periodRange": "{{from}} – {{to}}",
+      "spots": "Emplacements",
+      "customer": "Client",
+      "anonymous": "Client anonyme",
+      "seasonPass": "Abonnement saisonnier",
+      "total": "Total",
+      "paid": "Payé",
+      "balance": "Reste à payer",
+      "nothingAllowed": "Votre rôle peut consulter la réservation mais pas effectuer d'opérations."
+    },
+    "bookingStatus": {
+      "draft": "Brouillon",
+      "held": "En attente de paiement",
+      "pending_payment": "Paiement en cours",
+      "awaiting_approval": "À approuver",
+      "confirmed": "Confirmée",
+      "checked_in": "Arrivée enregistrée",
+      "completed": "Terminée",
+      "cancelled": "Annulée",
+      "no_show": "Absent",
+      "expired": "Expirée",
+      "rejected": "Refusée"
+    },
+    "spotStatus": {
+      "free": "Libre",
+      "booked": "Réservé",
+      "checked_in": "Occupé",
+      "pass_holder": "Abonné",
+      "released": "Libéré",
+      "held": "En attente",
+      "renewal_offer": "Renouvellement proposé",
+      "blocked": "Bloqué",
+      "closed": "Fermé",
+      "inactive": "Inactif"
+    },
+    "slots": {
+      "FULL": "Journée entière",
+      "AM": "Matin",
+      "PM": "Après-midi"
+    },
+    "queued": {
+      "sent": "Enregistré.",
+      "offline": "Enregistré sur l'appareil : sera envoyé dès que l'instance sera joignable."
+    },
+    "checkIn": {
+      "title": "Arrivée",
+      "action": "Enregistrer l'arrivée",
+      "done": "Arrivée enregistrée",
+      "outside_stay": "L'arrivée n'est possible que pendant le séjour ({{from}} – {{to}}).",
+      "unavailable": "Arrivée impossible : la réservation est « {{status}} »."
+    },
+    "note": {
+      "title": "Notes internes",
+      "none": "Aucune note.",
+      "label": "Nouvelle note",
+      "placeholder": "Par exemple : parasol à remplacer",
+      "hint": "Visible uniquement par le personnel.",
+      "submit": "Ajouter la note",
+      "errors": {
+        "note_empty": "Écrivez le texte de la note.",
+        "note_too_long": "La note est trop longue : 2000 caractères au maximum."
+      }
+    },
+    "cash": {
+      "title": "Encaissement en espèces",
+      "balance": "Reste à payer : {{amount}}",
+      "settled": "Soldée : rien à encaisser.",
+      "label": "Montant",
+      "hint": "En euros, par exemple 12,50.",
+      "submit": "Encaisser",
+      "deskClosed": "La caisse est fermée : ouvrez une session de caisse depuis le panneau avant d'encaisser en espèces.",
+      "deskUnknown": "Sans connexion, on ne sait pas si la caisse est ouverte : l'encaissement sera envoyé à la reconnexion et refusé si la caisse est fermée.",
+      "confirmTitle": "Encaisser {{amount}} en espèces ?",
+      "confirmDescription": "Réservation {{label}}. L'encaissement est enregistré dans la session de caisse ouverte.",
+      "confirm": "Encaisser",
+      "errors": {
+        "amount_invalid": "Montant non valide. Exemple : 12,50",
+        "amount_zero": "Le montant doit être supérieur à zéro.",
+        "amount_over_balance": "Le montant dépasse le reste à payer."
+      }
+    },
+    "release": {
+      "title": "Libération du jour",
+      "description": "Un jour libéré peut être réservé par d'autres clients.",
+      "day": "Jour",
+      "slot": "Créneau",
+      "submit": "Libérer",
+      "none": "Aucun jour à libérer aujourd'hui ou demain.",
+      "confirmTitle": "Libérer {{date}} ?",
+      "confirmDescription": "{{label}} : l'emplacement devient réservable ({{slot}}).",
+      "confirm": "Libérer"
+    },
+    "spot": {
+      "title": "Emplacement {{label}}",
+      "notFoundTitle": "Emplacement introuvable",
+      "notFoundDescription": "L'emplacement ne figure pas dans le plan du jour enregistré sur l'appareil.",
+      "status": "État",
+      "blockReason": "Motif du blocage",
+      "booking": "Réservation",
+      "openBooking": "Opérations sur la réservation"
+    },
+    "block": {
+      "title": "Bloquer l'emplacement",
+      "description": "Un emplacement bloqué ne peut pas être réservé.",
+      "period": "Période",
+      "periods": {
+        "today": "Aujourd'hui",
+        "tomorrow": "Demain",
+        "today_and_tomorrow": "Aujourd'hui et demain"
+      },
+      "slot": "Créneau",
+      "reason": "Motif (facultatif)",
+      "reasonPlaceholder": "Par exemple : parasol cassé",
+      "reasonTooLong": "200 caractères au maximum.",
+      "submit": "Bloquer",
+      "done": "Emplacement bloqué.",
+      "unblock": "Débloquer l'emplacement",
+      "unblocked": "Emplacement débloqué.",
+      "unblockTitle": "Débloquer l'emplacement {{label}} ?",
+      "unblockDescription": "L'emplacement redevient réservable.",
+      "onlineOnly": "Bloquer ou débloquer un emplacement nécessite une instance joignable, comme créer ou déplacer une réservation."
+    },
+    "errors": {
+      "offline": "Une connexion est nécessaire : réessayez quand l'instance sera joignable.",
+      "forbidden": "Non autorisé pour votre rôle.",
+      "spot_unavailable": "L'emplacement n'est pas libre sur la période choisie.",
+      "not_found": "Introuvable : les données ont peut-être changé. Actualisez et réessayez.",
+      "default": "L'instance a refusé l'opération."
     }
   }
 }
