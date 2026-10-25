@@ -1,4 +1,4 @@
-import { formatCents, isCents, parseCents } from './money';
+import { centsToInput, formatCents, isCents, parseCents } from './money';
 
 // Intl separates amount and symbol with a (narrow) no-break space.
 const plain = (s: string) => s.replace(/[  ]/g, ' ');
@@ -55,5 +55,22 @@ describe('isCents', () => {
     ['1250', false],
   ])('%p → %p', (v, expected) => {
     expect(isCents(v)).toBe(expected);
+  });
+});
+
+describe('centsToInput', () => {
+  it.each([
+    [2000, '20,00'],
+    [1250, '12,50'],
+    [5, '0,05'],
+    [0, '0,00'],
+    [123456789, '1234567,89'],
+  ])('%p → %p and back', (cents, text) => {
+    expect(centsToInput(cents)).toBe(text);
+    expect(parseCents(text)).toBe(cents);
+  });
+
+  it.each([12.5, -1])('rejects %p', (v) => {
+    expect(() => centsToInput(v)).toThrow(TypeError);
   });
 });

@@ -58,3 +58,12 @@ export function parseCents(input: string): Cents | null {
   const fraction = (m[2] ?? '').padEnd(2, '0');
   return units * 100 + Number(fraction);
 }
+
+/**
+ * Integer cents as the text of an amount field ("20,00"), the inverse of
+ * parseCents for prefilled inputs; no float, no currency sign.
+ */
+export function centsToInput(cents: Cents): string {
+  if (!isCents(cents) || cents < 0) throw new TypeError('centsToInput: amount must be cents >= 0');
+  return `${Math.floor(cents / 100)},${String(cents % 100).padStart(2, '0')}`;
+}
