@@ -39,7 +39,12 @@ const RAW_COLOUR_ALLOW = new Set([
 ]);
 
 /** Inline style / StyleSheet exemptions, with their reason. */
-const STYLE_ALLOW = new Set([]);
+const STYLE_ALLOW = new Set([
+  // Pan and pinch zoom of the day map (ADR 0008): the live transform comes from
+  // Reanimated shared values (useAnimatedStyle) and the drawing is placed in dp
+  // around the viewport; neither can be expressed as a class.
+  'src/features/day-map/components/map-viewport.tsx',
+]);
 
 const CSS_IN_JS = [
   'styled-components',

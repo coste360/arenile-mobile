@@ -141,6 +141,7 @@
   },
   "nav": {
     "home": "Inizio",
+    "map": "Mappa",
     "settings": "Impostazioni",
     "pending": "Operazioni in attesa"
   },
@@ -277,6 +278,170 @@
     "onlineOnly": {
       "title": "Serve la connessione",
       "description": "Creare o spostare una prenotazione richiede l'istanza raggiungibile, che garantisce la disponibilità delle postazioni."
+    }
+  },
+  "dayMap": {
+    "mapFallback": "Mappa",
+    "seaLabel": "Mare",
+    "maps": "Mappe",
+    "day": {
+      "label": "Giorno",
+      "today": "Oggi",
+      "tomorrow": "Domani"
+    },
+    "slot": {
+      "label": "Fascia",
+      "FULL": "Giornata",
+      "AM": "Mattina",
+      "PM": "Pomeriggio"
+    },
+    "view": {
+      "label": "Vista",
+      "map": "Mappa",
+      "list": "Elenco"
+    },
+    "status": {
+      "free": "Libero",
+      "booked_online": "Prenotato online",
+      "booked_desk": "Prenotato in cassa",
+      "season": "Abbonato",
+      "season_released": "Abbonato assente oggi",
+      "hold": "In attesa",
+      "to_collect": "Da incassare",
+      "present": "Presente",
+      "blocked": "Bloccato",
+      "renewal_hold": "Prelazione rinnovo",
+      "unavailable": "Non disponibile",
+      "unknown": "Stato non ancora disponibile"
+    },
+    "bookingStatus": {
+      "draft": "Bozza",
+      "held": "In attesa",
+      "pending_payment": "In attesa di pagamento",
+      "awaiting_approval": "Da approvare",
+      "confirmed": "Confermata",
+      "checked_in": "Presente",
+      "completed": "Conclusa",
+      "cancelled": "Annullata",
+      "no_show": "Non presentato",
+      "expired": "Scaduta",
+      "rejected": "Rifiutata"
+    },
+    "indicator": {
+      "extra": "Extra",
+      "note": "Nota",
+      "vip": "VIP",
+      "to_assign": "Da assegnare"
+    },
+    "occupant": {
+      "anonymous": "Cliente anonimo",
+      "anonymousShort": "Anonimo"
+    },
+    "legend": {
+      "title": "Legenda degli stati",
+      "item": "{{label}}: {{count}}"
+    },
+    "search": {
+      "label": "Cerca una postazione",
+      "placeholder": "Postazione, cliente o codice",
+      "placeholderNoCustomers": "Postazione o codice",
+      "clear": "Cancella la ricerca",
+      "results_one": "{{count}} postazione trovata",
+      "results_other": "{{count}} postazioni trovate",
+      "none": "Nessuna postazione corrisponde alla ricerca"
+    },
+    "list": {
+      "item": "{{label}}, {{status}}",
+      "itemOccupied": "{{label}}, {{status}}, {{occupant}}"
+    },
+    "a11y": {
+      "map_one": "Mappa {{name}} con {{count}} postazione. Tocca una postazione per aprirne la scheda, oppure usa la ricerca o la vista Elenco.",
+      "map_other": "Mappa {{name}} con {{count}} postazioni. Tocca una postazione per aprirne la scheda, oppure usa la ricerca o la vista Elenco."
+    },
+    "zoom": {
+      "in": "Ingrandisci",
+      "out": "Riduci",
+      "fit": "Mostra tutta la mappa",
+      "value": "Zoom {{percent}}%"
+    },
+    "states": {
+      "loading": "Caricamento della mappa",
+      "noMaps": {
+        "title": "Nessuna mappa",
+        "description": "Le mappe dello stabilimento si disegnano nel pannello web, in Configurazione."
+      },
+      "error": {
+        "title": "Mappa non disponibile",
+        "description": "Non è stato possibile caricare la mappa. Controlla la connessione e riprova."
+      },
+      "forbidden": {
+        "title": "Non consentito"
+      },
+      "closed": "Giorno di chiusura o fuori stagione.",
+      "dayLoading": "Caricamento degli stati del giorno…",
+      "dayError": "Stati del giorno non disponibili: la mappa mostra solo le postazioni."
+    },
+    "sheet": {
+      "title": "Postazione {{label}}",
+      "close": "Chiudi la scheda",
+      "booking": "Prenotazione",
+      "actions": "Azioni",
+      "seasonPass": "Abbonamento",
+      "passHolder": "L'abbonato",
+      "test": "Prova",
+      "code": "Codice",
+      "ticket": "Biglietto",
+      "period": "Periodo",
+      "slots": "Fascia",
+      "bookingStatus": "Stato",
+      "total": "Totale",
+      "paid": "Pagato",
+      "balance": "Saldo",
+      "free": "Nessuna allocazione per questa fascia.",
+      "unavailable": "Postazione non disponibile in questa fascia.",
+      "unknown": "Lo stato del giorno non è ancora disponibile.",
+      "blocked": "Postazione bloccata manualmente.",
+      "blockedReason": "Bloccata: {{reason}}",
+      "holdExpires": "Blocco temporaneo fino alle {{time}}.",
+      "readOnly": "Accesso in sola lettura: il tuo ruolo non ha azioni sulla mappa."
+    },
+    "actions": {
+      "checkIn": "Check-in",
+      "releaseDay": "Rilascia il giorno",
+      "block": "Blocca la postazione",
+      "unblock": "Sblocca la postazione"
+    },
+    "notices": {
+      "checkIn": "Check-in registrato per {{code}}.",
+      "release": "Giorno rilasciato: la postazione {{label}} torna prenotabile.",
+      "queued": "Partirà appena l'istanza torna raggiungibile (vedi le operazioni in attesa).",
+      "blocked": "Postazione {{label}} bloccata.",
+      "unblocked": "Postazione {{label}} sbloccata."
+    },
+    "release": {
+      "title": "Rilasciare la postazione {{label}}?",
+      "description": "{{customer}} non verrà il {{date}} ({{slot}}): la postazione diventa prenotabile. Se viene rivenduta, l'abbonato riceve il credito previsto.",
+      "confirm": "Rilascia"
+    },
+    "block": {
+      "title": "Bloccare la postazione {{label}}?",
+      "description": "Non sarà prenotabile il {{date}} ({{slot}}).",
+      "reason": "Motivo (facoltativo)",
+      "reasonPlaceholder": "Es. manutenzione ombrellone",
+      "confirm": "Blocca",
+      "tooLong": "Al massimo 200 caratteri."
+    },
+    "unblock": {
+      "title": "Sbloccare la postazione {{label}}?",
+      "description": "Il blocco viene rimosso per tutto il suo periodo: la postazione torna prenotabile.",
+      "confirm": "Sblocca"
+    },
+    "onlineOnly": "Bloccare e sbloccare richiede l'istanza raggiungibile: le postazioni libere le garantisce il server.",
+    "errors": {
+      "spotUnavailable": "La postazione non è più libera: la mappa è stata aggiornata.",
+      "notFound": "Il blocco non esiste più: la mappa è stata aggiornata.",
+      "network": "Istanza non raggiungibile: riprova quando torna la connessione.",
+      "default": "L'istanza ha rifiutato l'operazione."
     }
   }
 }

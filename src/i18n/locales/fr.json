@@ -141,6 +141,7 @@
   },
   "nav": {
     "home": "Accueil",
+    "map": "Plan",
     "settings": "Réglages",
     "pending": "Opérations en attente"
   },
@@ -277,6 +278,170 @@
     "onlineOnly": {
       "title": "Connexion nécessaire",
       "description": "Créer ou déplacer une réservation nécessite que l'instance soit joignable, car elle garantit la disponibilité des emplacements."
+    }
+  },
+  "dayMap": {
+    "mapFallback": "Plan",
+    "seaLabel": "Mer",
+    "maps": "Plans",
+    "day": {
+      "label": "Jour",
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain"
+    },
+    "slot": {
+      "label": "Créneau",
+      "FULL": "Journée",
+      "AM": "Matin",
+      "PM": "Après-midi"
+    },
+    "view": {
+      "label": "Vue",
+      "map": "Plan",
+      "list": "Liste"
+    },
+    "status": {
+      "free": "Libre",
+      "booked_online": "Réservé en ligne",
+      "booked_desk": "Réservé à la caisse",
+      "season": "Abonné",
+      "season_released": "Abonné absent aujourd'hui",
+      "hold": "En attente",
+      "to_collect": "Solde à encaisser",
+      "present": "Présent",
+      "blocked": "Bloqué",
+      "renewal_hold": "Réservé pour renouvellement",
+      "unavailable": "Indisponible",
+      "unknown": "Statut pas encore disponible"
+    },
+    "bookingStatus": {
+      "draft": "Brouillon",
+      "held": "En attente",
+      "pending_payment": "Paiement en attente",
+      "awaiting_approval": "À approuver",
+      "confirmed": "Confirmée",
+      "checked_in": "Présent",
+      "completed": "Terminée",
+      "cancelled": "Annulée",
+      "no_show": "Non présenté",
+      "expired": "Expirée",
+      "rejected": "Refusée"
+    },
+    "indicator": {
+      "extra": "Suppléments",
+      "note": "Note",
+      "vip": "VIP",
+      "to_assign": "À attribuer"
+    },
+    "occupant": {
+      "anonymous": "Client anonyme",
+      "anonymousShort": "Anonyme"
+    },
+    "legend": {
+      "title": "Légende des statuts",
+      "item": "{{label}} : {{count}}"
+    },
+    "search": {
+      "label": "Rechercher un emplacement",
+      "placeholder": "Emplacement, client ou code",
+      "placeholderNoCustomers": "Emplacement ou code",
+      "clear": "Effacer la recherche",
+      "results_one": "{{count}} emplacement trouvé",
+      "results_other": "{{count}} emplacements trouvés",
+      "none": "Aucun emplacement ne correspond à la recherche"
+    },
+    "list": {
+      "item": "{{label}}, {{status}}",
+      "itemOccupied": "{{label}}, {{status}}, {{occupant}}"
+    },
+    "a11y": {
+      "map_one": "Plan {{name}} avec {{count}} emplacement. Touchez un emplacement pour ouvrir sa fiche, ou utilisez la recherche ou la vue Liste.",
+      "map_other": "Plan {{name}} avec {{count}} emplacements. Touchez un emplacement pour ouvrir sa fiche, ou utilisez la recherche ou la vue Liste."
+    },
+    "zoom": {
+      "in": "Agrandir",
+      "out": "Réduire",
+      "fit": "Afficher tout le plan",
+      "value": "Zoom {{percent}} %"
+    },
+    "states": {
+      "loading": "Chargement du plan",
+      "noMaps": {
+        "title": "Aucun plan",
+        "description": "Les plans de l'établissement se dessinent dans le panneau web, sous Configuration."
+      },
+      "error": {
+        "title": "Plan indisponible",
+        "description": "Le plan n'a pas pu être chargé. Vérifiez la connexion et réessayez."
+      },
+      "forbidden": {
+        "title": "Non autorisé"
+      },
+      "closed": "Jour de fermeture ou hors saison.",
+      "dayLoading": "Chargement des statuts du jour…",
+      "dayError": "Statuts du jour indisponibles : le plan n'affiche que les emplacements."
+    },
+    "sheet": {
+      "title": "Emplacement {{label}}",
+      "close": "Fermer la fiche",
+      "booking": "Réservation",
+      "actions": "Actions",
+      "seasonPass": "Abonnement",
+      "passHolder": "L'abonné",
+      "test": "Test",
+      "code": "Code",
+      "ticket": "Billet",
+      "period": "Période",
+      "slots": "Créneau",
+      "bookingStatus": "Statut",
+      "total": "Total",
+      "paid": "Payé",
+      "balance": "Solde",
+      "free": "Aucune allocation pour ce créneau.",
+      "unavailable": "Emplacement indisponible sur ce créneau.",
+      "unknown": "Le statut du jour n'est pas encore disponible.",
+      "blocked": "Emplacement bloqué manuellement.",
+      "blockedReason": "Bloqué : {{reason}}",
+      "holdExpires": "Blocage temporaire jusqu'à {{time}}.",
+      "readOnly": "Accès en lecture seule : votre rôle n'a pas d'actions sur le plan."
+    },
+    "actions": {
+      "checkIn": "Check-in",
+      "releaseDay": "Libérer la journée",
+      "block": "Bloquer l'emplacement",
+      "unblock": "Débloquer l'emplacement"
+    },
+    "notices": {
+      "checkIn": "Check-in enregistré pour {{code}}.",
+      "release": "Journée libérée : l'emplacement {{label}} redevient réservable.",
+      "queued": "Elle partira dès que l'instance sera de nouveau joignable (voir les opérations en attente).",
+      "blocked": "Emplacement {{label}} bloqué.",
+      "unblocked": "Emplacement {{label}} débloqué."
+    },
+    "release": {
+      "title": "Libérer l'emplacement {{label}} ?",
+      "description": "{{customer}} ne viendra pas le {{date}} ({{slot}}) : l'emplacement devient réservable. S'il est revendu, l'abonné reçoit l'avoir prévu.",
+      "confirm": "Libérer"
+    },
+    "block": {
+      "title": "Bloquer l'emplacement {{label}} ?",
+      "description": "Il ne sera pas réservable le {{date}} ({{slot}}).",
+      "reason": "Motif (facultatif)",
+      "reasonPlaceholder": "Ex. entretien du parasol",
+      "confirm": "Bloquer",
+      "tooLong": "200 caractères au maximum."
+    },
+    "unblock": {
+      "title": "Débloquer l'emplacement {{label}} ?",
+      "description": "Le blocage est supprimé sur toute sa période : l'emplacement redevient réservable.",
+      "confirm": "Débloquer"
+    },
+    "onlineOnly": "Bloquer et débloquer nécessitent une instance joignable : seul le serveur garantit quels emplacements sont libres.",
+    "errors": {
+      "spotUnavailable": "L'emplacement n'est plus libre : le plan a été mis à jour.",
+      "notFound": "Le blocage n'existe plus : le plan a été mis à jour.",
+      "network": "Instance injoignable : réessayez quand la connexion sera rétablie.",
+      "default": "L'instance a refusé l'opération."
     }
   }
 }

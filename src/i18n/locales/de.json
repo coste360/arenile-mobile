@@ -141,6 +141,7 @@
   },
   "nav": {
     "home": "Start",
+    "map": "Karte",
     "settings": "Einstellungen",
     "pending": "Ausstehende Vorgänge"
   },
@@ -277,6 +278,170 @@
     "onlineOnly": {
       "title": "Verbindung erforderlich",
       "description": "Eine Buchung anzulegen oder zu verschieben erfordert die erreichbare Instanz, die die Verfügbarkeit der Plätze garantiert."
+    }
+  },
+  "dayMap": {
+    "mapFallback": "Karte",
+    "seaLabel": "Meer",
+    "maps": "Karten",
+    "day": {
+      "label": "Tag",
+      "today": "Heute",
+      "tomorrow": "Morgen"
+    },
+    "slot": {
+      "label": "Zeitfenster",
+      "FULL": "Ganzer Tag",
+      "AM": "Vormittag",
+      "PM": "Nachmittag"
+    },
+    "view": {
+      "label": "Ansicht",
+      "map": "Karte",
+      "list": "Liste"
+    },
+    "status": {
+      "free": "Frei",
+      "booked_online": "Online gebucht",
+      "booked_desk": "An der Kasse gebucht",
+      "season": "Saisonabo",
+      "season_released": "Saisonabo heute frei",
+      "hold": "Ausstehend",
+      "to_collect": "Offener Betrag",
+      "present": "Anwesend",
+      "blocked": "Gesperrt",
+      "renewal_hold": "Für Verlängerung reserviert",
+      "unavailable": "Nicht verfügbar",
+      "unknown": "Status noch nicht verfügbar"
+    },
+    "bookingStatus": {
+      "draft": "Entwurf",
+      "held": "Vorgemerkt",
+      "pending_payment": "Zahlung ausstehend",
+      "awaiting_approval": "Genehmigung ausstehend",
+      "confirmed": "Bestätigt",
+      "checked_in": "Eingecheckt",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert",
+      "no_show": "Nicht erschienen",
+      "expired": "Abgelaufen",
+      "rejected": "Abgelehnt"
+    },
+    "indicator": {
+      "extra": "Extras",
+      "note": "Notiz",
+      "vip": "VIP",
+      "to_assign": "Zuzuweisen"
+    },
+    "occupant": {
+      "anonymous": "Anonymer Gast",
+      "anonymousShort": "Anonym"
+    },
+    "legend": {
+      "title": "Legende der Status",
+      "item": "{{label}}: {{count}}"
+    },
+    "search": {
+      "label": "Platz suchen",
+      "placeholder": "Platz, Gast oder Code",
+      "placeholderNoCustomers": "Platz oder Code",
+      "clear": "Suche löschen",
+      "results_one": "{{count}} Platz gefunden",
+      "results_other": "{{count}} Plätze gefunden",
+      "none": "Kein Platz entspricht der Suche"
+    },
+    "list": {
+      "item": "{{label}}, {{status}}",
+      "itemOccupied": "{{label}}, {{status}}, {{occupant}}"
+    },
+    "a11y": {
+      "map_one": "Karte {{name}} mit {{count}} Platz. Tippen Sie auf einen Platz, um seine Karte zu öffnen, oder nutzen Sie die Suche oder die Listenansicht.",
+      "map_other": "Karte {{name}} mit {{count}} Plätzen. Tippen Sie auf einen Platz, um seine Karte zu öffnen, oder nutzen Sie die Suche oder die Listenansicht."
+    },
+    "zoom": {
+      "in": "Vergrößern",
+      "out": "Verkleinern",
+      "fit": "Ganze Karte zeigen",
+      "value": "Zoom {{percent}} %"
+    },
+    "states": {
+      "loading": "Karte wird geladen",
+      "noMaps": {
+        "title": "Keine Karten",
+        "description": "Die Karten des Betriebs werden im Web-Panel unter Konfiguration gezeichnet."
+      },
+      "error": {
+        "title": "Karte nicht verfügbar",
+        "description": "Die Karte konnte nicht geladen werden. Prüfen Sie die Verbindung und versuchen Sie es erneut."
+      },
+      "forbidden": {
+        "title": "Nicht erlaubt"
+      },
+      "closed": "Ruhetag oder außerhalb der Saison.",
+      "dayLoading": "Status des Tages werden geladen…",
+      "dayError": "Status des Tages nicht verfügbar: Die Karte zeigt nur die Plätze."
+    },
+    "sheet": {
+      "title": "Platz {{label}}",
+      "close": "Karte schließen",
+      "booking": "Buchung",
+      "actions": "Aktionen",
+      "seasonPass": "Saisonabo",
+      "passHolder": "Der Abonnent",
+      "test": "Test",
+      "code": "Code",
+      "ticket": "Ticket",
+      "period": "Zeitraum",
+      "slots": "Zeitfenster",
+      "bookingStatus": "Status",
+      "total": "Gesamt",
+      "paid": "Bezahlt",
+      "balance": "Restbetrag",
+      "free": "Keine Belegung in diesem Zeitfenster.",
+      "unavailable": "Platz in diesem Zeitfenster nicht verfügbar.",
+      "unknown": "Der Status des Tages ist noch nicht verfügbar.",
+      "blocked": "Platz manuell gesperrt.",
+      "blockedReason": "Gesperrt: {{reason}}",
+      "holdExpires": "Vorläufige Reservierung bis {{time}}.",
+      "readOnly": "Nur Lesezugriff: Ihre Rolle hat keine Aktionen auf der Karte."
+    },
+    "actions": {
+      "checkIn": "Einchecken",
+      "releaseDay": "Tag freigeben",
+      "block": "Platz sperren",
+      "unblock": "Platz entsperren"
+    },
+    "notices": {
+      "checkIn": "{{code}} eingecheckt.",
+      "release": "Tag freigegeben: Platz {{label}} ist wieder buchbar.",
+      "queued": "Wird gesendet, sobald die Instanz wieder erreichbar ist (siehe ausstehende Vorgänge).",
+      "blocked": "Platz {{label}} gesperrt.",
+      "unblocked": "Platz {{label}} entsperrt."
+    },
+    "release": {
+      "title": "Platz {{label}} freigeben?",
+      "description": "{{customer}} kommt am {{date}} ({{slot}}) nicht: Der Platz wird buchbar. Wird er weiterverkauft, erhält der Abonnent die vorgesehene Gutschrift.",
+      "confirm": "Freigeben"
+    },
+    "block": {
+      "title": "Platz {{label}} sperren?",
+      "description": "Er ist am {{date}} ({{slot}}) nicht buchbar.",
+      "reason": "Grund (optional)",
+      "reasonPlaceholder": "Z. B. Wartung des Schirms",
+      "confirm": "Sperren",
+      "tooLong": "Höchstens 200 Zeichen."
+    },
+    "unblock": {
+      "title": "Platz {{label}} entsperren?",
+      "description": "Die Sperre wird für den gesamten Zeitraum aufgehoben: Der Platz ist wieder buchbar.",
+      "confirm": "Entsperren"
+    },
+    "onlineOnly": "Sperren und Entsperren erfordern eine erreichbare Instanz: Nur der Server garantiert, welche Plätze frei sind.",
+    "errors": {
+      "spotUnavailable": "Der Platz ist nicht mehr frei: Die Karte wurde aktualisiert.",
+      "notFound": "Die Sperre existiert nicht mehr: Die Karte wurde aktualisiert.",
+      "network": "Instanz nicht erreichbar: Versuchen Sie es erneut, wenn die Verbindung wieder da ist.",
+      "default": "Die Instanz hat den Vorgang abgelehnt."
     }
   }
 }
