@@ -149,7 +149,8 @@
     "booking": "Réservation",
     "spots": "Emplacements",
     "operations": "Opérations",
-    "reports": "Rapports"
+    "reports": "Rapports",
+    "sale": "Vente du jour"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -410,13 +411,14 @@
       "blockedReason": "Bloqué : {{reason}}",
       "holdExpires": "Blocage temporaire jusqu'à {{time}}.",
       "readOnly": "Accès en lecture seule : votre rôle n'a pas d'actions sur le plan.",
-      "ticketActions": "Actions du ticket"
+      "moreActions": "Autres actions"
     },
     "actions": {
       "checkIn": "Check-in",
       "releaseDay": "Libérer la journée",
       "block": "Bloquer l'emplacement",
-      "unblock": "Débloquer l'emplacement"
+      "unblock": "Débloquer l'emplacement",
+      "sell": "Vente du jour"
     },
     "notices": {
       "checkIn": "Check-in enregistré pour {{code}}.",
@@ -957,5 +959,69 @@
       "notFound": "Le ticket n'existe plus.",
       "default": "Échec de l'impression. Réessayez."
     }
+  },
+  "sale": {
+    "screenTitle": "Vente du jour",
+    "title": "Vente du jour · {{label}}",
+    "subtitle": "Réservation confirmée, paiement et ticket numéroté en une seule étape.",
+    "spotUnknown": "Emplacement introuvable dans la journée",
+    "slot": "Créneau",
+    "slotTaken": "{{label}} n'est pas libre sur ce créneau : choisissez-en un autre.",
+    "noPacks": "Aucune formule vendable en caisse pour cet emplacement : vérifiez la grille tarifaire dans le panneau.",
+    "pack": "Formule",
+    "extras": "Suppléments",
+    "extraLess": "Retirer un {{name}}",
+    "extraMore": "Ajouter un {{name}}",
+    "holder": "Nom sur le ticket (facultatif)",
+    "holderHint": "Seulement pour l'étiquette sur le plan : ni téléphone ni e-mail.",
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "nameTooLong": "100 caractères au maximum.",
+      "amountInvalid": "Montant non valide (ex. 50 ou 12,50)."
+    },
+    "summary": "Récapitulatif",
+    "spot": "Emplacement",
+    "day": "Jour",
+    "code": "Code",
+    "total": "Total",
+    "totalA11y": "Total : {{total}}",
+    "computing": "Calcul du total…",
+    "unavailable": "{{label}} n'est plus libre sur ce créneau.",
+    "method": "Paiement",
+    "cash": "Espèces",
+    "card": "Carte",
+    "cashClosed": "La caisse est fermée : seul le paiement par carte est possible. Ouvrez la caisse depuis le panneau pour les espèces.",
+    "tendered": "Espèces reçues (facultatif)",
+    "change": "Monnaie à rendre : {{amount}}",
+    "changeLabel": "Monnaie",
+    "failedTitle": "Vente non aboutie",
+    "sell": "Vendre",
+    "sellCash": "Encaisser {{total}} en espèces",
+    "sellCard": "Encaisser {{total}} par carte",
+    "confirm": {
+      "title": "Vendre {{label}} ?",
+      "cash": "Vous encaissez {{total}} en espèces et émettez le ticket pour {{label}}.",
+      "card": "Vous encaissez {{total}} par carte et émettez le ticket pour {{label}}.",
+      "submit": "Confirmer la vente"
+    },
+    "done": {
+      "title": "Ticket {{number}} émis",
+      "description": "{{label}} est occupé : le plan est à jour.",
+      "ticket": "Ticket {{number}}",
+      "backToMap": "Retour au plan"
+    },
+    "errors": {
+      "offline": "Instance injoignable : la vente n'a pas été enregistrée. Réessayez quand la connexion revient.",
+      "forbidden": "Votre rôle ne permet pas de vendre.",
+      "spot_unavailable": "L'emplacement vient d'être occupé : choisissez-en un autre sur le plan.",
+      "cash_session_closed": "La caisse est fermée : ouvrez-la depuis le panneau ou encaissez par carte.",
+      "price_changed": "Le prix a changé : vérifiez le nouveau total et confirmez à nouveau.",
+      "no_price": "Aucun prix pour cette formule à cette date : vérifiez la grille tarifaire dans le panneau.",
+      "in_progress": "La vente est déjà en cours : patientez quelques secondes.",
+      "not_found": "Emplacement ou formule plus disponible.",
+      "default": "Vente non aboutie. Réessayez."
+    },
+    "onlineOnly": "La vente nécessite l'instance joignable : le serveur garantit la disponibilité et le numéro du ticket."
   }
 }

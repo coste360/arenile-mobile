@@ -14,6 +14,7 @@ import OperationsScanScreen from '@/app/(connected)/operations/scan';
 import SpotOperationsScreen from '@/app/(connected)/operations/spot/[spotId]';
 import PendingScreen from '@/app/(connected)/pending';
 import ReportsScreen from '@/app/(connected)/reports';
+import SaleScreen from '@/app/(connected)/sale';
 import SettingsScreen from '@/app/(connected)/settings';
 import SpotsScreen from '@/app/(connected)/spots';
 import TodayScreen from '@/app/(connected)/today';
@@ -139,6 +140,7 @@ export async function renderApp({
       '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,
       '(connected)/operations/spot/[spotId]': SpotOperationsScreen,
       '(connected)/reports': ReportsScreen,
+      '(connected)/sale': SaleScreen,
     },
     { initialUrl },
   );

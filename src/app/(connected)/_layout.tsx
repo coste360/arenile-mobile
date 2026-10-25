@@ -83,6 +83,11 @@ function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') =>
   ];
 }
 
+/** Phase 2 screens (spec 03), online only, declared once for both layouts. */
+function phase2Screens(t: (key: 'nav.sale') => string) {
+  return [<Stack.Screen key="sale" name="sale" options={{ title: t('nav.sale') }} />];
+}
+
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
  * "Collega" with the reason) and picks the layout: a stack on phones, a
@@ -116,6 +121,7 @@ export default function ConnectedLayout() {
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
             {dayScreens(t)}
             {operationsScreens(t)}
+            {phase2Screens(t)}
             <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
           </Stack>
         </View>
@@ -171,6 +177,7 @@ export default function ConnectedLayout() {
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
       {dayScreens(t)}
       {operationsScreens(t)}
+      {phase2Screens(t)}
       <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
     </Stack>
   );

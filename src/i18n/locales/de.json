@@ -149,7 +149,8 @@
     "booking": "Buchung",
     "spots": "Plätze",
     "operations": "Vorgänge",
-    "reports": "Berichte"
+    "reports": "Berichte",
+    "sale": "Tagesverkauf"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -410,13 +411,14 @@
       "blockedReason": "Gesperrt: {{reason}}",
       "holdExpires": "Vorläufige Reservierung bis {{time}}.",
       "readOnly": "Nur Lesezugriff: Ihre Rolle hat keine Aktionen auf der Karte.",
-      "ticketActions": "Aktionen des Tickets"
+      "moreActions": "Weitere Aktionen"
     },
     "actions": {
       "checkIn": "Einchecken",
       "releaseDay": "Tag freigeben",
       "block": "Platz sperren",
-      "unblock": "Platz entsperren"
+      "unblock": "Platz entsperren",
+      "sell": "Tagesverkauf"
     },
     "notices": {
       "checkIn": "{{code}} eingecheckt.",
@@ -957,5 +959,69 @@
       "notFound": "Das Ticket existiert nicht mehr.",
       "default": "Drucken fehlgeschlagen. Versuche es erneut."
     }
+  },
+  "sale": {
+    "screenTitle": "Tagesverkauf",
+    "title": "Tagesverkauf · {{label}}",
+    "subtitle": "Bestätigte Buchung, Zahlung und nummeriertes Ticket in einem Schritt.",
+    "spotUnknown": "Platz im Tag nicht gefunden",
+    "slot": "Zeitraum",
+    "slotTaken": "{{label}} ist in diesem Zeitraum nicht frei: Wähle einen anderen.",
+    "noPacks": "Für diesen Platz ist kein Paket an der Kasse verkäuflich: Prüfe die Preisliste im Panel.",
+    "pack": "Paket",
+    "extras": "Extras",
+    "extraLess": "Ein {{name}} entfernen",
+    "extraMore": "Ein {{name}} hinzufügen",
+    "holder": "Name auf dem Ticket (optional)",
+    "holderHint": "Nur für die Beschriftung auf der Karte: keine Telefonnummer oder E-Mail.",
+    "form": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "nameTooLong": "Höchstens 100 Zeichen.",
+      "amountInvalid": "Ungültiger Betrag (z. B. 50 oder 12,50)."
+    },
+    "summary": "Übersicht",
+    "spot": "Platz",
+    "day": "Tag",
+    "code": "Code",
+    "total": "Gesamt",
+    "totalA11y": "Gesamt: {{total}}",
+    "computing": "Gesamtbetrag wird berechnet…",
+    "unavailable": "{{label}} ist für diesen Zeitraum nicht mehr frei.",
+    "method": "Zahlung",
+    "cash": "Bar",
+    "card": "Karte",
+    "cashClosed": "Die Kasse ist geschlossen: Nur Kartenzahlung möglich. Öffne die Kasse im Panel für Barzahlungen.",
+    "tendered": "Erhaltenes Bargeld (optional)",
+    "change": "Wechselgeld: {{amount}}",
+    "changeLabel": "Wechselgeld",
+    "failedTitle": "Verkauf fehlgeschlagen",
+    "sell": "Verkaufen",
+    "sellCash": "{{total}} bar kassieren",
+    "sellCard": "{{total}} per Karte kassieren",
+    "confirm": {
+      "title": "{{label}} verkaufen?",
+      "cash": "Du kassierst {{total}} bar und stellst das Ticket für {{label}} aus.",
+      "card": "Du kassierst {{total}} per Karte und stellst das Ticket für {{label}} aus.",
+      "submit": "Verkauf bestätigen"
+    },
+    "done": {
+      "title": "Ticket {{number}} ausgestellt",
+      "description": "{{label}} ist belegt: Die Karte ist aktuell.",
+      "ticket": "Ticket {{number}}",
+      "backToMap": "Zurück zur Karte"
+    },
+    "errors": {
+      "offline": "Instanz nicht erreichbar: Der Verkauf wurde nicht gespeichert. Versuche es erneut, sobald die Verbindung zurück ist.",
+      "forbidden": "Deine Rolle darf nicht verkaufen.",
+      "spot_unavailable": "Der Platz wurde gerade belegt: Wähle auf der Karte einen anderen.",
+      "cash_session_closed": "Die Kasse ist geschlossen: Öffne sie im Panel oder kassiere per Karte.",
+      "price_changed": "Der Preis hat sich geändert: Prüfe den neuen Gesamtbetrag und bestätige erneut.",
+      "no_price": "Kein Preis für dieses Paket an diesem Datum: Prüfe die Preisliste im Panel.",
+      "in_progress": "Der Verkauf läuft bereits: Warte einige Sekunden.",
+      "not_found": "Platz oder Paket nicht mehr verfügbar.",
+      "default": "Verkauf fehlgeschlagen. Versuche es erneut."
+    },
+    "onlineOnly": "Der Verkauf braucht die erreichbare Instanz: Verfügbarkeit und Ticketnummer garantiert der Server."
   }
 }

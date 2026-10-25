@@ -290,7 +290,7 @@ describe('day map', () => {
     await fireEvent.press(await screen.findByRole('button', { name: 'A1, Libero' }));
     expect(await screen.findByRole('button', { name: 'Blocca la postazione' })).toBeEnabled();
     await act(async () => connectivity.set(false));
-    expect(await screen.findByText(/richiede l'istanza raggiungibile/)).toBeOnTheScreen();
+    expect(await screen.findByText(/Bloccare e sbloccare richiede/)).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Blocca la postazione' })).toBeDisabled();
   });
 

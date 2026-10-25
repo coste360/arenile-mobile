@@ -6,7 +6,7 @@ import {
   PrinterIcon,
   RotateCcwIcon,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -32,13 +32,20 @@ import {
  * roles with cash.operate; when no printer is ready it says why instead of
  * offering the button (the panel prints from the browser).
  */
-export function TicketPrint({ ticketId, ticketLabel }: { ticketId: string; ticketLabel: string }) {
+export function TicketPrint(props: TicketPrintProps) {
   const abilities = useAbilities();
   if (!abilities.canCollectCash) return null;
-  return <TicketPrintInner ticketId={ticketId} ticketLabel={ticketLabel} />;
+  return <TicketPrintInner {...props} />;
 }
 
-function TicketPrintInner({ ticketId, ticketLabel }: { ticketId: string; ticketLabel: string }) {
+interface TicketPrintProps {
+  ticketId: string;
+  ticketLabel: string;
+  /** Print once as soon as a printer is ready (the panel's "stampa automatica"). */
+  autoPrint?: boolean;
+}
+
+function TicketPrintInner({ ticketId, ticketLabel, autoPrint = false }: TicketPrintProps) {
   const { t } = useTranslation();
   const { available: online } = useOnlineOnly();
   const { route, registerId } = useTicketPrintRoute(online);
@@ -47,6 +54,25 @@ function TicketPrintInner({ ticketId, ticketLabel }: { ticketId: string; ticketL
   const [jobId, setJobId] = useState<string>();
   const [error, setError] = useState<PrintErrorKey | null>(null);
   const job = usePrintJob(jobId);
+  const autoSent = useRef(false);
+  const ready = !!route.data && !unreadyReasonKey(route.data);
+
+  const send = async () => {
+    setError(null);
+    try {
+      setJobId((await print.mutateAsync(ticketId)).id);
+    } catch (e) {
+      setError(printErrorKey(e));
+    }
+  };
+
+  useEffect(() => {
+    if (!autoPrint || !ready || autoSent.current) return;
+    autoSent.current = true;
+    void send();
+    // `send` changes on every render; the ref makes this run once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPrint, ready]);
 
   if (!online) {
     return (
@@ -64,14 +90,6 @@ function TicketPrintInner({ ticketId, ticketLabel }: { ticketId: string; ticketL
   const phase = job.data ? printPhase(job.data.status) : jobId ? 'sending' : null;
   const busy = print.isPending || retry.isPending || phase === 'sending';
 
-  const send = async () => {
-    setError(null);
-    try {
-      setJobId((await print.mutateAsync(ticketId)).id);
-    } catch (e) {
-      setError(printErrorKey(e));
-    }
-  };
   const again = async () => {
     if (!jobId) return;
     setError(null);

@@ -149,7 +149,8 @@
     "booking": "Booking",
     "spots": "Spots",
     "operations": "Operations",
-    "reports": "Reports"
+    "reports": "Reports",
+    "sale": "Daily sale"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -410,13 +411,14 @@
       "blockedReason": "Blocked: {{reason}}",
       "holdExpires": "Temporary hold until {{time}}.",
       "readOnly": "Read-only access: your role has no actions on the map.",
-      "ticketActions": "Ticket actions"
+      "moreActions": "More actions"
     },
     "actions": {
       "checkIn": "Check in",
       "releaseDay": "Release the day",
       "block": "Block the spot",
-      "unblock": "Unblock the spot"
+      "unblock": "Unblock the spot",
+      "sell": "Daily sale"
     },
     "notices": {
       "checkIn": "{{code}} checked in.",
@@ -957,5 +959,69 @@
       "notFound": "The ticket no longer exists.",
       "default": "Printing failed. Try again."
     }
+  },
+  "sale": {
+    "screenTitle": "Daily sale",
+    "title": "Daily sale · {{label}}",
+    "subtitle": "Confirmed booking, payment and numbered ticket in one step.",
+    "spotUnknown": "Spot not found in the day",
+    "slot": "Slot",
+    "slotTaken": "{{label}} is not free in this slot: pick another one.",
+    "noPacks": "No package can be sold at the desk for this spot: check the price list in the panel.",
+    "pack": "Package",
+    "extras": "Extras",
+    "extraLess": "Remove one {{name}}",
+    "extraMore": "Add one {{name}}",
+    "holder": "Name on the ticket (optional)",
+    "holderHint": "Only for the label on the map: no phone or email.",
+    "form": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "nameTooLong": "At most 100 characters.",
+      "amountInvalid": "Invalid amount (e.g. 50 or 12.50)."
+    },
+    "summary": "Summary",
+    "spot": "Spot",
+    "day": "Day",
+    "code": "Code",
+    "total": "Total",
+    "totalA11y": "Total: {{total}}",
+    "computing": "Computing the total…",
+    "unavailable": "{{label}} is no longer free for this slot.",
+    "method": "Payment",
+    "cash": "Cash",
+    "card": "Card",
+    "cashClosed": "The cash desk is closed: you can only take card payments. Open the cash desk from the panel for cash.",
+    "tendered": "Cash received (optional)",
+    "change": "Change to give: {{amount}}",
+    "changeLabel": "Change",
+    "failedTitle": "Sale failed",
+    "sell": "Sell",
+    "sellCash": "Take {{total}} in cash",
+    "sellCard": "Take {{total}} by card",
+    "confirm": {
+      "title": "Sell {{label}}?",
+      "cash": "You take {{total}} in cash and issue the ticket for {{label}}.",
+      "card": "You take {{total}} by card and issue the ticket for {{label}}.",
+      "submit": "Confirm the sale"
+    },
+    "done": {
+      "title": "Ticket {{number}} issued",
+      "description": "{{label}} is taken: the map is up to date.",
+      "ticket": "Ticket {{number}}",
+      "backToMap": "Back to the map"
+    },
+    "errors": {
+      "offline": "Instance unreachable: the sale was not recorded. Try again when the connection is back.",
+      "forbidden": "Your role is not allowed to sell.",
+      "spot_unavailable": "The spot was just taken: pick another one on the map.",
+      "cash_session_closed": "The cash desk is closed: open it from the panel or take a card payment.",
+      "price_changed": "The price changed: check the new total and confirm again.",
+      "no_price": "No price for this package on this date: check the price list in the panel.",
+      "in_progress": "The sale is already in progress: wait a few seconds.",
+      "not_found": "Spot or package no longer available.",
+      "default": "Sale failed. Try again."
+    },
+    "onlineOnly": "Selling needs the instance to be reachable: the server guarantees availability and the ticket number."
   }
 }

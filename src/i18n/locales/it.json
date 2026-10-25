@@ -149,7 +149,8 @@
     "booking": "Prenotazione",
     "spots": "Postazioni",
     "operations": "Operazioni",
-    "reports": "Report"
+    "reports": "Report",
+    "sale": "Vendita giornaliera"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -410,13 +411,14 @@
       "blockedReason": "Bloccata: {{reason}}",
       "holdExpires": "Blocco temporaneo fino alle {{time}}.",
       "readOnly": "Accesso in sola lettura: il tuo ruolo non ha azioni sulla mappa.",
-      "ticketActions": "Azioni del biglietto"
+      "moreActions": "Altre azioni"
     },
     "actions": {
       "checkIn": "Check-in",
       "releaseDay": "Rilascia il giorno",
       "block": "Blocca la postazione",
-      "unblock": "Sblocca la postazione"
+      "unblock": "Sblocca la postazione",
+      "sell": "Vendita giornaliera"
     },
     "notices": {
       "checkIn": "Check-in registrato per {{code}}.",
@@ -957,5 +959,69 @@
       "notFound": "Il biglietto non esiste più.",
       "default": "Stampa non riuscita. Riprova."
     }
+  },
+  "sale": {
+    "screenTitle": "Vendita giornaliera",
+    "title": "Vendita giornaliera · {{label}}",
+    "subtitle": "Prenotazione confermata, pagamento e biglietto numerato in un solo passaggio.",
+    "spotUnknown": "Postazione non trovata nella giornata",
+    "slot": "Fascia",
+    "slotTaken": "{{label}} non è libera in questa fascia: scegline un'altra.",
+    "noPacks": "Nessun pacchetto vendibile in cassa per questa postazione: controlla il listino nel pannello.",
+    "pack": "Pacchetto",
+    "extras": "Extra",
+    "extraLess": "Togli un {{name}}",
+    "extraMore": "Aggiungi un {{name}}",
+    "holder": "Nome sul biglietto (facoltativo)",
+    "holderHint": "Solo per l'etichetta in mappa: niente telefono né email.",
+    "form": {
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "nameTooLong": "Al massimo 100 caratteri.",
+      "amountInvalid": "Importo non valido (es. 50 o 12,50)."
+    },
+    "summary": "Riepilogo",
+    "spot": "Postazione",
+    "day": "Giorno",
+    "code": "Codice",
+    "total": "Totale",
+    "totalA11y": "Totale: {{total}}",
+    "computing": "Calcolo del totale…",
+    "unavailable": "{{label}} non è più libera per questa fascia.",
+    "method": "Pagamento",
+    "cash": "Contanti",
+    "card": "Carta",
+    "cashClosed": "La cassa è chiusa: puoi incassare solo con carta. Apri la cassa dal pannello per i contanti.",
+    "tendered": "Contanti ricevuti (facoltativo)",
+    "change": "Resto da dare: {{amount}}",
+    "changeLabel": "Resto",
+    "failedTitle": "Vendita non riuscita",
+    "sell": "Vendi",
+    "sellCash": "Incassa {{total}} in contanti",
+    "sellCard": "Incassa {{total}} con carta",
+    "confirm": {
+      "title": "Vendere {{label}}?",
+      "cash": "Incassi {{total}} in contanti ed emetti il biglietto per {{label}}.",
+      "card": "Incassi {{total}} con carta ed emetti il biglietto per {{label}}.",
+      "submit": "Conferma la vendita"
+    },
+    "done": {
+      "title": "Biglietto {{number}} emesso",
+      "description": "{{label}} è occupata: la mappa è aggiornata.",
+      "ticket": "Biglietto {{number}}",
+      "backToMap": "Torna alla mappa"
+    },
+    "errors": {
+      "offline": "Istanza non raggiungibile: la vendita non è stata registrata. Riprova quando torna la connessione.",
+      "forbidden": "Vendita non consentita al tuo ruolo.",
+      "spot_unavailable": "La postazione è stata appena occupata: scegline un'altra dalla mappa.",
+      "cash_session_closed": "La cassa è chiusa: aprila dal pannello o incassa con carta.",
+      "price_changed": "Il prezzo è cambiato: controlla il nuovo totale e conferma di nuovo.",
+      "no_price": "Nessun prezzo per questo pacchetto in questa data: controlla il listino nel pannello.",
+      "in_progress": "La vendita è già in corso: attendi qualche secondo.",
+      "not_found": "Postazione o pacchetto non più disponibili.",
+      "default": "Vendita non riuscita. Riprova."
+    },
+    "onlineOnly": "La vendita richiede l'istanza raggiungibile: la disponibilità e il numero del biglietto li garantisce il server."
   }
 }
