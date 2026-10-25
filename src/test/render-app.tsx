@@ -4,10 +4,14 @@ import { renderRouter, screen } from 'expo-router/testing-library';
 import { Dimensions } from 'react-native';
 
 import ConnectedLayout from '@/app/(connected)/_layout';
+import BookingScreen from '@/app/(connected)/bookings/[bookingId]';
+import BookingsScreen from '@/app/(connected)/bookings/index';
 import HomeScreen from '@/app/(connected)/home';
 import MapScreen from '@/app/(connected)/map';
 import PendingScreen from '@/app/(connected)/pending';
 import SettingsScreen from '@/app/(connected)/settings';
+import SpotsScreen from '@/app/(connected)/spots';
+import TodayScreen from '@/app/(connected)/today';
 import ConnectScreen from '@/app/connect';
 import Index from '@/app/index';
 import ManualScreen from '@/app/manual';
@@ -118,6 +122,10 @@ export async function renderApp({
       '(connected)/map': MapScreen,
       '(connected)/settings': SettingsScreen,
       '(connected)/pending': PendingScreen,
+      '(connected)/today': TodayScreen,
+      '(connected)/bookings/index': BookingsScreen,
+      '(connected)/bookings/[bookingId]': BookingScreen,
+      '(connected)/spots': SpotsScreen,
     },
     { initialUrl },
   );

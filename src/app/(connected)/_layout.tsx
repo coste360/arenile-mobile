@@ -1,5 +1,12 @@
 import { Redirect, router, Stack, usePathname } from 'expo-router';
-import { HouseIcon, MapIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
+import {
+  CalendarDaysIcon,
+  ClipboardListIcon,
+  HouseIcon,
+  MapIcon,
+  SettingsIcon,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -12,15 +19,35 @@ import { Text } from '@/components/ui/text';
 import { useSession } from '@/features/session/session-provider';
 import { cn } from '@/lib/utils';
 
-const NAV: {
-  href: '/home' | '/map' | '/settings';
-  label: 'nav.home' | 'nav.map' | 'nav.settings';
+type NavItem = {
+  href: '/home' | '/map' | '/settings' | '/today' | '/bookings';
+  label: 'nav.home' | 'nav.map' | 'nav.settings' | 'nav.today' | 'nav.bookings';
   icon: LucideIcon;
-}[] = [
+};
+
+const NAV: NavItem[] = [
   { href: '/home', label: 'nav.home', icon: HouseIcon },
+  { href: '/today', label: 'nav.today', icon: CalendarDaysIcon },
+  { href: '/bookings', label: 'nav.bookings', icon: ClipboardListIcon },
   { href: '/map', label: 'nav.map', icon: MapIcon },
   { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
 ];
+
+/** Day screens (Oggi, bookings, spots) declared once for both layouts. */
+function dayScreens(
+  t: (key: 'nav.today' | 'nav.bookings' | 'nav.booking' | 'nav.spots') => string,
+) {
+  return [
+    <Stack.Screen key="today" name="today" options={{ title: t('nav.today') }} />,
+    <Stack.Screen key="bookings" name="bookings/index" options={{ title: t('nav.bookings') }} />,
+    <Stack.Screen
+      key="booking"
+      name="bookings/[bookingId]"
+      options={{ title: t('nav.booking') }}
+    />,
+    <Stack.Screen key="spots" name="spots" options={{ title: t('nav.spots') }} />,
+  ];
+}
 
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
@@ -53,6 +80,7 @@ export default function ConnectedLayout() {
             <Stack.Screen name="map" options={{ title: t('nav.map') }} />
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+            {dayScreens(t)}
           </Stack>
         </View>
       </View>
@@ -96,6 +124,7 @@ export default function ConnectedLayout() {
       <Stack.Screen name="map" options={{ title: t('nav.map') }} />
       <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+      {dayScreens(t)}
     </Stack>
   );
 }
@@ -117,7 +146,7 @@ function Sidebar() {
         <ConnectionIndicator variant="full" />
       </View>
       {NAV.map((item) => {
-        const active = pathname === item.href;
+        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <Pressable
             key={item.href}

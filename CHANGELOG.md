@@ -19,6 +19,20 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   (solo con il permesso di vedere le prenotazioni), saldo e azioni del ruolo: check-in e rilascio del
   giorno anche offline (coda), blocco e sblocco della postazione solo online. Su tablet la scheda si
   apre accanto alla mappa. Funziona sulla cache offline del giorno.
+- Fase 1 — _Oggi_: arrivi, presenti, postazioni libere sul totale, prenotazioni da saldare con
+  l'importo, giorni rilasciati dagli abbonati, nel fuso dello stabilimento; ogni numero apre il proprio
+  elenco filtrato e ne è la lunghezza. Elenco delle postazioni libere e rilasciate (con la mezza
+  giornata libera). Avviso di stabilimento chiuso.
+- Fase 1 — _Prenotazioni del giorno_ (oggi e domani): filtri arrivi, presenti, da saldare, abbonati,
+  online/cassa; ricerca per codice, cliente (senza accenti) o postazione; ordinamento per postazione,
+  cliente, arrivo o saldo; cancellate e scadute su richiesta; trascina per aggiornare.
+- _Scheda prenotazione_: postazioni e pacchetti, periodo, fasce, formula, canale, cliente, importi,
+  pagamenti e rimborsi, note, cronologia essenziale; avviso delle operazioni ancora in coda per la
+  prenotazione. Contatti e note del cliente solo per i ruoli che scrivono prenotazioni (titolare,
+  gestore, cassiere); cliente anonimizzato mostrato come tale.
+- Su tablet elenco e scheda affiancati; _Oggi_ e _Prenotazioni_ nel pannello di navigazione, scheda
+  _Giornata_ nella schermata principale del telefono. Dati salvati sul dispositivo segnalati con l'ora
+  dell'ultimo aggiornamento.
 - Fase 1 — fondamenta dei dati e dell'offline (ADR 0007): cache di mappa e prenotazioni di oggi e
   domani (nel fuso dello stabilimento) consultabile senza rete, anche all'avvio, e cancellata a ogni
   scollegamento; coda di check-in, rilasci del giorno, note e incassi in contanti inviata in ordine

@@ -42,7 +42,9 @@ are saved and restored automatically, and the runtime warms up today's and tomor
 online (`features/offline/prefetch.ts`). A new resource that must be readable offline needs its key
 added to `isPersistable` (with a test in `persist.test.ts`) and, if it must be warm, to the prefetch.
 Screens show cached data when a query has `data`, even if it also has an error (offline or
-unreachable).
+unreachable). Say so with `<CachedNotice stale={servedFromCache(query)} updatedAt={query.dataUpdatedAt} />`
+(`src/components/cached-notice.tsx`): saved data is shown with the time of its last update, both when
+the last refresh failed and when the query waits for the network (`isPaused`).
 
 ## Operation queue
 

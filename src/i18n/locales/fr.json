@@ -143,7 +143,11 @@
     "home": "Accueil",
     "map": "Plan",
     "settings": "Réglages",
-    "pending": "Opérations en attente"
+    "pending": "Opérations en attente",
+    "today": "Aujourd'hui",
+    "bookings": "Réservations",
+    "booking": "Réservation",
+    "spots": "Emplacements"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -442,6 +446,214 @@
       "notFound": "Le blocage n'existe plus : le plan a été mis à jour.",
       "network": "Instance injoignable : réessayez quand la connexion sera rétablie.",
       "default": "L'instance a refusé l'opération."
+    }
+  },
+  "today": {
+    "heading": "Aujourd'hui, {{date}}",
+    "closedTitle": "Établissement fermé",
+    "closedDescription": "Aujourd'hui est un jour de fermeture ou hors saison.",
+    "figures": {
+      "arrivals": "Arrivées",
+      "present": "Présents",
+      "free": "Emplacements libres",
+      "toSettle": "À solder",
+      "released": "Jours libérés par les abonnés"
+    },
+    "freeOf": "sur {{total}}",
+    "figureLabel": "{{label}} : {{value}}",
+    "figureHint": "Ouvre la liste filtrée",
+    "cachedAt": "Données enregistrées sur l’appareil, mises à jour à {{time}}.",
+    "errorTitle": "Données du jour indisponibles",
+    "errorDescription": "Impossible de les lire depuis l'instance. Vérifiez la connexion et réessayez.",
+    "forbiddenTitle": "Non autorisé",
+    "shortcuts": {
+      "title": "La journée",
+      "today": "Résumé du jour",
+      "bookings": "Réservations du jour"
+    }
+  },
+  "spots": {
+    "title": {
+      "free": "Emplacements libres",
+      "released": "Jours libérés"
+    },
+    "count_one": "{{count}} emplacement",
+    "count_other": "{{count}} emplacements",
+    "released": "Libéré",
+    "free": "Libre",
+    "emptyFree": "Aucun emplacement libre ce jour-là.",
+    "emptyReleased": "Aucun abonné n'a libéré son emplacement ce jour-là."
+  },
+  "bookings": {
+    "status": {
+      "draft": "Brouillon",
+      "held": "En attente",
+      "pending_payment": "Paiement en attente",
+      "awaiting_approval": "À approuver",
+      "confirmed": "Confirmée",
+      "checked_in": "Présent",
+      "completed": "Terminée",
+      "cancelled": "Annulée",
+      "no_show": "Non présenté",
+      "expired": "Expirée",
+      "rejected": "Refusée"
+    },
+    "channel": {
+      "desk": "Caisse",
+      "online": "En ligne",
+      "api": "API"
+    },
+    "slots": {
+      "FULL": "Journée entière",
+      "AM": "Matin",
+      "PM": "Après-midi"
+    },
+    "formula": {
+      "half_day": "Demi-journée",
+      "day": "Journée",
+      "multi_day": "Plusieurs jours",
+      "week": "Semaine",
+      "fortnight": "Quinzaine",
+      "month": "Mois",
+      "season": "Saison"
+    },
+    "anonymous": "Client anonyme",
+    "unassigned": "À attribuer",
+    "seasonPass": "Abonnement",
+    "test": "Test",
+    "balanceDue": "À solder {{amount}}",
+    "settled": "Soldé",
+    "stay": "{{from}} – {{to}}",
+    "list": {
+      "searchLabel": "Rechercher des réservations",
+      "searchPlaceholder": "Code, client ou emplacement",
+      "filtersLabel": "Filtres",
+      "filters": {
+        "all": "Toutes",
+        "arrivals": "Arrivées",
+        "present": "Présents",
+        "to_settle": "À solder",
+        "season_pass": "Abonnés"
+      },
+      "chipLabel": "{{label}}, {{count}}",
+      "dayLabel": "Jour",
+      "days": {
+        "today": "Aujourd'hui",
+        "tomorrow": "Demain"
+      },
+      "channelLabel": "Canal",
+      "channels": {
+        "all": "Tous les canaux",
+        "online": "En ligne",
+        "desk": "Caisse"
+      },
+      "sortLabel": "Trier par",
+      "sorts": {
+        "spot": "Emplacement",
+        "customer": "Client",
+        "arrival": "Arrivée",
+        "balance": "Solde"
+      },
+      "includeClosed": "Afficher aussi les annulées et expirées",
+      "moreFilters": "Plus de filtres",
+      "moreFiltersActive": "Plus de filtres ({{count}})",
+      "hideFilters": "Masquer les filtres",
+      "results_one": "{{count}} réservation",
+      "results_other": "{{count}} réservations",
+      "emptyTitle": "Aucune réservation",
+      "emptyDescription": "Il n'y a aucune réservation ce jour-là.",
+      "noMatchTitle": "Aucun résultat",
+      "noMatchDescription": "Aucune réservation ne correspond aux filtres choisis.",
+      "resetFilters": "Effacer les filtres",
+      "rowHint": "Ouvre la fiche de la réservation",
+      "selectTitle": "Sélectionnez une réservation",
+      "selectDescription": "La fiche s'ouvre ici, à côté de la liste."
+    },
+    "detail": {
+      "stay": "Emplacement et période",
+      "spots": "Emplacements",
+      "period": "Période",
+      "days_one": "{{count}} jour",
+      "days_other": "{{count}} jours",
+      "slots": "Créneaux",
+      "formula": "Formule",
+      "channel": "Canal",
+      "pack": "Forfait {{pack}}",
+      "quantity": "Quantité {{count}}",
+      "extras_one": "{{count}} supplément",
+      "extras_other": "{{count}} suppléments",
+      "customer": "Client",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "customerNotes": "Notes sur le client",
+      "tags": "Étiquettes",
+      "contactsHidden": "Les coordonnées du client ne sont visibles que par la caisse et la direction.",
+      "amounts": "Montants",
+      "total": "Total",
+      "paid": "Encaissé",
+      "balance": "Solde à encaisser",
+      "deposit": "Acompte demandé",
+      "payments": "Paiements",
+      "paymentsEmpty": "Aucun paiement enregistré.",
+      "refund": "Remboursement",
+      "methods": {
+        "cash": "Espèces",
+        "card": "Carte",
+        "bank_transfer": "Virement",
+        "wallet": "Portefeuille",
+        "credit": "Avoir client",
+        "other": "Autre"
+      },
+      "paymentStatus": {
+        "pending": "En cours",
+        "succeeded": "Réussi",
+        "failed": "Échoué",
+        "cancelled": "Annulé"
+      },
+      "notes": "Notes",
+      "notesInternal": "Notes internes",
+      "notesCustomer": "Notes du client",
+      "notesEmpty": "Aucune note.",
+      "history": "Historique",
+      "historyEmpty": "Aucune activité enregistrée.",
+      "showAllHistory": "Afficher tout l'historique ({{count}})",
+      "actions": {
+        "booking": {
+          "created": "Réservation créée",
+          "confirmed": "Confirmée",
+          "checked_in": "Arrivée enregistrée",
+          "no_show": "Non présenté",
+          "cancelled": "Annulée",
+          "rejected": "Refusée",
+          "expired": "Expirée",
+          "modified": "Modifiée",
+          "moved": "Déplacée",
+          "note_added": "Note ajoutée",
+          "completed": "Terminée",
+          "refund_reserved": "Remboursement réservé",
+          "refund_succeeded": "Remboursement confirmé par le prestataire",
+          "refund_failed": "Remboursement échoué",
+          "refund_retried": "Remboursement relancé"
+        },
+        "payment": {
+          "recorded": "Paiement enregistré",
+          "succeeded": "Paiement enregistré",
+          "refunded": "Remboursement enregistré"
+        },
+        "other": "Autre activité"
+      },
+      "actor": {
+        "user": "Opérateur",
+        "customer": "Client",
+        "system": "Système",
+        "api_key": "Intégration API"
+      },
+      "queued_one": "{{count}} opération sur cette réservation n'a pas encore atteint l'instance : la fiche affiche les données de l'instance.",
+      "queued_other": "{{count}} opérations sur cette réservation n'ont pas encore atteint l'instance : la fiche affiche les données de l'instance.",
+      "queuedLink": "Voir les opérations en attente",
+      "errorTitle": "Réservation indisponible",
+      "errorDescription": "Impossible de la lire depuis l'instance. Vérifiez la connexion et réessayez.",
+      "notFound": "La réservation n'existe plus."
     }
   }
 }
