@@ -5,6 +5,7 @@ import { Dimensions } from 'react-native';
 
 import ConnectedLayout from '@/app/(connected)/_layout';
 import HomeScreen from '@/app/(connected)/home';
+import MapScreen from '@/app/(connected)/map';
 import PendingScreen from '@/app/(connected)/pending';
 import SettingsScreen from '@/app/(connected)/settings';
 import ConnectScreen from '@/app/connect';
@@ -114,6 +115,7 @@ export async function renderApp({
       pair: PairScreen,
       '(connected)/_layout': ConnectedLayout,
       '(connected)/home': HomeScreen,
+      '(connected)/map': MapScreen,
       '(connected)/settings': SettingsScreen,
       '(connected)/pending': PendingScreen,
     },

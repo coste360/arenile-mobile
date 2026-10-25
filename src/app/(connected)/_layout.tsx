@@ -1,5 +1,5 @@
 import { Redirect, router, Stack, usePathname } from 'expo-router';
-import { HouseIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
+import { HouseIcon, MapIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -12,11 +12,15 @@ import { Text } from '@/components/ui/text';
 import { useSession } from '@/features/session/session-provider';
 import { cn } from '@/lib/utils';
 
-const NAV: { href: '/home' | '/settings'; label: 'nav.home' | 'nav.settings'; icon: LucideIcon }[] =
-  [
-    { href: '/home', label: 'nav.home', icon: HouseIcon },
-    { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
-  ];
+const NAV: {
+  href: '/home' | '/map' | '/settings';
+  label: 'nav.home' | 'nav.map' | 'nav.settings';
+  icon: LucideIcon;
+}[] = [
+  { href: '/home', label: 'nav.home', icon: HouseIcon },
+  { href: '/map', label: 'nav.map', icon: MapIcon },
+  { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
+];
 
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
@@ -46,6 +50,7 @@ export default function ConnectedLayout() {
         <View className="flex-1">
           <Stack screenOptions={{ animation: 'none', headerBackVisible: false }}>
             <Stack.Screen name="home" options={{ title: t('nav.home') }} />
+            <Stack.Screen name="map" options={{ title: t('nav.map') }} />
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
           </Stack>
@@ -71,6 +76,14 @@ export default function ConnectedLayout() {
               <Button
                 variant="ghost"
                 size="icon"
+                accessibilityLabel={t('nav.map')}
+                onPress={() => router.push('/map')}
+              >
+                <Icon as={MapIcon} size={22} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 accessibilityLabel={t('nav.settings')}
                 onPress={() => router.push('/settings')}
               >
@@ -80,6 +93,7 @@ export default function ConnectedLayout() {
           ),
         }}
       />
+      <Stack.Screen name="map" options={{ title: t('nav.map') }} />
       <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
     </Stack>
