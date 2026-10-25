@@ -142,7 +142,8 @@
   "nav": {
     "home": "Start",
     "settings": "Einstellungen",
-    "pending": "Ausstehende Vorgänge"
+    "pending": "Ausstehende Vorgänge",
+    "operations": "Vorgänge"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -277,6 +278,194 @@
     "onlineOnly": {
       "title": "Verbindung erforderlich",
       "description": "Eine Buchung anzulegen oder zu verschieben erfordert die erreichbare Instanz, die die Verfügbarkeit der Plätze garantiert."
+    }
+  },
+  "operations": {
+    "hub": {
+      "description": "Check-in, Notizen, Barzahlungen und Platzsperren.",
+      "checkInTitle": "Check-in",
+      "scan": "QR-Code scannen",
+      "scanHint": "QR-Code der Buchung oder des Eintrittstickets.",
+      "codeLabel": "Buchungscode oder Ticketnummer",
+      "codePlaceholder": "AR-7K3Q9 oder 37",
+      "codeSubmit": "Suchen",
+      "codeRequired": "Gib einen Code ein.",
+      "searching": "Suche läuft",
+      "spotsTitle": "Plätze von heute",
+      "spotsSearch": "Platz suchen",
+      "spotsSearchPlaceholder": "Zum Beispiel A1",
+      "spotsEmpty": "Kein Platz gefunden.",
+      "spotsUnavailable": "Der heutige Plan ist nicht verfügbar: Es braucht mindestens einmal eine Verbindung.",
+      "spotsMore": "Verfeinere die Suche, um die weiteren Plätze zu sehen."
+    },
+    "scan": {
+      "cameraLabel": "Kameravorschau für QR-Codes von Buchungen und Tickets",
+      "hint": "Richte die Kamera auf den QR-Code der Buchung oder des Tickets.",
+      "next": "Nächsten scannen",
+      "manual": "Code eingeben",
+      "permission": {
+        "title": "Kamera erforderlich",
+        "description": "Die App nutzt die Kamera, um die QR-Codes von Buchungen und Tickets zu lesen. Die Bilder bleiben auf dem Gerät.",
+        "denied": "Der Kamerazugriff ist verweigert. Erlaube ihn in den Geräteeinstellungen oder gib den Code von Hand ein.",
+        "grant": "Kamera erlauben",
+        "openSettings": "Einstellungen öffnen"
+      }
+    },
+    "result": {
+      "unrecognized": "Dieser QR-Code stammt nicht von Arenile.",
+      "notFound": "Keine Buchung und kein Ticket mit diesem Code.",
+      "needsConnection": "Verbindung erforderlich: Dieser Code ist nicht in den auf dem Gerät gespeicherten Daten.",
+      "error": "Der Code konnte nicht geprüft werden. Versuche es erneut.",
+      "openBooking": "Vorgänge öffnen"
+    },
+    "gate": {
+      "ticketTitle": "Eintrittsticket {{number}}",
+      "numberTitle": "Ticketnummer {{number}}",
+      "manualDescription": "Der Eintritt wird als manuelle Eingabe des Personals erfasst. Prüfe das Ticket vor dem Bestätigen.",
+      "admit": "Eintritt erfassen",
+      "working": "Eintritt wird erfasst",
+      "forbidden": "Deine Rolle darf keine Eintritte erfassen.",
+      "outcome": {
+        "admitted": "Eintritt erfasst",
+        "already_entered": "Bereits eingetreten: Das Ticket wurde schon verwendet",
+        "voided": "Ticket storniert: kein Eintritt",
+        "wrong_date": "Ticket für einen anderen Tag: kein Eintritt"
+      }
+    },
+    "booking": {
+      "title": "Buchung {{code}}",
+      "unavailableTitle": "Buchung nicht verfügbar",
+      "unavailableDescription": "Sie ist nicht in den auf dem Gerät gespeicherten Daten und die Instanz ist nicht erreichbar.",
+      "status": "Status",
+      "period": "Zeitraum",
+      "periodRange": "{{from}} – {{to}}",
+      "spots": "Plätze",
+      "customer": "Kunde",
+      "anonymous": "Anonymer Kunde",
+      "seasonPass": "Saisonabo",
+      "total": "Gesamt",
+      "paid": "Bezahlt",
+      "balance": "Offener Betrag",
+      "nothingAllowed": "Deine Rolle kann die Buchung ansehen, aber keine Vorgänge ausführen."
+    },
+    "bookingStatus": {
+      "draft": "Entwurf",
+      "held": "Zahlung ausstehend",
+      "pending_payment": "Zahlung läuft",
+      "awaiting_approval": "Freigabe ausstehend",
+      "confirmed": "Bestätigt",
+      "checked_in": "Eingecheckt",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert",
+      "no_show": "Nicht erschienen",
+      "expired": "Abgelaufen",
+      "rejected": "Abgelehnt"
+    },
+    "spotStatus": {
+      "free": "Frei",
+      "booked": "Gebucht",
+      "checked_in": "Belegt",
+      "pass_holder": "Abonnent",
+      "released": "Freigegeben",
+      "held": "Reserviert",
+      "renewal_offer": "Verlängerung angeboten",
+      "blocked": "Gesperrt",
+      "closed": "Geschlossen",
+      "inactive": "Nicht aktiv"
+    },
+    "slots": {
+      "FULL": "Ganzer Tag",
+      "AM": "Vormittag",
+      "PM": "Nachmittag"
+    },
+    "queued": {
+      "sent": "Erfasst.",
+      "offline": "Auf dem Gerät gespeichert: Wird gesendet, sobald die Instanz erreichbar ist."
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "action": "Einchecken",
+      "done": "Eingecheckt",
+      "outside_stay": "Check-in ist nur während des Aufenthalts möglich ({{from}} – {{to}}).",
+      "unavailable": "Check-in nicht möglich: Die Buchung ist „{{status}}“."
+    },
+    "note": {
+      "title": "Interne Notizen",
+      "none": "Keine Notizen.",
+      "label": "Neue Notiz",
+      "placeholder": "Zum Beispiel: Schirm austauschen",
+      "hint": "Nur für das Personal sichtbar.",
+      "submit": "Notiz hinzufügen",
+      "errors": {
+        "note_empty": "Schreibe den Text der Notiz.",
+        "note_too_long": "Die Notiz ist zu lang: höchstens 2000 Zeichen."
+      }
+    },
+    "cash": {
+      "title": "Barzahlung",
+      "balance": "Offen: {{amount}}",
+      "settled": "Bezahlt: nichts zu kassieren.",
+      "label": "Betrag",
+      "hint": "In Euro, zum Beispiel 12,50.",
+      "submit": "Kassieren",
+      "deskClosed": "Die Kasse ist geschlossen: Öffne im Panel eine Kassensitzung, bevor du bar kassierst.",
+      "deskUnknown": "Ohne Verbindung ist unbekannt, ob die Kasse geöffnet ist: Die Zahlung wird bei Wiederverbindung gesendet und abgelehnt, wenn die Kasse geschlossen ist.",
+      "confirmTitle": "{{amount}} bar kassieren?",
+      "confirmDescription": "Buchung {{label}}. Die Zahlung wird in der offenen Kassensitzung erfasst.",
+      "confirm": "Kassieren",
+      "errors": {
+        "amount_invalid": "Ungültiger Betrag. Beispiel: 12,50",
+        "amount_zero": "Der Betrag muss größer als null sein.",
+        "amount_over_balance": "Der Betrag übersteigt den offenen Betrag."
+      }
+    },
+    "release": {
+      "title": "Tagesfreigabe",
+      "description": "Ein freigegebener Tag kann von anderen Kunden gebucht werden.",
+      "day": "Tag",
+      "slot": "Zeitfenster",
+      "submit": "Freigeben",
+      "none": "Heute oder morgen gibt es keinen Tag zum Freigeben.",
+      "confirmTitle": "{{date}} freigeben?",
+      "confirmDescription": "{{label}}: Der Platz wird buchbar ({{slot}}).",
+      "confirm": "Freigeben"
+    },
+    "spot": {
+      "title": "Platz {{label}}",
+      "notFoundTitle": "Platz nicht gefunden",
+      "notFoundDescription": "Der Platz ist nicht im auf dem Gerät gespeicherten Plan von heute.",
+      "status": "Status",
+      "blockReason": "Grund der Sperre",
+      "booking": "Buchung",
+      "openBooking": "Vorgänge der Buchung"
+    },
+    "block": {
+      "title": "Platz sperren",
+      "description": "Ein gesperrter Platz kann nicht gebucht werden.",
+      "period": "Zeitraum",
+      "periods": {
+        "today": "Heute",
+        "tomorrow": "Morgen",
+        "today_and_tomorrow": "Heute und morgen"
+      },
+      "slot": "Zeitfenster",
+      "reason": "Grund (optional)",
+      "reasonPlaceholder": "Zum Beispiel: Schirm kaputt",
+      "reasonTooLong": "Höchstens 200 Zeichen.",
+      "submit": "Sperren",
+      "done": "Platz gesperrt.",
+      "unblock": "Platz entsperren",
+      "unblocked": "Platz entsperrt.",
+      "unblockTitle": "Platz {{label}} entsperren?",
+      "unblockDescription": "Der Platz ist wieder buchbar.",
+      "onlineOnly": "Das Sperren oder Entsperren eines Platzes erfordert eine erreichbare Instanz, wie das Anlegen oder Verschieben einer Buchung."
+    },
+    "errors": {
+      "offline": "Verbindung erforderlich: Versuche es erneut, wenn die Instanz erreichbar ist.",
+      "forbidden": "Für deine Rolle nicht erlaubt.",
+      "spot_unavailable": "Der Platz ist im gewählten Zeitraum nicht frei.",
+      "not_found": "Nicht gefunden: Die Daten haben sich vielleicht geändert. Aktualisiere und versuche es erneut.",
+      "default": "Die Instanz hat den Vorgang abgelehnt."
     }
   }
 }
