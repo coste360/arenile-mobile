@@ -262,13 +262,17 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
     async enqueue(input) {
       if (!scope) throw new Error('offline queue: enqueue without a paired session');
       let op = input;
-      // A check-in queued behind other operations on the same booking cannot
-      // know the version the server will have when its turn comes (an
-      // earlier one may be refused): drop it, the sender uses If-Match "*".
+      // A check-in queued behind other operations on the same booking (waiting
+      // or being sent) cannot know the version the server will have when its
+      // turn comes (an earlier one may be refused): drop it, the sender uses
+      // If-Match "*".
       if (op.kind === 'check_in' && op.ifMatch !== undefined) {
         const behind = queue
           .getSnapshot()
-          .some((o) => o.bookingId === op.bookingId && o.status === 'pending');
+          .some(
+            (o) =>
+              o.bookingId === op.bookingId && (o.status === 'pending' || o.status === 'sending'),
+          );
         if (behind) {
           const { ifMatch: _drop, ...rest } = op;
           op = rest;

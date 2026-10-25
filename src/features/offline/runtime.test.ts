@@ -195,6 +195,26 @@ describe('offline runtime', () => {
     expect(behind).not.toHaveProperty('ifMatch');
   });
 
+  it('drops the read version on a check-in while another operation on its booking is being sent', async () => {
+    let answer: (r: Response) => void = () => {};
+    const { runtime, api } = await attached({
+      routes: {
+        [NOTE]: () => new Promise<Response>((resolve) => (answer = resolve)),
+        [CHECK_IN]: () => json(200, {}),
+      },
+    });
+    await runtime.enqueue(note);
+    await waitFor(() => expect(posts(api)).toHaveLength(1));
+    expect(runtime.queue.getSnapshot()[0]).toMatchObject({ status: 'sending' });
+
+    // The note may still be refused: the cached version (raised for it) is a guess.
+    const queued = await runtime.enqueue({ ...checkIn, kind: 'check_in', ifMatch: '"4"' });
+    expect(queued).not.toHaveProperty('ifMatch');
+    answer(json(200, {}));
+    await waitFor(() => expect(runtime.getStatus().pending).toBe(0));
+    expect(posts(api)[1]!.headers.get('If-Match')).toBe('*');
+  });
+
   it('empties queue and cache on a voluntary unpair', async () => {
     const { runtime, store } = await attached({ connected: false });
     await runtime.enqueue(note);
