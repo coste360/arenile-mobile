@@ -9,6 +9,7 @@ import { Linking, Platform } from 'react-native';
 
 import { APP_VERSION } from '@/config/app';
 import type { DeviceInfo } from '@/features/pairing/pair';
+import { createExpoWidgetBridge, type WidgetBridge } from '@/features/widget/bridge';
 import { systemClock, type Clock } from '@/lib/clock';
 import { createExpoNetworkMonitor, type NetworkMonitor } from '@/lib/network';
 import { createOfflineKeyValueStore } from '@/lib/offline-storage';
@@ -32,6 +33,8 @@ export interface Dependencies {
   /** Device languages, most preferred first (BCP 47 tags). */
   deviceLocales: () => string[];
   openSystemSettings: () => void;
+  /** Home screen widget (app group / shared preferences); absent means no widget. */
+  widget?: WidgetBridge;
 }
 
 function platform(): DeviceInfo['platform'] {
@@ -56,6 +59,7 @@ export function createDefaultDependencies(): Dependencies {
     openSystemSettings: () => {
       void Linking.openSettings();
     },
+    widget: createExpoWidgetBridge(),
   };
 }
 

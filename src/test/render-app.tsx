@@ -23,6 +23,7 @@ import { AppProviders } from '@/providers/app-providers';
 import type { Dependencies } from '@/providers/dependencies';
 
 import { fakeFetch, type Handler } from './fake-fetch';
+import { createFakeWidget } from './fake-widget';
 import { sequentialIds } from './ids';
 
 export const WINDOWS = {
@@ -84,6 +85,7 @@ export async function renderApp({
   const network = fakeFetch(routes);
   const offlineStore = createMemoryKeyValueStore(offlineData);
   const connectivity = createFakeNetworkMonitor(connected);
+  const widget = createFakeWidget();
   const dependencies: Dependencies = {
     kv,
     offlineStore,
@@ -95,6 +97,7 @@ export async function renderApp({
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],
     openSystemSettings: jest.fn(),
+    widget,
   };
 
   function TestRootLayout() {
@@ -121,7 +124,7 @@ export async function renderApp({
     },
     { initialUrl },
   );
-  return { ...result, kv, offlineStore, connectivity, network, dependencies, screen };
+  return { ...result, kv, offlineStore, connectivity, network, widget, dependencies, screen };
 }
 
 /** "METHOD /path" of every request, in order. */
