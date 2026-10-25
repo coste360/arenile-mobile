@@ -1,9 +1,5 @@
 # Fase 2
 
-- **Notifiche push facoltative** (sezione 29.2 del core): per vincolo di Apple e Google passano da un
-  relay centrale. Il relay di Coste360 riceve solo un identificativo opaco del dispositivo e un testo
-  generico ("Nuova prenotazione"), mai dati personali; l'istanza può anche non usare push (l'app
-  aggiorna i dati all'apertura). Attivazione esplicita dall'utente e dal gestore.
 - **Vendita giornaliera rapida** dalla mappa o dalla scheda postazione, **solo online** (garanzia di
   disponibilità e numerazione dei biglietti lato server).
 - **Spostamento di una prenotazione**, solo online.
@@ -15,8 +11,7 @@
 
 Decisioni in [ADR 0011](../adr/0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md). Tutte le
 funzioni di questa fase sono **solo online**: disattivate senza connessione, mai in coda. Implementate e
-coperte da test delle schermate; nessuna è stata provata su un dispositivo o con una stampante reale. Le
-notifiche push restano spente finché non escono la release del core e gli account (sotto).
+coperte da test delle schermate; nessuna è stata provata su un dispositivo o con una stampante reale.
 
 - **Vendita giornaliera rapida:** pulsante _Vendita giornaliera_ nella scheda di una postazione libera o
   rilasciata (oggi o domani), per i ruoli con `bookings.write` e `cash.operate` (titolare, gestore,
@@ -38,10 +33,8 @@ notifiche push restano spente finché non escono la release del core e gli accou
   giornaliera, nella scheda prenotazione e dopo la vendita, per chi ha `cash.operate`. Il server stampa
   sulla stampante instradata nel pannello e l'app segue il lavoro; senza una stampante pronta (edizione
   server, nessuna regola, stampante spenta o irraggiungibile) l'app dice perché.
-- **Notifiche push:** card _Notifiche push_ nelle impostazioni, solo se l'istanza le offre (`/meta`).
-  Spente finché l'utente non le accende: permesso del sistema, token nativo APNs/FCM registrato
-  sull'istanza con gli avvisi scelti (nuove prenotazioni online, prenotazioni da approvare, pagamenti
-  non riusciti, secondo il ruolo). Mai il servizio push di Expo. **In attesa della release del core**
-  con `/api/device/v1/push` (ADR 0027 del core): fino ad allora la card non compare sulle istanze v1.0.1
-  e il client usa un adattatore tipizzato da sostituire con i tipi generati. Da provare su dispositivo
-  con una build EAS, con le credenziali APNs e Firebase di Coste360 e il relay attivo.
+- **Notifiche push: non in questa edizione.** Per decisione di Coste360 l'app pubblica non ha notifiche
+  push ([ADR 0012](../adr/0012-niente-notifiche-push-nell-edizione-pubblica.md)): richiederebbero un
+  relay centrale e le credenziali APNs/Firebase di Coste360, e potranno diventare una funzione di una
+  futura edizione a pagamento. L'app rilegge i dati dall'istanza quando viene aperta o torna in primo
+  piano e alla riconnessione.

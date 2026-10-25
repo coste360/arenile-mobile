@@ -9,9 +9,9 @@
 
 La specifica del core prevede un'app per lo staff pubblicata da Coste360 negli store, collegata
 all'istanza del gestore, con fotocamera (QR), portachiavi sicuro, funzionamento offline con coda,
-notifiche push facoltative, widget e layout per tablet. Il team scrive già TypeScript e React (pannello
-e pagina di prenotazione) e genera i tipi delle API con openapi-typescript. Su questa macchina non ci
-sono Xcode né Android SDK.
+notifiche push facoltative (poi escluse dall'app pubblica, ADR 0012), widget e layout per tablet. Il
+team scrive già TypeScript e React (pannello e pagina di prenotazione) e genera i tipi delle API con
+openapi-typescript. Su questa macchina non ci sono Xcode né Android SDK.
 
 Alternative considerate:
 

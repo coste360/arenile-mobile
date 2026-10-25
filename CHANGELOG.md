@@ -20,11 +20,6 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
     richieste compatibili con la postazione liberata.
   - _Stampa il biglietto_ sulla stampante ESC/POS instradata nel pannello: stampa il server, l'app la
     chiede e ne segue l'esito.
-  - _Notifiche push_ facoltative nelle impostazioni, solo se l'istanza le offre: consenso esplicito,
-    token nativo APNs/FCM registrato sull'istanza, mai il servizio push di Expo. Richiedono una release
-    del core con `/api/device/v1/push` (ADR 0027 del core).
-- Dipendenza `expo-notifications` (MIT, SDK 58) solo per il permesso e il token nativo; plugin di
-  configurazione che tiene Firebase Messaging spento fino al consenso.
 - Fase 1 — **Mappa del giorno** (ADR 0008): vista operativa di oggi o domani con i colori di stato del
   pannello, sempre con etichetta e glifo, legenda sempre visibile con i conteggi, fasce giornata /
   mattina / pomeriggio, più mappe dello stabilimento; zoom e spostamento con i gesti (fluidi anche con
@@ -101,6 +96,15 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 - Strumenti: `Makefile`, ESLint, Prettier, guardia degli stili, Jest con test delle schermate a
   larghezza di telefono e di tablet, CI su GitHub Actions (`make check`, `expo-doctor`, bundle iOS e
   Android), regole e agenti per Claude Code, ADR 0001–0006, piano dell'app per fasi.
+
+### Rimosso
+
+- Notifiche push: per decisione di Coste360 non fanno parte dell'app pubblica (ADR 0012, sostituisce la
+  parte push dell'ADR 0011) e potranno diventare una funzione di una futura edizione a pagamento. Tolti
+  il client mai attivato (card nelle impostazioni, registrazione del token, adattatore degli endpoint),
+  la dipendenza `expo-notifications` e il plugin di configurazione per Firebase Messaging: nessun
+  entitlement o permesso di notifica nella build. L'app aggiorna i dati quando viene aperta o torna in
+  primo piano.
 
 ### Corretto
 

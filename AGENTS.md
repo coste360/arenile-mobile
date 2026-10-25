@@ -44,8 +44,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   entry), `waitlist/[entryId]`; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
-  `src/api/generated/` generated types; `push-adapter.ts` hand-typed device push endpoints not in the
-  pinned contract yet (replace with generated types after the core release, ADR 0011)
+  `src/api/generated/` generated types
 - `src/features/<area>` logic per area: `pairing` (QR decoder, target normalisation, pairing flow,
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
@@ -58,7 +57,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`), phase 2 (ADR 0011):
   `daily-sale` (sale rules, catalogue, quote, sale), `move-booking` (move rules, dry run, booking or
   ticket move), `waitlist` (list, compatibility, offer), `printing` (print route, jobs), `tickets`
-  (ticket of a booking), `push` (native token, registration, token renewal). **Read `docs/data-and-offline.md` before adding a feature.**
+  (ticket of a booking). No push notifications in this edition (ADR 0012): data refreshes when the app
+  is opened or foregrounded. **Read `docs/data-and-offline.md` before adding a feature.**
 - `src/widgets/` home screen widget layouts for expo-widgets (`'widget'` directive: isolated runtime,
   only Expo UI components, data only through props; ADR 0010)
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
@@ -77,7 +77,6 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   `ids.ts`, `render-app.tsx`) and screen tests
 - `src/global.css` the only stylesheet (theme tokens); `tailwind.config.js` maps them
 - `api/core-version.json` pinned core release + SHA-256; `api/openapi.yaml` its contract (verbatim)
-- `plugins/` local Expo config plugins (`with-fcm-privacy.js`: FCM dormant until the push opt-in)
 - `scripts/` `gen-api.mjs` (contract download/verify/generate), `style-guard.js`, `agents/` hooks
 - `assets/brand/` official Arenile brand assets (not covered by the code licence, see NOTICE.md)
 - `native-locales/` localized native strings (app name, permission prompts)
@@ -124,8 +123,9 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   queries are persisted; the cache is removed on every sign-out. Hide actions with `useAbilities()`;
   a 403 is "non consentito".
 - Phase 2 (ADR 0011): daily sale, move, waitlist offers and ticket printing are online-only, never
-  queued, with a stable `Idempotency-Key` per request on creations. Push is opt-in: native APNs/FCM
-  token to the instance only, never the Expo push token or service (guarded by a test).
+  queued, with a stable `Idempotency-Key` per request on creations.
+- No push notifications in the public app (ADR 0012): no `expo-notifications`, no APNs/FCM token, no
+  notification entitlements or permissions; data refreshes on open/foreground and on reconnect.
 - Home screen widget (ADR 0010): it shows only props the app publishes from data already cached
   (counts, never names or amounts) and never fetches; the widget is cleared on sign-out.
 - No new runtime dependency without explaining why in the PR; licences must be compatible with both

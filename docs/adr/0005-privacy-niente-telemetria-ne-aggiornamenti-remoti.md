@@ -16,9 +16,8 @@ reporting e analytics, la telemetria della CLI Expo durante lo sviluppo.
 1. **Nessuna telemetria, nessun SDK di analisi, pubblicità o crash reporting** nell'app.
 2. **Niente `expo-updates` né EAS Update:** il codice cambia solo con una nuova versione negli store.
    `eas update` è negato anche nelle impostazioni di Claude Code del repository.
-3. L'app non contatta altri host oltre all'istanza abbinata. Le notifiche push (fase 2) passeranno, per
-   vincolo di Apple e Google, da un relay facoltativo che riceve solo un identificativo opaco e un testo
-   generico, attivato esplicitamente.
+3. L'app non contatta altri host oltre all'istanza abbinata. Le notifiche push, che per vincolo di
+   Apple e Google passerebbero da un relay, non fanno parte dell'app pubblica (ADR 0012).
 4. Anche gli strumenti di sviluppo non inviano dati d'uso: `EXPO_NO_TELEMETRY=1` nel `Makefile` e in CI.
 5. Un nuovo pacchetto che apre connessioni di rete proprie va dichiarato e motivato nella PR.
 

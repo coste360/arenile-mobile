@@ -1,10 +1,16 @@
 # 0011 — Fase 2: vendita, spostamenti, lista d'attesa e stampa solo online; push tramite l'istanza
 
-- **Stato:** proposto
+- **Stato:** proposto; punti 7, 8 e 9 (notifiche push) sostituiti da
+  [0012](0012-niente-notifiche-push-nell-edizione-pubblica.md): l'app pubblica non ha notifiche push
 - **Data:** 2026-10-25
 - **Sezioni della specifica:** `docs/spec/03-fase-2.md`; core §10.5 (lista d'attesa), §11.3 (vista
   operativa), §14.3 (vendita giornaliera), §21.2 (offline), §29.2 (app mobile); core ADR 0020 (vendita
   giornaliera), ADR 0021 (stampa ESC/POS), ADR 0027 (notifiche push tramite relay)
+
+> **Aggiornamento (ADR 0012):** le notifiche push non fanno parte dell'app pubblica e il loro client è
+> stato rimosso (`features/push`, `push-adapter.ts`, `expo-notifications`, `plugins/with-fcm-privacy.js`).
+> Potranno diventare una funzione di una futura edizione a pagamento. I punti 7–9 restano qui come
+> storia della decisione.
 
 ## Contesto
 

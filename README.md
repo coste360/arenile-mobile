@@ -7,8 +7,7 @@ invia dati a Coste360.
 
 > **Stato:** fasi 0–3 implementate e verificate con i test (`make check-full` verde), **non ancora
 > provate su dispositivi reali né compilate con EAS Build** e non pubblicate negli store: servono gli
-> account Expo/EAS, Apple Developer e Google Play di Coste360. Le notifiche push aspettano anche una
-> release del core. Dettagli nel [piano dell'app](docs/spec/README.md) e in
+> account Expo/EAS, Apple Developer e Google Play di Coste360. Dettagli nel [piano dell'app](docs/spec/README.md) e in
 > [Da fare prima della pubblicazione](#da-fare-prima-della-pubblicazione).
 
 ## Cosa fa oggi
@@ -50,8 +49,6 @@ invia dati a Coste360.
 
 - Vendita giornaliera rapida dalla mappa, spostamento di una prenotazione, lista d'attesa con l'offerta
   di un posto, stampa del biglietto sulla stampante ESC/POS del pannello (edizione desktop).
-- Notifiche push facoltative: il client è pronto ma la card compare solo sulle istanze che le offrono
-  (serve una release del core successiva alla v1.0.1, più le credenziali APNs/Firebase di Coste360).
 
 **Fase 3** ([ADR 0010](docs/adr/0010-report-essenziali-e-widget.md))
 
@@ -64,15 +61,19 @@ un rifiuto del server si mostra come "non consentito".
 
 **Da provare su dispositivo prima del rilascio:** rete locale del desktop (modulo nativo mai compilato
 per intero), gesti della mappa con centinaia di postazioni, fotocamera, widget, permessi di sistema,
-notifiche push, stampa su una stampante reale.
+stampa su una stampante reale.
+
+**Notifiche push: non in questa edizione.** L'app rilegge i dati dall'istanza quando viene aperta o torna
+in primo piano. Le notifiche push richiederebbero un relay centrale gestito da Coste360 e potranno
+diventare una funzione di una futura edizione a pagamento
+([ADR 0012](docs/adr/0012-niente-notifiche-push-nell-edizione-pubblica.md)).
 
 ## Privacy
 
 L'app parla solo con la tua istanza: nessuna telemetria, nessun SDK di analisi, pubblicità o crash
 reporting, nessun aggiornamento remoto del codice ([ADR 0005](docs/adr/0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md)).
-Le notifiche push sono facoltative e spente finché non le accendi: passano dal relay di Coste360, che
-riceve solo l'identificativo del telefono dato da Apple o Google e un testo generico, mai dati dei
-clienti ([ADR 0011](docs/adr/0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md)).
+Nessuna notifica push, quindi nessun identificativo del telefono dato ad Apple, Google o Coste360
+([ADR 0012](docs/adr/0012-niente-notifiche-push-nell-edizione-pubblica.md)).
 
 ## Sviluppo
 
@@ -138,16 +139,11 @@ docs/adr/           decisioni
   ancora fatta); per il widget iOS anche l'estensione
   `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile` (ADR 0010).
 - **Build e prove su dispositivo:** una build di sviluppo EAS per iOS e Android (servono per
-  `expo-sqlite`, il modulo `modules/pinned-fetch`, l'estensione del widget e `expo-notifications`), poi
+  `expo-sqlite`, il modulo `modules/pinned-fetch` e l'estensione del widget), poi
   le prove su iPhone, iPad e Android elencate nel [piano dell'app](docs/spec/README.md); il test JUnit del
   modulo Android (`./gradlew :pinned-fetch:testDebugUnitTest` in un progetto generato con prebuild).
 - **Kit della mappa:** le illustrazioni dei kit del core non sono ancora usate (ADR 0008): servono una
   release del core che le pubblichi come asset versionato e la decisione sulla licenza dell'app.
-- **Notifiche push (fase 2, ADR 0011):** una chiave APNs del team Apple di Coste360 e un progetto
-  Firebase di Coste360 per FCM (il file `google-services.json` va indicato in `android.googleServicesFile`
-  al momento della build EAS, non nel repository), consegnati al relay `push.coste360.it`; una release
-  del core con `/api/device/v1/push`, poi `make api-bump` e la sostituzione di `src/api/push-adapter.ts`
-  con i tipi generati.
 
 ## Contatti
 
