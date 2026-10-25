@@ -126,15 +126,15 @@ describe('resolveAbilities', () => {
   });
 
   it.each([
-    // role, check-in, release, block, note, cash, write, takings
-    ['owner', true, true, true, true, true, true, true],
-    ['manager', true, true, true, true, true, true, true],
-    ['cashier', true, true, true, true, true, true, true],
-    ['beach_staff', true, true, true, false, false, false, false],
-    ['viewer', false, false, false, false, false, false, true],
+    // role, check-in, release, block, note, cash, write, takings, reports
+    ['owner', true, true, true, true, true, true, true, true],
+    ['manager', true, true, true, true, true, true, true, true],
+    ['cashier', true, true, true, true, true, true, true, false],
+    ['beach_staff', true, true, true, false, false, false, false, false],
+    ['viewer', false, false, false, false, false, false, true, true],
   ] as const)(
     'falls back to the matrix for %s',
-    (role, checkIn, release, block, note, cash, write, takings) => {
+    (role, checkIn, release, block, note, cash, write, takings, reports) => {
       const a = resolveAbilities({ role, establishmentId: EST });
       expect(a).toMatchObject({
         known: true,
@@ -146,6 +146,7 @@ describe('resolveAbilities', () => {
         canCollectCash: cash,
         canWriteBookings: write,
         canSeeTakings: takings,
+        canSeeReports: reports,
       });
     },
   );
@@ -155,5 +156,6 @@ describe('resolveAbilities', () => {
     expect(a.known).toBe(false);
     expect(a.canViewBookings).toBe(false);
     expect(a.has('bookings.read')).toBe(false);
+    expect(a.canSeeReports).toBe(false);
   });
 });

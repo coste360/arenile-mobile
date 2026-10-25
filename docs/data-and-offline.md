@@ -29,7 +29,7 @@ writing its own fetching, caching or permission logic.
 
 `features/permissions`: `useAbilities()` returns what the paired user may do (`canCheckIn`,
 `canReleaseDay`, `canBlockSpot`, `canAddNote`, `canCollectCash`, `canWriteBookings`,
-`canSeeTakings`, `canViewBookings`, `has(permission)`, `known`). It mirrors the core matrix
+`canSeeTakings`, `canSeeReports`, `canViewBookings`, `has(permission)`, `known`). It mirrors the core matrix
 (`internal/domain/auth/roles.go`, spec 16.1): the permissions reported by `/auth/me` win, the matrix
 on the device role is the offline fallback, nothing is offered while unknown. **Hide** what the role
 cannot do; when the server refuses anyway, `isForbidden(error)` (`src/api/errors.ts`) → show
