@@ -1,6 +1,7 @@
 // In-memory fake of fetch for unit tests (no network). Routes are keyed by
 // "METHOD /path"; a handler returns a Response, throws to simulate a network
 // failure, or returns a never-settling promise to simulate a hang.
+import { normalizeFingerprint, PinnedFetchError, type PinnedFetch } from '@/api/transport';
 import type { Meta } from '@/api/types';
 
 export type Handler = (request: Request) => Response | Promise<Response>;
@@ -22,6 +23,38 @@ export function fakeFetch(routes: Record<string, Handler>): FakeFetch {
     return handler(request);
   };
   return { fetch: impl as typeof fetch, calls };
+}
+
+/** Fingerprint of the desktop LAN certificate in the fixtures (core desktop.Fingerprint format). */
+export const LAN_FINGERPRINT =
+  '83:A9:D2:70:46:86:36:88:87:C6:F1:DE:C5:48:09:77:90:72:ED:6D:FC:BD:49:D5:D0:A8:FD:B8:F4:B2:09:7D';
+/** The same server after the 30-day renewal: a different certificate. */
+export const RENEWED_FINGERPRINT = LAN_FINGERPRINT.replace('83:A9', '5E:17');
+
+export interface FakePinnedFetch {
+  pinnedFetch: PinnedFetch;
+  /** Fingerprints the app expected, one per request. */
+  pins: string[];
+}
+
+/**
+ * Fake of the native pinned transport: a desktop LAN server presenting the
+ * certificate `serverFingerprint`. Requests pinned to another fingerprint fail
+ * like the native module does (no HTTP exchange); matching ones reach `fetch`.
+ */
+export function fakePinnedFetch(
+  fetchImpl: typeof fetch,
+  serverFingerprint: string,
+): FakePinnedFetch {
+  const pins: string[] = [];
+  const pinnedFetch: PinnedFetch = async (request, fingerprint) => {
+    pins.push(fingerprint);
+    if (normalizeFingerprint(fingerprint) !== normalizeFingerprint(serverFingerprint)) {
+      throw new PinnedFetchError('certificate_mismatch');
+    }
+    return fetchImpl(request);
+  };
+  return { pinnedFetch, pins };
 }
 
 export const json = (status: number, body: unknown, contentType = 'application/json') =>

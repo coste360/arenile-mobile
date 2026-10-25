@@ -42,15 +42,31 @@ export class UnauthorizedError extends ProblemError {
 }
 
 /**
- * The instance uses a self-signed certificate (desktop LAN mode). React
- * Native cannot pin it yet: the pinned native transport is planned in ADR 0006.
+ * The instance uses a self-signed certificate (desktop LAN mode) and this
+ * build has no pinned native transport (Expo Go, web; ADR 0006).
  */
 export class LanTransportUnavailableError extends Error {
   override readonly name = 'LanTransportUnavailableError';
   constructor() {
-    super('pinned transport for self-signed certificates is not available yet');
+    super('pinned transport for self-signed certificates is not available in this build');
   }
 }
+
+/**
+ * The desktop LAN server presented a certificate whose SHA-256 differs from
+ * the fingerprint saved at pairing: the certificate was renewed (30 days
+ * before expiry, `lan_cert_renews_at` in /meta) or another machine answers at
+ * that address. Nothing was sent past the TLS handshake; pair again.
+ */
+export class CertificateMismatchError extends Error {
+  override readonly name = 'CertificateMismatchError';
+  constructor(options?: { cause?: unknown }) {
+    super('certificate fingerprint mismatch', options);
+  }
+}
+
+export const isCertificateMismatch = (e: unknown): e is CertificateMismatchError =>
+  e instanceof CertificateMismatchError;
 
 function isProblem(body: unknown): body is Problem {
   if (typeof body !== 'object' || body === null) return false;
