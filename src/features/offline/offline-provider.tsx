@@ -28,7 +28,7 @@ export function OfflineProvider({
   children: ReactNode;
 }) {
   const { state, signOut } = useSession();
-  const { fetch } = useDependencies();
+  const { fetch, pinnedFetch } = useDependencies();
   const session = state.status === 'paired' ? state.session : null;
   const reason = state.status === 'unpaired' ? state.reason : undefined;
 
@@ -44,9 +44,10 @@ export function OfflineProvider({
         token: session.token,
         fingerprint: session.fingerprint,
         fetch,
+        pinnedFetch,
       }),
     );
-  }, [runtime, session, reason, fetch]);
+  }, [runtime, session, reason, fetch, pinnedFetch]);
 
   useEffect(() => runtime.onUnauthorized(() => void signOut('revoked')), [runtime, signOut]);
   useEffect(() => () => runtime.stop(), [runtime]);

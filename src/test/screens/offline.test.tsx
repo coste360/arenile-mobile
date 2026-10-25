@@ -6,7 +6,16 @@ import { QueryClient } from '@tanstack/react-query';
 import { CACHE_KEY, createOfflineCache } from '@/features/offline/persist';
 import { QUEUE_KEY } from '@/features/offline/queue';
 import type { OfflineOperation } from '@/features/offline/types';
-import { DEVICE, json, meta, networkDown, problem, type Handler } from '@/test/fake-fetch';
+import {
+  DEVICE,
+  json,
+  LAN_FINGERPRINT,
+  meta,
+  networkDown,
+  problem,
+  RENEWED_FINGERPRINT,
+  type Handler,
+} from '@/test/fake-fetch';
 import { queryKeys } from '@/features/session/queries';
 import { createMemoryKeyValueStore } from '@/lib/storage';
 import { SESSION } from '@/test/fixtures';
@@ -94,6 +103,46 @@ describe('connection indicator', () => {
     expect(sent?.headers.get('Idempotency-Key')).toBe('key-0001-abcd');
     expect(await sent?.clone().json()).toEqual({ amount: 1250, method: 'cash' });
     expect(await screen.findByRole('button', { name: 'Connesso' })).toBeOnTheScreen();
+  });
+
+  describe('desktop LAN instance (ADR 0006)', () => {
+    const LAN_SESSION = {
+      ...SESSION,
+      instanceUrl: 'https://192.168.1.20:8443',
+      fingerprint: LAN_FINGERPRINT,
+    };
+    const lanQueue = () =>
+      queue(
+        queued({
+          scope: { instanceUrl: LAN_SESSION.instanceUrl, establishmentId: SESSION.establishmentId },
+        }),
+      );
+
+    it('replays the queue through the pinned transport', async () => {
+      const payment = jest.fn(() => json(201, {}));
+      const { screen } = await renderApp({
+        session: LAN_SESSION,
+        routes: { ...ONLINE, [`POST ${EST}/bookings/b-1/payments`]: payment },
+        lanServerFingerprint: LAN_FINGERPRINT,
+        offlineData: lanQueue(),
+      });
+
+      await waitFor(() => expect(payment).toHaveBeenCalledTimes(1));
+      expect(await screen.findByRole('button', { name: 'Connesso' })).toBeOnTheScreen();
+    });
+
+    it('never sends the queue to a server with another certificate', async () => {
+      const payment = jest.fn(() => json(201, {}));
+      const { screen } = await renderApp({
+        session: LAN_SESSION,
+        routes: { ...ONLINE, [`POST ${EST}/bookings/b-1/payments`]: payment },
+        lanServerFingerprint: RENEWED_FINGERPRINT,
+        offlineData: lanQueue(),
+      });
+
+      expect(await screen.findByText('Certificato del desktop cambiato')).toBeOnTheScreen();
+      expect(payment).not.toHaveBeenCalled();
+    });
   });
 
   it('flags a refused operation for the user', async () => {
