@@ -38,7 +38,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - `src/app/` expo-router routes (every file is a screen; no tests or helpers here):
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
   its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
-  operations; phone stack or tablet master/detail)
+  operations, `operations/` hub, QR scanner, booking and spot operations; phone stack or tablet
+  master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
   `src/api/generated/` generated types
@@ -46,10 +47,14 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
   phase 1), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
-  operation queue, runtime and hooks). **Read `docs/data-and-offline.md` before adding a feature.**
+  operation queue, runtime and hooks), `check-in` (booking/ticket QR formats, code resolution, gate
+  admission), `booking-actions` (booking facts, operation rules, form schemas, queued actions, cash
+  desk state), `spot-blocks` (online-only blocks, spot search). **Read `docs/data-and-offline.md`
+  before adding a feature.**
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
   `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
-  `ConnectionIndicator`, `OnlineOnlyNotice`)
+  `ConnectionIndicator`, `OnlineOnlyNotice`); `src/components/operations/` the embeddable operation
+  panels (`BookingActionsPanel`, `SpotActionsPanel`, `CodeResult`) and their forms
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
 - `src/lib/` shared primitives (version compare, base64url, storage, offline storage, network,
@@ -99,8 +104,9 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   RFC 3339 UTC (as the API).
 - Offline (ADR 0007): check-in, day release, note and cash payment go through the operation queue
   (`useEnqueueOperation`, stable `Idempotency-Key`), refusals stay visible until the user decides;
-  create/move booking are online-only. Only allowlisted queries are persisted; the cache is removed
-  on every sign-out. Hide actions with `useAbilities()`; a 403 is "non consentito".
+  create/move booking, spot blocks and gate admission are online-only (ADR 0008). Only allowlisted
+  queries are persisted; the cache is removed on every sign-out. Hide actions with `useAbilities()`;
+  a 403 is "non consentito".
 - No new runtime dependency without explaining why in the PR; licences must be compatible with both
   BSL 1.1 and AGPL-3.0 (MIT, BSD, Apache-2.0...).
 - Code comments and identifiers in English.

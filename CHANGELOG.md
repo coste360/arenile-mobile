@@ -11,6 +11,12 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- Fase 1 — operazioni (ADR 0008): check-in con la scansione del QR della prenotazione (anche senza
+  rete, dai dati del giorno) o del biglietto d'ingresso (ammesso al varco con l'esito: entrato, già
+  entrato, annullato, altro giorno), oppure con il codice digitato; schermata delle operazioni di una
+  prenotazione con check-in, incasso rapido in contanti (con conferma, mai oltre il saldo, avviso se la
+  cassa è chiusa), rilascio del giorno degli abbonati e note interne, tutte nella coda offline;
+  postazioni di oggi con ricerca e blocco/sblocco (solo online). Azioni mostrate secondo il ruolo.
 - Fase 1 — fondamenta dei dati e dell'offline (ADR 0007): cache di mappa e prenotazioni di oggi e
   domani (nel fuso dello stabilimento) consultabile senza rete, anche all'avvio, e cancellata a ogni
   scollegamento; coda di check-in, rilasci del giorno, note e incassi in contanti inviata in ordine
