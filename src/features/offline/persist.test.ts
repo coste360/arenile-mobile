@@ -58,6 +58,12 @@ describe('isPersistable', () => {
       undefined,
       false,
     ],
+    // Phase 2 (spec 03): online only, never saved on the device.
+    ['the catalogue', estKeys.packs(EST_ID), [], false],
+    ['a sale quote', estKeys.dailySaleQuote(EST_ID, { date: '2026-10-25' }), undefined, false],
+    ['a ticket', estKeys.ticketByCode(EST_ID, 'AR-7K3Q9'), undefined, false],
+    ['the waitlist', estKeys.waitlist(EST_ID, {}), undefined, false],
+    ['a print route', estKeys.printRoute(EST_ID, 'daily_ticket'), undefined, false],
     ['anything else', ['x'], undefined, false],
   ])('%s → %p', (_name, key, data, expected) => {
     expect(isPersistable(key, data, ctx())).toBe(expected);

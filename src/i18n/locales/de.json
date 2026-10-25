@@ -409,7 +409,8 @@
       "blocked": "Platz manuell gesperrt.",
       "blockedReason": "Gesperrt: {{reason}}",
       "holdExpires": "Vorläufige Reservierung bis {{time}}.",
-      "readOnly": "Nur Lesezugriff: Ihre Rolle hat keine Aktionen auf der Karte."
+      "readOnly": "Nur Lesezugriff: Ihre Rolle hat keine Aktionen auf der Karte.",
+      "ticketActions": "Aktionen des Tickets"
     },
     "actions": {
       "checkIn": "Einchecken",
@@ -930,6 +931,31 @@
       "checkedIn_other": "eingecheckt",
       "free_one": "frei",
       "free_other": "frei"
+    }
+  },
+  "printing": {
+    "print": "Ticket drucken",
+    "reprint": "Erneut drucken",
+    "printOn": "Ticket {{label}} auf {{printer}} drucken",
+    "printer": "Drucker: {{printer}}",
+    "sending": "Wird an {{printer}} gesendet…",
+    "printed": "Ticket {{label}} gedruckt.",
+    "failed": "{{printer}} hat das Ticket nicht gedruckt.",
+    "retry": "Druck wiederholen",
+    "onlineOnly": "Zum Drucken des Tickets ist die Verbindung zur Instanz nötig.",
+    "reason": {
+      "server_edition": "Drucken auf den Druckern des Strandbads ist mit der Desktop-Edition von Arenile möglich: Drucke das Ticket über das Panel.",
+      "no_route": "Für Tickets ist kein Drucker eingerichtet: Richte ihn im Panel ein.",
+      "printer_inactive": "Der Ticketdrucker ist im Panel deaktiviert.",
+      "printer_unreachable": "Der Ticketdrucker antwortet nicht: Prüfe, ob er eingeschaltet und im Netz ist."
+    },
+    "errors": {
+      "offline": "Instanz nicht erreichbar: Das Ticket wurde nicht gedruckt.",
+      "forbidden": "Deine Rolle darf nicht drucken.",
+      "unavailable": "Diese Instanz druckt nicht auf den Druckern des Strandbads.",
+      "noRoute": "Für Tickets ist kein Drucker eingerichtet.",
+      "notFound": "Das Ticket existiert nicht mehr.",
+      "default": "Drucken fehlgeschlagen. Versuche es erneut."
     }
   }
 }

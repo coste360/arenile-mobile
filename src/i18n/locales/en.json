@@ -409,7 +409,8 @@
       "blocked": "Spot blocked manually.",
       "blockedReason": "Blocked: {{reason}}",
       "holdExpires": "Temporary hold until {{time}}.",
-      "readOnly": "Read-only access: your role has no actions on the map."
+      "readOnly": "Read-only access: your role has no actions on the map.",
+      "ticketActions": "Ticket actions"
     },
     "actions": {
       "checkIn": "Check in",
@@ -930,6 +931,31 @@
       "checkedIn_other": "checked in",
       "free_one": "free",
       "free_other": "free"
+    }
+  },
+  "printing": {
+    "print": "Print the ticket",
+    "reprint": "Print again",
+    "printOn": "Print ticket {{label}} on {{printer}}",
+    "printer": "Printer: {{printer}}",
+    "sending": "Sending to {{printer}}…",
+    "printed": "Ticket {{label}} printed.",
+    "failed": "{{printer}} did not print the ticket.",
+    "retry": "Retry printing",
+    "onlineOnly": "Printing the ticket needs the connection to the instance.",
+    "reason": {
+      "server_edition": "Printing on the establishment's printers is available with the Arenile desktop edition: print the ticket from the panel.",
+      "no_route": "No printer is set up for tickets: set one in the panel.",
+      "printer_inactive": "The ticket printer is turned off in the panel.",
+      "printer_unreachable": "The ticket printer does not answer: check that it is on and connected."
+    },
+    "errors": {
+      "offline": "Instance unreachable: the ticket was not printed.",
+      "forbidden": "Your role is not allowed to print.",
+      "unavailable": "This instance does not print on the establishment's printers.",
+      "noRoute": "No printer is set up for tickets.",
+      "notFound": "The ticket no longer exists.",
+      "default": "Printing failed. Try again."
     }
   }
 }

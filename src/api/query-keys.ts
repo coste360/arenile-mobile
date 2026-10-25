@@ -12,7 +12,17 @@ import type { ComparisonAlign, Slots } from './types';
 
 /** Areas of the establishment data (second element after the id). */
 export type EstablishmentArea =
-  'operations' | 'bookings' | 'maps' | 'season-passes' | 'payments' | 'cash' | 'reports';
+  | 'operations'
+  | 'bookings'
+  | 'maps'
+  | 'season-passes'
+  | 'payments'
+  | 'cash'
+  | 'reports'
+  | 'catalog'
+  | 'tickets'
+  | 'waitlist'
+  | 'printing';
 
 export const estKeys = {
   /** Every query of the establishment. */
@@ -45,6 +55,39 @@ export const estKeys = {
     establishmentId: string,
     params: { from: CalendarDate; to: CalendarDate; align: ComparisonAlign },
   ) => ['est', establishmentId, 'reports', 'comparison', params] as const,
+
+  // Phase 2 (spec 03): online only, none of these keys is persisted.
+  /** GET packs and extras: the sellable catalogue (daily sale). */
+  packs: (establishmentId: string) => ['est', establishmentId, 'catalog', 'packs'] as const,
+  extras: (establishmentId: string) => ['est', establishmentId, 'catalog', 'extras'] as const,
+  /** GET daily-sale-settings: zone-first, automatic print, format. */
+  dailySaleSettings: (establishmentId: string) =>
+    ['est', establishmentId, 'tickets', 'settings'] as const,
+  /** POST daily-sales/quote: price and availability of a sale (no write). */
+  dailySaleQuote: (establishmentId: string, body: unknown) =>
+    ['est', establishmentId, 'tickets', 'quote', body] as const,
+  /** GET tickets/by-code/{code}: the ticket of a booking, if it has one. */
+  ticketByCode: (establishmentId: string, code: string) =>
+    ['est', establishmentId, 'tickets', 'by-code', code] as const,
+  /** GET waitlist: entries in priority order, with their filters. */
+  waitlist: (establishmentId: string, params: { status?: string; q?: string }) =>
+    ['est', establishmentId, 'waitlist', 'list', params] as const,
+  waitlistEntry: (establishmentId: string, entryId: string) =>
+    ['est', establishmentId, 'waitlist', 'detail', entryId] as const,
+  waitlistSettings: (establishmentId: string) =>
+    ['est', establishmentId, 'waitlist', 'settings'] as const,
+  /** GET print-routes/resolve: the ESC/POS printer of a document, if ready. */
+  printRoute: (establishmentId: string, kind: string, registerId?: string) =>
+    [
+      'est',
+      establishmentId,
+      'printing',
+      'route',
+      { kind, registerId: registerId ?? null },
+    ] as const,
+  /** GET print-jobs/{id}: status of a print job. */
+  printJob: (establishmentId: string, jobId: string) =>
+    ['est', establishmentId, 'printing', 'job', jobId] as const,
 };
 
 export const authKeys = {

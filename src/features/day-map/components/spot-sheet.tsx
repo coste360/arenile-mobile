@@ -42,6 +42,7 @@ import { blockSchema, type BlockValues } from '../block-form';
 import { blockErrorKey, useBlockSpot, useUnblockSpot } from '../blocks';
 import type { DaySpot } from '../model';
 import { indicatorsOf } from '../status';
+import { SpotSheetExtras } from './spot-sheet-extras';
 import { StatusGlyph } from './status-glyph';
 
 type Dialog = 'release' | 'block' | 'unblock' | null;
@@ -287,6 +288,8 @@ export function SpotSheet({
         ) : abilities.known && !abilities.canCheckIn && !abilities.canBlockSpot ? (
           <Text variant="muted">{t('dayMap.sheet.readOnly')}</Text>
         ) : null}
+
+        <SpotSheetExtras spot={spot} date={date} today={today} slot={slot} />
       </ScrollView>
 
       <ConfirmDialog

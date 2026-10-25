@@ -409,7 +409,8 @@
       "blocked": "Postazione bloccata manualmente.",
       "blockedReason": "Bloccata: {{reason}}",
       "holdExpires": "Blocco temporaneo fino alle {{time}}.",
-      "readOnly": "Accesso in sola lettura: il tuo ruolo non ha azioni sulla mappa."
+      "readOnly": "Accesso in sola lettura: il tuo ruolo non ha azioni sulla mappa.",
+      "ticketActions": "Azioni del biglietto"
     },
     "actions": {
       "checkIn": "Check-in",
@@ -930,6 +931,31 @@
       "checkedIn_other": "presenti",
       "free_one": "libera",
       "free_other": "libere"
+    }
+  },
+  "printing": {
+    "print": "Stampa il biglietto",
+    "reprint": "Stampa di nuovo",
+    "printOn": "Stampa il biglietto {{label}} su {{printer}}",
+    "printer": "Stampante: {{printer}}",
+    "sending": "Invio a {{printer}}…",
+    "printed": "Biglietto {{label}} stampato.",
+    "failed": "{{printer}} non ha stampato il biglietto.",
+    "retry": "Riprova la stampa",
+    "onlineOnly": "La stampa del biglietto richiede la connessione con l'istanza.",
+    "reason": {
+      "server_edition": "La stampa sulle stampanti del lido è disponibile con l'edizione desktop di Arenile: stampa il biglietto dal pannello.",
+      "no_route": "Nessuna stampante configurata per i biglietti: impostala nel pannello.",
+      "printer_inactive": "La stampante dei biglietti è disattivata nel pannello.",
+      "printer_unreachable": "La stampante dei biglietti non risponde: controlla che sia accesa e in rete."
+    },
+    "errors": {
+      "offline": "Istanza non raggiungibile: il biglietto non è stato stampato.",
+      "forbidden": "Stampa non consentita al tuo ruolo.",
+      "unavailable": "Questa istanza non stampa sulle stampanti del lido.",
+      "noRoute": "Nessuna stampante configurata per i biglietti.",
+      "notFound": "Il biglietto non esiste più.",
+      "default": "Stampa non riuscita. Riprova."
     }
   }
 }

@@ -409,7 +409,8 @@
       "blocked": "Emplacement bloqué manuellement.",
       "blockedReason": "Bloqué : {{reason}}",
       "holdExpires": "Blocage temporaire jusqu'à {{time}}.",
-      "readOnly": "Accès en lecture seule : votre rôle n'a pas d'actions sur le plan."
+      "readOnly": "Accès en lecture seule : votre rôle n'a pas d'actions sur le plan.",
+      "ticketActions": "Actions du ticket"
     },
     "actions": {
       "checkIn": "Check-in",
@@ -930,6 +931,31 @@
       "checkedIn_other": "présents",
       "free_one": "libre",
       "free_other": "libres"
+    }
+  },
+  "printing": {
+    "print": "Imprimer le ticket",
+    "reprint": "Imprimer à nouveau",
+    "printOn": "Imprimer le ticket {{label}} sur {{printer}}",
+    "printer": "Imprimante : {{printer}}",
+    "sending": "Envoi à {{printer}}…",
+    "printed": "Ticket {{label}} imprimé.",
+    "failed": "{{printer}} n'a pas imprimé le ticket.",
+    "retry": "Relancer l'impression",
+    "onlineOnly": "L'impression du ticket nécessite la connexion à l'instance.",
+    "reason": {
+      "server_edition": "L'impression sur les imprimantes de la plage est disponible avec l'édition desktop d'Arenile : imprimez le ticket depuis le panneau.",
+      "no_route": "Aucune imprimante n'est configurée pour les tickets : configurez-la dans le panneau.",
+      "printer_inactive": "L'imprimante des tickets est désactivée dans le panneau.",
+      "printer_unreachable": "L'imprimante des tickets ne répond pas : vérifiez qu'elle est allumée et connectée."
+    },
+    "errors": {
+      "offline": "Instance injoignable : le ticket n'a pas été imprimé.",
+      "forbidden": "Votre rôle ne permet pas d'imprimer.",
+      "unavailable": "Cette instance n'imprime pas sur les imprimantes de la plage.",
+      "noRoute": "Aucune imprimante n'est configurée pour les tickets.",
+      "notFound": "Le ticket n'existe plus.",
+      "default": "Échec de l'impression. Réessayez."
     }
   }
 }
