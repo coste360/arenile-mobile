@@ -22,8 +22,11 @@ invia dati a Coste360.
 - Impostazioni: lingua (italiano, inglese, tedesco, francese), tema chiaro/scuro, _Scollega questo
   dispositivo_.
 - Layout per telefono e per tablet/iPad (pannello di navigazione laterale), tutte le orientazioni.
-- L'app desktop in **rete locale** (certificato autogenerato) non è ancora supportata: l'app lo dice
-  chiaramente; la soluzione è descritta nell'[ADR 0006](docs/adr/0006-rete-locale-desktop-certificato-autofirmato.md).
+- Si collega anche all'app desktop in **rete locale** (certificato autogenerato): accetta solo il
+  certificato con l'impronta del QR, avvisa prima del rinnovo e chiede di riabbinare dopo
+  ([ADR 0006](docs/adr/0006-rete-locale-desktop-certificato-autofirmato.md), modulo nativo
+  [`modules/pinned-fetch`](modules/pinned-fetch/README.md)). Serve la build dell'app (EAS Build): in Expo
+  Go la rete locale del desktop non è disponibile.
 
 ## Privacy
 

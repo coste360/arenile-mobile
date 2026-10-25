@@ -20,8 +20,12 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 - Token del dispositivo nel portachiavi (Keychain / Keystore, solo questo dispositivo); verifica
   all'avvio con `GET /api/device/v1/self`; dispositivo revocato → ritorno a _Collega_ con spiegazione;
   _Scollega questo dispositivo_ con conferma, anche quando l'istanza non è raggiungibile.
-- Messaggio chiaro per l'app desktop in rete locale (certificato autogenerato), in attesa del trasporto
-  con pinning dell'impronta (ADR 0006).
+- Collegamento all'app desktop in rete locale (certificato autogenerato) con il modulo nativo
+  `modules/pinned-fetch` (ADR 0006): accetta il server solo se lo SHA-256 del certificato foglia coincide
+  con l'impronta del QR (confronto in tempo costante; iOS `URLSession`, Android `OkHttpClient` dedicato),
+  senza mai indebolire TLS per le altre connessioni. Certificato diverso → nuovo QR all'abbinamento,
+  "Abbina di nuovo" da collegato; avviso nei 30 giorni prima di `lan_cert_renews_at`; permesso "Rete
+  locale" di iOS spiegato. Nelle build senza il modulo (Expo Go, web) resta il messaggio chiaro.
 - Schermata principale (stabilimento, utente e ruolo, connessione, versione ed edizione dell'istanza) e
   Impostazioni (istanza, dispositivo, lingua, tema, informazioni).
 - Lingue italiano (sorgente), inglese, tedesco e francese, anche per il nome dell'app e il permesso

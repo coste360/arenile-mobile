@@ -15,7 +15,7 @@ quando riguardano il contratto API, il marchio o la licenza.
 | [0003](0003-autenticazione-con-token-del-dispositivo.md)          | Autenticazione con il token del dispositivo nel portachiavi, niente cookie, 401 gestito in un solo punto                           | accettato |
 | [0004](0004-ui-kit-reusables-nativewind.md)                       | UI kit: React Native Reusables su NativeWind 4 (Tailwind 3), solo token del tema del pannello, layout master/detail su tablet      | accettato |
 | [0005](0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md) | Privacy: niente telemetria, SDK di analisi o crash reporting, niente `expo-updates`/EAS Update                                     | accettato |
-| [0006](0006-rete-locale-desktop-certificato-autofirmato.md)       | Rete locale del desktop: certificato autofirmato, trasporto nativo con pinning dell'impronta (rifiuto chiaro fino ad allora)       | proposto  |
+| [0006](0006-rete-locale-desktop-certificato-autofirmato.md)       | Rete locale del desktop: certificato autofirmato, trasporto nativo con pinning dell'impronta (`modules/pinned-fetch`)              | accettato |
 
 ## Come aggiungere un ADR
 

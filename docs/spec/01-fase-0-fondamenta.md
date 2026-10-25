@@ -46,20 +46,33 @@ finta o segnaposto "in arrivo" nelle schermate.
 
 L'edizione desktop in modalità rete locale usa un certificato autogenerato; il QR ne porta l'impronta
 SHA-256. Il trasporto di rete di React Native non accetta certificati autofirmati e l'app non indebolisce
-mai TLS: in fase 0 un QR con impronta mostra "Rete locale del desktop: in arrivo" con la spiegazione.
-La soluzione (modulo nativo che accetta solo quell'impronta) è descritta nell'ADR 0006.
+mai TLS: le istanze con impronta passano dal modulo nativo `modules/pinned-fetch`, che accetta **solo** il
+certificato con quell'impronta (ADR 0006). In dettaglio:
+
+- l'impronta del QR viene validata; il collegamento avviene come per le altre istanze e l'impronta resta
+  nella sessione, così ogni richiesta successiva è legata allo stesso certificato;
+- se il server presenta un altro certificato il collegamento si ferma prima di inviare il codice e chiede
+  un nuovo QR dall'app desktop;
+- il certificato si rinnova 30 giorni prima della scadenza (`lan_cert_renews_at` in `/meta`): nei 30
+  giorni precedenti la schermata principale annuncia la data; dopo il rinnovo spiega che il certificato è
+  cambiato e offre "Abbina di nuovo" (la schermata "Collega" ricorda di revocare il vecchio abbinamento
+  nel pannello);
+- in una build senza il modulo nativo (Expo Go, web) un QR con impronta mostra "Rete locale del desktop
+  non supportata" con la spiegazione, senza richieste di rete;
+- su iOS il primo collegamento chiede il permesso "Rete locale", con la spiegazione tradotta.
 
 ## Schermate
 
 - **Collega a un'istanza:** marchio, due azioni (QR, indirizzo e codice), nota sulla privacy, motivo
-  dell'ultima disconnessione (revoca, scollegamento).
+  dell'ultima disconnessione (revoca, scollegamento, certificato del desktop cambiato).
 - **Scansione:** permesso della fotocamera con spiegazione, rinvio alle impostazioni se negato,
   alternativa manuale sempre visibile.
 - **Collegamento in corso / errori:** stato di avanzamento e, per ogni errore, cosa fare (riprova, nuovo
   QR, inserimento manuale, torna all'inizio).
 - **Schermata principale:** nome dello stabilimento, utente e ruolo, stato della connessione con ultima
   verifica e "Verifica di nuovo", indirizzo, versione ed edizione dell'istanza, avviso se l'istanza o
-  l'app vanno aggiornate.
+  l'app vanno aggiornate; sull'app desktop in rete locale, avviso di rinnovo del certificato e, dopo il
+  rinnovo, "Abbina di nuovo".
 - **Impostazioni:** istanza, dispositivo (nome nel pannello, utente, ruolo, data del collegamento),
   lingua (del dispositivo, italiano, inglese, tedesco, francese), tema (sistema, chiaro, scuro),
   informazioni sull'app, _Scollega questo dispositivo_.
@@ -79,7 +92,11 @@ La soluzione (modulo nativo che accetta solo quell'impronta) è descritta nell'A
 
 - Collegamento da QR (app e fotocamera di sistema) e a mano, con tutti gli errori sopra, coperti da test.
 - Token solo nel portachiavi; revoca dal pannello gestita al primo avvio o alla prima richiesta.
-- Messaggio chiaro per istanza troppo vecchia, app troppo vecchia e rete locale del desktop.
+- Messaggio chiaro per istanza troppo vecchia, app troppo vecchia e rete locale del desktop non
+  supportata dalla build.
+- App desktop in rete locale: collegamento con l'impronta giusta, rifiuto con impronta sbagliata o
+  certificato rinnovato (test con il modulo nativo simulato; prova su dispositivi reali prima del
+  rilascio).
 - Quattro lingue con le stesse chiavi (test), tema chiaro e scuro, schermate provate a larghezza di
   telefono e di tablet.
 - `make check-full` verde: test, lint, guardia degli stili, `expo-doctor`, bundle iOS e Android.
