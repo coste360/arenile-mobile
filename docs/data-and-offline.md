@@ -114,3 +114,28 @@ Other screens reuse them instead of rewriting the actions:
   entry ticket for the gate, or the reason; `<CodeResult />` renders the next step.
 - **Online-only** — gate admission (`useAdmitEntry`) and spot blocks (`useCreateSpotBlock`,
   `useDeleteSpotBlock`) never enter the queue; show their errors with `onlineErrorKey()`.
+
+## Phase 2: sale, move, waitlist, printing, push (online only)
+
+Decisions in [ADR 0011](adr/0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md). None of these
+is queued or persisted (their keys under the areas `catalog`, `tickets`, `waitlist`, `printing` are not
+allowlisted); gate the actions on `useOnlineOnly().available` and say why when offline.
+
+- **Daily sale** — `features/daily-sale`: `canSell()`, `packsForSale()`, `extrasForPack()`,
+  `toQuoteRequest()` / `toCreateRequest()`, `changeDue()`, `saleErrorKey()`; hooks `usePacks`,
+  `useExtras`, `useDailySaleSettings`, `useSaleQuote(body)`, `useCreateDailySale()` (stable
+  Idempotency-Key per request). UI: `/sale?spotId&date&slot` (`components/daily-sale`).
+- **Move** — `features/move-booking`: `canMove()`, `movable()`, `moveFrom()`, `targetSpots()`,
+  `toMoveRequest()`, `moveErrorKey()`; `useMovePreview()` (dry run) and `useApplyMove()` (booking with
+  If-Match, or the daily ticket through `tickets/{id}/move`). UI: `/move/[bookingId]?lineId`.
+- **Waitlist** — `features/waitlist`: `compatibleWith()`, `freedSpotOf()`, `offerSchema`,
+  `toOfferCreate()`, `waitlistErrorKey()`; `useWaitlist`, `useWaitlistEntry`, `useWaitlistSettings`,
+  `useOfferWaitlistEntry()`. UI: `/waitlist` (optionally for a freed spot) and `/waitlist/[entryId]`.
+- **Printing** — `features/printing`: `useTicketPrintRoute()`, `usePrintTicket()`, `usePrintJob()`,
+  `useRetryPrintJob()`; `<TicketPrint ticketId ticketLabel autoPrint? />` renders the button, the
+  reason when no printer is ready, and the job outcome. `features/tickets` finds a booking's ticket.
+- **Push** — `features/push`: the native side is `Dependencies.push` (`createExpoPushNative()`, fake in
+  tests: `src/test/fake-push.ts`, passed to `renderApp({ push })`); `usePushStatus`,
+  `useRegisterPush(native)`, `useUnregisterPush()`; `<PushSettingsCard />` in the settings and
+  `<PushTokenSync />` in the root navigator. The endpoints come from `src/api/push-adapter.ts` until the
+  core release that publishes them; show the card only with `/meta capabilities.push_notifications`.

@@ -11,6 +11,20 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- Fase 2 (ADR 0011), tutto solo online e mai in coda:
+  - _Vendita giornaliera rapida_ dalla scheda di una postazione libera: fascia, pacchetto, extra, nome
+    facoltativo, totale dal server, contanti con il resto o carta, biglietto numerato.
+  - _Sposta su un'altra postazione_ dalla mappa e dalla scheda prenotazione, con l'anteprima del server
+    (conflitti e nuovo totale); le vendite giornaliere si spostano tramite il biglietto.
+  - _Lista d'attesa_: coda, offerte in corso e offerta di un posto come nel pannello; dalla mappa le
+    richieste compatibili con la postazione liberata.
+  - _Stampa il biglietto_ sulla stampante ESC/POS instradata nel pannello: stampa il server, l'app la
+    chiede e ne segue l'esito.
+  - _Notifiche push_ facoltative nelle impostazioni, solo se l'istanza le offre: consenso esplicito,
+    token nativo APNs/FCM registrato sull'istanza, mai il servizio push di Expo. Richiedono una release
+    del core con `/api/device/v1/push` (ADR 0027 del core).
+- Dipendenza `expo-notifications` (MIT, SDK 58) solo per il permesso e il token nativo; plugin di
+  configurazione che tiene Firebase Messaging spento fino al consenso.
 - Fase 1 — **Mappa del giorno** (ADR 0008): vista operativa di oggi o domani con i colori di stato del
   pannello, sempre con etichetta e glifo, legenda sempre visibile con i conteggi, fasce giornata /
   mattina / pomeriggio, più mappe dello stabilimento; zoom e spostamento con i gesti (fluidi anche con

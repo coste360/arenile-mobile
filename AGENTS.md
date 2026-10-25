@@ -40,10 +40,12 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
   operations, day map, `today` ("Oggi"), `bookings/` (day list; tablet list + sheet), `bookings/[bookingId]`
   (sheet on phones), `spots` (free / released spots), `operations/` hub, QR scanner, booking and spot
-  operations; phone stack or tablet master/detail)
+  operations, phase 2 `sale` (daily quick sale), `move/[bookingId]`, `waitlist/` (list; tablet list +
+  entry), `waitlist/[entryId]`; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
-  `src/api/generated/` generated types
+  `src/api/generated/` generated types; `push-adapter.ts` hand-typed device push endpoints not in the
+  pinned contract yet (replace with generated types after the core release, ADR 0011)
 - `src/features/<area>` logic per area: `pairing` (QR decoder, target normalisation, pairing flow,
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
@@ -53,7 +55,10 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   camera, SVG renderer, spot sheet; ADR 0008), `check-in` (booking/ticket QR formats, code resolution, gate
   admission), `booking-actions` (booking facts, operation rules, form schemas, queued actions, cash
   desk state), `spot-blocks` (online-only blocks, spot search), `reports` (year comparison, periods,
-  formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`). **Read `docs/data-and-offline.md` before adding a feature.**
+  formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`), phase 2 (ADR 0011):
+  `daily-sale` (sale rules, catalogue, quote, sale), `move-booking` (move rules, dry run, booking or
+  ticket move), `waitlist` (list, compatibility, offer), `printing` (print route, jobs), `tickets`
+  (ticket of a booking), `push` (native token, registration, token renewal). **Read `docs/data-and-offline.md` before adding a feature.**
 - `src/widgets/` home screen widget layouts for expo-widgets (`'widget'` directive: isolated runtime,
   only Expo UI components, data only through props; ADR 0010)
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
@@ -70,6 +75,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   `ids.ts`, `render-app.tsx`) and screen tests
 - `src/global.css` the only stylesheet (theme tokens); `tailwind.config.js` maps them
 - `api/core-version.json` pinned core release + SHA-256; `api/openapi.yaml` its contract (verbatim)
+- `plugins/` local Expo config plugins (`with-fcm-privacy.js`: FCM dormant until the push opt-in)
 - `scripts/` `gen-api.mjs` (contract download/verify/generate), `style-guard.js`, `agents/` hooks
 - `assets/brand/` official Arenile brand assets (not covered by the code licence, see NOTICE.md)
 - `native-locales/` localized native strings (app name, permission prompts)
@@ -114,6 +120,9 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   create/move booking, spot blocks and gate admission are online-only (ADR 0009). Only allowlisted
   queries are persisted; the cache is removed on every sign-out. Hide actions with `useAbilities()`;
   a 403 is "non consentito".
+- Phase 2 (ADR 0011): daily sale, move, waitlist offers and ticket printing are online-only, never
+  queued, with a stable `Idempotency-Key` per request on creations. Push is opt-in: native APNs/FCM
+  token to the instance only, never the Expo push token or service (guarded by a test).
 - Home screen widget (ADR 0010): it shows only props the app publishes from data already cached
   (counts, never names or amounts) and never fetches; the widget is cleared on sign-out.
 - No new runtime dependency without explaining why in the PR; licences must be compatible with both
