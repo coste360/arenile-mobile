@@ -325,7 +325,7 @@ describe('day map', () => {
     ]);
   });
 
-  it('switches between the maps of the establishment', async () => {
+  it('switches between the maps of the establishment, keeping the slot', async () => {
     const second = mapDocument({
       map: beachMap({ id: 'm-2', name: { it: 'Terrazza' }, sort_order: 1 }),
       spots: [mapDocument().spots[0]!].map((s) => ({
@@ -337,11 +337,14 @@ describe('day map', () => {
       decorations: [],
     });
     const { screen } = await openMap({ documents: [mapDocument(), second] });
+    await fireEvent.press(await screen.findByRole('radio', { name: 'Pomeriggio' }));
     await fireEvent.press(await screen.findByRole('radio', { name: 'Terrazza' }));
     expect(await screen.findByTestId('day-map-viewport')).toHaveProp(
       'accessibilityLabel',
       expect.stringContaining('Mappa Terrazza con 1 postazione'),
     );
+    // The slot chosen on the first map is kept.
+    expect(screen.getByRole('radio', { name: 'Pomeriggio' })).toBeChecked();
   });
 
   it('says the day is closed', async () => {

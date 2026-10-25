@@ -51,6 +51,12 @@ export function DayMapView() {
   const { t } = useTranslation();
   const maps = useMaps();
   const [chosenMap, setChosenMap] = useState<string | null>(null);
+  // Kept across maps: switching map keeps the day, the slot and the view.
+  const [settings, setSettings] = useState<PaneSettings>({
+    day: 'today',
+    slot: 'FULL',
+    view: 'map',
+  });
 
   if (!maps.data) {
     if (maps.isError) {
@@ -69,7 +75,16 @@ export function DayMapView() {
   }
   const mapId =
     chosenMap && maps.data.some((m) => m.id === chosenMap) ? chosenMap : maps.data[0]!.id;
-  return <MapPane key={mapId} maps={maps.data} mapId={mapId} onMap={setChosenMap} />;
+  return (
+    <MapPane
+      key={mapId}
+      maps={maps.data}
+      mapId={mapId}
+      onMap={setChosenMap}
+      settings={settings}
+      onSettings={(patch) => setSettings((prev) => ({ ...prev, ...patch }))}
+    />
+  );
 }
 
 function ErrorState({ forbidden, onRetry }: { forbidden: boolean; onRetry: () => void }) {
@@ -90,14 +105,24 @@ function ErrorState({ forbidden, onRetry }: { forbidden: boolean; onRetry: () =>
   );
 }
 
+interface PaneSettings {
+  day: DayChoice;
+  slot: Slots;
+  view: 'map' | 'list';
+}
+
 function MapPane({
   maps,
   mapId,
   onMap,
+  settings,
+  onSettings,
 }: {
   maps: readonly BeachMap[];
   mapId: string;
   onMap: (id: string) => void;
+  settings: PaneSettings;
+  onSettings: (patch: Partial<PaneSettings>) => void;
 }) {
   const { t } = useTranslation();
   const { locale } = usePreferences();
@@ -107,9 +132,10 @@ function MapPane({
   const palette = useMapPalette();
   const abilities = useAbilities();
   const { today, tomorrow, timeZone } = useOperationalDays();
-  const [dayChoice, setDayChoice] = useState<DayChoice>('today');
-  const [slot, setSlot] = useState<Slots>('FULL');
-  const [view, setView] = useState<'map' | 'list'>('map');
+  const { day: dayChoice, slot, view } = settings;
+  const setDayChoice = (day: DayChoice) => onSettings({ day });
+  const setSlot = (value: Slots) => onSettings({ slot: value });
+  const setView = (value: 'map' | 'list') => onSettings({ view: value });
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [focus, setFocus] = useState<FocusRequest | undefined>();

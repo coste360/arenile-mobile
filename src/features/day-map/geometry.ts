@@ -159,6 +159,15 @@ export function boundCamera(cam: Camera, content: Rect, viewport: Size): Camera 
   return { k: cam.k, tx, ty };
 }
 
+/** The camera for a resized viewport, keeping the map point at the centre in the centre. */
+export function resizeCamera(cam: Camera, from: Size, to: Size): Camera {
+  return {
+    k: cam.k,
+    tx: cam.tx + (to.width - from.width) / 2,
+    ty: cam.ty + (to.height - from.height) / 2,
+  };
+}
+
 export function screenToMap(cam: Camera, p: Point): Point {
   return { x: (p.x - cam.tx) / cam.k, y: (p.y - cam.ty) / cam.k };
 }

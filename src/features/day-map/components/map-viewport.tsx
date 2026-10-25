@@ -41,6 +41,7 @@ import {
   centerOn,
   commitLive,
   fitCamera,
+  resizeCamera,
   scaleLimits,
   screenToMap,
   zoomAt,
@@ -213,7 +214,8 @@ export function MapViewport({
     const { width, height } = e.nativeEvent.layout;
     if (width > 0 && height > 0 && (width !== size.width || height !== size.height)) {
       setMeasured({ width, height });
-      setChosen(null);
+      // Rotation, the phone sheet opening: what was in the centre stays there.
+      setChosen((prev) => (prev ? resizeCamera(prev, size, { width, height }) : null));
     }
   };
 

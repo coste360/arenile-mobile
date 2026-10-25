@@ -9,6 +9,7 @@ import {
   labelFontSize,
   MIN_TARGET_DP,
   quantiseScale,
+  resizeCamera,
   scaleLimits,
   screenToMap,
   seaDepth,
@@ -111,6 +112,13 @@ describe('camera', () => {
     expect(screenToMap(cam, { x: 100, y: 250 })).toEqual({ x: 100, y: 100 });
     expect(visibleRect(cam, viewport)).toEqual({ x: 50, y: -25, width: 200, height: 150 });
     expect(visibleRect(cam, viewport, 0.5)).toEqual({ x: -50, y: -100, width: 400, height: 300 });
+  });
+
+  it('keeps the centre when the viewport is resized (rotation, sheet)', () => {
+    const cam: Camera = { k: 2, tx: -100, ty: 50 };
+    const centre = screenToMap(cam, { x: 200, y: 150 });
+    const next = resizeCamera(cam, viewport, { width: 400, height: 150 });
+    expect(screenToMap(next, { x: 200, y: 75 })).toEqual(centre);
   });
 
   it('centres on a spot, zooming in when asked', () => {
