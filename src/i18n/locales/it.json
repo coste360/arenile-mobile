@@ -32,6 +32,10 @@
     "unpaired": {
       "title": "Dispositivo scollegato",
       "description": "Questo dispositivo non ha più accesso allo stabilimento."
+    },
+    "certificate_changed": {
+      "title": "Certificato del desktop cambiato",
+      "description": "Il certificato di sicurezza dell'app desktop è cambiato, di solito per il rinnovo periodico. Abbina di nuovo questo dispositivo con un nuovo QR code e revoca il vecchio abbinamento dal pannello, in Configurazione → Dispositivi."
     }
   },
   "scan": {
@@ -168,6 +172,14 @@
     "editions": {
       "server": "Server",
       "desktop": "Desktop"
+    },
+    "lanCertificate": {
+      "mismatchTitle": "Certificato del desktop cambiato",
+      "mismatchDescription": "L'app desktop ora presenta un certificato di sicurezza diverso da quello verificato all'abbinamento, di solito per il rinnovo periodico. Per sicurezza l'app non si collega: abbina di nuovo questo dispositivo con un nuovo QR code.",
+      "pairAgain": "Abbina di nuovo",
+      "renewalTitle": "Rinnovo del certificato in arrivo",
+      "renewalDescription": "Il {{date}} l'app desktop rinnova il certificato di sicurezza della rete locale: da quel momento questo dispositivo andrà abbinato di nuovo con un nuovo QR code.",
+      "renewalDueDescription": "L'app desktop rinnova il certificato di sicurezza della rete locale al prossimo avvio: da quel momento questo dispositivo andrà abbinato di nuovo con un nuovo QR code."
     }
   },
   "settings": {

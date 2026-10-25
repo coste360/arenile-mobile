@@ -20,7 +20,11 @@ import { errorKind } from '@/lib/log';
 
 import type { Session, SessionStore } from './session';
 
-export type SignOutReason = 'revoked' | 'unpaired';
+/**
+ * revoked: 401 from the instance; unpaired: the user unpaired the device;
+ * certificate_changed: the desktop LAN certificate is no longer the pinned one.
+ */
+export type SignOutReason = 'revoked' | 'unpaired' | 'certificate_changed';
 
 export type SessionState =
   { status: 'unpaired'; reason?: SignOutReason } | { status: 'paired'; session: Session };

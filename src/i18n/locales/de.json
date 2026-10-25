@@ -32,6 +32,10 @@
     "unpaired": {
       "title": "Gerät getrennt",
       "description": "Dieses Gerät hat keinen Zugang mehr zum Strandbad."
+    },
+    "certificate_changed": {
+      "title": "Zertifikat der Desktop-App geändert",
+      "description": "Das Sicherheitszertifikat der Desktop-App hat sich geändert, meist wegen der regelmäßigen Erneuerung. Kopple dieses Gerät mit einem neuen QR-Code erneut und widerrufe die alte Kopplung im Panel unter Konfiguration → Geräte."
     }
   },
   "scan": {
@@ -168,6 +172,14 @@
     "editions": {
       "server": "Server",
       "desktop": "Desktop"
+    },
+    "lanCertificate": {
+      "mismatchTitle": "Zertifikat der Desktop-App geändert",
+      "mismatchDescription": "Die Desktop-App legt jetzt ein anderes Sicherheitszertifikat vor als bei der Kopplung geprüft, meist wegen der regelmäßigen Erneuerung. Zu deiner Sicherheit verbindet sich die App nicht: Kopple dieses Gerät mit einem neuen QR-Code erneut.",
+      "pairAgain": "Erneut koppeln",
+      "renewalTitle": "Zertifikatserneuerung steht bevor",
+      "renewalDescription": "Am {{date}} erneuert die Desktop-App ihr Sicherheitszertifikat für das lokale Netzwerk: Danach muss dieses Gerät mit einem neuen QR-Code erneut gekoppelt werden.",
+      "renewalDueDescription": "Die Desktop-App erneuert ihr Sicherheitszertifikat für das lokale Netzwerk beim nächsten Start: Danach muss dieses Gerät mit einem neuen QR-Code erneut gekoppelt werden."
     }
   },
   "settings": {

@@ -32,6 +32,10 @@
     "unpaired": {
       "title": "Device disconnected",
       "description": "This device no longer has access to the establishment."
+    },
+    "certificate_changed": {
+      "title": "Desktop certificate changed",
+      "description": "The security certificate of the desktop app has changed, usually because of the periodic renewal. Pair this device again with a new QR code and revoke the old pairing in the panel, under Configuration → Devices."
     }
   },
   "scan": {
@@ -168,6 +172,14 @@
     "editions": {
       "server": "Server",
       "desktop": "Desktop"
+    },
+    "lanCertificate": {
+      "mismatchTitle": "Desktop certificate changed",
+      "mismatchDescription": "The desktop app now presents a security certificate different from the one verified at pairing, usually because of the periodic renewal. For your security the app does not connect: pair this device again with a new QR code.",
+      "pairAgain": "Pair again",
+      "renewalTitle": "Certificate renewal coming up",
+      "renewalDescription": "On {{date}} the desktop app renews its local network security certificate: from then on this device must be paired again with a new QR code.",
+      "renewalDueDescription": "The desktop app renews its local network security certificate at its next start: from then on this device must be paired again with a new QR code."
     }
   },
   "settings": {

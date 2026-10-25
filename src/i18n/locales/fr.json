@@ -32,6 +32,10 @@
     "unpaired": {
       "title": "Appareil déconnecté",
       "description": "Cet appareil n'a plus accès à l'établissement."
+    },
+    "certificate_changed": {
+      "title": "Certificat de l'application de bureau modifié",
+      "description": "Le certificat de sécurité de l'application de bureau a changé, généralement à cause du renouvellement périodique. Associez de nouveau cet appareil avec un nouveau QR code et révoquez l'ancienne association depuis le panneau, dans Configuration → Appareils."
     }
   },
   "scan": {
@@ -168,6 +172,14 @@
     "editions": {
       "server": "Serveur",
       "desktop": "Bureau"
+    },
+    "lanCertificate": {
+      "mismatchTitle": "Certificat de l'application de bureau modifié",
+      "mismatchDescription": "L'application de bureau présente maintenant un certificat de sécurité différent de celui vérifié lors de l'association, généralement à cause du renouvellement périodique. Par sécurité, l'application ne se connecte pas : associez de nouveau cet appareil avec un nouveau QR code.",
+      "pairAgain": "Associer de nouveau",
+      "renewalTitle": "Renouvellement du certificat à venir",
+      "renewalDescription": "Le {{date}}, l'application de bureau renouvelle son certificat de sécurité du réseau local : à partir de ce moment, cet appareil devra être associé de nouveau avec un nouveau QR code.",
+      "renewalDueDescription": "L'application de bureau renouvelle son certificat de sécurité du réseau local à son prochain démarrage : à partir de ce moment, cet appareil devra être associé de nouveau avec un nouveau QR code."
     }
   },
   "settings": {
