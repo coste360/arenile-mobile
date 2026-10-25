@@ -1,5 +1,5 @@
 import { Redirect, router, Stack, usePathname } from 'expo-router';
-import { HouseIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
+import { ClipboardCheckIcon, HouseIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -12,11 +12,29 @@ import { Text } from '@/components/ui/text';
 import { useSession } from '@/features/session/session-provider';
 import { cn } from '@/lib/utils';
 
-const NAV: { href: '/home' | '/settings'; label: 'nav.home' | 'nav.settings'; icon: LucideIcon }[] =
-  [
-    { href: '/home', label: 'nav.home', icon: HouseIcon },
-    { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
+const NAV: {
+  href: '/home' | '/operations' | '/settings';
+  label: 'nav.home' | 'nav.operations' | 'nav.settings';
+  icon: LucideIcon;
+}[] = [
+  { href: '/home', label: 'nav.home', icon: HouseIcon },
+  { href: '/operations', label: 'nav.operations', icon: ClipboardCheckIcon },
+  { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
+];
+
+/** Titles of the operations screens (the booking and spot screens set their own). */
+function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') => string) {
+  return [
+    <Stack.Screen key="ops" name="operations/index" options={{ title: t('nav.operations') }} />,
+    <Stack.Screen
+      key="scan"
+      name="operations/scan"
+      options={{ title: t('operations.hub.scan') }}
+    />,
+    <Stack.Screen key="booking" name="operations/booking/[bookingId]" options={{ title: '' }} />,
+    <Stack.Screen key="spot" name="operations/spot/[spotId]" options={{ title: '' }} />,
   ];
+}
 
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
@@ -48,6 +66,7 @@ export default function ConnectedLayout() {
             <Stack.Screen name="home" options={{ title: t('nav.home') }} />
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+            {operationsScreens(t)}
           </Stack>
         </View>
       </View>
@@ -71,6 +90,14 @@ export default function ConnectedLayout() {
               <Button
                 variant="ghost"
                 size="icon"
+                accessibilityLabel={t('nav.operations')}
+                onPress={() => router.push('/operations')}
+              >
+                <Icon as={ClipboardCheckIcon} size={22} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 accessibilityLabel={t('nav.settings')}
                 onPress={() => router.push('/settings')}
               >
@@ -82,6 +109,7 @@ export default function ConnectedLayout() {
       />
       <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+      {operationsScreens(t)}
     </Stack>
   );
 }
@@ -103,7 +131,7 @@ function Sidebar() {
         <ConnectionIndicator variant="full" />
       </View>
       {NAV.map((item) => {
-        const active = pathname === item.href;
+        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <Pressable
             key={item.href}

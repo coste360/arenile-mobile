@@ -5,6 +5,10 @@ import { Dimensions } from 'react-native';
 
 import ConnectedLayout from '@/app/(connected)/_layout';
 import HomeScreen from '@/app/(connected)/home';
+import BookingOperationsScreen from '@/app/(connected)/operations/booking/[bookingId]';
+import OperationsScreen from '@/app/(connected)/operations/index';
+import OperationsScanScreen from '@/app/(connected)/operations/scan';
+import SpotOperationsScreen from '@/app/(connected)/operations/spot/[spotId]';
 import PendingScreen from '@/app/(connected)/pending';
 import SettingsScreen from '@/app/(connected)/settings';
 import ConnectScreen from '@/app/connect';
@@ -116,6 +120,10 @@ export async function renderApp({
       '(connected)/home': HomeScreen,
       '(connected)/settings': SettingsScreen,
       '(connected)/pending': PendingScreen,
+      '(connected)/operations/index': OperationsScreen,
+      '(connected)/operations/scan': OperationsScanScreen,
+      '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,
+      '(connected)/operations/spot/[spotId]': SpotOperationsScreen,
     },
     { initialUrl },
   );
