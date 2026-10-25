@@ -2,6 +2,7 @@
   "expo": {
     "name": "Arenile",
     "slug": "arenile-mobile",
+    "owner": "coste360",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/brand/icon.png",
@@ -92,6 +93,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bd969b3c-f62b-45cf-9f3e-4208a2124a51"
+      }
     }
   }
 }
