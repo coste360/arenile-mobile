@@ -97,9 +97,10 @@ Il contratto API è l'`openapi.yaml` della release del core indicata in `api/cor
 **v1.0.1**), verificato con SHA-256; i tipi TypeScript in `src/api/generated/` si generano con
 `make gen` e non si modificano a mano ([ADR 0002](docs/adr/0002-repository-separato-e-contratto-api.md)).
 
-Per provare l'app su un dispositivo serve una **build di sviluppo** con EAS Build (account Expo):
-la configurazione (`eas.json`, `expo-dev-client`) si aggiunge con la prima build, quando l'account Expo
-di Coste360 sarà disponibile. Fotocamera e portachiavi sono inclusi anche in Expo Go per provare i flussi
+Per provare l'app su un dispositivo serve una **build di sviluppo** con EAS Build, progetto
+`@coste360/arenile-mobile`: `npx eas-cli build --profile development --platform ios|android` (profili in
+`eas.json`: `development`, `development-simulator`, `preview`, `production`; nessun canale di
+aggiornamento remoto, ADR 0005). Fotocamera e portachiavi sono inclusi anche in Expo Go per provare i flussi
 base con `make dev`.
 Per un'istanza locale usa `http://localhost:8080` dal simulatore o un indirizzo `https` (ad esempio un
 tunnel) dal telefono: l'app accetta `http` solo su loopback.
@@ -133,8 +134,8 @@ docs/adr/           decisioni
   marchio: varianti dedicate per l'icona adattiva e per la schermata di avvio (oggi derivate dal simbolo
   ufficiale con margini) e le schede degli store.
 - **Account:** Expo/EAS (build e invio), Apple Developer Program e Google Play Console di Coste360,
-  identificativo `app.arenile.mobile` (nessuna build EAS è stata ancora fatta: `eas.json` si aggiunge
-  con la prima); per il widget iOS anche l'estensione
+  identificativo `app.arenile.mobile` (progetto EAS `@coste360/arenile-mobile` collegato; nessuna build
+  ancora fatta); per il widget iOS anche l'estensione
   `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile` (ADR 0010).
 - **Build e prove su dispositivo:** una build di sviluppo EAS per iOS e Android (servono per
   `expo-sqlite`, il modulo `modules/pinned-fetch`, l'estensione del widget e `expo-notifications`), poi
