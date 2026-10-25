@@ -38,7 +38,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - `src/app/` expo-router routes (every file is a screen; no tests or helpers here):
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
   its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
-  operations; phone stack or tablet master/detail)
+  operations, day map; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
   `src/api/generated/` generated types
@@ -46,7 +46,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
   phase 1), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
-  operation queue, runtime and hooks). **Read `docs/data-and-offline.md` before adding a feature.**
+  operation queue, runtime and hooks), `day-map` (operational map of the day: status, search,
+  camera, SVG renderer, spot sheet; ADR 0008). **Read `docs/data-and-offline.md` before adding a feature.**
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
   `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
   `ConnectionIndicator`, `OnlineOnlyNotice`)
@@ -86,7 +87,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - UI = React Native Reusables + NativeWind theme tokens only (ADR 0004): no `StyleSheet`, no
   `style={}`, no raw colours, no default Tailwind palette, no arbitrary values, no native `Alert`.
   `npm run lint` (`scripts/style-guard.js` + ESLint) enforces it; exemptions live in the script with
-  their reason.
+  their reason (the day map's SVG palette and gesture viewport, ADR 0008).
 - Phone and tablet/iPad from day one: responsive layout helpers, tests at both widths.
 - User-facing strings go through i18n keys; Italian is the source language; `en`, `de`, `fr` kept in
   parity (tested). Native strings (permission prompts) in `native-locales/`.

@@ -17,6 +17,7 @@ quando riguardano il contratto API, il marchio o la licenza.
 | [0005](0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md) | Privacy: niente telemetria, SDK di analisi o crash reporting, niente `expo-updates`/EAS Update                                     | accettato |
 | [0006](0006-rete-locale-desktop-certificato-autofirmato.md)       | Rete locale del desktop: certificato autofirmato, trasporto nativo con pinning dell'impronta (rifiuto chiaro fino ad allora)       | proposto  |
 | [0007](0007-offline-cache-e-coda-delle-operazioni.md)             | Offline: cache persistita di oggi e domani (SQLite, lista di chiavi ammesse), coda con chiavi di idempotenza, conflitti visibili   | accettato |
+| [0008](0008-mappa-del-giorno-renderer-svg.md)                     | Mappa del giorno: SVG tagliato all'area visibile, gesti sul thread UI, palette di stato del pannello, kit rinviati                 | proposto  |
 
 ## Come aggiungere un ADR
 

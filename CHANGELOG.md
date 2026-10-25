@@ -11,6 +11,14 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- Fase 1 — **Mappa del giorno** (ADR 0008): vista operativa di oggi o domani con i colori di stato del
+  pannello, sempre con etichetta e glifo, legenda sempre visibile con i conteggi, fasce giornata /
+  mattina / pomeriggio, più mappe dello stabilimento; zoom e spostamento con i gesti (fluidi anche con
+  centinaia di postazioni) e con i pulsanti; ricerca per postazione, cliente o codice prenotazione;
+  vista Elenco accessibile. Scheda della postazione con stato, prenotazione o abbonamento, cliente
+  (solo con il permesso di vedere le prenotazioni), saldo e azioni del ruolo: check-in e rilascio del
+  giorno anche offline (coda), blocco e sblocco della postazione solo online. Su tablet la scheda si
+  apre accanto alla mappa. Funziona sulla cache offline del giorno.
 - Fase 1 — fondamenta dei dati e dell'offline (ADR 0007): cache di mappa e prenotazioni di oggi e
   domani (nel fuso dello stabilimento) consultabile senza rete, anche all'avvio, e cancellata a ogni
   scollegamento; coda di check-in, rilasci del giorno, note e incassi in contanti inviata in ordine
