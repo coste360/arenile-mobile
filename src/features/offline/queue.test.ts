@@ -120,6 +120,9 @@ describe('operation queue', () => {
     // Desktop LAN (ADR 0006): nothing reached the server; the operations wait
     // for "Abbina di nuovo" with the renewed certificate.
     ['a desktop certificate that changed', () => new CertificateMismatchError()],
+    // The same key is still being processed (app killed mid-send, replayed at
+    // start): a new key from "riprova" could apply the operation twice.
+    ['a 409 idempotency_in_progress', () => problem(409, 'idempotency_in_progress')],
   ])('treats %s as transient', async (_name, error) => {
     const { queue } = setup(async () => {
       throw error();
