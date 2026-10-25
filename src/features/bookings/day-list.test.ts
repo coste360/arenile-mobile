@@ -4,6 +4,7 @@ import { bookingSummary } from '@/test/operations-fixtures';
 import {
   dayBookingFigures,
   DEFAULT_DAY_LIST_QUERY,
+  filterCounts,
   isChannelFilter,
   isDayFilter,
   isDaySort,
@@ -234,5 +235,32 @@ describe('guards of the route parameters', () => {
     [isDaySort, ['spot'], false],
   ] as const)('%p(%j) is %s', (guard, value, expected) => {
     expect(guard(value)).toBe(expected);
+  });
+});
+
+describe('filterCounts', () => {
+  it('counts each filter with the other criteria applied', () => {
+    const list = [
+      bookingSummary({ id: '1', starts_on: DAY, channel: 'online' }),
+      bookingSummary({ id: '2', starts_on: DAY, status: 'checked_in', balance_due: 0 }),
+      bookingSummary({ id: '3', status: 'cancelled' }),
+      bookingSummary({ id: '4', is_season_pass: true, starts_on: '2026-06-01', balance_due: 0 }),
+    ];
+    const q = { date: DAY, channel: 'all', search: '', includeClosed: false } as const;
+    expect(filterCounts(list, q)).toEqual({
+      all: 3,
+      arrivals: 2,
+      present: 1,
+      to_settle: 1,
+      season_pass: 1,
+    });
+    expect(filterCounts(list, { ...q, channel: 'desk' })).toEqual({
+      all: 2,
+      arrivals: 1,
+      present: 1,
+      to_settle: 0,
+      season_pass: 1,
+    });
+    expect(filterCounts(list, { ...q, includeClosed: true }).all).toBe(4);
   });
 });

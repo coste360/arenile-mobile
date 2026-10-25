@@ -167,6 +167,21 @@ export function selectBookings(
   return sortBookings(shown, query.sort);
 }
 
+/**
+ * How many bookings each main filter would show with the other criteria
+ * unchanged (the figures on the filter chips).
+ */
+export function filterCounts(
+  list: readonly BookingSummary[],
+  query: Omit<DayListQuery, 'filter' | 'sort'>,
+): Record<DayFilter, number> {
+  const out = {} as Record<DayFilter, number>;
+  for (const filter of DAY_FILTERS) {
+    out[filter] = selectBookings(list, { ...query, filter, sort: 'spot' }).length;
+  }
+  return out;
+}
+
 export interface DayBookingFigures {
   arrivals: number;
   present: number;
