@@ -1,7 +1,8 @@
 // Every provider of the app, in one place: dependencies, safe area, server
-// state, i18n, preferences (language, theme), session, portal host for the
-// Reusables overlays. Renders nothing until the session and the preferences
-// are read from the keychain (the splash screen stays up meanwhile).
+// state, i18n, preferences (language, theme), session, offline mode, portal
+// host for the Reusables overlays. Renders nothing until the session and the
+// preferences are read from the keychain and the offline cache is restored
+// (the splash screen stays up meanwhile).
 import { PortalHost } from '@rn-primitives/portal';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { i18n as I18n } from 'i18next';
@@ -14,6 +15,8 @@ import {
   DEFAULT_PREFERENCES,
   type Preferences,
 } from '@/features/preferences/preferences';
+import { OfflineProvider } from '@/features/offline/offline-provider';
+import { createOfflineRuntime } from '@/features/offline/runtime';
 import { PairingIntentProvider } from '@/features/pairing/pairing-intent';
 import { PreferencesProvider } from '@/features/preferences/preferences-provider';
 import { createSessionStore, type Session } from '@/features/session/session';
@@ -48,6 +51,15 @@ export function AppProviders({
     session: createSessionStore(dependencies.kv),
     preferences: createPreferencesStore(dependencies.kv),
   }));
+  const [offline] = useState(() =>
+    createOfflineRuntime({
+      queryClient,
+      store: dependencies.offlineStore,
+      network: dependencies.network,
+      now: () => dependencies.clock.now(),
+      newId: dependencies.randomId,
+    }),
+  );
   const [boot, setBoot] = useState<Boot | null>(null);
 
   useEffect(() => bindAppStateFocus(), []);
@@ -62,15 +74,21 @@ export function AppProviders({
     void Promise.all([
       safely(stores.session.load(), null),
       safely(stores.preferences.load(), DEFAULT_PREFERENCES),
-    ]).then(([session, preferences]) => {
-      if (cancelled) return;
-      const i18n = createI18n(resolveLocale(preferences.language, dependencies.deviceLocales()));
-      setBoot({ session, preferences, i18n });
-    });
+    ])
+      .then(async ([session, preferences]) => {
+        // The cached day is in the query client before the first screen.
+        await offline.boot(session);
+        return [session, preferences] as const;
+      })
+      .then(([session, preferences]) => {
+        if (cancelled) return;
+        const i18n = createI18n(resolveLocale(preferences.language, dependencies.deviceLocales()));
+        setBoot({ session, preferences, i18n });
+      });
     return () => {
       cancelled = true;
     };
-  }, [stores, dependencies]);
+  }, [stores, dependencies, offline]);
 
   useEffect(() => {
     if (boot) onReady?.();
@@ -90,10 +108,12 @@ export function AppProviders({
               deviceLocales={dependencies.deviceLocales}
             >
               <SessionProvider initial={boot.session} store={stores.session}>
-                <PairingIntentProvider>
-                  {children}
-                  <PortalHost />
-                </PairingIntentProvider>
+                <OfflineProvider runtime={offline}>
+                  <PairingIntentProvider>
+                    {children}
+                    <PortalHost />
+                  </PairingIntentProvider>
+                </OfflineProvider>
               </SessionProvider>
             </PreferencesProvider>
           </I18nextProvider>

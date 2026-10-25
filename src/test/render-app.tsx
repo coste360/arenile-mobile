@@ -15,11 +15,13 @@ import { RootNavigator } from '@/components/root-navigator';
 import { PREFERENCES_KEY, type Preferences } from '@/features/preferences/preferences';
 import { SESSION_KEY, type Session } from '@/features/session/session';
 import { fixedClock } from '@/lib/clock';
+import { createFakeNetworkMonitor } from '@/lib/network';
 import { createMemoryKeyValueStore } from '@/lib/storage';
 import { AppProviders } from '@/providers/app-providers';
 import type { Dependencies } from '@/providers/dependencies';
 
 import { fakeFetch, type Handler } from './fake-fetch';
+import { sequentialIds } from './ids';
 
 export const WINDOWS = {
   phone: { width: 390, height: 844 },
@@ -47,7 +49,12 @@ export interface RenderAppOptions {
   size?: WindowSize;
   /** Number of keychain writes that fail before the keychain works again. */
   keychainWriteFailures?: number;
+  /** Initial content of the offline store (cached day, operation queue). */
+  offlineData?: Record<string, string>;
+  /** Device connectivity at start (the returned `connectivity` changes it). */
+  connected?: boolean;
 }
+
 
 export async function renderApp({
   initialUrl = '/',
@@ -56,6 +63,8 @@ export async function renderApp({
   routes = {},
   size = 'phone',
   keychainWriteFailures = 0,
+  offlineData = {},
+  connected = true,
 }: RenderAppOptions = {}) {
   setWindow(size);
   const kv = createMemoryKeyValueStore({
@@ -72,8 +81,13 @@ export async function renderApp({
     return setItem(key, value);
   };
   const network = fakeFetch(routes);
+  const offlineStore = createMemoryKeyValueStore(offlineData);
+  const connectivity = createFakeNetworkMonitor(connected);
   const dependencies: Dependencies = {
     kv,
+    offlineStore,
+    network: connectivity,
+    randomId: sequentialIds(),
     clock: fixedClock('2026-10-25T08:00:00Z'),
     fetch: network.fetch,
     device: { name: 'iPhone di Anna', platform: 'ios' },
@@ -104,7 +118,7 @@ export async function renderApp({
     },
     { initialUrl },
   );
-  return { ...result, kv, network, dependencies, screen };
+  return { ...result, kv, offlineStore, connectivity, network, dependencies, screen };
 }
 
 /** "METHOD /path" of every request, in order. */
