@@ -19,7 +19,7 @@ import { createMemoryKeyValueStore } from '@/lib/storage';
 import { AppProviders } from '@/providers/app-providers';
 import type { Dependencies } from '@/providers/dependencies';
 
-import { fakeFetch, type Handler } from './fake-fetch';
+import { fakeFetch, fakePinnedFetch, type Handler } from './fake-fetch';
 
 export const WINDOWS = {
   phone: { width: 390, height: 844 },
@@ -47,6 +47,11 @@ export interface RenderAppOptions {
   size?: WindowSize;
   /** Number of keychain writes that fail before the keychain works again. */
   keychainWriteFailures?: number;
+  /**
+   * Certificate fingerprint of the desktop LAN server answering `routes`:
+   * gives the app a fake pinned transport. Omitted: the build has none.
+   */
+  lanServerFingerprint?: string;
 }
 
 export async function renderApp({
@@ -56,6 +61,7 @@ export async function renderApp({
   routes = {},
   size = 'phone',
   keychainWriteFailures = 0,
+  lanServerFingerprint,
 }: RenderAppOptions = {}) {
   setWindow(size);
   const kv = createMemoryKeyValueStore({
@@ -76,6 +82,9 @@ export async function renderApp({
     kv,
     clock: fixedClock('2026-10-25T08:00:00Z'),
     fetch: network.fetch,
+    pinnedFetch: lanServerFingerprint
+      ? fakePinnedFetch(network.fetch, lanServerFingerprint).pinnedFetch
+      : null,
     device: { name: 'iPhone di Anna', platform: 'ios' },
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],

@@ -86,8 +86,12 @@
     },
     "errors": {
       "lan_unsupported": {
-        "title": "Réseau local du bureau : bientôt disponible",
-        "description": "Ce QR code provient de l'application de bureau en mode réseau local, qui utilise son propre certificat de sécurité. La connexion de l'application à ce mode arrive bientôt : en attendant, utilisez le panneau dans le navigateur."
+        "title": "Réseau local du bureau non pris en charge",
+        "description": "Ce QR code provient de l'application de bureau en mode réseau local, qui utilise son propre certificat de sécurité. Cette version de l'application ne peut pas le vérifier (par exemple Expo Go ou la version web) : installez l'application Arenile depuis l'App Store ou Google Play, ou utilisez le panneau dans le navigateur."
+      },
+      "certificate_mismatch": {
+        "title": "Certificat différent de celui du QR code",
+        "description": "Le serveur du réseau local a présenté un certificat de sécurité différent de celui indiqué dans le QR code, l'application ne s'est donc pas connectée. Le QR code est peut-être ancien (le certificat est renouvelé périodiquement) ou un autre ordinateur répond à cette adresse : générez un nouveau QR code dans l'application de bureau et scannez-le."
       },
       "unreachable": {
         "title": "Instance injoignable",

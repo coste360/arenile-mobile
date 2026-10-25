@@ -1,17 +1,20 @@
 // Pairing: exchanges a pairing code for a device token (spec 29.2), with the
 // same steps as the core desktop client (internal/desktop/remote/pair.go):
-//   1. refuse self-signed instances until the pinned transport exists (ADR 0006);
+//   1. self-signed desktop LAN instances go through the pinned transport and
+//      are refused when this build has none (ADR 0006);
 //   2. GET /api/admin/v1/meta: is it Arenile, is it compatible both ways;
 //   3. POST /api/device/v1/pair with the code: 201 gives the token (ar_dev_…);
 //   4. best effort: read the establishment name when the QR did not carry it.
 // Pure orchestration: transport, clock and versions are injected.
 import { createApiClient, request } from '@/api/client';
 import {
+  CertificateMismatchError,
   LanTransportUnavailableError,
   NetworkError,
   ProblemError,
   UnexpectedResponseError,
 } from '@/api/errors';
+import type { PinnedFetch } from '@/api/transport';
 import type { DevicePlatform, Meta } from '@/api/types';
 import { checkCompatibility, type Versions } from '@/features/instance/compat';
 import type { Session } from '@/features/session/session';
@@ -21,6 +24,7 @@ import type { PairingTarget } from './target';
 
 export type PairingFailure =
   | 'lan_unsupported'
+  | 'certificate_mismatch'
   | 'unreachable'
   | 'not_arenile'
   | 'instance_too_old'
@@ -51,6 +55,8 @@ export interface PairDeps {
   device: DeviceInfo;
   clock: Clock;
   fetch?: typeof fetch;
+  /** Pinned transport for LAN instances (undefined: the native module of this build). */
+  pinnedFetch?: PinnedFetch | null;
 }
 
 export interface Paired {
@@ -67,6 +73,7 @@ function deviceName(raw: string): string {
 }
 
 function failureOf(e: unknown, step: 'meta' | 'pair'): PairingFailure {
+  if (e instanceof CertificateMismatchError) return 'certificate_mismatch';
   if (e instanceof NetworkError) return 'unreachable';
   if (e instanceof UnexpectedResponseError) return step === 'meta' ? 'not_arenile' : 'unexpected';
   if (e instanceof ProblemError) {
@@ -85,6 +92,7 @@ export async function pairDevice(target: PairingTarget, deps: PairDeps): Promise
       baseUrl: target.url,
       fingerprint: target.fingerprint,
       fetch: deps.fetch,
+      pinnedFetch: deps.pinnedFetch,
     });
   } catch (e) {
     if (e instanceof LanTransportUnavailableError)
@@ -137,7 +145,7 @@ export async function pairDevice(target: PairingTarget, deps: PairDeps): Promise
   if (target.establishmentName) {
     session.establishmentName = target.establishmentName;
   } else {
-    session.establishmentName = await establishmentName(session, deps.fetch);
+    session.establishmentName = await establishmentName(session, deps);
   }
   return { session, meta };
 }
@@ -145,14 +153,15 @@ export async function pairDevice(target: PairingTarget, deps: PairDeps): Promise
 /** Best effort: the name is cosmetic, a failure must not undo a successful pairing. */
 async function establishmentName(
   session: Session,
-  fetchImpl?: typeof fetch,
+  deps: Pick<PairDeps, 'fetch' | 'pinnedFetch'>,
 ): Promise<string | undefined> {
   try {
     const client = createApiClient({
       baseUrl: session.instanceUrl,
       token: session.token,
       fingerprint: session.fingerprint,
-      fetch: fetchImpl,
+      fetch: deps.fetch,
+      pinnedFetch: deps.pinnedFetch,
     });
     const est = await request(() =>
       client.GET('/api/admin/v1/establishments/{establishmentId}', {

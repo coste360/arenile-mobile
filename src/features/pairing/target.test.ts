@@ -1,3 +1,5 @@
+import { LAN_FINGERPRINT } from '@/test/fake-fetch';
+
 import { QR_PREFIX } from './qr';
 import {
   normalizeInstanceUrl,
@@ -66,7 +68,7 @@ describe('targetFromQR', () => {
         v: 1,
         url: 'https://192.168.1.20:8443/',
         code: 'abcd-efgh',
-        fingerprint: 'aa:bb',
+        fingerprint: LAN_FINGERPRINT.toLowerCase(),
         establishment_name: 'Lido Azzurro',
       });
     expect(targetFromQR(text)).toEqual({
@@ -74,7 +76,7 @@ describe('targetFromQR', () => {
       target: {
         url: 'https://192.168.1.20:8443',
         code: 'ABCDEFGH',
-        fingerprint: 'AA:BB',
+        fingerprint: LAN_FINGERPRINT,
         establishmentName: 'Lido Azzurro',
       },
     });
@@ -87,6 +89,12 @@ describe('targetFromQR', () => {
       'http on the network',
       QR_PREFIX + b64({ v: 1, url: 'http://a.it', code: 'ABCDEFGH' }),
       'insecure_url',
+    ],
+    [
+      'a malformed certificate fingerprint',
+      QR_PREFIX +
+        b64({ v: 1, url: 'https://192.168.1.20:8443', code: 'ABCDEFGH', fingerprint: 'AA:BB' }),
+      'invalid_input',
     ],
   ])('rejects %s', (_name, text, error) => {
     expect(targetFromQR(text)).toEqual({ ok: false, error });

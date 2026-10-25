@@ -86,8 +86,12 @@
     },
     "errors": {
       "lan_unsupported": {
-        "title": "Desktop local network: coming soon",
-        "description": "This QR code comes from the desktop app in local network mode, which uses its own security certificate. Connecting the app to this mode is coming soon: for now use the panel in the browser."
+        "title": "Desktop local network not supported",
+        "description": "This QR code comes from the desktop app in local network mode, which uses its own security certificate. This version of the app cannot verify it (for example Expo Go or the web version): install the Arenile app from the App Store or Google Play, or use the panel in the browser."
+      },
+      "certificate_mismatch": {
+        "title": "Certificate differs from the QR code",
+        "description": "The local network server presented a security certificate different from the one in the QR code, so the app did not connect. The QR code may be old (the certificate is renewed periodically) or another computer answers at that address: generate a new QR code in the desktop app and scan it."
       },
       "unreachable": {
         "title": "Instance unreachable",

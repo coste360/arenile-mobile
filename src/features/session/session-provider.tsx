@@ -109,7 +109,7 @@ export function usePairedSession(): Session {
 /** API client of the paired instance (the single factory, src/api/client.ts). */
 export function useApiClient(): ApiClient {
   const session = usePairedSession();
-  const { fetch } = useDependencies();
+  const { fetch, pinnedFetch } = useDependencies();
   return useMemo(
     () =>
       createApiClient({
@@ -117,7 +117,8 @@ export function useApiClient(): ApiClient {
         token: session.token,
         fingerprint: session.fingerprint,
         fetch,
+        pinnedFetch,
       }),
-    [session.instanceUrl, session.token, session.fingerprint, fetch],
+    [session.instanceUrl, session.token, session.fingerprint, fetch, pinnedFetch],
   );
 }

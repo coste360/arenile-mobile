@@ -86,8 +86,12 @@
     },
     "errors": {
       "lan_unsupported": {
-        "title": "Lokales Netzwerk des Desktops: demnächst",
-        "description": "Dieser QR-Code stammt von der Desktop-App im lokalen Netzwerkmodus, die ein eigenes Sicherheitszertifikat verwendet. Die Verbindung der App mit diesem Modus kommt demnächst: Nutze bis dahin das Panel im Browser."
+        "title": "Lokales Netzwerk der Desktop-App nicht unterstützt",
+        "description": "Dieser QR-Code stammt von der Desktop-App im lokalen Netzwerkmodus, die ein eigenes Sicherheitszertifikat verwendet. Diese Version der App kann es nicht prüfen (zum Beispiel Expo Go oder die Webversion): Installiere die Arenile-App aus dem App Store oder von Google Play oder nutze das Panel im Browser."
+      },
+      "certificate_mismatch": {
+        "title": "Zertifikat weicht vom QR-Code ab",
+        "description": "Der Server im lokalen Netzwerk hat ein anderes Sicherheitszertifikat vorgelegt als im QR-Code angegeben, deshalb hat sich die App nicht verbunden. Der QR-Code ist vielleicht veraltet (das Zertifikat wird regelmäßig erneuert) oder unter dieser Adresse antwortet ein anderer Computer: Erzeuge in der Desktop-App einen neuen QR-Code und scanne ihn."
       },
       "unreachable": {
         "title": "Instanz nicht erreichbar",

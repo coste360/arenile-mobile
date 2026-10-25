@@ -2,7 +2,16 @@ import { router } from 'expo-router';
 import { fireEvent, waitFor } from 'expo-router/testing-library';
 
 import { SESSION_KEY } from '@/features/session/session';
-import { DEVICE, json, meta, networkDown, problem, type Handler } from '@/test/fake-fetch';
+import {
+  DEVICE,
+  json,
+  LAN_FINGERPRINT,
+  meta,
+  networkDown,
+  problem,
+  RENEWED_FINGERPRINT,
+  type Handler,
+} from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { renderApp, requestsOf, type RenderAppOptions } from '@/test/render-app';
 
@@ -80,14 +89,51 @@ describe('pairing from the link arenile://pair?d=… (system camera, other apps)
     ]);
   });
 
-  it('explains that the desktop local network is coming, without any request', async () => {
-    const { screen, network } = await renderApp({
-      initialUrl: `/pair?d=${d({ ...QR, url: 'https://192.168.1.20:8443', fingerprint: 'AA:BB' })}`,
-      routes: PAIRED_ROUTES,
+  describe('desktop LAN mode (ADR 0006)', () => {
+    const LAN_QR = { ...QR, url: 'https://192.168.1.20:8443', fingerprint: LAN_FINGERPRINT };
+
+    it('explains that this build cannot verify the certificate, without any request', async () => {
+      const { screen, network } = await renderApp({
+        initialUrl: `/pair?d=${d(LAN_QR)}`,
+        routes: PAIRED_ROUTES,
+      });
+
+      expect(await screen.findByText('Rete locale del desktop non supportata')).toBeOnTheScreen();
+      expect(network.calls).toHaveLength(0);
     });
 
-    expect(await screen.findByText('Rete locale del desktop: in arrivo')).toBeOnTheScreen();
-    expect(network.calls).toHaveLength(0);
+    it('pairs with the pinned certificate and opens home', async () => {
+      const { screen, kv, getPathname } = await openLink({
+        payload: LAN_QR,
+        routes: PAIRED_ROUTES,
+        lanServerFingerprint: LAN_FINGERPRINT,
+      });
+
+      expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
+      expect(getPathname()).toBe('/home');
+      expect(JSON.parse(kv.snapshot()[SESSION_KEY] ?? '{}')).toMatchObject({
+        instanceUrl: 'https://192.168.1.20:8443',
+        fingerprint: LAN_FINGERPRINT,
+      });
+    });
+
+    it.each(['phone', 'tablet'] as const)(
+      'asks for a new QR when the certificate differs (%s)',
+      async (size) => {
+        const { screen, network, kv } = await openLink({
+          payload: LAN_QR,
+          routes: PAIRED_ROUTES,
+          lanServerFingerprint: RENEWED_FINGERPRINT,
+          size,
+        });
+
+        expect(await screen.findByText('Certificato diverso da quello del QR')).toBeOnTheScreen();
+        expect(screen.getByRole('button', { name: 'Inquadra un nuovo QR code' })).toBeOnTheScreen();
+        expect(screen.queryByRole('button', { name: 'Riprova' })).toBeNull();
+        expect(network.calls).toHaveLength(0);
+        expect(kv.snapshot()[SESSION_KEY]).toBeUndefined();
+      },
+    );
   });
 
   it.each([
