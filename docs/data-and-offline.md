@@ -73,6 +73,18 @@ await enqueue({ kind: 'day_release', bookingId: passBookingId, date, slots, labe
   (with `Idempotency-Key`), its optimistic effect in `optimistic.ts`, i18n labels
   (`offline.pending.kinds`), tests; and it must be low-risk per core spec 21.2.
 
+## Reports and widget (phase 3)
+
+- **Reports** — `features/reports`: `useYearComparison({ from, to, align })` (GET reports/comparison,
+  daily series), periods in `period.ts` (`periodOf`, `shiftAnchor`, `canGoForward`), presentation in
+  `format.ts` (truncated basis points like the panel). Online only: report keys are deliberately not
+  persistable. Gate on `useAbilities().canSeeReports`.
+- **Widget** — `features/widget`: `widgetEntries()` turns the cached operational day of today into the
+  props of the home screen widget (`src/widgets/day-summary-widget.{ios,android}.tsx`); `WidgetSync`
+  (mounted in the root navigator) republishes on every change of that cache entry and on unpair. The
+  widget never triggers a request: do not add a fetch to it. Native writes go through
+  `Dependencies.widget` (fake in tests: `src/test/fake-widget.ts`, returned by `renderApp()`).
+
 ## Connection indicator
 
 `<ConnectionIndicator />` (`src/components/connection-indicator.tsx`) is already in every phone header

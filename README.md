@@ -68,7 +68,8 @@ e [CONTRIBUTING.md](CONTRIBUTING.md).
 ```
 src/app/            rotte expo-router (collega, scansione, manuale, collegamento, area collegata)
 src/api/            client API unico, trasporto, errori tipizzati; generated/ = tipi dal contratto
-src/features/       abbinamento, sessione, compatibilità, preferenze
+src/features/       abbinamento, sessione, compatibilità, preferenze, dati, offline, report, widget
+src/widgets/        layout del widget della schermata principale (expo-widgets)
 src/components/     componenti dell'app; ui/ = React Native Reusables
 src/i18n/           i18next, lingue it (sorgente), en, de, fr
 docs/spec/          piano dell'app per fasi
@@ -87,7 +88,8 @@ docs/adr/           decisioni
   marchio: varianti dedicate per l'icona adattiva e per la schermata di avvio (oggi derivate dal simbolo
   ufficiale con margini) e le schede degli store.
 - **Account:** Expo/EAS (build e invio), Apple Developer Program e Google Play Console di Coste360,
-  identificativo `app.arenile.mobile`.
+  identificativo `app.arenile.mobile`; per il widget iOS anche l'estensione
+  `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile` (ADR 0008).
 
 ## Contatti
 
