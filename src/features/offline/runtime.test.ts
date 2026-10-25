@@ -28,6 +28,9 @@ const note: NewOfflineOperation = {
   label: 'A1 · AR-7K3Q9',
 };
 
+/** The operations sent (the warm-up of the offline window also reads data). */
+const posts = (api: { calls: Request[] }) => api.calls.filter((r) => r.method === 'POST');
+
 const runtimes: OfflineRuntime[] = [];
 const clients: QueryClient[] = [];
 
@@ -85,17 +88,17 @@ describe('offline runtime', () => {
 
     const a = await runtime.enqueue(checkIn);
     const b = await runtime.enqueue(note);
-    expect(api.calls).toHaveLength(0);
+    expect(posts(api)).toHaveLength(0);
     expect(runtime.getStatus()).toMatchObject({ connection: 'offline', pending: 2 });
 
     network.set(true);
 
     await waitFor(() => expect(runtime.getStatus().pending).toBe(0));
-    expect(api.calls.map((r) => `${r.method} ${new URL(r.url).pathname}`)).toEqual([
+    expect(posts(api).map((r) => `${r.method} ${new URL(r.url).pathname}`)).toEqual([
       CHECK_IN,
       NOTE,
     ]);
-    expect(api.calls.map((r) => r.headers.get('Idempotency-Key'))).toEqual([
+    expect(posts(api).map((r) => r.headers.get('Idempotency-Key'))).toEqual([
       a.idempotencyKey,
       b.idempotencyKey,
     ]);
@@ -105,7 +108,7 @@ describe('offline runtime', () => {
   it('sends at once when online', async () => {
     const { runtime, api } = await attached({ routes: { [NOTE]: () => json(200, {}) } });
     await runtime.enqueue(note);
-    await waitFor(() => expect(api.calls).toHaveLength(1));
+    await waitFor(() => expect(posts(api)).toHaveLength(1));
     await waitFor(() => expect(runtime.getStatus().pending).toBe(0));
   });
 
@@ -122,7 +125,7 @@ describe('offline runtime', () => {
     await runtime.flush();
     expect(runtime.getStatus()).toMatchObject({ connection: 'online', pending: 0 });
     // The same key both times: the server applies the note once.
-    expect(new Set(api.calls.map((r) => r.headers.get('Idempotency-Key'))).size).toBe(1);
+    expect(new Set(posts(api).map((r) => r.headers.get('Idempotency-Key'))).size).toBe(1);
   });
 
   it('surfaces a conflict to the user and keeps it until they decide', async () => {
@@ -166,8 +169,8 @@ describe('offline runtime', () => {
       idPrefix: 'after',
       routes: { [NOTE]: () => json(200, {}) },
     });
-    await waitFor(() => expect(after.api.calls).toHaveLength(1));
-    expect(after.api.calls[0]!.headers.get('Idempotency-Key')).toBe(op.idempotencyKey);
+    await waitFor(() => expect(posts(after.api)).toHaveLength(1));
+    expect(posts(after.api)[0]!.headers.get('Idempotency-Key')).toBe(op.idempotencyKey);
     await waitFor(() => expect(JSON.parse(store.snapshot()[QUEUE_KEY]!)).toEqual([]));
   });
 

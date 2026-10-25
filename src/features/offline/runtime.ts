@@ -16,6 +16,7 @@ import type { KeyValueStore } from '@/lib/storage';
 
 import { applyOptimistic, invalidateAfter } from './optimistic';
 import { createOfflineCache, type OfflineCache } from './persist';
+import { prefetchOfflineWindow } from './prefetch';
 import { createOperationQueue, type FlushResult, type OperationQueue } from './queue';
 import { sendOfflineOperation } from './senders';
 import type {
@@ -81,6 +82,7 @@ export interface OfflineRuntimeOptions {
 export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRuntime {
   const { queryClient, store, network, now, newId } = options;
   let client: ApiClient | null = null;
+  let current: Session | null = null;
   let scope: OperationScope | null = null;
   let cachedDevice: string | null = null;
   let stopCache: (() => void) | null = null;
@@ -164,6 +166,12 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
     return result;
   };
 
+  /** Fills the cache with today's and tomorrow's data while the instance answers. */
+  const warmUp = () => {
+    if (!client || !current || deviceConnected === false) return;
+    prefetchOfflineWindow(queryClient, client, current, now()).catch(() => undefined);
+  };
+
   const startCache = async (session: Session) => {
     if (cachedDevice === session.deviceId) return;
     cachedDevice = session.deviceId;
@@ -182,7 +190,10 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
       const was = deviceConnected;
       setDeviceConnected(connected);
       emit();
-      if (connected !== false && was === false) void flush();
+      if (connected !== false && was === false) {
+        void flush();
+        warmUp();
+      }
     };
     void network.current().then(onConnected, () => onConnected(null));
     teardown.push(network.subscribe(onConnected));
@@ -198,7 +209,9 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
       }),
     );
     const sub = AppState.addEventListener('change', (s) => {
-      if (s === 'active') void flush();
+      if (s !== 'active') return;
+      void flush();
+      warmUp();
     });
     teardown.push(() => sub.remove());
     const timer = setInterval(() => {
@@ -223,6 +236,7 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
     },
     attach(session, apiClient) {
       client = apiClient;
+      current = session;
       const next = { instanceUrl: session.instanceUrl, establishmentId: session.establishmentId };
       scope = next;
       // A new token may send what a revoked one could not.
@@ -230,11 +244,13 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
       listen();
       void startCache(session)
         .then(() => queue.quarantine(next))
-        .then(() => flush());
+        .then(() => flush())
+        .then(warmUp);
       emit();
     },
     async detach(reason) {
       client = null;
+      current = null;
       scope = null;
       cachedDevice = null;
       stopCache?.();
