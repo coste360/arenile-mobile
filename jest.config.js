@@ -15,7 +15,11 @@ module.exports = {
   preset: 'jest-expo',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   resolver: '<rootDir>/jest.resolver.js',
-  testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}', '<rootDir>/scripts/**/*.test.js'],
+  testMatch: [
+    '<rootDir>/src/**/*.test.{ts,tsx}',
+    '<rootDir>/modules/*/src/**/*.test.ts',
+    '<rootDir>/scripts/**/*.test.js',
+  ],
   transformIgnorePatterns: [
     expoPreset.transformIgnorePatterns[0].replace('(?!(', `(?!(${TRANSFORM.join('|')}|`),
     ...expoPreset.transformIgnorePatterns.slice(1),

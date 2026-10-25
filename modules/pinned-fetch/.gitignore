@@ -1,0 +1,5 @@
+# SwiftPM build output of the host-side Swift tests
+ios/Tests/.build/
+ios/Tests/.swiftpm/
+# Gradle output when the module is built on its own
+android/build/

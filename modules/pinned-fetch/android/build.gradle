@@ -1,0 +1,23 @@
+// Local Expo module of the Arenile staff app (ADR 0006), autolinked from modules/.
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'app.arenile'
+version = '1.0.0'
+
+android {
+  namespace "app.arenile.pinnedfetch"
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+  }
+}
+
+dependencies {
+  // The same OkHttp that React Native already ships (react-native/gradle/libs.versions.toml):
+  // no new library in the app, only an explicit compile-time dependency.
+  implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+  testImplementation 'junit:junit:4.13.2'
+}
