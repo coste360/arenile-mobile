@@ -34,3 +34,10 @@ export type BookingDetail = Schemas['BookingDetail'];
 export type BeachMap = Schemas['Map'];
 export type MapDocument = Schemas['MapDocument'];
 export type PaymentMethod = Schemas['PaymentMethod'];
+
+// Phase 1 operations: check-in by QR, cash desk, spot blocks.
+export type Ticket = Schemas['Ticket'];
+export type GateCheckInResult = Schemas['GateCheckInResult'];
+export type CashSessionDetail = Schemas['CashSessionDetail'];
+export type SpotBlockCreate = Schemas['SpotBlockCreate'];
+export type SpotBlockList = Schemas['SpotBlockList'];
