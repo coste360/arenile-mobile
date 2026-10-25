@@ -170,24 +170,23 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
     stopCache = await cache.start(session);
   };
 
+  /** TanStack pauses queries without a network and refetches on reconnection. */
+  const setDeviceConnected = (connected: boolean | null) => {
+    deviceConnected = connected;
+    onlineManager.setOnline(connected !== false);
+  };
+
   const listen = () => {
     if (teardown.length > 0) return;
     const onConnected = (connected: boolean | null) => {
       const was = deviceConnected;
-      deviceConnected = connected;
+      setDeviceConnected(connected);
       emit();
       if (connected !== false && was === false) void flush();
     };
     void network.current().then(onConnected, () => onConnected(null));
     teardown.push(network.subscribe(onConnected));
-    // TanStack pauses queries without a network and refetches on reconnection.
-    onlineManager.setEventListener((setOnline) =>
-      network.subscribe((connected) => setOnline(connected !== false)),
-    );
-    teardown.push(() => {
-      onlineManager.setEventListener(() => () => {});
-      onlineManager.setOnline(true);
-    });
+    teardown.push(() => onlineManager.setOnline(true));
     // Every answer of the instance tells whether it is reachable.
     teardown.push(
       queryClient.getQueryCache().subscribe((event) => {
@@ -212,6 +211,11 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
     queue,
     cache,
     async boot(session) {
+      // Connectivity is known before the first query runs: a cold start
+      // without network shows the cache instead of failing requests. The OS
+      // state is the only source (no browser events in React Native).
+      onlineManager.setEventListener(() => () => {});
+      setDeviceConnected(await network.current().catch(() => null));
       await queue.init().catch((e: unknown) => {
         console.warn('offline queue: load failed', errorKind(e));
       });

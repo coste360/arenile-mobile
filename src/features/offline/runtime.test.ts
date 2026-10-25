@@ -1,4 +1,4 @@
-import { QueryClient } from '@tanstack/react-query';
+import { onlineManager, QueryClient } from '@tanstack/react-query';
 import { waitFor } from '@testing-library/react-native';
 
 import { createApiClient } from '@/api/client';
@@ -206,6 +206,15 @@ describe('offline runtime', () => {
     await runtime.detach('revoked');
     expect(runtime.queue.getSnapshot()).toHaveLength(1);
     expect(store.snapshot()[CACHE_KEY]).toBeUndefined();
+  });
+
+  it('tells TanStack the device has no network before the first query runs', async () => {
+    const { runtime, network } = setup({ connected: false });
+    await runtime.boot(SESSION);
+    expect(onlineManager.isOnline()).toBe(false);
+    runtime.attach(SESSION, setup().client);
+    network.set(true);
+    expect(onlineManager.isOnline()).toBe(true);
   });
 
   it('refuses to enqueue without a paired session', async () => {
