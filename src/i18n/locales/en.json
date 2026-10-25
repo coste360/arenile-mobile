@@ -142,7 +142,8 @@
   "nav": {
     "home": "Home",
     "settings": "Settings",
-    "pending": "Pending operations"
+    "pending": "Pending operations",
+    "reports": "Reports"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -277,6 +278,74 @@
     "onlineOnly": {
       "title": "Connection needed",
       "description": "Creating or moving a booking needs the instance to be reachable, as it guarantees the availability of the spots."
+    }
+  },
+  "reports": {
+    "description": "Takings and occupancy compared with the previous year.",
+    "range": {
+      "label": "Period",
+      "day": "Day",
+      "week": "Week"
+    },
+    "previous": {
+      "day": "Previous day",
+      "week": "Previous week"
+    },
+    "next": {
+      "day": "Next day",
+      "week": "Next week"
+    },
+    "periodLabel": {
+      "week": "{{from}} – {{to}}"
+    },
+    "today": "Today",
+    "thisWeek": "This week",
+    "align": {
+      "label": "Compare with",
+      "calendar": "Same date",
+      "weekday": "Same day of the week"
+    },
+    "comparedWith": "Previous year: {{from}} to {{to}}",
+    "metrics": {
+      "revenue_collected": "Takings",
+      "occupancy_bp": "Occupancy",
+      "bookings": "Bookings",
+      "revenue_booked": "Booked value"
+    },
+    "metricHints": {
+      "revenue_collected": "Payments recorded in the period, net of refunds.",
+      "occupancy_bp": "Occupied spots over the capacity of the open days.",
+      "bookings": "Bookings whose first day is in the period.",
+      "revenue_booked": "Value of the bookings whose first day is in the period."
+    },
+    "previousValue": "{{year}}: {{value}}",
+    "delta": {
+      "up": "Up",
+      "down": "Down",
+      "flat": "Unchanged",
+      "new": "new",
+      "points": "pp"
+    },
+    "metricA11y": "{{metric}}: {{value}}. In {{year}}: {{previous}}. {{trend}} {{delta}}.",
+    "daily": {
+      "title": "Day by day",
+      "revenue": "Takings",
+      "occupancy": "Occupancy",
+      "rowA11y": "{{day}}: takings {{revenue}}, in {{year}} {{previousRevenue}}; occupancy {{occupancy}}, in {{year}} {{previousOccupancy}}."
+    },
+    "refresh": "Refresh",
+    "exportsHint": "Report exports stay in the web panel.",
+    "states": {
+      "loading": "Loading reports…",
+      "forbiddenTitle": "Not allowed",
+      "forbidden": "Reports are reserved to owners, managers and read-only users.",
+      "offlineTitle": "Reports unavailable without network",
+      "offline": "Reports are read from the instance: try again when the connection is back.",
+      "unavailableTitle": "Reports unavailable",
+      "notImplemented": "This instance does not provide reports.",
+      "error": "The reports could not be loaded from the instance.",
+      "stale": "Data not up to date. {{reason}}",
+      "retry": "Try again"
     }
   }
 }

@@ -7,6 +7,7 @@ import {
   formatDelta,
   formatMetricValue,
   formatRatioBP,
+  formatReportDate,
   formatSignedBP,
   metricsByKey,
 } from './format';
@@ -105,5 +106,14 @@ describe('metricsByKey', () => {
 describe('formatCount', () => {
   it('rounds nothing: counts are integers', () => {
     expect(formatCount(7, 'it')).toBe('7');
+  });
+});
+
+describe('formatReportDate', () => {
+  it.each([
+    ['2025-10-25', 'it', '25 ott 2025'],
+    ['2025-10-25', 'en', 'Oct 25, 2025'],
+  ])('%s in %s → %s', (date, locale, expected) => {
+    expect(formatReportDate(date, locale)).toBe(expected);
   });
 });

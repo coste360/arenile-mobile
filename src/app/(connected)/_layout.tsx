@@ -1,5 +1,5 @@
 import { Redirect, router, Stack, usePathname } from 'expo-router';
-import { HouseIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
+import { ChartColumnIcon, HouseIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -9,14 +9,29 @@ import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import type { Abilities } from '@/features/permissions/permissions';
+import { useAbilities } from '@/features/permissions/use-abilities';
 import { useSession } from '@/features/session/session-provider';
 import { cn } from '@/lib/utils';
 
-const NAV: { href: '/home' | '/settings'; label: 'nav.home' | 'nav.settings'; icon: LucideIcon }[] =
-  [
-    { href: '/home', label: 'nav.home', icon: HouseIcon },
-    { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
-  ];
+interface NavItem {
+  href: '/home' | '/settings' | '/reports';
+  label: 'nav.home' | 'nav.settings' | 'nav.reports';
+  icon: LucideIcon;
+  /** Shown only when the role may open it (hidden, the server stays the judge). */
+  visible?: (abilities: Abilities) => boolean;
+}
+
+const NAV: NavItem[] = [
+  { href: '/home', label: 'nav.home', icon: HouseIcon },
+  {
+    href: '/reports',
+    label: 'nav.reports',
+    icon: ChartColumnIcon,
+    visible: (a) => a.canSeeReports,
+  },
+  { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
+];
 
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
@@ -48,6 +63,7 @@ export default function ConnectedLayout() {
             <Stack.Screen name="home" options={{ title: t('nav.home') }} />
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+            <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
           </Stack>
         </View>
       </View>
@@ -68,6 +84,7 @@ export default function ConnectedLayout() {
           headerRight: () => (
             <View className="flex-row items-center">
               <ConnectionIndicator />
+              <ReportsHeaderButton />
               <Button
                 variant="ghost"
                 size="icon"
@@ -82,7 +99,25 @@ export default function ConnectedLayout() {
       />
       <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+      <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
     </Stack>
+  );
+}
+
+/** Phone header shortcut to the reports, only for the roles that may read them. */
+function ReportsHeaderButton() {
+  const { t } = useTranslation();
+  const abilities = useAbilities();
+  if (!abilities.canSeeReports) return null;
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      accessibilityLabel={t('nav.reports')}
+      onPress={() => router.push('/reports')}
+    >
+      <Icon as={ChartColumnIcon} size={22} />
+    </Button>
   );
 }
 
@@ -90,6 +125,7 @@ export default function ConnectedLayout() {
 function Sidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const abilities = useAbilities();
   return (
     <View
       className="pb-safe pt-safe w-72 gap-1 border-r border-border bg-card px-3"
@@ -102,7 +138,7 @@ function Sidebar() {
       <View className="mb-2 rounded-md border border-border">
         <ConnectionIndicator variant="full" />
       </View>
-      {NAV.map((item) => {
+      {NAV.filter((item) => !item.visible || item.visible(abilities)).map((item) => {
         const active = pathname === item.href;
         return (
           <Pressable

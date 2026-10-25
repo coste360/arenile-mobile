@@ -7,12 +7,14 @@ import type { ComparisonMetric, ComparisonMetricKey } from '@/api/types';
 import { formatCents } from '@/lib/money';
 
 /** The metrics the app shows, in display order (takings and occupancy first). */
-export const REPORT_METRICS: readonly ComparisonMetricKey[] = [
+export const REPORT_METRICS = [
   'revenue_collected',
   'occupancy_bp',
   'bookings',
   'revenue_booked',
-];
+] as const satisfies readonly ComparisonMetricKey[];
+
+export type ReportMetricKey = (typeof REPORT_METRICS)[number];
 
 /** Direction of a change for the reader. */
 export type DeltaTrend = 'up' | 'down' | 'flat';
@@ -112,4 +114,15 @@ export function formatDelta(
   if (m.unit === 'basis_points') return formatPointsDelta(m.delta, locale, labels.points);
   if (m.delta_bp !== undefined) return formatSignedBP(m.delta_bp, locale);
   return m.delta === 0 ? formatSignedBP(0, locale) : labels.new;
+}
+
+/** A calendar date with its year, for the compared period: "25 ott 2025" (it). */
+export function formatReportDate(date: string, locale: string): string {
+  const [y, m, d] = date.split('-').map(Number) as [number, number, number];
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(y, m - 1, d)));
 }

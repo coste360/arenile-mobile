@@ -142,7 +142,8 @@
   "nav": {
     "home": "Start",
     "settings": "Einstellungen",
-    "pending": "Ausstehende Vorgänge"
+    "pending": "Ausstehende Vorgänge",
+    "reports": "Berichte"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -277,6 +278,74 @@
     "onlineOnly": {
       "title": "Verbindung erforderlich",
       "description": "Eine Buchung anzulegen oder zu verschieben erfordert die erreichbare Instanz, die die Verfügbarkeit der Plätze garantiert."
+    }
+  },
+  "reports": {
+    "description": "Einnahmen und Auslastung im Vergleich zum Vorjahr.",
+    "range": {
+      "label": "Zeitraum",
+      "day": "Tag",
+      "week": "Woche"
+    },
+    "previous": {
+      "day": "Vorheriger Tag",
+      "week": "Vorherige Woche"
+    },
+    "next": {
+      "day": "Nächster Tag",
+      "week": "Nächste Woche"
+    },
+    "periodLabel": {
+      "week": "{{from}} – {{to}}"
+    },
+    "today": "Heute",
+    "thisWeek": "Diese Woche",
+    "align": {
+      "label": "Vergleichen mit",
+      "calendar": "Gleiches Datum",
+      "weekday": "Gleicher Wochentag"
+    },
+    "comparedWith": "Vorjahr: {{from}} bis {{to}}",
+    "metrics": {
+      "revenue_collected": "Einnahmen",
+      "occupancy_bp": "Auslastung",
+      "bookings": "Buchungen",
+      "revenue_booked": "Gebuchter Wert"
+    },
+    "metricHints": {
+      "revenue_collected": "Im Zeitraum erfasste Zahlungen, abzüglich Erstattungen.",
+      "occupancy_bp": "Belegte Plätze im Verhältnis zur Kapazität der Öffnungstage.",
+      "bookings": "Buchungen mit erstem Tag im Zeitraum.",
+      "revenue_booked": "Wert der Buchungen mit erstem Tag im Zeitraum."
+    },
+    "previousValue": "{{year}}: {{value}}",
+    "delta": {
+      "up": "Gestiegen",
+      "down": "Gesunken",
+      "flat": "Unverändert",
+      "new": "neu",
+      "points": "Pp."
+    },
+    "metricA11y": "{{metric}}: {{value}}. {{year}}: {{previous}}. {{trend}} {{delta}}.",
+    "daily": {
+      "title": "Tag für Tag",
+      "revenue": "Einnahmen",
+      "occupancy": "Auslastung",
+      "rowA11y": "{{day}}: Einnahmen {{revenue}}, {{year}} {{previousRevenue}}; Auslastung {{occupancy}}, {{year}} {{previousOccupancy}}."
+    },
+    "refresh": "Aktualisieren",
+    "exportsHint": "Berichtsexporte bleiben im Web-Panel.",
+    "states": {
+      "loading": "Berichte werden geladen…",
+      "forbiddenTitle": "Nicht erlaubt",
+      "forbidden": "Berichte sind Inhabern, Managern und Nur-Lese-Benutzern vorbehalten.",
+      "offlineTitle": "Berichte ohne Netz nicht verfügbar",
+      "offline": "Berichte werden von der Instanz gelesen: Versuche es erneut, wenn die Verbindung zurück ist.",
+      "unavailableTitle": "Berichte nicht verfügbar",
+      "notImplemented": "Diese Instanz stellt keine Berichte bereit.",
+      "error": "Die Berichte konnten nicht von der Instanz geladen werden.",
+      "stale": "Daten nicht aktuell. {{reason}}",
+      "retry": "Erneut versuchen"
     }
   }
 }
