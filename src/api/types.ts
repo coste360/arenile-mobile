@@ -16,3 +16,21 @@ export type Establishment = Schemas['Establishment'];
 export type Problem = Schemas['Problem'];
 export type ProblemType = Schemas['ProblemType'];
 export type Role = Schemas['Role'];
+
+// Phase 1: operations, bookings, maps, roles (data and offline foundation).
+export type Me = Schemas['Me'];
+export type Membership = Schemas['Membership'];
+export type Permission = Schemas['Permission'];
+export type Slots = Schemas['Slots'];
+export type Money = Schemas['Money'];
+export type OperationsDay = Schemas['OperationsDay'];
+export type OperationalSpot = Schemas['OperationalSpot'];
+export type OperationalSpotStatus = Schemas['OperationalSpotStatus'];
+export type OperationalBooking = Schemas['OperationalBooking'];
+export type BookingStatus = Schemas['BookingStatus'];
+export type BookingSummary = Schemas['BookingSummary'];
+export type BookingList = Schemas['BookingList'];
+export type BookingDetail = Schemas['BookingDetail'];
+export type BeachMap = Schemas['Map'];
+export type MapDocument = Schemas['MapDocument'];
+export type PaymentMethod = Schemas['PaymentMethod'];
