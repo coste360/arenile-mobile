@@ -8,14 +8,19 @@ quando riguardano il contratto API, il marchio o la licenza.
 
 ## Indice
 
-| N.                                                                | Titolo                                                                                                                             | Stato     |
-| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| [0001](0001-stack-expo-react-native.md)                           | Stack: Expo SDK 58, React Native, expo-router, TypeScript strict, build con EAS (scartati Capacitor, Flutter, solo PWA)            | accettato |
-| [0002](0002-repository-separato-e-contratto-api.md)               | Repository separato e contratto API dall'`openapi.yaml` di una release fissata del core (tag + SHA-256), compatibilità con `/meta` | accettato |
-| [0003](0003-autenticazione-con-token-del-dispositivo.md)          | Autenticazione con il token del dispositivo nel portachiavi, niente cookie, 401 gestito in un solo punto                           | accettato |
-| [0004](0004-ui-kit-reusables-nativewind.md)                       | UI kit: React Native Reusables su NativeWind 4 (Tailwind 3), solo token del tema del pannello, layout master/detail su tablet      | accettato |
-| [0005](0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md) | Privacy: niente telemetria, SDK di analisi o crash reporting, niente `expo-updates`/EAS Update                                     | accettato |
-| [0006](0006-rete-locale-desktop-certificato-autofirmato.md)       | Rete locale del desktop: certificato autofirmato, trasporto nativo con pinning dell'impronta (rifiuto chiaro fino ad allora)       | proposto  |
+| N.                                                                  | Titolo                                                                                                                                 | Stato     |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| [0001](0001-stack-expo-react-native.md)                             | Stack: Expo SDK 58, React Native, expo-router, TypeScript strict, build con EAS (scartati Capacitor, Flutter, solo PWA)                | accettato |
+| [0002](0002-repository-separato-e-contratto-api.md)                 | Repository separato e contratto API dall'`openapi.yaml` di una release fissata del core (tag + SHA-256), compatibilità con `/meta`     | accettato |
+| [0003](0003-autenticazione-con-token-del-dispositivo.md)            | Autenticazione con il token del dispositivo nel portachiavi, niente cookie, 401 gestito in un solo punto                               | accettato |
+| [0004](0004-ui-kit-reusables-nativewind.md)                         | UI kit: React Native Reusables su NativeWind 4 (Tailwind 3), solo token del tema del pannello, layout master/detail su tablet          | accettato |
+| [0005](0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md)   | Privacy: niente telemetria, SDK di analisi o crash reporting, niente `expo-updates`/EAS Update                                         | accettato |
+| [0006](0006-rete-locale-desktop-certificato-autofirmato.md)         | Rete locale del desktop: certificato autofirmato, trasporto nativo con pinning dell'impronta (rifiuto chiaro fino ad allora)           | proposto  |
+| [0007](0007-offline-cache-e-coda-delle-operazioni.md)               | Offline: cache persistita di oggi e domani (SQLite, lista di chiavi ammesse), coda con chiavi di idempotenza, conflitti visibili       | accettato |
+| [0008](0008-mappa-del-giorno-renderer-svg.md)                       | Mappa del giorno: SVG tagliato all'area visibile, gesti sul thread UI, palette di stato del pannello, kit rinviati                     | proposto  |
+| [0009](0009-operazioni-check-in-qr-e-azioni-solo-online.md)         | Operazioni: check-in dal QR della prenotazione (anche offline), ingressi al varco e blocchi delle postazioni solo online               | accettato |
+| [0010](0010-report-essenziali-e-widget.md)                          | Report dal confronto con l'anno precedente (solo online, `reports.read`); widget con `expo-widgets` alimentato dalla cache             | proposto  |
+| [0011](0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md) | Fase 2: vendita, spostamenti, lista d'attesa e stampa solo online e idempotenti; push con consenso, token nativo, adattatore tipizzato | proposto  |
 
 ## Come aggiungere un ADR
 

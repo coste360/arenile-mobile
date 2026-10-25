@@ -13,7 +13,7 @@
 //   6. the default Tailwind palette (`bg-red-500`, `text-white`, `border-slate-200`):
 //      use the semantic tokens (bg-destructive, text-primary-foreground, border-border).
 // The only exemptions are listed below, each with its reason. Do not add to them
-// without updating ADR 0004.
+// without updating ADR 0004 (or the ADR that adds them, e.g. 0008).
 const { readFileSync, readdirSync, statSync } = require('node:fs');
 const { join, relative, sep } = require('node:path');
 
@@ -32,10 +32,24 @@ const RAW_COLOUR_ALLOW = new Set([
   // React Navigation needs concrete colours (it cannot read CSS variables);
   // src/lib/theme.test.ts keeps them equal to src/global.css.
   'src/lib/theme.ts',
+  // react-native-svg props of the day map (hundreds of shapes): concrete colours,
+  // no per-element class resolution (ADR 0008); src/features/day-map/palette.test.ts
+  // keeps them equal to src/global.css.
+  'src/features/day-map/palette.ts',
 ]);
 
 /** Inline style / StyleSheet exemptions, with their reason. */
-const STYLE_ALLOW = new Set([]);
+const STYLE_ALLOW = new Set([
+  // Pan and pinch zoom of the day map (ADR 0008): the live transform comes from
+  // Reanimated shared values (useAnimatedStyle) and the drawing is placed in dp
+  // around the viewport; neither can be expressed as a class.
+  'src/features/day-map/components/map-viewport.tsx',
+  // Android home screen widget (ADR 0010): rendered by Jetpack Glance through
+  // Expo UI, outside React Native, where NativeWind does not exist. Its
+  // `style` is a Compose TextStyle with Material typography roles (no sizes,
+  // no colours); the colours come from the theme as props (features/widget/colors.ts).
+  'src/widgets/day-summary-widget.android.tsx',
+]);
 
 const CSS_IN_JS = [
   'styled-components',

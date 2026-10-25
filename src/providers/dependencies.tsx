@@ -1,6 +1,7 @@
 // Composition root of the side effects the app needs: storage, clock,
 // network, device facts. Production values come from createDefaultDependencies();
 // tests pass in-memory fakes, so no screen touches a native module directly.
+import { randomUUID } from 'expo-crypto';
 import * as Device from 'expo-device';
 import { getLocales } from 'expo-localization';
 import { createContext, useContext, type ReactNode } from 'react';
@@ -8,11 +9,22 @@ import { Linking, Platform } from 'react-native';
 
 import { APP_VERSION } from '@/config/app';
 import type { DeviceInfo } from '@/features/pairing/pair';
+import { createExpoPushNative, type PushNative } from '@/features/push/native';
+import { createExpoWidgetBridge, type WidgetBridge } from '@/features/widget/bridge';
 import { systemClock, type Clock } from '@/lib/clock';
+import { createExpoNetworkMonitor, type NetworkMonitor } from '@/lib/network';
+import { createOfflineKeyValueStore } from '@/lib/offline-storage';
 import { createSecureKeyValueStore, type KeyValueStore } from '@/lib/storage';
 
 export interface Dependencies {
+  /** Keychain: the device token and the preferences. */
   kv: KeyValueStore;
+  /** Offline data (cached day, operation queue): app sandbox, not the keychain. */
+  offlineStore: KeyValueStore;
+  /** Connectivity of the device (OS state). */
+  network: NetworkMonitor;
+  /** Random UUID (local ids and Idempotency-Key of queued operations). */
+  randomId: () => string;
   clock: Clock;
   /** fetch implementation; undefined means the platform fetch. */
   fetch?: typeof fetch;
@@ -22,6 +34,10 @@ export interface Dependencies {
   /** Device languages, most preferred first (BCP 47 tags). */
   deviceLocales: () => string[];
   openSystemSettings: () => void;
+  /** Home screen widget (app group / shared preferences); absent means no widget. */
+  widget?: WidgetBridge;
+  /** Native push token and permission (phase 2, opt-in); absent means no push. */
+  push?: PushNative;
 }
 
 function platform(): DeviceInfo['platform'] {
@@ -31,6 +47,9 @@ function platform(): DeviceInfo['platform'] {
 export function createDefaultDependencies(): Dependencies {
   return {
     kv: createSecureKeyValueStore(),
+    offlineStore: createOfflineKeyValueStore(),
+    network: createExpoNetworkMonitor(),
+    randomId: randomUUID,
     clock: systemClock,
     appVersion: APP_VERSION,
     device: {
@@ -43,6 +62,8 @@ export function createDefaultDependencies(): Dependencies {
     openSystemSettings: () => {
       void Linking.openSettings();
     },
+    widget: createExpoWidgetBridge(),
+    push: createExpoPushNative(),
   };
 }
 

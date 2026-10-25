@@ -43,6 +43,40 @@
     --border: 214.1 22.1% 86.5%; /* rgb(148 163 184 / 0.35) on #f8fafc */
     --input: 215.4 16.3% 53.1%; /* #74849b */
     --ring: 206 68.8% 30.2%; /* #185482 */
+
+    /* Day map (ADR 0008): status colours of the operational map and map surfaces, from the
+       core panel (web/shared/src/styles/globals.css --status-*, --map-*); the spot stroke is
+       drawn at 35% opacity as there. Mirrored by src/features/day-map/palette.ts. */
+    --status-free: 240 3.8% 46.1%; /* #71717a */
+    --status-free-foreground: 0 0% 100%; /* #ffffff */
+    --status-booked-online: 200.4 98% 39.4%; /* #0284c7 */
+    --status-booked-online-foreground: 0 0% 0%; /* #000000 */
+    --status-booked-desk: 262.1 83.3% 57.8%; /* #7c3aed */
+    --status-booked-desk-foreground: 0 0% 100%; /* #ffffff */
+    --status-season: 175.3 77.4% 26.1%; /* #0f766e */
+    --status-season-foreground: 0 0% 100%; /* #ffffff */
+    --status-season-released: 170.6 76.9% 64.3%; /* #5eead4 */
+    --status-season-released-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-hold: 26 90.5% 37.1%; /* #b45309 */
+    --status-hold-foreground: 0 0% 100%; /* #ffffff */
+    --status-to-collect: 0 72.2% 50.6%; /* #dc2626 */
+    --status-to-collect-foreground: 0 0% 100%; /* #ffffff */
+    --status-present: 224.4 64.3% 32.9%; /* #1e3a8a */
+    --status-present-foreground: 0 0% 100%; /* #ffffff */
+    --status-blocked: 216.9 19.1% 26.7%; /* #374151 */
+    --status-blocked-foreground: 0 0% 100%; /* #ffffff */
+    --status-renewal-hold: 333.3 71.4% 50.6%; /* #db2777 */
+    --status-renewal-hold-foreground: 0 0% 100%; /* #ffffff */
+    --status-unavailable: 216 12.2% 83.9%; /* #d1d5db */
+    --status-unavailable-foreground: 220.9 39.3% 11%; /* #111827 */
+    --map-sand: 42.2 72.5% 90%; /* #f8edd3 */
+    --map-sea: 200 70.1% 69.8%; /* #7cc4e8 */
+    --map-sea-label: 202 80.3% 23.9%; /* #0c4a6e */
+    --map-decoration: 42.2 43.5% 83.3%; /* #e7dcc2 */
+    --map-decoration-stroke: 40.4 25.9% 62.9%; /* #b9a988 */
+    --map-decoration-label: 39.2 36.8% 26.1%; /* #5b4a2a */
+    --map-spot-stroke: 220.9 39.3% 11%; /* #111827 */
+    --map-spot-selected: 220.9 39.3% 11%; /* #111827 */
   }
 
   .dark:root {
@@ -70,5 +104,37 @@
     --border: 211.6 35% 19.2%; /* oklch(1 0 0 / 10%) on #07192d */
     --input: 212.5 27.2% 57.5%; /* #7590b0 */
     --ring: 198.4 93.2% 59.6%; /* #38bdf8 */
+
+    /* Day map: the panel's dark values (lifted to 3:1 on the dark sand). */
+    --status-free: 240 4.9% 83.9%; /* #d4d4d8 */
+    --status-free-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-booked-online: 200.6 94.4% 86.1%; /* #bae6fd */
+    --status-booked-online-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-booked-desk: 255.1 91.7% 76.3%; /* #a78bfa */
+    --status-booked-desk-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-season: 173.4 80.4% 40%; /* #14b8a6 */
+    --status-season-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-season-released: 170.6 76.9% 64.3%; /* #5eead4 */
+    --status-season-released-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-hold: 37.7 92.1% 50.2%; /* #f59e0b */
+    --status-hold-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-to-collect: 0 90.6% 70.8%; /* #f87171 */
+    --status-to-collect-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-present: 234.5 89.5% 73.9%; /* #818cf8 */
+    --status-present-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-blocked: 240 3.7% 57.3%; /* #8e8e96 */
+    --status-blocked-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-renewal-hold: 328.6 85.5% 70.2%; /* #f472b6 */
+    --status-renewal-hold-foreground: 220.9 39.3% 11%; /* #111827 */
+    --status-unavailable: 240 5.2% 33.9%; /* #52525b */
+    --status-unavailable-foreground: 0 0% 100%; /* #ffffff */
+    --map-sand: 40 18.4% 19.2%; /* #3a3428 */
+    --map-sea: 203 58.3% 27.3%; /* #1d4f6e */
+    --map-sea-label: 200 72.4% 88.6%; /* #cde9f7 */
+    --map-decoration: 40 19.4% 24.3%; /* #4a4232 */
+    --map-decoration-stroke: 41.1 22.1% 52.2%; /* #a08f6a */
+    --map-decoration-label: 42.4 56.2% 85.7%; /* #efe3c6 */
+    --map-spot-stroke: 0 0% 100%; /* #ffffff */
+    --map-spot-selected: 0 0% 100%; /* #ffffff */
   }
 }

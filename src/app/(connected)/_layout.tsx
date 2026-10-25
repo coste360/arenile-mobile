@@ -1,26 +1,125 @@
 import { Redirect, router, Stack, usePathname } from 'expo-router';
-import { HouseIcon, SettingsIcon, type LucideIcon } from 'lucide-react-native';
+import {
+  CalendarDaysIcon,
+  ChartColumnIcon,
+  ClipboardCheckIcon,
+  ClipboardListIcon,
+  HouseIcon,
+  ListOrderedIcon,
+  MapIcon,
+  SettingsIcon,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { BrandMark } from '@/components/brand-mark';
+import { ConnectionIndicator } from '@/components/connection-indicator';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import type { Abilities } from '@/features/permissions/permissions';
+import { useAbilities } from '@/features/permissions/use-abilities';
 import { useSession } from '@/features/session/session-provider';
 import { cn } from '@/lib/utils';
 
-const NAV: { href: '/home' | '/settings'; label: 'nav.home' | 'nav.settings'; icon: LucideIcon }[] =
-  [
-    { href: '/home', label: 'nav.home', icon: HouseIcon },
-    { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
+interface NavItem {
+  href:
+    | '/home'
+    | '/map'
+    | '/operations'
+    | '/waitlist'
+    | '/reports'
+    | '/settings'
+    | '/today'
+    | '/bookings';
+  label:
+    | 'nav.home'
+    | 'nav.map'
+    | 'nav.operations'
+    | 'nav.waitlist'
+    | 'nav.reports'
+    | 'nav.settings'
+    | 'nav.today'
+    | 'nav.bookings';
+  icon: LucideIcon;
+  /** Shown only when the role may open it (hidden, the server stays the judge). */
+  visible?: (abilities: Abilities) => boolean;
+}
+
+const NAV: NavItem[] = [
+  { href: '/home', label: 'nav.home', icon: HouseIcon },
+  { href: '/today', label: 'nav.today', icon: CalendarDaysIcon },
+  { href: '/bookings', label: 'nav.bookings', icon: ClipboardListIcon },
+  { href: '/map', label: 'nav.map', icon: MapIcon },
+  { href: '/operations', label: 'nav.operations', icon: ClipboardCheckIcon },
+  {
+    href: '/waitlist',
+    label: 'nav.waitlist',
+    icon: ListOrderedIcon,
+    visible: (a) => a.canViewBookings,
+  },
+  {
+    href: '/reports',
+    label: 'nav.reports',
+    icon: ChartColumnIcon,
+    visible: (a) => a.canSeeReports,
+  },
+  { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
+];
+
+/** Day screens (Oggi, bookings, spots) declared once for both layouts. */
+function dayScreens(
+  t: (key: 'nav.today' | 'nav.bookings' | 'nav.booking' | 'nav.spots') => string,
+) {
+  return [
+    <Stack.Screen key="today" name="today" options={{ title: t('nav.today') }} />,
+    <Stack.Screen key="bookings" name="bookings/index" options={{ title: t('nav.bookings') }} />,
+    <Stack.Screen
+      key="booking"
+      name="bookings/[bookingId]"
+      options={{ title: t('nav.booking') }}
+    />,
+    <Stack.Screen key="spots" name="spots" options={{ title: t('nav.spots') }} />,
   ];
+}
+
+/** Titles of the operations screens (the booking and spot screens set their own). */
+function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') => string) {
+  return [
+    <Stack.Screen key="ops" name="operations/index" options={{ title: t('nav.operations') }} />,
+    <Stack.Screen
+      key="scan"
+      name="operations/scan"
+      options={{ title: t('operations.hub.scan') }}
+    />,
+    <Stack.Screen key="booking" name="operations/booking/[bookingId]" options={{ title: '' }} />,
+    <Stack.Screen key="spot" name="operations/spot/[spotId]" options={{ title: '' }} />,
+  ];
+}
+
+/** Phase 2 screens (spec 03), online only, declared once for both layouts. */
+function phase2Screens(
+  t: (key: 'nav.sale' | 'nav.move' | 'nav.waitlist' | 'nav.waitlistEntry') => string,
+) {
+  return [
+    <Stack.Screen key="sale" name="sale" options={{ title: t('nav.sale') }} />,
+    <Stack.Screen key="move" name="move/[bookingId]" options={{ title: t('nav.move') }} />,
+    <Stack.Screen key="waitlist" name="waitlist/index" options={{ title: t('nav.waitlist') }} />,
+    <Stack.Screen
+      key="waitlist-entry"
+      name="waitlist/[entryId]"
+      options={{ title: t('nav.waitlistEntry') }}
+    />,
+  ];
+}
 
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
  * "Collega" with the reason) and picks the layout: a stack on phones, a
- * master/detail split with a navigation pane on tablets.
+ * master/detail split with a navigation pane on tablets. The connection
+ * indicator is always visible: in every phone header, in the tablet pane.
  */
 export default function ConnectedLayout() {
   const { t } = useTranslation();
@@ -44,7 +143,13 @@ export default function ConnectedLayout() {
         <View className="flex-1">
           <Stack screenOptions={{ animation: 'none', headerBackVisible: false }}>
             <Stack.Screen name="home" options={{ title: t('nav.home') }} />
+            <Stack.Screen name="map" options={{ title: t('nav.map') }} />
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
+            <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+            {dayScreens(t)}
+            {operationsScreens(t)}
+            {phase2Screens(t)}
+            <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
           </Stack>
         </View>
       </View>
@@ -52,25 +157,73 @@ export default function ConnectedLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
+    <Stack
+      screenOptions={{
+        headerBackButtonDisplayMode: 'minimal',
+        headerRight: () => <ConnectionIndicator />,
+      }}
+    >
       <Stack.Screen
         name="home"
         options={{
           title: t('nav.home'),
           headerRight: () => (
-            <Button
-              variant="ghost"
-              size="icon"
-              accessibilityLabel={t('nav.settings')}
-              onPress={() => router.push('/settings')}
-            >
-              <Icon as={SettingsIcon} size={22} />
-            </Button>
+            <View className="flex-row items-center">
+              <ConnectionIndicator />
+              <ReportsHeaderButton />
+              <Button
+                variant="ghost"
+                size="icon"
+                accessibilityLabel={t('nav.map')}
+                onPress={() => router.push('/map')}
+              >
+                <Icon as={MapIcon} size={22} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                accessibilityLabel={t('nav.operations')}
+                onPress={() => router.push('/operations')}
+              >
+                <Icon as={ClipboardCheckIcon} size={22} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                accessibilityLabel={t('nav.settings')}
+                onPress={() => router.push('/settings')}
+              >
+                <Icon as={SettingsIcon} size={22} />
+              </Button>
+            </View>
           ),
         }}
       />
+      <Stack.Screen name="map" options={{ title: t('nav.map') }} />
       <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
+      <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
+      {dayScreens(t)}
+      {operationsScreens(t)}
+      {phase2Screens(t)}
+      <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
     </Stack>
+  );
+}
+
+/** Phone header shortcut to the reports, only for the roles that may read them. */
+function ReportsHeaderButton() {
+  const { t } = useTranslation();
+  const abilities = useAbilities();
+  if (!abilities.canSeeReports) return null;
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      accessibilityLabel={t('nav.reports')}
+      onPress={() => router.push('/reports')}
+    >
+      <Icon as={ChartColumnIcon} size={22} />
+    </Button>
   );
 }
 
@@ -78,6 +231,7 @@ export default function ConnectedLayout() {
 function Sidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const abilities = useAbilities();
   return (
     <View
       className="pb-safe pt-safe w-72 gap-1 border-r border-border bg-card px-3"
@@ -87,8 +241,11 @@ function Sidebar() {
         <BrandMark className="h-10 w-10" />
         <Text variant="large">{t('common.appName')}</Text>
       </View>
-      {NAV.map((item) => {
-        const active = pathname === item.href;
+      <View className="mb-2 rounded-md border border-border">
+        <ConnectionIndicator variant="full" />
+      </View>
+      {NAV.filter((item) => !item.visible || item.visible(abilities)).map((item) => {
+        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <Pressable
             key={item.href}

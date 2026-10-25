@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 
 import { ProblemError, UnauthorizedError } from '@/api/errors';
 import { fixedClock } from '@/lib/clock';
+import { createFakeNetworkMonitor } from '@/lib/network';
 import { createMemoryKeyValueStore } from '@/lib/storage';
 import { DependenciesProvider, type Dependencies } from '@/providers/dependencies';
 import { SESSION } from '@/test/fixtures';
@@ -18,6 +19,9 @@ function setup() {
   });
   const deps: Dependencies = {
     kv,
+    offlineStore: createMemoryKeyValueStore(),
+    network: createFakeNetworkMonitor(),
+    randomId: () => 'id',
     clock: fixedClock('2026-10-25T08:00:00Z'),
     device: { name: 'Test', platform: 'ios' },
     appVersion: '1.0.0',

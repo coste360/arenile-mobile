@@ -4,6 +4,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { DetailRow } from '@/components/detail-row';
 import { Screen } from '@/components/layout/screen';
+import { DayShortcuts } from '@/components/today/day-shortcuts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -74,6 +75,8 @@ export default function HomeScreen() {
           </AlertDescription>
         </Alert>
       ) : null}
+
+      <DayShortcuts />
 
       <Card>
         <CardHeader className="flex-row items-center justify-between">

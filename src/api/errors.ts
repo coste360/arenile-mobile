@@ -73,3 +73,11 @@ export function errorForStatus(status: number, body: unknown): ProblemError {
 
 export const isUnauthorized = (e: unknown): e is UnauthorizedError =>
   e instanceof UnauthorizedError;
+
+/**
+ * HTTP 403: the role of the pairing user does not allow the action (core spec
+ * 16). Features hide such actions; when the server refuses anyway, show
+ * "non consentito".
+ */
+export const isForbidden = (e: unknown): e is ProblemError =>
+  e instanceof ProblemError && e.status === 403;

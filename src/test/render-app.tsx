@@ -4,8 +4,23 @@ import { renderRouter, screen } from 'expo-router/testing-library';
 import { Dimensions } from 'react-native';
 
 import ConnectedLayout from '@/app/(connected)/_layout';
+import BookingScreen from '@/app/(connected)/bookings/[bookingId]';
+import BookingsScreen from '@/app/(connected)/bookings/index';
 import HomeScreen from '@/app/(connected)/home';
+import MapScreen from '@/app/(connected)/map';
+import MoveScreen from '@/app/(connected)/move/[bookingId]';
+import BookingOperationsScreen from '@/app/(connected)/operations/booking/[bookingId]';
+import OperationsScreen from '@/app/(connected)/operations/index';
+import OperationsScanScreen from '@/app/(connected)/operations/scan';
+import SpotOperationsScreen from '@/app/(connected)/operations/spot/[spotId]';
+import PendingScreen from '@/app/(connected)/pending';
+import ReportsScreen from '@/app/(connected)/reports';
+import SaleScreen from '@/app/(connected)/sale';
 import SettingsScreen from '@/app/(connected)/settings';
+import SpotsScreen from '@/app/(connected)/spots';
+import TodayScreen from '@/app/(connected)/today';
+import WaitlistEntryScreen from '@/app/(connected)/waitlist/[entryId]';
+import WaitlistScreen from '@/app/(connected)/waitlist/index';
 import ConnectScreen from '@/app/connect';
 import Index from '@/app/index';
 import ManualScreen from '@/app/manual';
@@ -13,13 +28,17 @@ import PairScreen from '@/app/pair';
 import ScanScreen from '@/app/scan';
 import { RootNavigator } from '@/components/root-navigator';
 import { PREFERENCES_KEY, type Preferences } from '@/features/preferences/preferences';
+import type { PushNative } from '@/features/push/native';
 import { SESSION_KEY, type Session } from '@/features/session/session';
 import { fixedClock } from '@/lib/clock';
+import { createFakeNetworkMonitor } from '@/lib/network';
 import { createMemoryKeyValueStore } from '@/lib/storage';
 import { AppProviders } from '@/providers/app-providers';
 import type { Dependencies } from '@/providers/dependencies';
 
 import { fakeFetch, type Handler } from './fake-fetch';
+import { createFakeWidget } from './fake-widget';
+import { sequentialIds } from './ids';
 
 export const WINDOWS = {
   phone: { width: 390, height: 844 },
@@ -47,6 +66,12 @@ export interface RenderAppOptions {
   size?: WindowSize;
   /** Number of keychain writes that fail before the keychain works again. */
   keychainWriteFailures?: number;
+  /** Initial content of the offline store (cached day, operation queue). */
+  offlineData?: Record<string, string>;
+  /** Device connectivity at start (the returned `connectivity` changes it). */
+  connected?: boolean;
+  /** Native push of the build (phase 2); absent means no push module. */
+  push?: PushNative;
 }
 
 export async function renderApp({
@@ -56,6 +81,9 @@ export async function renderApp({
   routes = {},
   size = 'phone',
   keychainWriteFailures = 0,
+  offlineData = {},
+  connected = true,
+  push,
 }: RenderAppOptions = {}) {
   setWindow(size);
   const kv = createMemoryKeyValueStore({
@@ -72,14 +100,22 @@ export async function renderApp({
     return setItem(key, value);
   };
   const network = fakeFetch(routes);
+  const offlineStore = createMemoryKeyValueStore(offlineData);
+  const connectivity = createFakeNetworkMonitor(connected);
+  const widget = createFakeWidget();
   const dependencies: Dependencies = {
     kv,
+    offlineStore,
+    network: connectivity,
+    randomId: sequentialIds(),
     clock: fixedClock('2026-10-25T08:00:00Z'),
     fetch: network.fetch,
     device: { name: 'iPhone di Anna', platform: 'ios' },
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],
     openSystemSettings: jest.fn(),
+    widget,
+    push,
   };
 
   function TestRootLayout() {
@@ -100,11 +136,26 @@ export async function renderApp({
       pair: PairScreen,
       '(connected)/_layout': ConnectedLayout,
       '(connected)/home': HomeScreen,
+      '(connected)/map': MapScreen,
       '(connected)/settings': SettingsScreen,
+      '(connected)/pending': PendingScreen,
+      '(connected)/today': TodayScreen,
+      '(connected)/bookings/index': BookingsScreen,
+      '(connected)/bookings/[bookingId]': BookingScreen,
+      '(connected)/spots': SpotsScreen,
+      '(connected)/operations/index': OperationsScreen,
+      '(connected)/operations/scan': OperationsScanScreen,
+      '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,
+      '(connected)/operations/spot/[spotId]': SpotOperationsScreen,
+      '(connected)/reports': ReportsScreen,
+      '(connected)/sale': SaleScreen,
+      '(connected)/move/[bookingId]': MoveScreen,
+      '(connected)/waitlist/index': WaitlistScreen,
+      '(connected)/waitlist/[entryId]': WaitlistEntryScreen,
     },
     { initialUrl },
   );
-  return { ...result, kv, network, dependencies, screen };
+  return { ...result, kv, offlineStore, connectivity, network, widget, dependencies, screen };
 }
 
 /** "METHOD /path" of every request, in order. */

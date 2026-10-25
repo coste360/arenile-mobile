@@ -16,3 +16,61 @@ export type Establishment = Schemas['Establishment'];
 export type Problem = Schemas['Problem'];
 export type ProblemType = Schemas['ProblemType'];
 export type Role = Schemas['Role'];
+
+// Phase 1: operations, bookings, maps, roles (data and offline foundation).
+export type Me = Schemas['Me'];
+export type Membership = Schemas['Membership'];
+export type Permission = Schemas['Permission'];
+export type Slots = Schemas['Slots'];
+export type Money = Schemas['Money'];
+export type OperationsDay = Schemas['OperationsDay'];
+export type OperationalSpot = Schemas['OperationalSpot'];
+export type OperationalSpotStatus = Schemas['OperationalSpotStatus'];
+export type OperationalBooking = Schemas['OperationalBooking'];
+export type BookingStatus = Schemas['BookingStatus'];
+export type BookingSummary = Schemas['BookingSummary'];
+export type BookingList = Schemas['BookingList'];
+export type BookingDetail = Schemas['BookingDetail'];
+export type BeachMap = Schemas['Map'];
+export type MapDocument = Schemas['MapDocument'];
+export type PaymentMethod = Schemas['PaymentMethod'];
+
+// Phase 1 operations: check-in by QR, cash desk, spot blocks.
+export type Ticket = Schemas['Ticket'];
+export type GateCheckInResult = Schemas['GateCheckInResult'];
+export type CashSessionDetail = Schemas['CashSessionDetail'];
+export type SpotBlockCreate = Schemas['SpotBlockCreate'];
+export type SpotBlockList = Schemas['SpotBlockList'];
+
+// Phase 3: essential reports (core spec 15.3).
+export type YearComparisonReport = Schemas['YearComparisonReport'];
+export type ComparisonMetric = Schemas['ComparisonMetric'];
+export type ComparisonMetricKey = Schemas['ComparisonMetricKey'];
+export type ComparisonPoint = Schemas['ComparisonPoint'];
+export type ComparisonAlign = Schemas['ComparisonAlign'];
+
+// Phase 2: daily quick sale, move, waitlist, ticket printing (spec 03).
+export type DailySaleQuoteRequest = Schemas['DailySaleQuoteRequest'];
+export type DailySaleQuote = Schemas['DailySaleQuote'];
+export type DailySaleCreate = Schemas['DailySaleCreate'];
+export type DailySaleResult = Schemas['DailySaleResult'];
+export type DailySaleSettings = Schemas['DailySaleSettings'];
+export type TicketPaymentMethod = Schemas['TicketPaymentMethod'];
+export type AllocationConflict = Schemas['AllocationConflict'];
+export type Pack = Schemas['Pack'];
+export type Extra = Schemas['Extra'];
+export type Zone = Schemas['Zone'];
+export type BookingMoveRequest = Schemas['BookingMoveRequest'];
+export type BookingChangeResult = Schemas['BookingChangeResult'];
+export type WaitlistEntry = Schemas['WaitlistEntry'];
+export type WaitlistEntryDetail = Schemas['WaitlistEntryDetail'];
+export type WaitlistEntryStatus = Schemas['WaitlistEntryStatus'];
+export type WaitlistOffer = Schemas['WaitlistOffer'];
+export type WaitlistOfferCreate = Schemas['WaitlistOfferCreate'];
+export type WaitlistOfferStatus = Schemas['WaitlistOfferStatus'];
+export type WaitlistSettings = Schemas['WaitlistSettings'];
+export type PrintDocumentKind = Schemas['PrintDocumentKind'];
+export type PrintRouteResolution = Schemas['PrintRouteResolution'];
+export type PrintRouteUnreadyReason = Schemas['PrintRouteUnreadyReason'];
+export type PrintJob = Schemas['PrintJob'];
+export type PrintJobStatus = Schemas['PrintJobStatus'];

@@ -3,7 +3,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { useTranslation } from 'react-i18next';
 
+import { PushTokenSync } from '@/features/push/push-token-sync';
 import { useSession } from '@/features/session/session-provider';
+import { WidgetSync } from '@/features/widget/widget-sync';
 import { NAV_THEME } from '@/lib/theme';
 
 /**
@@ -21,6 +23,8 @@ export function RootNavigator() {
   return (
     <ThemeProvider value={NAV_THEME[scheme]}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <WidgetSync />
+      <PushTokenSync />
       <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen

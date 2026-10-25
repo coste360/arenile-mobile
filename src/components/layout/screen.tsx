@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { cn } from '@/lib/utils';
 
@@ -13,11 +13,16 @@ export function Screen({
   children,
   className,
   topInset = false,
+  refreshing = false,
+  onRefresh,
 }: {
   children: ReactNode;
   className?: string;
   /** Pad the top safe area (screens without a native header). */
   topInset?: boolean;
+  /** Pull to refresh: shown only when `onRefresh` is given. */
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }) {
   const layout = useDeviceLayout();
   return (
@@ -26,6 +31,9 @@ export function Screen({
       contentContainerClassName={cn('grow pb-safe', topInset && 'pt-safe')}
       keyboardShouldPersistTaps="handled"
       contentInsetAdjustmentBehavior="automatic"
+      refreshControl={
+        onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> : undefined
+      }
     >
       <View
         className={cn(

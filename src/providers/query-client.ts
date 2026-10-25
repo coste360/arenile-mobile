@@ -2,10 +2,13 @@ import { focusManager, QueryClient } from '@tanstack/react-query';
 import { AppState, type AppStateStatus } from 'react-native';
 
 import { NetworkError } from '@/api/errors';
+import { OFFLINE_MAX_AGE_MS } from '@/features/offline/persist';
 
 /**
  * Retries only transient network failures; a problem+json answer is final.
- * 401s are handled by SessionProvider (sign-out), never retried.
+ * 401s are handled by SessionProvider (sign-out), never retried. Unused
+ * queries are kept as long as the offline cache (48 h): a restored day with
+ * no screen observing it must survive until it is shown offline.
  */
 export function createQueryClient(): QueryClient {
   return new QueryClient({
@@ -13,6 +16,7 @@ export function createQueryClient(): QueryClient {
       queries: {
         retry: (failureCount, error) => error instanceof NetworkError && failureCount < 2,
         refetchOnReconnect: true,
+        gcTime: OFFLINE_MAX_AGE_MS,
       },
       mutations: { retry: false },
     },

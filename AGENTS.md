@@ -37,25 +37,50 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 
 - `src/app/` expo-router routes (every file is a screen; no tests or helpers here):
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
-  its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings; phone stack or
-  tablet master/detail)
+  its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
+  operations, day map, `today` ("Oggi"), `bookings/` (day list; tablet list + sheet), `bookings/[bookingId]`
+  (sheet on phones), `spots` (free / released spots), `operations/` hub, QR scanner, booking and spot
+  operations, phase 2 `sale` (daily quick sale), `move/[bookingId]`, `waitlist/` (list; tablet list +
+  entry), `waitlist/[entryId]`; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
-  (`errors.ts`), contract type aliases (`types.ts`); `src/api/generated/` generated types
+  (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
+  `src/api/generated/` generated types; `push-adapter.ts` hand-typed device push endpoints not in the
+  pinned contract yet (replace with generated types after the core release, ADR 0011)
 - `src/features/<area>` logic per area: `pairing` (QR decoder, target normalisation, pairing flow,
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
-  `preferences` (language, theme)
+  `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
+  phase 1; `bookings/day-list` filters, search and sort, `bookings/detail` sheet rules and customer
+  visibility by role, `operations/day-spots` free and released spots), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
+  operation queue, runtime and hooks), `day-map` (operational map of the day: status, search,
+  camera, SVG renderer, spot sheet; ADR 0008), `check-in` (booking/ticket QR formats, code resolution, gate
+  admission), `booking-actions` (booking facts, operation rules, form schemas, queued actions, cash
+  desk state), `spot-blocks` (online-only blocks, spot search), `reports` (year comparison, periods,
+  formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`), phase 2 (ADR 0011):
+  `daily-sale` (sale rules, catalogue, quote, sale), `move-booking` (move rules, dry run, booking or
+  ticket move), `waitlist` (list, compatibility, offer), `printing` (print route, jobs), `tickets`
+  (ticket of a booking), `push` (native token, registration, token renewal). **Read `docs/data-and-offline.md` before adding a feature.**
+- `src/widgets/` home screen widget layouts for expo-widgets (`'widget'` directive: isolated runtime,
+  only Expo UI components, data only through props; ADR 0010)
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
-  `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers)
+  `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
+  `ConnectionIndicator`, `OnlineOnlyNotice`, `FilterChip`, `CachedNotice`); `bookings/` (list, row,
+  badges, sheet), `today/` (figure card, home shortcuts) and `operations/` (the embeddable operation
+  panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms) and `reports/`
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
-- `src/lib/` shared primitives (version compare, base64url, storage, clock, navigation theme, `cn`)
-- `src/test/` test helpers (`fake-fetch.ts`, `fixtures.ts`, `render-app.tsx`) and screen tests
+- `src/lib/` shared primitives (version compare, base64url, storage, offline storage, network,
+  clock, calendar dates, instants in the establishment zone, localised API texts, money in cents,
+  navigation theme, `cn`)
+- `src/test/` test helpers (`fake-fetch.ts`, `fixtures.ts`, `operations-fixtures.ts`, `day-routes.ts`,
+  `ids.ts`, `render-app.tsx`) and screen tests
 - `src/global.css` the only stylesheet (theme tokens); `tailwind.config.js` maps them
 - `api/core-version.json` pinned core release + SHA-256; `api/openapi.yaml` its contract (verbatim)
+- `plugins/` local Expo config plugins (`with-fcm-privacy.js`: FCM dormant until the push opt-in)
 - `scripts/` `gen-api.mjs` (contract download/verify/generate), `style-guard.js`, `agents/` hooks
 - `assets/brand/` official Arenile brand assets (not covered by the code licence, see NOTICE.md)
 - `native-locales/` localized native strings (app name, permission prompts)
-- `docs/spec/` functional plan of the app, `docs/adr/` decisions
+- `docs/spec/` functional plan of the app, `docs/adr/` decisions, `docs/data-and-offline.md` the
+  data, permission and offline APIs features build on
 
 ## Generated code (never edit by hand)
 
@@ -79,7 +104,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - UI = React Native Reusables + NativeWind theme tokens only (ADR 0004): no `StyleSheet`, no
   `style={}`, no raw colours, no default Tailwind palette, no arbitrary values, no native `Alert`.
   `npm run lint` (`scripts/style-guard.js` + ESLint) enforces it; exemptions live in the script with
-  their reason.
+  their reason (the day map's SVG palette and gesture viewport, ADR 0008).
 - Phone and tablet/iPad from day one: responsive layout helpers, tests at both widths.
 - User-facing strings go through i18n keys; Italian is the source language; `en`, `de`, `fr` kept in
   parity (tested). Native strings (permission prompts) in `native-locales/`.
@@ -87,8 +112,19 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   screens and logic never call native modules, `fetch` or `new Date()` directly.
 - Pairing rules mirror the core (`internal/domain/device/qr.go`, `internal/desktop/remote/pair.go`):
   QR v1, http only on loopback, Crockford pairing codes, semver compatibility both ways.
-- Money, when it arrives (Phase 1), is integer cents formatted only at display time with `Intl`;
-  calendar dates are `YYYY-MM-DD` in the establishment timezone, instants RFC 3339 UTC (as the API).
+- Money is integer cents (`src/lib/money.ts`), formatted only at display time with `Intl`;
+  calendar dates are `YYYY-MM-DD` in the establishment timezone (`src/lib/calendar.ts`), instants
+  RFC 3339 UTC (as the API).
+- Offline (ADR 0007): check-in, day release, note and cash payment go through the operation queue
+  (`useEnqueueOperation`, stable `Idempotency-Key`), refusals stay visible until the user decides;
+  create/move booking, spot blocks and gate admission are online-only (ADR 0009). Only allowlisted
+  queries are persisted; the cache is removed on every sign-out. Hide actions with `useAbilities()`;
+  a 403 is "non consentito".
+- Phase 2 (ADR 0011): daily sale, move, waitlist offers and ticket printing are online-only, never
+  queued, with a stable `Idempotency-Key` per request on creations. Push is opt-in: native APNs/FCM
+  token to the instance only, never the Expo push token or service (guarded by a test).
+- Home screen widget (ADR 0010): it shows only props the app publishes from data already cached
+  (counts, never names or amounts) and never fetches; the widget is cleared on sign-out.
 - No new runtime dependency without explaining why in the PR; licences must be compatible with both
   BSL 1.1 and AGPL-3.0 (MIT, BSD, Apache-2.0...).
 - Code comments and identifiers in English.

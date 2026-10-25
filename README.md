@@ -29,6 +29,9 @@ invia dati a Coste360.
 
 L'app parla solo con la tua istanza: nessuna telemetria, nessun SDK di analisi, pubblicità o crash
 reporting, nessun aggiornamento remoto del codice ([ADR 0005](docs/adr/0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md)).
+Le notifiche push sono facoltative e spente finché non le accendi: passano dal relay di Coste360, che
+riceve solo l'identificativo del telefono dato da Apple o Google e un testo generico, mai dati dei
+clienti ([ADR 0011](docs/adr/0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md)).
 
 ## Sviluppo
 
@@ -68,7 +71,8 @@ e [CONTRIBUTING.md](CONTRIBUTING.md).
 ```
 src/app/            rotte expo-router (collega, scansione, manuale, collegamento, area collegata)
 src/api/            client API unico, trasporto, errori tipizzati; generated/ = tipi dal contratto
-src/features/       abbinamento, sessione, compatibilità, preferenze
+src/features/       abbinamento, sessione, compatibilità, preferenze, dati, offline, report, widget
+src/widgets/        layout del widget della schermata principale (expo-widgets)
 src/components/     componenti dell'app; ui/ = React Native Reusables
 src/i18n/           i18next, lingue it (sorgente), en, de, fr
 docs/spec/          piano dell'app per fasi
@@ -87,7 +91,13 @@ docs/adr/           decisioni
   marchio: varianti dedicate per l'icona adattiva e per la schermata di avvio (oggi derivate dal simbolo
   ufficiale con margini) e le schede degli store.
 - **Account:** Expo/EAS (build e invio), Apple Developer Program e Google Play Console di Coste360,
-  identificativo `app.arenile.mobile`.
+  identificativo `app.arenile.mobile`; per il widget iOS anche l'estensione
+  `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile` (ADR 0010).
+- **Notifiche push (fase 2, ADR 0011):** una chiave APNs del team Apple di Coste360 e un progetto
+  Firebase di Coste360 per FCM (il file `google-services.json` va indicato in `android.googleServicesFile`
+  al momento della build EAS, non nel repository), consegnati al relay `push.coste360.it`; una release
+  del core con `/api/device/v1/push`, poi `make api-bump` e la sostituzione di `src/api/push-adapter.ts`
+  con i tipi generati.
 
 ## Contatti
 

@@ -32,6 +32,30 @@ module.exports = {
         card: { DEFAULT: token('card'), foreground: token('card-foreground') },
         success: token('success'),
         warning: token('warning'),
+        // Day map (ADR 0008): status colours of the operational map, always paired
+        // with a label and a glyph; map surfaces.
+        status: Object.fromEntries(
+          [
+            'free',
+            'booked-online',
+            'booked-desk',
+            'season',
+            'season-released',
+            'hold',
+            'to-collect',
+            'present',
+            'blocked',
+            'renewal-hold',
+            'unavailable',
+          ].map((s) => [
+            s,
+            { DEFAULT: token(`status-${s}`), foreground: token(`status-${s}-foreground`) },
+          ]),
+        ),
+        map: {
+          sand: token('map-sand'),
+          sea: token('map-sea'),
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
