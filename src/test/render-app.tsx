@@ -19,6 +19,8 @@ import SaleScreen from '@/app/(connected)/sale';
 import SettingsScreen from '@/app/(connected)/settings';
 import SpotsScreen from '@/app/(connected)/spots';
 import TodayScreen from '@/app/(connected)/today';
+import WaitlistEntryScreen from '@/app/(connected)/waitlist/[entryId]';
+import WaitlistScreen from '@/app/(connected)/waitlist/index';
 import ConnectScreen from '@/app/connect';
 import Index from '@/app/index';
 import ManualScreen from '@/app/manual';
@@ -143,6 +145,8 @@ export async function renderApp({
       '(connected)/reports': ReportsScreen,
       '(connected)/sale': SaleScreen,
       '(connected)/move/[bookingId]': MoveScreen,
+      '(connected)/waitlist/index': WaitlistScreen,
+      '(connected)/waitlist/[entryId]': WaitlistEntryScreen,
     },
     { initialUrl },
   );

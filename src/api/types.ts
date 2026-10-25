@@ -63,6 +63,7 @@ export type Zone = Schemas['Zone'];
 export type BookingMoveRequest = Schemas['BookingMoveRequest'];
 export type BookingChangeResult = Schemas['BookingChangeResult'];
 export type WaitlistEntry = Schemas['WaitlistEntry'];
+export type WaitlistEntryDetail = Schemas['WaitlistEntryDetail'];
 export type WaitlistEntryStatus = Schemas['WaitlistEntryStatus'];
 export type WaitlistOffer = Schemas['WaitlistOffer'];
 export type WaitlistOfferCreate = Schemas['WaitlistOfferCreate'];

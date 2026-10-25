@@ -1,5 +1,10 @@
 import { router } from 'expo-router';
-import { ArrowRightLeftIcon, CloudOffIcon, TicketPlusIcon } from 'lucide-react-native';
+import {
+  ArrowRightLeftIcon,
+  CloudOffIcon,
+  ListOrderedIcon,
+  TicketPlusIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -13,6 +18,7 @@ import { canSell } from '@/features/daily-sale/sale';
 import { canMove, MOVABLE_STATUSES } from '@/features/move-booking/move';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useAbilities } from '@/features/permissions/use-abilities';
+import { canViewWaitlist } from '@/features/waitlist/waitlist';
 import type { CalendarDate } from '@/lib/calendar';
 
 import type { DaySpot } from '../model';
@@ -21,7 +27,8 @@ import { isBookable } from '../status';
 /**
  * Phase 2 actions of the spot sheet (spec 03), online only and each hidden
  * from the roles that cannot perform it: the daily quick sale of a free
- * spot, moving the booking on it and printing the daily ticket of a sold one.
+ * spot, offering it to the waitlist, moving the booking on it and
+ * printing the daily ticket of a sold one.
  */
 export function SpotSheetExtras({
   spot,
@@ -49,7 +56,10 @@ export function SpotSheetExtras({
     !!booking?.line_id &&
     MOVABLE_STATUSES.has(booking.status) &&
     booking.ends_on >= today;
-  if (!sell && !print && !move) return null;
+  // A freed spot (free, or a released pass day) can go to the waitlist.
+  const waitlist =
+    canViewWaitlist(abilities) && date >= today && !!status && isBookable(status) && !!spot.op;
+  if (!sell && !print && !move && !waitlist) return null;
 
   return (
     <View className="gap-2" accessibilityLabel={t('dayMap.sheet.moreActions')}>
@@ -81,11 +91,32 @@ export function SpotSheetExtras({
           <Text>{t('move.action')}</Text>
         </Button>
       ) : null}
-      {(sell || move) && !online ? (
+      {waitlist && spot.op ? (
+        <Button
+          size="lg"
+          variant="outline"
+          disabled={!online}
+          onPress={() =>
+            router.push({
+              pathname: '/waitlist',
+              params: {
+                spotId: spot.id,
+                zoneId: spot.op?.zone_id ?? '',
+                label: spot.label,
+                date,
+              },
+            })
+          }
+        >
+          <Icon as={ListOrderedIcon} size={18} />
+          <Text>{t('waitlist.offerSpot')}</Text>
+        </Button>
+      ) : null}
+      {(sell || move || waitlist) && !online ? (
         <View className="flex-row items-center gap-2" accessibilityLiveRegion="polite">
           <Icon as={CloudOffIcon} size={16} className="text-muted-foreground" />
           <Text variant="muted" className="flex-1">
-            {t(sell ? 'sale.onlineOnly' : 'move.onlineOnly')}
+            {t(sell ? 'sale.onlineOnly' : move ? 'move.onlineOnly' : 'waitlist.onlineOnly')}
           </Text>
         </View>
       ) : null}

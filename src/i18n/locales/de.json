@@ -151,7 +151,9 @@
     "operations": "Vorgänge",
     "reports": "Berichte",
     "sale": "Tagesverkauf",
-    "move": "Buchung verschieben"
+    "move": "Buchung verschieben",
+    "waitlist": "Warteliste",
+    "waitlistEntry": "Eintrag"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -1078,6 +1080,89 @@
       "invalid": "Das Paket ist auf diesem Platz nicht gültig: Wähle einen anderen.",
       "not_found": "Die Buchung oder der Platz existiert nicht mehr.",
       "default": "Verschieben fehlgeschlagen. Versuche es erneut."
+    }
+  },
+  "waitlist": {
+    "offerSpot": "Der Warteliste anbieten",
+    "onlineOnly": "Die Warteliste braucht die erreichbare Instanz: Angebote reservieren den Platz auf dem Server.",
+    "offlineTitle": "Warteliste offline nicht verfügbar",
+    "selectTitle": "Wähle einen Eintrag",
+    "selectDescription": "Anfrage und Angebote erscheinen hier.",
+    "disabled": {
+      "title": "Warteliste deaktiviert",
+      "description": "Es werden keine neuen Einträge angenommen und keine Angebote verschickt. Aktiviere sie im Panel."
+    },
+    "freed": "{{label}} ist am {{day}} frei",
+    "scope": "Anfragen",
+    "compatible": "Passend",
+    "everyone": "Ganze Liste",
+    "filter": "Status",
+    "views": {
+      "waiting": "Wartend",
+      "offered": "Angebot gesendet",
+      "all": "Alle"
+    },
+    "search": "Kunde suchen",
+    "searchPlaceholder": "Kunde suchen",
+    "empty": "Keine Einträge.",
+    "emptyCompatible": "Keine Anfrage passt zu diesem Platz und Tag.",
+    "position": "{{position}}.",
+    "positionLabel": "Position in der Warteschlange",
+    "status": {
+      "waiting": "Wartend",
+      "offered": "Angebot gesendet",
+      "converted": "Gebucht",
+      "expired": "Abgelaufen",
+      "removed": "Entfernt"
+    },
+    "offerStatus": {
+      "pending": "Wartet auf Antwort",
+      "accepted": "Angenommen",
+      "declined": "Abgelehnt",
+      "expired": "Abgelaufen",
+      "revoked": "Widerrufen"
+    },
+    "request": "Anfrage",
+    "period": "Zeitraum",
+    "slots": "Tageszeit",
+    "pack": "Paket",
+    "quantity": "Menge",
+    "channel": "Kanal",
+    "note": "Notiz",
+    "offerCount": "Gesendete Angebote",
+    "activeOffer": "Offenes Angebot",
+    "expires": "Läuft ab",
+    "cause": "Grund",
+    "causes": {
+      "cancellation": "Stornierung",
+      "release": "Freigabe Saisonabo",
+      "expiry": "Buchung abgelaufen",
+      "manual": "Manuell"
+    },
+    "readOnly": "Deine Rolle kann die Warteliste ansehen, aber keine Angebote senden.",
+    "offer": {
+      "title": "Platz anbieten",
+      "description": "{{customer}} erhält eine E-Mail mit dem Buchungslink: Der Platz bleibt bis zum Ablauf reserviert.",
+      "spot": "Platz",
+      "anySpot": "Der erste passende",
+      "minutes": "Dauer des Angebots (Minuten)",
+      "minutesInvalid": "Von 5 bis 10080 Minuten (7 Tage).",
+      "help": "Antwortet der Kunde nicht rechtzeitig, läuft das Angebot ab und geht an den Nächsten.",
+      "submit": "Angebot senden",
+      "confirmTitle": "Angebot an {{customer}} senden?",
+      "confirmDescription": "Platz: {{spot}}. Er bleibt {{minutes}} Minuten reserviert.",
+      "done": "Angebot an {{customer}} gesendet.",
+      "doneDetail": "Platz {{spot}}, gültig bis {{time}}."
+    },
+    "errors": {
+      "offline": "Instanz nicht erreichbar: Versuche es erneut, sobald die Verbindung zurück ist.",
+      "forbidden": "Für deine Rolle nicht erlaubt.",
+      "disabled": "Die Warteliste ist deaktiviert: Aktiviere sie im Panel.",
+      "unavailable": "Für diese Anfrage ist kein passender Platz frei.",
+      "alreadyOffered": "Dieser Eintrag hat bereits ein offenes Angebot oder wartet nicht mehr.",
+      "invalid": "Ungültige Daten: Prüfe Platz und Dauer.",
+      "notFound": "Der Eintrag existiert nicht mehr.",
+      "default": "Vorgang fehlgeschlagen. Versuche es erneut."
     }
   }
 }

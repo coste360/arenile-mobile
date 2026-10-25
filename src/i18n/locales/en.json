@@ -151,7 +151,9 @@
     "operations": "Operations",
     "reports": "Reports",
     "sale": "Daily sale",
-    "move": "Move booking"
+    "move": "Move booking",
+    "waitlist": "Waitlist",
+    "waitlistEntry": "Entry"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -1078,6 +1080,89 @@
       "invalid": "The package is not valid on this spot: pick another one.",
       "not_found": "The booking or the spot no longer exists.",
       "default": "Move failed. Try again."
+    }
+  },
+  "waitlist": {
+    "offerSpot": "Offer to the waitlist",
+    "onlineOnly": "The waitlist needs the instance to be reachable: offers hold the spot on the server.",
+    "offlineTitle": "Waitlist not available offline",
+    "selectTitle": "Pick an entry",
+    "selectDescription": "The request and its offers appear here.",
+    "disabled": {
+      "title": "Waitlist turned off",
+      "description": "No new entries are accepted and no offers are sent. Turn it on again from the panel."
+    },
+    "freed": "{{label}} is free on {{day}}",
+    "scope": "Requests",
+    "compatible": "Compatible",
+    "everyone": "Whole list",
+    "filter": "Status",
+    "views": {
+      "waiting": "Waiting",
+      "offered": "Offer sent",
+      "all": "All"
+    },
+    "search": "Search customer",
+    "searchPlaceholder": "Search customer",
+    "empty": "No entries.",
+    "emptyCompatible": "No request is compatible with this spot and day.",
+    "position": "#{{position}}",
+    "positionLabel": "Position in the queue",
+    "status": {
+      "waiting": "Waiting",
+      "offered": "Offer sent",
+      "converted": "Booked",
+      "expired": "Expired",
+      "removed": "Removed"
+    },
+    "offerStatus": {
+      "pending": "Awaiting reply",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "expired": "Expired",
+      "revoked": "Revoked"
+    },
+    "request": "Request",
+    "period": "Period",
+    "slots": "Slot",
+    "pack": "Package",
+    "quantity": "Quantity",
+    "channel": "Channel",
+    "note": "Note",
+    "offerCount": "Offers sent",
+    "activeOffer": "Open offer",
+    "expires": "Expires",
+    "cause": "Reason",
+    "causes": {
+      "cancellation": "Cancellation",
+      "release": "Season pass release",
+      "expiry": "Booking expired",
+      "manual": "Manual"
+    },
+    "readOnly": "Your role can view the waitlist but cannot send offers.",
+    "offer": {
+      "title": "Offer a spot",
+      "description": "{{customer}} receives an email with the link to book: the spot stays held until it expires.",
+      "spot": "Spot",
+      "anySpot": "First compatible one",
+      "minutes": "Offer duration (minutes)",
+      "minutesInvalid": "From 5 to 10080 minutes (7 days).",
+      "help": "If the customer does not answer in time, the offer expires and goes to the next in line.",
+      "submit": "Send the offer",
+      "confirmTitle": "Send the offer to {{customer}}?",
+      "confirmDescription": "Spot: {{spot}}. It stays held for {{minutes}} minutes.",
+      "done": "Offer sent to {{customer}}.",
+      "doneDetail": "Spot {{spot}}, valid until {{time}}."
+    },
+    "errors": {
+      "offline": "Instance unreachable: try again when the connection is back.",
+      "forbidden": "Not allowed for your role.",
+      "disabled": "The waitlist is turned off: turn it on from the panel.",
+      "unavailable": "No compatible spot is free for this request.",
+      "alreadyOffered": "This entry already has an open offer or is no longer waiting.",
+      "invalid": "Invalid data: check the spot and the duration.",
+      "notFound": "The entry no longer exists.",
+      "default": "Operation failed. Try again."
     }
   }
 }

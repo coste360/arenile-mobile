@@ -151,7 +151,9 @@
     "operations": "Opérations",
     "reports": "Rapports",
     "sale": "Vente du jour",
-    "move": "Déplacer la réservation"
+    "move": "Déplacer la réservation",
+    "waitlist": "Liste d'attente",
+    "waitlistEntry": "Inscription"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -1078,6 +1080,89 @@
       "invalid": "La formule n'est pas valable sur cet emplacement : choisissez-en un autre.",
       "not_found": "La réservation ou l'emplacement n'existe plus.",
       "default": "Déplacement non abouti. Réessayez."
+    }
+  },
+  "waitlist": {
+    "offerSpot": "Proposer à la liste d'attente",
+    "onlineOnly": "La liste d'attente nécessite l'instance joignable : les offres bloquent l'emplacement sur le serveur.",
+    "offlineTitle": "Liste d'attente indisponible hors ligne",
+    "selectTitle": "Choisissez une inscription",
+    "selectDescription": "La demande et ses offres apparaissent ici.",
+    "disabled": {
+      "title": "Liste d'attente désactivée",
+      "description": "Aucune nouvelle inscription n'est acceptée et aucune offre n'est envoyée. Réactivez-la depuis le panneau."
+    },
+    "freed": "{{label}} est libre le {{day}}",
+    "scope": "Demandes",
+    "compatible": "Compatibles",
+    "everyone": "Toute la liste",
+    "filter": "Statut",
+    "views": {
+      "waiting": "En attente",
+      "offered": "Offre envoyée",
+      "all": "Toutes"
+    },
+    "search": "Rechercher un client",
+    "searchPlaceholder": "Rechercher un client",
+    "empty": "Aucune inscription.",
+    "emptyCompatible": "Aucune demande compatible avec cet emplacement et ce jour.",
+    "position": "{{position}}e",
+    "positionLabel": "Position dans la file",
+    "status": {
+      "waiting": "En attente",
+      "offered": "Offre envoyée",
+      "converted": "Réservé",
+      "expired": "Expirée",
+      "removed": "Retirée"
+    },
+    "offerStatus": {
+      "pending": "En attente de réponse",
+      "accepted": "Acceptée",
+      "declined": "Refusée",
+      "expired": "Expirée",
+      "revoked": "Révoquée"
+    },
+    "request": "Demande",
+    "period": "Période",
+    "slots": "Créneau",
+    "pack": "Formule",
+    "quantity": "Quantité",
+    "channel": "Canal",
+    "note": "Note",
+    "offerCount": "Offres envoyées",
+    "activeOffer": "Offre en cours",
+    "expires": "Expire",
+    "cause": "Motif",
+    "causes": {
+      "cancellation": "Annulation",
+      "release": "Libération d'abonnement",
+      "expiry": "Réservation expirée",
+      "manual": "Manuelle"
+    },
+    "readOnly": "Votre rôle peut consulter la liste d'attente mais pas envoyer d'offres.",
+    "offer": {
+      "title": "Proposer un emplacement",
+      "description": "{{customer}} reçoit un e-mail avec le lien pour réserver : l'emplacement reste bloqué jusqu'à l'expiration.",
+      "spot": "Emplacement",
+      "anySpot": "Le premier compatible",
+      "minutes": "Durée de l'offre (minutes)",
+      "minutesInvalid": "De 5 à 10080 minutes (7 jours).",
+      "help": "Si le client ne répond pas à temps, l'offre expire et passe au suivant.",
+      "submit": "Envoyer l'offre",
+      "confirmTitle": "Envoyer l'offre à {{customer}} ?",
+      "confirmDescription": "Emplacement : {{spot}}. Il reste bloqué {{minutes}} minutes.",
+      "done": "Offre envoyée à {{customer}}.",
+      "doneDetail": "Emplacement {{spot}}, valable jusqu'au {{time}}."
+    },
+    "errors": {
+      "offline": "Instance injoignable : réessayez quand la connexion revient.",
+      "forbidden": "Non autorisé pour votre rôle.",
+      "disabled": "La liste d'attente est désactivée : réactivez-la depuis le panneau.",
+      "unavailable": "Aucun emplacement compatible n'est libre pour cette demande.",
+      "alreadyOffered": "Cette inscription a déjà une offre en cours ou n'est plus en attente.",
+      "invalid": "Données non valides : vérifiez l'emplacement et la durée.",
+      "notFound": "L'inscription n'existe plus.",
+      "default": "Opération non aboutie. Réessayez."
     }
   }
 }

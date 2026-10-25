@@ -10,6 +10,7 @@ import type {
   Permission,
   PrintRouteResolution,
   Role,
+  WaitlistEntry,
 } from '@/api/types';
 import { ROLE_PERMISSIONS } from '@/features/permissions/permissions';
 
@@ -201,4 +202,26 @@ export function phase2Instance({
 /** Requests of `method path` received by the fake instance, in order. */
 export function requestsTo(calls: Request[], method: string, path: string): Request[] {
   return calls.filter((r) => r.method === method && new URL(r.url).pathname === path);
+}
+
+export function waitlistEntry(overrides: Partial<WaitlistEntry> = {}): WaitlistEntry {
+  return {
+    id: 'w-1',
+    status: 'waiting',
+    channel: 'desk',
+    customer_id: 'c-9',
+    customer_display_name: 'Esposito Gennaro',
+    starts_on: '2026-10-25',
+    ends_on: '2026-10-25',
+    slots: 'FULL',
+    pack_id: 'p-1',
+    quantity: 1,
+    priority: 0,
+    position: 1,
+    offer_count: 0,
+    version: 1,
+    created_at: '2026-10-20T09:00:00Z',
+    updated_at: '2026-10-20T09:00:00Z',
+    ...overrides,
+  };
 }

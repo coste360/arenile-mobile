@@ -151,7 +151,9 @@
     "operations": "Operazioni",
     "reports": "Report",
     "sale": "Vendita giornaliera",
-    "move": "Sposta prenotazione"
+    "move": "Sposta prenotazione",
+    "waitlist": "Lista d'attesa",
+    "waitlistEntry": "Iscrizione"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -1078,6 +1080,89 @@
       "invalid": "Il pacchetto non è valido su questa postazione: scegline un'altra.",
       "not_found": "La prenotazione o la postazione non esiste più.",
       "default": "Spostamento non riuscito. Riprova."
+    }
+  },
+  "waitlist": {
+    "offerSpot": "Offri a chi è in lista d'attesa",
+    "onlineOnly": "La lista d'attesa richiede l'istanza raggiungibile: le offerte bloccano il posto sul server.",
+    "offlineTitle": "Lista d'attesa non disponibile offline",
+    "selectTitle": "Scegli un'iscrizione",
+    "selectDescription": "La richiesta e le offerte compaiono qui.",
+    "disabled": {
+      "title": "Lista d'attesa disattivata",
+      "description": "Non si accettano nuove iscrizioni e non partono offerte. Riattivala dal pannello."
+    },
+    "freed": "{{label}} è libera {{day}}",
+    "scope": "Richieste",
+    "compatible": "Compatibili",
+    "everyone": "Tutta la lista",
+    "filter": "Stato",
+    "views": {
+      "waiting": "In attesa",
+      "offered": "Offerta inviata",
+      "all": "Tutte"
+    },
+    "search": "Cerca cliente",
+    "searchPlaceholder": "Cerca cliente",
+    "empty": "Nessuna iscrizione.",
+    "emptyCompatible": "Nessuna richiesta compatibile con questa postazione e questo giorno.",
+    "position": "{{position}}°",
+    "positionLabel": "Posizione in coda",
+    "status": {
+      "waiting": "In attesa",
+      "offered": "Offerta inviata",
+      "converted": "Prenotato",
+      "expired": "Scaduta",
+      "removed": "Rimossa"
+    },
+    "offerStatus": {
+      "pending": "In attesa di risposta",
+      "accepted": "Accettata",
+      "declined": "Rifiutata",
+      "expired": "Scaduta",
+      "revoked": "Revocata"
+    },
+    "request": "Richiesta",
+    "period": "Periodo",
+    "slots": "Fascia",
+    "pack": "Pacchetto",
+    "quantity": "Quantità",
+    "channel": "Canale",
+    "note": "Nota",
+    "offerCount": "Offerte inviate",
+    "activeOffer": "Offerta in corso",
+    "expires": "Scade",
+    "cause": "Motivo",
+    "causes": {
+      "cancellation": "Cancellazione",
+      "release": "Rilascio abbonamento",
+      "expiry": "Prenotazione scaduta",
+      "manual": "Manuale"
+    },
+    "readOnly": "Il tuo ruolo può consultare la lista d'attesa ma non inviare offerte.",
+    "offer": {
+      "title": "Offri un posto",
+      "description": "{{customer}} riceve un'email con il link per prenotare: il posto resta bloccato fino alla scadenza.",
+      "spot": "Postazione",
+      "anySpot": "La prima compatibile",
+      "minutes": "Durata dell'offerta (minuti)",
+      "minutesInvalid": "Da 5 a 10080 minuti (7 giorni).",
+      "help": "Se il cliente non risponde in tempo, l'offerta scade e passa al successivo in coda.",
+      "submit": "Invia l'offerta",
+      "confirmTitle": "Inviare l'offerta a {{customer}}?",
+      "confirmDescription": "Postazione: {{spot}}. Resta bloccata per {{minutes}} minuti.",
+      "done": "Offerta inviata a {{customer}}.",
+      "doneDetail": "Postazione {{spot}}, valida fino a {{time}}."
+    },
+    "errors": {
+      "offline": "Istanza non raggiungibile: riprova quando torna la connessione.",
+      "forbidden": "Non consentito per il tuo ruolo.",
+      "disabled": "La lista d'attesa è disattivata: riattivala dal pannello.",
+      "unavailable": "Nessun posto compatibile libero per questa richiesta.",
+      "alreadyOffered": "Questa iscrizione ha già un'offerta in corso o non è più in attesa.",
+      "invalid": "Dati non validi: controlla la postazione e la durata.",
+      "notFound": "L'iscrizione non esiste più.",
+      "default": "Operazione non riuscita. Riprova."
     }
   }
 }

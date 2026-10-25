@@ -1,5 +1,10 @@
 import { router } from 'expo-router';
-import { CalendarDaysIcon, ChevronRightIcon, ClipboardListIcon } from 'lucide-react-native';
+import {
+  CalendarDaysIcon,
+  ChevronRightIcon,
+  ClipboardListIcon,
+  ListOrderedIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -35,6 +40,13 @@ export function DayShortcuts() {
           <Icon as={ClipboardListIcon} size={18} />
           <View className="flex-1">
             <Text className="text-left">{t('today.shortcuts.bookings')}</Text>
+          </View>
+          <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
+        </Button>
+        <Button size="lg" variant="outline" onPress={() => router.push('/waitlist')}>
+          <Icon as={ListOrderedIcon} size={18} />
+          <View className="flex-1">
+            <Text className="text-left">{t('nav.waitlist')}</Text>
           </View>
           <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
         </Button>
