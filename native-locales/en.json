@@ -3,7 +3,8 @@
     "CFBundleDisplayName": "Arenile",
     "NSCameraUsageDescription": "Arenile uses the camera to scan the pairing QR code and booking QR codes.",
     "NSMicrophoneUsageDescription": "Arenile does not record audio.",
-    "NSFaceIDUsageDescription": "Arenile does not use Face ID."
+    "NSFaceIDUsageDescription": "Arenile does not use Face ID.",
+    "NSLocalNetworkUsageDescription": "Arenile connects to your establishment's desktop app on the local network, when you use it in local network mode."
   },
   "android": {
     "app_name": "Arenile"

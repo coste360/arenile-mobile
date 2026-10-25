@@ -13,7 +13,8 @@
       "requireFullScreen": false,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocalNetworkUsageDescription": "Arenile si collega all'app desktop del tuo stabilimento sulla rete locale, quando la usi in modalità rete locale."
       }
     },
     "android": {
