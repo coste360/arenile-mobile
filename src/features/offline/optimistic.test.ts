@@ -1,8 +1,9 @@
 import { QueryClient } from '@tanstack/react-query';
 
 import { estKeys } from '@/api/query-keys';
-import type { BookingSummary, OperationsDay } from '@/api/types';
+import type { BookingDetail, BookingSummary, OperationsDay } from '@/api/types';
 import {
+  bookingDetail,
   bookingSummary,
   EST_ID,
   operationalBooking,
@@ -10,7 +11,7 @@ import {
   spot,
 } from '@/test/operations-fixtures';
 
-import { applyOptimistic, applyToBookings, applyToDay } from './optimistic';
+import { applyOptimistic, applyToBookings, applyToDay, applyToDetail } from './optimistic';
 import type { OfflineOperation } from './types';
 
 const base = {
@@ -104,7 +105,55 @@ describe('applyToBookings', () => {
   });
 });
 
+describe('applyToDetail', () => {
+  it('checks in a confirmed booking and raises its version', () => {
+    expect(applyToDetail(bookingDetail(), { ...base, kind: 'check_in' })).toMatchObject({
+      status: 'checked_in',
+      version: 4,
+    });
+  });
+
+  it('leaves a booking that is not confirmed as it is', () => {
+    const before = bookingDetail({ status: 'cancelled' });
+    expect(applyToDetail(before, { ...base, kind: 'check_in' })).toBe(before);
+  });
+
+  it('adds a cash payment in cents, never below a zero balance', () => {
+    expect(
+      applyToDetail(bookingDetail(), { ...base, kind: 'cash_payment', amount: 2500 }),
+    ).toMatchObject({ paid_amount: 3500, balance_due: 0, version: 4 });
+  });
+
+  it.each([
+    ['', '  Ombrellone rotto  ', 'Ombrellone rotto'],
+    ['Cliente abituale', 'Arriva alle 11', 'Cliente abituale\nArriva alle 11'],
+  ])('appends a note on a new line (%j + %j)', (before, text, after) => {
+    expect(
+      applyToDetail(bookingDetail({ notes_internal: before }), { ...base, kind: 'note', text }),
+    ).toMatchObject({ notes_internal: after, version: 4 });
+  });
+
+  it('ignores day releases and other bookings', () => {
+    const detail = bookingDetail();
+    const release = { ...base, kind: 'day_release' as const, date: '2026-10-25' };
+    expect(applyToDetail(detail, release)).toBe(detail);
+    expect(applyToDetail(detail, { ...base, bookingId: 'b-9', kind: 'check_in' })).toBe(detail);
+  });
+});
+
 describe('applyOptimistic', () => {
+  it('updates the cached detail of the booking', () => {
+    const qc = new QueryClient();
+    qc.setQueryData(estKeys.booking(EST_ID, 'b-1'), bookingDetail());
+
+    applyOptimistic(qc, { ...base, kind: 'check_in' });
+
+    expect(qc.getQueryData<BookingDetail>(estKeys.booking(EST_ID, 'b-1'))!.status).toBe(
+      'checked_in',
+    );
+    expect(qc.getQueryData(estKeys.booking(EST_ID, 'b-2'))).toBeUndefined();
+  });
+
   it('updates every cached day and day list of the establishment', () => {
     const qc = new QueryClient();
     qc.setQueryData(estKeys.operationsDay(EST_ID, '2026-10-25'), operationsDay());

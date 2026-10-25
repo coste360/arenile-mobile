@@ -4,7 +4,7 @@
 import type { QueryClient } from '@tanstack/react-query';
 
 import { estKeys } from '@/api/query-keys';
-import type { BookingSummary, OperationalSpot, OperationsDay } from '@/api/types';
+import type { BookingDetail, BookingSummary, OperationalSpot, OperationsDay } from '@/api/types';
 
 import type { OfflineOperation } from './types';
 
@@ -14,6 +14,10 @@ function isOperationsDay(v: unknown): v is OperationsDay {
 
 function isBookingList(v: unknown): v is BookingSummary[] {
   return Array.isArray(v);
+}
+
+function isBookingDetail(v: unknown): v is BookingDetail {
+  return typeof v === 'object' && v !== null && typeof (v as BookingDetail).version === 'number';
 }
 
 type SpotStatus = OperationalSpot['status'];
@@ -101,7 +105,38 @@ export function applyToBookings(list: BookingSummary[], op: OfflineOperation): B
   });
 }
 
-/** Applies `op` to every cached day and day list of its establishment. */
+/**
+ * Pure: the booking detail once `op` is applied, so the booking sheet shows
+ * the check-in, the cash collected and the note at once (the server adds a
+ * note on a new line of notes_internal, booking.Service.AddNote).
+ */
+export function applyToDetail(detail: BookingDetail, op: OfflineOperation): BookingDetail {
+  if (detail.id !== op.bookingId) return detail;
+  switch (op.kind) {
+    case 'check_in':
+      return detail.status === 'confirmed'
+        ? { ...detail, status: 'checked_in', version: detail.version + 1 }
+        : detail;
+    case 'cash_payment': {
+      const paid = detail.paid_amount + op.amount;
+      return {
+        ...detail,
+        paid_amount: paid,
+        balance_due: Math.max(0, detail.total_amount - paid),
+        version: detail.version + 1,
+      };
+    }
+    case 'note': {
+      const text = op.text.trim();
+      const notes = detail.notes_internal ? `${detail.notes_internal}\n${text}` : text;
+      return { ...detail, notes_internal: notes, version: detail.version + 1 };
+    }
+    case 'day_release':
+      return detail;
+  }
+}
+
+/** Applies `op` to every cached day, day list and detail of its establishment. */
 export function applyOptimistic(qc: QueryClient, op: OfflineOperation): void {
   const { establishmentId } = op.scope;
   qc.setQueriesData<unknown>(
@@ -111,6 +146,9 @@ export function applyOptimistic(qc: QueryClient, op: OfflineOperation): void {
   qc.setQueriesData<unknown>(
     { queryKey: [...estKeys.area(establishmentId, 'bookings'), 'day'] },
     (old: unknown) => (isBookingList(old) ? applyToBookings(old, op) : old),
+  );
+  qc.setQueryData<unknown>(estKeys.booking(establishmentId, op.bookingId), (old: unknown) =>
+    isBookingDetail(old) ? applyToDetail(old, op) : old,
   );
 }
 
