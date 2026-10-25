@@ -1,4 +1,5 @@
 import Foundation
+import Security
 import Testing
 
 @testable import PinnedFingerprint
@@ -8,9 +9,9 @@ private let sample = Data("arenile".utf8)
 // Self-signed ECDSA P-256 certificate (CN=arenile.local, SAN 192.168.1.20) and
 // its fingerprint as printed by `openssl x509 -fingerprint -sha256`, which is
 // the format of the core's desktop.Fingerprint.
-private let certificateDER = Data(base64Encoded: "MIICPTCCAeOgAwIBAgIJANsV+ovT7iwAMAoGCCqGSM49BAMCMBgxFjAUBgNVBAMMDWFyZW5pbGUubG9jYWwwHhcNMjYxMDI1MDcyMTU5WhcNMjkwMTI3MDcyMTU5WjAYMRYwFAYDVQQDDA1hcmVuaWxlLmxvY2FsMIIBSzCCAQMGByqGSM49AgEwgfcCAQEwLAYHKoZIzj0BAQIhAP////8AAAABAAAAAAAAAAAAAAAA////////////////MFsEIP////8AAAABAAAAAAAAAAAAAAAA///////////////8BCBaxjXYqjqT57PrvVV2mIa8ZR0GsMxTsPY7zjw+J9JgSwMVAMSdNgiG5wSTamZ44ROdJreBn36QBEEEaxfR8uEsQkf4vOblY6RA8ncDfYEt6zOg9KE5RdiYwpZP40Li/hp/m47n60p8D54WK84zV2sxXs7LtkBoN79R9QIhAP////8AAAAA//////////+85vqtpxeehPO5ysL8YyVRAgEBA0IABJdK2wv2H9IUr0RCVkeYoQBOxU9cjDxwIbsBBxSJjI1pPDtFI82IFzTM8ZfM7+m0SiBBnN1NRGs5XslboQrS+bajIjAgMB4GA1UdEQQXMBWCDWFyZW5pbGUubG9jYWyHBMCoARQwCgYIKoZIzj0EAwIDSAAwRQIhANyJILAyfKnzd+ch/2mzaW+lz0HM8lYRNJPp1uPgdKXlAiB9eYxqDHgGKVYK+AZQuZyFCGM/mwzGb/gxrJlsQmmXkw==")!
+private let certificateDER = Data(base64Encoded: "MIIBSDCB76ADAgECAgkA34QcKL6NR/8wCgYIKoZIzj0EAwIwGDEWMBQGA1UEAwwNYXJlbmlsZS5sb2NhbDAeFw0yNjEwMjUwNzMzMDZaFw0yOTAxMjcwNzMzMDZaMBgxFjAUBgNVBAMMDWFyZW5pbGUubG9jYWwwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT0iokM6HFnhFuEWHQyA9djwpxwDjZnP4iiKhwQO5ifSsgZ6JLgxAxWdE1Nvl4nluGdryuNgrcbkZjZ+szF2neXoyIwIDAeBgNVHREEFzAVgg1hcmVuaWxlLmxvY2FshwTAqAEUMAoGCCqGSM49BAMCA0gAMEUCIQDTz52P8wcFerVqi4e5Qpe8Tem4qfexC8ESRO+4DPaukQIgVcnga0evVmI4w4K/ChPXgNrwLILGWhle4q0L8pDg29I=")!
 private let certificateFingerprint =
-  "83:A9:D2:70:46:86:36:88:87:C6:F1:DE:C5:48:09:77:90:72:ED:6D:FC:BD:49:D5:D0:A8:FD:B8:F4:B2:09:7D"
+  "83:79:BA:75:B9:FC:AB:AE:F7:5B:09:DA:78:A5:B9:68:84:AB:55:74:B8:59:A4:40:4F:7A:0E:A6:CB:A1:2B:4F"
 
 private func canonical(_ digest: Data) -> String {
   digest.map { String(format: "%02X", $0) }.joined(separator: ":")
@@ -43,6 +44,20 @@ func rejectsMalformed(_ value: String) {
   var tampered = certificateDER
   tampered[tampered.count - 1] ^= 0x01
   #expect(!PinnedFingerprint.matches(certificate: tampered, expected: expected))
+}
+
+/// A SecTrust holding the fixture certificate, like the one URLSession hands to the delegate.
+private func fixtureTrust() -> SecTrust? {
+  guard let certificate = SecCertificateCreateWithData(nil, certificateDER as CFData) else { return nil }
+  var trust: SecTrust?
+  let policy = SecPolicyCreateSSL(true, "192.168.1.20" as CFString)
+  guard SecTrustCreateWithCertificates(certificate, policy, &trust) == errSecSuccess else { return nil }
+  return trust
+}
+
+@Test func extractsTheLeafCertificateFromATrust() throws {
+  let trust = try #require(fixtureTrust())
+  #expect(PinnedFingerprint.leafCertificate(of: trust) == certificateDER)
 }
 
 @Test func constantTimeEqualsComparesLengthAndBytes() {

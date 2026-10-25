@@ -27,9 +27,9 @@ export function fakeFetch(routes: Record<string, Handler>): FakeFetch {
 
 /** Fingerprint of the desktop LAN certificate in the fixtures (core desktop.Fingerprint format). */
 export const LAN_FINGERPRINT =
-  '83:A9:D2:70:46:86:36:88:87:C6:F1:DE:C5:48:09:77:90:72:ED:6D:FC:BD:49:D5:D0:A8:FD:B8:F4:B2:09:7D';
+  '83:79:BA:75:B9:FC:AB:AE:F7:5B:09:DA:78:A5:B9:68:84:AB:55:74:B8:59:A4:40:4F:7A:0E:A6:CB:A1:2B:4F';
 /** The same server after the 30-day renewal: a different certificate. */
-export const RENEWED_FINGERPRINT = LAN_FINGERPRINT.replace('83:A9', '5E:17');
+export const RENEWED_FINGERPRINT = LAN_FINGERPRINT.replace('83:79', '5E:17');
 
 export interface FakePinnedFetch {
   pinnedFetch: PinnedFetch;
