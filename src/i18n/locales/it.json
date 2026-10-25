@@ -142,7 +142,11 @@
   "nav": {
     "home": "Inizio",
     "settings": "Impostazioni",
-    "pending": "Operazioni in attesa"
+    "pending": "Operazioni in attesa",
+    "today": "Oggi",
+    "bookings": "Prenotazioni",
+    "booking": "Prenotazione",
+    "spots": "Postazioni"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -277,6 +281,214 @@
     "onlineOnly": {
       "title": "Serve la connessione",
       "description": "Creare o spostare una prenotazione richiede l'istanza raggiungibile, che garantisce la disponibilità delle postazioni."
+    }
+  },
+  "today": {
+    "heading": "Oggi, {{date}}",
+    "closedTitle": "Stabilimento chiuso",
+    "closedDescription": "Oggi è un giorno di chiusura o fuori stagione.",
+    "figures": {
+      "arrivals": "Arrivi",
+      "present": "Presenti",
+      "free": "Postazioni libere",
+      "toSettle": "Da saldare",
+      "released": "Giorni rilasciati dagli abbonati"
+    },
+    "freeOf": "su {{total}}",
+    "figureLabel": "{{label}}: {{value}}",
+    "figureHint": "Apre l'elenco filtrato",
+    "cachedAt": "Dati salvati sul dispositivo, aggiornati alle {{time}}.",
+    "errorTitle": "Dati del giorno non disponibili",
+    "errorDescription": "Non è stato possibile leggerli dall'istanza. Controlla la connessione e riprova.",
+    "forbiddenTitle": "Non consentito",
+    "shortcuts": {
+      "title": "Giornata",
+      "today": "Riepilogo di oggi",
+      "bookings": "Prenotazioni del giorno"
+    }
+  },
+  "spots": {
+    "title": {
+      "free": "Postazioni libere",
+      "released": "Giorni rilasciati"
+    },
+    "count_one": "{{count}} postazione",
+    "count_other": "{{count}} postazioni",
+    "released": "Rilasciata",
+    "free": "Libera",
+    "emptyFree": "Nessuna postazione libera per questo giorno.",
+    "emptyReleased": "Nessun abbonato ha rilasciato la postazione per questo giorno."
+  },
+  "bookings": {
+    "status": {
+      "draft": "Bozza",
+      "held": "In attesa",
+      "pending_payment": "In attesa di pagamento",
+      "awaiting_approval": "Da approvare",
+      "confirmed": "Confermata",
+      "checked_in": "Presente",
+      "completed": "Conclusa",
+      "cancelled": "Cancellata",
+      "no_show": "Non presentato",
+      "expired": "Scaduta",
+      "rejected": "Rifiutata"
+    },
+    "channel": {
+      "desk": "Cassa",
+      "online": "Online",
+      "api": "API"
+    },
+    "slots": {
+      "FULL": "Giornata intera",
+      "AM": "Mattina",
+      "PM": "Pomeriggio"
+    },
+    "formula": {
+      "half_day": "Mezza giornata",
+      "day": "Giornaliero",
+      "multi_day": "Più giorni",
+      "week": "Settimana",
+      "fortnight": "Quindicina",
+      "month": "Mese",
+      "season": "Stagione"
+    },
+    "anonymous": "Cliente anonimo",
+    "unassigned": "Da assegnare",
+    "seasonPass": "Abbonamento",
+    "test": "Prova",
+    "balanceDue": "Da saldare {{amount}}",
+    "settled": "Saldato",
+    "stay": "{{from}} – {{to}}",
+    "list": {
+      "searchLabel": "Cerca prenotazioni",
+      "searchPlaceholder": "Codice, cliente o postazione",
+      "filtersLabel": "Filtri",
+      "filters": {
+        "all": "Tutte",
+        "arrivals": "Arrivi",
+        "present": "Presenti",
+        "to_settle": "Da saldare",
+        "season_pass": "Abbonati"
+      },
+      "chipLabel": "{{label}}, {{count}}",
+      "dayLabel": "Giorno",
+      "days": {
+        "today": "Oggi",
+        "tomorrow": "Domani"
+      },
+      "channelLabel": "Canale",
+      "channels": {
+        "all": "Tutti i canali",
+        "online": "Online",
+        "desk": "Cassa"
+      },
+      "sortLabel": "Ordina per",
+      "sorts": {
+        "spot": "Postazione",
+        "customer": "Cliente",
+        "arrival": "Arrivo",
+        "balance": "Saldo"
+      },
+      "includeClosed": "Mostra anche cancellate e scadute",
+      "moreFilters": "Altri filtri",
+      "moreFiltersActive": "Altri filtri ({{count}})",
+      "hideFilters": "Nascondi filtri",
+      "results_one": "{{count}} prenotazione",
+      "results_other": "{{count}} prenotazioni",
+      "emptyTitle": "Nessuna prenotazione",
+      "emptyDescription": "Non ci sono prenotazioni per questo giorno.",
+      "noMatchTitle": "Nessun risultato",
+      "noMatchDescription": "Nessuna prenotazione corrisponde ai filtri scelti.",
+      "resetFilters": "Azzera filtri",
+      "rowHint": "Apre la scheda della prenotazione",
+      "selectTitle": "Seleziona una prenotazione",
+      "selectDescription": "La scheda si apre qui accanto, senza lasciare l'elenco."
+    },
+    "detail": {
+      "stay": "Postazione e periodo",
+      "spots": "Postazioni",
+      "period": "Periodo",
+      "days_one": "{{count}} giorno",
+      "days_other": "{{count}} giorni",
+      "slots": "Fasce",
+      "formula": "Formula",
+      "channel": "Canale",
+      "pack": "Pacchetto {{pack}}",
+      "quantity": "Quantità {{count}}",
+      "extras_one": "{{count}} extra",
+      "extras_other": "{{count}} extra",
+      "customer": "Cliente",
+      "email": "Email",
+      "phone": "Telefono",
+      "customerNotes": "Note sul cliente",
+      "tags": "Etichette",
+      "contactsHidden": "I contatti del cliente sono visibili solo a cassa e direzione.",
+      "amounts": "Importi",
+      "total": "Totale",
+      "paid": "Incassato",
+      "balance": "Saldo da incassare",
+      "deposit": "Acconto richiesto",
+      "payments": "Pagamenti",
+      "paymentsEmpty": "Nessun pagamento registrato.",
+      "refund": "Rimborso",
+      "methods": {
+        "cash": "Contanti",
+        "card": "Carta",
+        "bank_transfer": "Bonifico",
+        "wallet": "Wallet",
+        "credit": "Credito cliente",
+        "other": "Altro"
+      },
+      "paymentStatus": {
+        "pending": "In corso",
+        "succeeded": "Riuscito",
+        "failed": "Fallito",
+        "cancelled": "Annullato"
+      },
+      "notes": "Note",
+      "notesInternal": "Note interne",
+      "notesCustomer": "Note del cliente",
+      "notesEmpty": "Nessuna nota.",
+      "history": "Cronologia",
+      "historyEmpty": "Nessuna attività registrata.",
+      "showAllHistory": "Mostra tutta la cronologia ({{count}})",
+      "actions": {
+        "booking": {
+          "created": "Prenotazione creata",
+          "confirmed": "Confermata",
+          "checked_in": "Check-in",
+          "no_show": "Non presentato",
+          "cancelled": "Cancellata",
+          "rejected": "Rifiutata",
+          "expired": "Scaduta",
+          "modified": "Modificata",
+          "moved": "Spostata",
+          "note_added": "Nota aggiunta",
+          "completed": "Conclusa",
+          "refund_reserved": "Rimborso riservato",
+          "refund_succeeded": "Rimborso confermato dal provider",
+          "refund_failed": "Rimborso non riuscito",
+          "refund_retried": "Rimborso riprovato"
+        },
+        "payment": {
+          "recorded": "Incasso registrato",
+          "succeeded": "Incasso registrato",
+          "refunded": "Rimborso registrato"
+        },
+        "other": "Altra attività"
+      },
+      "actor": {
+        "user": "Operatore",
+        "customer": "Cliente",
+        "system": "Sistema",
+        "api_key": "Integrazione API"
+      },
+      "queued_one": "{{count}} operazione su questa prenotazione non è ancora arrivata all'istanza: la scheda mostra i dati dell'istanza.",
+      "queued_other": "{{count}} operazioni su questa prenotazione non sono ancora arrivate all'istanza: la scheda mostra i dati dell'istanza.",
+      "queuedLink": "Vedi le operazioni in attesa",
+      "errorTitle": "Prenotazione non disponibile",
+      "errorDescription": "Non è stato possibile leggerla dall'istanza. Controlla la connessione e riprova.",
+      "notFound": "La prenotazione non esiste più."
     }
   }
 }

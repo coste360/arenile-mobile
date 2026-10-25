@@ -142,7 +142,11 @@
   "nav": {
     "home": "Start",
     "settings": "Einstellungen",
-    "pending": "Ausstehende Vorgänge"
+    "pending": "Ausstehende Vorgänge",
+    "today": "Heute",
+    "bookings": "Buchungen",
+    "booking": "Buchung",
+    "spots": "Plätze"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -277,6 +281,214 @@
     "onlineOnly": {
       "title": "Verbindung erforderlich",
       "description": "Eine Buchung anzulegen oder zu verschieben erfordert die erreichbare Instanz, die die Verfügbarkeit der Plätze garantiert."
+    }
+  },
+  "today": {
+    "heading": "Heute, {{date}}",
+    "closedTitle": "Betrieb geschlossen",
+    "closedDescription": "Heute ist Ruhetag oder außerhalb der Saison.",
+    "figures": {
+      "arrivals": "Anreisen",
+      "present": "Anwesend",
+      "free": "Freie Plätze",
+      "toSettle": "Offen",
+      "released": "Von Abonnenten freigegebene Tage"
+    },
+    "freeOf": "von {{total}}",
+    "figureLabel": "{{label}}: {{value}}",
+    "figureHint": "Öffnet die gefilterte Liste",
+    "cachedAt": "Auf dem Gerät gespeicherte Daten, Stand {{time}} Uhr.",
+    "errorTitle": "Tagesdaten nicht verfügbar",
+    "errorDescription": "Sie konnten nicht von der Instanz gelesen werden. Prüfe die Verbindung und versuche es erneut.",
+    "forbiddenTitle": "Nicht erlaubt",
+    "shortcuts": {
+      "title": "Der Tag",
+      "today": "Heutige Übersicht",
+      "bookings": "Buchungen des Tages"
+    }
+  },
+  "spots": {
+    "title": {
+      "free": "Freie Plätze",
+      "released": "Freigegebene Tage"
+    },
+    "count_one": "{{count}} Platz",
+    "count_other": "{{count}} Plätze",
+    "released": "Freigegeben",
+    "free": "Frei",
+    "emptyFree": "Keine freien Plätze an diesem Tag.",
+    "emptyReleased": "Kein Abonnent hat seinen Platz für diesen Tag freigegeben."
+  },
+  "bookings": {
+    "status": {
+      "draft": "Entwurf",
+      "held": "Vorgemerkt",
+      "pending_payment": "Zahlung ausstehend",
+      "awaiting_approval": "Freigabe ausstehend",
+      "confirmed": "Bestätigt",
+      "checked_in": "Anwesend",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert",
+      "no_show": "Nicht erschienen",
+      "expired": "Abgelaufen",
+      "rejected": "Abgelehnt"
+    },
+    "channel": {
+      "desk": "Kasse",
+      "online": "Online",
+      "api": "API"
+    },
+    "slots": {
+      "FULL": "Ganzer Tag",
+      "AM": "Vormittag",
+      "PM": "Nachmittag"
+    },
+    "formula": {
+      "half_day": "Halber Tag",
+      "day": "Tag",
+      "multi_day": "Mehrere Tage",
+      "week": "Woche",
+      "fortnight": "Zwei Wochen",
+      "month": "Monat",
+      "season": "Saison"
+    },
+    "anonymous": "Anonymer Kunde",
+    "unassigned": "Zuzuweisen",
+    "seasonPass": "Saisonabo",
+    "test": "Test",
+    "balanceDue": "Offen {{amount}}",
+    "settled": "Bezahlt",
+    "stay": "{{from}} – {{to}}",
+    "list": {
+      "searchLabel": "Buchungen suchen",
+      "searchPlaceholder": "Code, Kunde oder Platz",
+      "filtersLabel": "Filter",
+      "filters": {
+        "all": "Alle",
+        "arrivals": "Anreisen",
+        "present": "Anwesend",
+        "to_settle": "Offen",
+        "season_pass": "Abonnenten"
+      },
+      "chipLabel": "{{label}}, {{count}}",
+      "dayLabel": "Tag",
+      "days": {
+        "today": "Heute",
+        "tomorrow": "Morgen"
+      },
+      "channelLabel": "Kanal",
+      "channels": {
+        "all": "Alle Kanäle",
+        "online": "Online",
+        "desk": "Kasse"
+      },
+      "sortLabel": "Sortieren nach",
+      "sorts": {
+        "spot": "Platz",
+        "customer": "Kunde",
+        "arrival": "Anreise",
+        "balance": "Offener Betrag"
+      },
+      "includeClosed": "Auch stornierte und abgelaufene zeigen",
+      "moreFilters": "Weitere Filter",
+      "moreFiltersActive": "Weitere Filter ({{count}})",
+      "hideFilters": "Filter ausblenden",
+      "results_one": "{{count}} Buchung",
+      "results_other": "{{count}} Buchungen",
+      "emptyTitle": "Keine Buchungen",
+      "emptyDescription": "Für diesen Tag gibt es keine Buchungen.",
+      "noMatchTitle": "Keine Ergebnisse",
+      "noMatchDescription": "Keine Buchung entspricht den gewählten Filtern.",
+      "resetFilters": "Filter zurücksetzen",
+      "rowHint": "Öffnet die Buchungsdetails",
+      "selectTitle": "Wähle eine Buchung",
+      "selectDescription": "Die Details öffnen sich hier neben der Liste."
+    },
+    "detail": {
+      "stay": "Platz und Zeitraum",
+      "spots": "Plätze",
+      "period": "Zeitraum",
+      "days_one": "{{count}} Tag",
+      "days_other": "{{count}} Tage",
+      "slots": "Zeiten",
+      "formula": "Tarif",
+      "channel": "Kanal",
+      "pack": "Paket {{pack}}",
+      "quantity": "Menge {{count}}",
+      "extras_one": "{{count}} Extra",
+      "extras_other": "{{count}} Extras",
+      "customer": "Kunde",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "customerNotes": "Notizen zum Kunden",
+      "tags": "Schlagwörter",
+      "contactsHidden": "Die Kontaktdaten des Kunden sehen nur Kasse und Leitung.",
+      "amounts": "Beträge",
+      "total": "Gesamt",
+      "paid": "Bezahlt",
+      "balance": "Offener Betrag",
+      "deposit": "Anzahlung",
+      "payments": "Zahlungen",
+      "paymentsEmpty": "Keine Zahlungen erfasst.",
+      "refund": "Erstattung",
+      "methods": {
+        "cash": "Bar",
+        "card": "Karte",
+        "bank_transfer": "Überweisung",
+        "wallet": "Wallet",
+        "credit": "Kundenguthaben",
+        "other": "Sonstiges"
+      },
+      "paymentStatus": {
+        "pending": "Ausstehend",
+        "succeeded": "Erfolgreich",
+        "failed": "Fehlgeschlagen",
+        "cancelled": "Abgebrochen"
+      },
+      "notes": "Notizen",
+      "notesInternal": "Interne Notizen",
+      "notesCustomer": "Notizen des Kunden",
+      "notesEmpty": "Keine Notizen.",
+      "history": "Verlauf",
+      "historyEmpty": "Keine Aktivität erfasst.",
+      "showAllHistory": "Ganzen Verlauf zeigen ({{count}})",
+      "actions": {
+        "booking": {
+          "created": "Buchung angelegt",
+          "confirmed": "Bestätigt",
+          "checked_in": "Eingecheckt",
+          "no_show": "Nicht erschienen",
+          "cancelled": "Storniert",
+          "rejected": "Abgelehnt",
+          "expired": "Abgelaufen",
+          "modified": "Geändert",
+          "moved": "Verlegt",
+          "note_added": "Notiz hinzugefügt",
+          "completed": "Abgeschlossen",
+          "refund_reserved": "Erstattung vorgemerkt",
+          "refund_succeeded": "Erstattung vom Anbieter bestätigt",
+          "refund_failed": "Erstattung fehlgeschlagen",
+          "refund_retried": "Erstattung erneut versucht"
+        },
+        "payment": {
+          "recorded": "Zahlung erfasst",
+          "succeeded": "Zahlung erfasst",
+          "refunded": "Erstattung erfasst"
+        },
+        "other": "Sonstige Aktivität"
+      },
+      "actor": {
+        "user": "Mitarbeiter",
+        "customer": "Kunde",
+        "system": "System",
+        "api_key": "API-Integration"
+      },
+      "queued_one": "{{count}} Vorgang zu dieser Buchung hat die Instanz noch nicht erreicht: Die Details zeigen den Stand der Instanz.",
+      "queued_other": "{{count}} Vorgänge zu dieser Buchung haben die Instanz noch nicht erreicht: Die Details zeigen den Stand der Instanz.",
+      "queuedLink": "Ausstehende Vorgänge ansehen",
+      "errorTitle": "Buchung nicht verfügbar",
+      "errorDescription": "Sie konnte nicht von der Instanz gelesen werden. Prüfe die Verbindung und versuche es erneut.",
+      "notFound": "Die Buchung existiert nicht mehr."
     }
   }
 }
