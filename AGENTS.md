@@ -37,25 +37,32 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 
 - `src/app/` expo-router routes (every file is a screen; no tests or helpers here):
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
-  its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings; phone stack or
-  tablet master/detail)
+  its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
+  operations; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
-  (`errors.ts`), contract type aliases (`types.ts`); `src/api/generated/` generated types
+  (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
+  `src/api/generated/` generated types
 - `src/features/<area>` logic per area: `pairing` (QR decoder, target normalisation, pairing flow,
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
-  `preferences` (language, theme)
+  `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
+  phase 1), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
+  operation queue, runtime and hooks). **Read `docs/data-and-offline.md` before adding a feature.**
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
-  `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers)
+  `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
+  `ConnectionIndicator`, `OnlineOnlyNotice`)
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
-- `src/lib/` shared primitives (version compare, base64url, storage, clock, navigation theme, `cn`)
-- `src/test/` test helpers (`fake-fetch.ts`, `fixtures.ts`, `render-app.tsx`) and screen tests
+- `src/lib/` shared primitives (version compare, base64url, storage, offline storage, network,
+  clock, calendar dates, money in cents, navigation theme, `cn`)
+- `src/test/` test helpers (`fake-fetch.ts`, `fixtures.ts`, `operations-fixtures.ts`, `ids.ts`,
+  `render-app.tsx`) and screen tests
 - `src/global.css` the only stylesheet (theme tokens); `tailwind.config.js` maps them
 - `api/core-version.json` pinned core release + SHA-256; `api/openapi.yaml` its contract (verbatim)
 - `scripts/` `gen-api.mjs` (contract download/verify/generate), `style-guard.js`, `agents/` hooks
 - `assets/brand/` official Arenile brand assets (not covered by the code licence, see NOTICE.md)
 - `native-locales/` localized native strings (app name, permission prompts)
-- `docs/spec/` functional plan of the app, `docs/adr/` decisions
+- `docs/spec/` functional plan of the app, `docs/adr/` decisions, `docs/data-and-offline.md` the
+  data, permission and offline APIs features build on
 
 ## Generated code (never edit by hand)
 
@@ -87,8 +94,13 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   screens and logic never call native modules, `fetch` or `new Date()` directly.
 - Pairing rules mirror the core (`internal/domain/device/qr.go`, `internal/desktop/remote/pair.go`):
   QR v1, http only on loopback, Crockford pairing codes, semver compatibility both ways.
-- Money, when it arrives (Phase 1), is integer cents formatted only at display time with `Intl`;
-  calendar dates are `YYYY-MM-DD` in the establishment timezone, instants RFC 3339 UTC (as the API).
+- Money is integer cents (`src/lib/money.ts`), formatted only at display time with `Intl`;
+  calendar dates are `YYYY-MM-DD` in the establishment timezone (`src/lib/calendar.ts`), instants
+  RFC 3339 UTC (as the API).
+- Offline (ADR 0007): check-in, day release, note and cash payment go through the operation queue
+  (`useEnqueueOperation`, stable `Idempotency-Key`), refusals stay visible until the user decides;
+  create/move booking are online-only. Only allowlisted queries are persisted; the cache is removed
+  on every sign-out. Hide actions with `useAbilities()`; a 403 is "non consentito".
 - No new runtime dependency without explaining why in the PR; licences must be compatible with both
   BSL 1.1 and AGPL-3.0 (MIT, BSD, Apache-2.0...).
 - Code comments and identifiers in English.

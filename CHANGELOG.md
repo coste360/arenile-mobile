@@ -11,6 +11,19 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- Fase 1 — fondamenta dei dati e dell'offline (ADR 0007): cache di mappa e prenotazioni di oggi e
+  domani (nel fuso dello stabilimento) consultabile senza rete, anche all'avvio, e cancellata a ogni
+  scollegamento; coda di check-in, rilasci del giorno, note e incassi in contanti inviata in ordine
+  alla riconnessione con chiavi di idempotenza, conflitti e rifiuti mostrati con il motivo finché
+  l'utente non riprova o elimina; creazione e spostamento di prenotazioni solo online.
+- Indicatore della connessione sempre visibile (telefono e tablet) con le operazioni in attesa e da
+  controllare; schermata _Operazioni in attesa_; avviso delle operazioni non inviate prima dello
+  scollegamento, che prova prima a inviarle.
+- Permessi dei ruoli come nel pannello (sezione 16 del core) per nascondere le azioni non consentite.
+- Importi in centesimi formattati in italiano, date di calendario nel fuso dello stabilimento.
+- Dipendenze: `expo-sqlite`, `expo-network`, `expo-crypto`, `@tanstack/react-query-persist-client`,
+  `@tanstack/query-async-storage-persister` (MIT, nessuna connessione verso terzi).
+
 - Fase 0 — fondamenta dell'app (Expo SDK 58, React Native 0.88, expo-router, TypeScript strict).
 - Collegamento a un'istanza con il QR del pannello (anche dalla fotocamera di sistema con il link
   `arenile://pair?d=…`, che chiede conferma dell'indirizzo dell'istanza) o con indirizzo e codice di
