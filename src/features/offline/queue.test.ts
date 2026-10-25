@@ -1,4 +1,9 @@
-import { NetworkError, ProblemError, UnauthorizedError } from '@/api/errors';
+import {
+  CertificateMismatchError,
+  NetworkError,
+  ProblemError,
+  UnauthorizedError,
+} from '@/api/errors';
 import { createMemoryKeyValueStore } from '@/lib/storage';
 import { sequentialIds } from '@/test/ids';
 
@@ -112,6 +117,9 @@ describe('operation queue', () => {
     ['a 5xx', () => problem(503, 'internal_error')],
     ['a 429', () => problem(429, 'rate_limited')],
     ['a 401 without the core problem (captive portal)', () => new ProblemError(401, null)],
+    // Desktop LAN (ADR 0006): nothing reached the server; the operations wait
+    // for "Abbina di nuovo" with the renewed certificate.
+    ['a desktop certificate that changed', () => new CertificateMismatchError()],
   ])('treats %s as transient', async (_name, error) => {
     const { queue } = setup(async () => {
       throw error();

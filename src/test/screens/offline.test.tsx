@@ -141,6 +141,10 @@ describe('connection indicator', () => {
       });
 
       expect(await screen.findByText('Certificato del desktop cambiato')).toBeOnTheScreen();
+      // Kept for the new pairing with the renewed certificate, never dropped.
+      expect(
+        await screen.findByRole('button', { name: /1 operazione in attesa/ }),
+      ).toBeOnTheScreen();
       expect(payment).not.toHaveBeenCalled();
     });
   });

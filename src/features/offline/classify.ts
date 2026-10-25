@@ -1,4 +1,5 @@
 import {
+  CertificateMismatchError,
   NetworkError,
   ProblemError,
   UnauthorizedError,
@@ -10,8 +11,9 @@ import type { OperationError } from './types';
 /**
  * What the queue does with a failed send:
  * - `retry`: transient (no network, timeout, 429, 5xx, a non-JSON answer
- *   such as a captive portal): the operation stays pending, in order, and
- *   the flush stops; the idempotency key makes the next attempt safe;
+ *   such as a captive portal, a desktop LAN certificate that changed, ADR
+ *   0006): the operation stays pending, in order, and the flush stops; the
+ *   idempotency key makes the next attempt safe;
  * - `auth`: 401 `unauthorized` (token revoked or expired): the queue pauses
  *   and the session signs out; operations wait for a new pairing;
  * - `conflict`: 409, 412, 422 (state changed on the server, version or
@@ -28,6 +30,9 @@ export interface ClassifiedFailure {
 export function classifyFailure(err: unknown): ClassifiedFailure {
   if (err instanceof NetworkError) return { outcome: 'retry' };
   if (err instanceof UnexpectedResponseError) return { outcome: 'retry' };
+  // The pinned transport refused the server before any byte was sent: keep
+  // the operations for the new pairing of the same desktop (same scope).
+  if (err instanceof CertificateMismatchError) return { outcome: 'retry' };
   if (err instanceof UnauthorizedError) {
     return { outcome: 'auth', error: { status: 401, type: 'unauthorized' } };
   }

@@ -38,7 +38,10 @@ le operazioni sono poche e il server resta l'unico giudice).
    dopo un rifiuto genera una chiave nuova. Errori di rete, timeout, 429 e 5xx lasciano l'operazione in
    attesa e fermano l'invio (l'ordine resta); 409/412/422 diventano **conflitti** e gli altri 4xx
    **non inviate**, con lo slug del problema, finché l'utente non riprova o elimina: nessuna operazione
-   sparisce senza l'utente. Un 401 `unauthorized` mette in pausa la coda e scollega la sessione.
+   sparisce senza l'utente. Un 401 `unauthorized` mette in pausa la coda e scollega la sessione. Sul
+   desktop in rete locale (ADR 0006) la coda passa dallo stesso trasporto con pinning del resto
+   dell'app; un certificato cambiato ferma l'invio come un errore di rete (nulla ha raggiunto il
+   server) e le operazioni ripartono dopo "Abbina di nuovo" con lo stesso desktop.
 4. **Ambito:** ogni operazione registra istanza e stabilimento; quelle di un altro abbinamento non
    vengono mai inviate con il token sbagliato e restano visibili come "non inviate".
 5. **Scollegamento:** prima dello scollegamento volontario l'app prova a inviare la coda (al massimo
