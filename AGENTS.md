@@ -38,24 +38,28 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - `src/app/` expo-router routes (every file is a screen; no tests or helpers here):
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
   its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
-  operations; phone stack or tablet master/detail)
+  operations, `today` ("Oggi"), `bookings/` (day list; tablet list + sheet), `bookings/[bookingId]`
+  (sheet on phones), `spots` (free / released spots); phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
   `src/api/generated/` generated types
 - `src/features/<area>` logic per area: `pairing` (QR decoder, target normalisation, pairing flow,
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
-  phase 1), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
+  phase 1; `bookings/day-list` filters, search and sort, `bookings/detail` sheet rules and customer
+  visibility by role, `operations/day-spots` free and released spots), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
   operation queue, runtime and hooks). **Read `docs/data-and-offline.md` before adding a feature.**
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
   `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
-  `ConnectionIndicator`, `OnlineOnlyNotice`)
+  `ConnectionIndicator`, `OnlineOnlyNotice`, `FilterChip`, `CachedNotice`); `bookings/` (list, row,
+  badges, sheet) and `today/` (figure card, home shortcuts)
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
 - `src/lib/` shared primitives (version compare, base64url, storage, offline storage, network,
-  clock, calendar dates, money in cents, navigation theme, `cn`)
-- `src/test/` test helpers (`fake-fetch.ts`, `fixtures.ts`, `operations-fixtures.ts`, `ids.ts`,
-  `render-app.tsx`) and screen tests
+  clock, calendar dates, instants in the establishment zone, localised API texts, money in cents,
+  navigation theme, `cn`)
+- `src/test/` test helpers (`fake-fetch.ts`, `fixtures.ts`, `operations-fixtures.ts`, `day-routes.ts`,
+  `ids.ts`, `render-app.tsx`) and screen tests
 - `src/global.css` the only stylesheet (theme tokens); `tailwind.config.js` maps them
 - `api/core-version.json` pinned core release + SHA-256; `api/openapi.yaml` its contract (verbatim)
 - `scripts/` `gen-api.mjs` (contract download/verify/generate), `style-guard.js`, `agents/` hooks
