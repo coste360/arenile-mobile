@@ -41,6 +41,7 @@ import { formatCents } from '@/lib/money';
 import { cn } from '@/lib/utils';
 
 import { BookingKindBadges, BookingStatusBadge } from './booking-badges';
+import { BookingSheetActions } from './booking-sheet-actions';
 
 /** History entries shown before "show all". */
 const HISTORY_PREVIEW = 5;
@@ -201,6 +202,7 @@ function BookingSheet({ booking: b }: { booking: Booking }) {
       </Card>
 
       <PaymentsCard booking={b} locale={locale} timeZone={timeZone} />
+      <BookingSheetActions booking={b} />
       <NotesCard booking={b} />
       <HistoryCard booking={b} locale={locale} timeZone={timeZone} />
     </>

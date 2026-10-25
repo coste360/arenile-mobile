@@ -150,7 +150,8 @@
     "spots": "Emplacements",
     "operations": "Opérations",
     "reports": "Rapports",
-    "sale": "Vente du jour"
+    "sale": "Vente du jour",
+    "move": "Déplacer la réservation"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -658,7 +659,8 @@
       "queuedLink": "Voir les opérations en attente",
       "errorTitle": "Réservation indisponible",
       "errorDescription": "Impossible de la lire depuis l'instance. Vérifiez la connexion et réessayez.",
-      "notFound": "La réservation n'existe plus."
+      "notFound": "La réservation n'existe plus.",
+      "actionsTitle": "Actions"
     }
   },
   "operations": {
@@ -1023,5 +1025,59 @@
       "default": "Vente non aboutie. Réessayez."
     },
     "onlineOnly": "La vente nécessite l'instance joignable : le serveur garantit la disponibilité et le numéro du ticket."
+  },
+  "move": {
+    "action": "Déplacer vers un autre emplacement",
+    "onlineOnly": "Déplacer une réservation nécessite l'instance joignable : le serveur garantit les emplacements libres.",
+    "title": "Déplacer {{code}}",
+    "notMovable": "{{code}} ne peut plus être déplacée.",
+    "noLines": "{{code}} n'a aucun emplacement attribué à déplacer.",
+    "line": "Emplacement à déplacer",
+    "target": "Nouvel emplacement",
+    "search": "Rechercher l'emplacement",
+    "searchPlaceholder": "Ex. B12",
+    "freeOn": "Libres le {{day}} · {{slot}}. Le serveur vérifie les autres jours.",
+    "noSpots": "Aucun emplacement libre ne correspond.",
+    "more": "Il y a d'autres emplacements libres : affinez la recherche.",
+    "spotOption": "Emplacement {{label}}",
+    "summary": "Déplacement",
+    "from": "De",
+    "to": "Vers",
+    "fromToday": "Le déplacement s'applique à partir du {{day}} : les jours passés restent où ils sont.",
+    "ticketPrice": "Vente du jour {{number}} : le total du ticket ne change pas.",
+    "previewing": "Vérification de la disponibilité…",
+    "conflicts": "{{label}} n'est pas libre pour tout le séjour :",
+    "conflictDay": "{{day}}, {{slot}}",
+    "halfSlot": {
+      "AM": "matin",
+      "PM": "après-midi"
+    },
+    "priceSame": "Le total reste {{total}}.",
+    "priceUp": "Nouveau total {{total}} (+{{diff}}).",
+    "priceDown": "Nouveau total {{total}} (−{{diff}}).",
+    "failedTitle": "Déplacement non abouti",
+    "submit": "Déplacer",
+    "submitTo": "Déplacer vers {{label}}",
+    "confirm": {
+      "title": "Déplacer {{code}} vers {{label}} ?",
+      "description": "L'emplacement {{from}} se libère et {{to}} est occupé.",
+      "submit": "Déplacer"
+    },
+    "done": {
+      "title": "{{code}} déplacée vers {{label}}",
+      "description": "Le plan et les listes sont à jour.",
+      "back": "Retour"
+    },
+    "errors": {
+      "offline": "Instance injoignable : la réservation n'a pas été déplacée.",
+      "forbidden": "Votre rôle ne permet pas de déplacer les réservations.",
+      "spot_unavailable": "L'emplacement vient d'être occupé : choisissez-en un autre.",
+      "version_conflict": "La réservation a été modifiée entre-temps : rouvrez le déplacement.",
+      "not_modifiable": "Cette réservation ne peut pas être déplacée dans son statut.",
+      "policy": "Cet emplacement nécessite une approbation : déplacez la réservation depuis le panneau.",
+      "invalid": "La formule n'est pas valable sur cet emplacement : choisissez-en un autre.",
+      "not_found": "La réservation ou l'emplacement n'existe plus.",
+      "default": "Déplacement non abouti. Réessayez."
+    }
   }
 }

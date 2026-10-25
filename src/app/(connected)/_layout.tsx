@@ -84,8 +84,11 @@ function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') =>
 }
 
 /** Phase 2 screens (spec 03), online only, declared once for both layouts. */
-function phase2Screens(t: (key: 'nav.sale') => string) {
-  return [<Stack.Screen key="sale" name="sale" options={{ title: t('nav.sale') }} />];
+function phase2Screens(t: (key: 'nav.sale' | 'nav.move') => string) {
+  return [
+    <Stack.Screen key="sale" name="sale" options={{ title: t('nav.sale') }} />,
+    <Stack.Screen key="move" name="move/[bookingId]" options={{ title: t('nav.move') }} />,
+  ];
 }
 
 /**

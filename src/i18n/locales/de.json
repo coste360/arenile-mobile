@@ -150,7 +150,8 @@
     "spots": "Plätze",
     "operations": "Vorgänge",
     "reports": "Berichte",
-    "sale": "Tagesverkauf"
+    "sale": "Tagesverkauf",
+    "move": "Buchung verschieben"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -658,7 +659,8 @@
       "queuedLink": "Ausstehende Vorgänge ansehen",
       "errorTitle": "Buchung nicht verfügbar",
       "errorDescription": "Sie konnte nicht von der Instanz gelesen werden. Prüfe die Verbindung und versuche es erneut.",
-      "notFound": "Die Buchung existiert nicht mehr."
+      "notFound": "Die Buchung existiert nicht mehr.",
+      "actionsTitle": "Aktionen"
     }
   },
   "operations": {
@@ -1023,5 +1025,59 @@
       "default": "Verkauf fehlgeschlagen. Versuche es erneut."
     },
     "onlineOnly": "Der Verkauf braucht die erreichbare Instanz: Verfügbarkeit und Ticketnummer garantiert der Server."
+  },
+  "move": {
+    "action": "Auf einen anderen Platz verschieben",
+    "onlineOnly": "Zum Verschieben einer Buchung muss die Instanz erreichbar sein: Freie Plätze garantiert der Server.",
+    "title": "{{code}} verschieben",
+    "notMovable": "{{code}} kann nicht mehr verschoben werden.",
+    "noLines": "{{code}} hat keinen zugewiesenen Platz zum Verschieben.",
+    "line": "Zu verschiebender Platz",
+    "target": "Neuer Platz",
+    "search": "Platz suchen",
+    "searchPlaceholder": "z. B. B12",
+    "freeOn": "Frei am {{day}} · {{slot}}. Die anderen Tage prüft der Server.",
+    "noSpots": "Kein freier Platz passt.",
+    "more": "Es gibt weitere freie Plätze: Grenze die Suche ein.",
+    "spotOption": "Platz {{label}}",
+    "summary": "Verschiebung",
+    "from": "Von",
+    "to": "Nach",
+    "fromToday": "Die Verschiebung gilt ab {{day}}: Vergangene Tage bleiben, wo sie sind.",
+    "ticketPrice": "Tagesverkauf {{number}}: Der Ticketbetrag ändert sich nicht.",
+    "previewing": "Verfügbarkeit wird geprüft…",
+    "conflicts": "{{label}} ist nicht für den ganzen Aufenthalt frei:",
+    "conflictDay": "{{day}}, {{slot}}",
+    "halfSlot": {
+      "AM": "Vormittag",
+      "PM": "Nachmittag"
+    },
+    "priceSame": "Der Gesamtbetrag bleibt {{total}}.",
+    "priceUp": "Neuer Gesamtbetrag {{total}} (+{{diff}}).",
+    "priceDown": "Neuer Gesamtbetrag {{total}} (−{{diff}}).",
+    "failedTitle": "Verschieben fehlgeschlagen",
+    "submit": "Verschieben",
+    "submitTo": "Nach {{label}} verschieben",
+    "confirm": {
+      "title": "{{code}} nach {{label}} verschieben?",
+      "description": "Platz {{from}} wird frei und {{to}} wird belegt.",
+      "submit": "Verschieben"
+    },
+    "done": {
+      "title": "{{code}} nach {{label}} verschoben",
+      "description": "Karte und Listen sind aktuell.",
+      "back": "Zurück"
+    },
+    "errors": {
+      "offline": "Instanz nicht erreichbar: Die Buchung wurde nicht verschoben.",
+      "forbidden": "Deine Rolle darf keine Buchungen verschieben.",
+      "spot_unavailable": "Der Platz wurde gerade belegt: Wähle einen anderen.",
+      "version_conflict": "Die Buchung wurde inzwischen geändert: Öffne die Verschiebung erneut.",
+      "not_modifiable": "Diese Buchung kann in ihrem Status nicht verschoben werden.",
+      "policy": "Dieser Platz erfordert eine Freigabe: Verschiebe die Buchung im Panel.",
+      "invalid": "Das Paket ist auf diesem Platz nicht gültig: Wähle einen anderen.",
+      "not_found": "Die Buchung oder der Platz existiert nicht mehr.",
+      "default": "Verschieben fehlgeschlagen. Versuche es erneut."
+    }
   }
 }

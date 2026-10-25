@@ -150,7 +150,8 @@
     "spots": "Postazioni",
     "operations": "Operazioni",
     "reports": "Report",
-    "sale": "Vendita giornaliera"
+    "sale": "Vendita giornaliera",
+    "move": "Sposta prenotazione"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -658,7 +659,8 @@
       "queuedLink": "Vedi le operazioni in attesa",
       "errorTitle": "Prenotazione non disponibile",
       "errorDescription": "Non è stato possibile leggerla dall'istanza. Controlla la connessione e riprova.",
-      "notFound": "La prenotazione non esiste più."
+      "notFound": "La prenotazione non esiste più.",
+      "actionsTitle": "Azioni"
     }
   },
   "operations": {
@@ -1023,5 +1025,59 @@
       "default": "Vendita non riuscita. Riprova."
     },
     "onlineOnly": "La vendita richiede l'istanza raggiungibile: la disponibilità e il numero del biglietto li garantisce il server."
+  },
+  "move": {
+    "action": "Sposta su un'altra postazione",
+    "onlineOnly": "Spostare una prenotazione richiede l'istanza raggiungibile: le postazioni libere le garantisce il server.",
+    "title": "Sposta {{code}}",
+    "notMovable": "{{code}} non si può più spostare.",
+    "noLines": "{{code}} non ha postazioni assegnate da spostare.",
+    "line": "Postazione da spostare",
+    "target": "Nuova postazione",
+    "search": "Cerca la postazione",
+    "searchPlaceholder": "Es. B12",
+    "freeOn": "Libere {{day}} · {{slot}}. Gli altri giorni li controlla il server.",
+    "noSpots": "Nessuna postazione libera corrisponde.",
+    "more": "Ci sono altre postazioni libere: restringi la ricerca.",
+    "spotOption": "Postazione {{label}}",
+    "summary": "Spostamento",
+    "from": "Da",
+    "to": "A",
+    "fromToday": "Lo spostamento vale da {{day}}: i giorni già passati restano dove sono.",
+    "ticketPrice": "Vendita giornaliera {{number}}: il totale del biglietto non cambia.",
+    "previewing": "Verifica della disponibilità…",
+    "conflicts": "{{label}} non è libera per tutto il soggiorno:",
+    "conflictDay": "{{day}}, {{slot}}",
+    "halfSlot": {
+      "AM": "mattina",
+      "PM": "pomeriggio"
+    },
+    "priceSame": "Il totale resta {{total}}.",
+    "priceUp": "Nuovo totale {{total}} (+{{diff}}).",
+    "priceDown": "Nuovo totale {{total}} (−{{diff}}).",
+    "failedTitle": "Spostamento non riuscito",
+    "submit": "Sposta",
+    "submitTo": "Sposta su {{label}}",
+    "confirm": {
+      "title": "Spostare {{code}} su {{label}}?",
+      "description": "La postazione {{from}} si libera e {{to}} viene occupata.",
+      "submit": "Sposta"
+    },
+    "done": {
+      "title": "{{code}} spostata su {{label}}",
+      "description": "La mappa e gli elenchi sono aggiornati.",
+      "back": "Torna indietro"
+    },
+    "errors": {
+      "offline": "Istanza non raggiungibile: la prenotazione non è stata spostata.",
+      "forbidden": "Spostamento non consentito al tuo ruolo.",
+      "spot_unavailable": "La postazione è stata appena occupata: scegline un'altra.",
+      "version_conflict": "La prenotazione è stata modificata nel frattempo: riapri lo spostamento.",
+      "not_modifiable": "Questa prenotazione non si può spostare nel suo stato.",
+      "policy": "Questa postazione richiede l'approvazione: spostala dal pannello.",
+      "invalid": "Il pacchetto non è valido su questa postazione: scegline un'altra.",
+      "not_found": "La prenotazione o la postazione non esiste più.",
+      "default": "Spostamento non riuscito. Riprova."
+    }
   }
 }

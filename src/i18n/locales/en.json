@@ -150,7 +150,8 @@
     "spots": "Spots",
     "operations": "Operations",
     "reports": "Reports",
-    "sale": "Daily sale"
+    "sale": "Daily sale",
+    "move": "Move booking"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -658,7 +659,8 @@
       "queuedLink": "See pending operations",
       "errorTitle": "Booking not available",
       "errorDescription": "It could not be read from the instance. Check the connection and try again.",
-      "notFound": "The booking no longer exists."
+      "notFound": "The booking no longer exists.",
+      "actionsTitle": "Actions"
     }
   },
   "operations": {
@@ -1023,5 +1025,59 @@
       "default": "Sale failed. Try again."
     },
     "onlineOnly": "Selling needs the instance to be reachable: the server guarantees availability and the ticket number."
+  },
+  "move": {
+    "action": "Move to another spot",
+    "onlineOnly": "Moving a booking needs the instance to be reachable: the server guarantees free spots.",
+    "title": "Move {{code}}",
+    "notMovable": "{{code}} can no longer be moved.",
+    "noLines": "{{code}} has no assigned spot to move.",
+    "line": "Spot to move",
+    "target": "New spot",
+    "search": "Search the spot",
+    "searchPlaceholder": "E.g. B12",
+    "freeOn": "Free on {{day}} · {{slot}}. The server checks the other days.",
+    "noSpots": "No free spot matches.",
+    "more": "There are more free spots: narrow the search.",
+    "spotOption": "Spot {{label}}",
+    "summary": "Move",
+    "from": "From",
+    "to": "To",
+    "fromToday": "The move applies from {{day}}: past days stay where they are.",
+    "ticketPrice": "Daily sale {{number}}: the ticket total does not change.",
+    "previewing": "Checking availability…",
+    "conflicts": "{{label}} is not free for the whole stay:",
+    "conflictDay": "{{day}}, {{slot}}",
+    "halfSlot": {
+      "AM": "morning",
+      "PM": "afternoon"
+    },
+    "priceSame": "The total stays {{total}}.",
+    "priceUp": "New total {{total}} (+{{diff}}).",
+    "priceDown": "New total {{total}} (−{{diff}}).",
+    "failedTitle": "Move failed",
+    "submit": "Move",
+    "submitTo": "Move to {{label}}",
+    "confirm": {
+      "title": "Move {{code}} to {{label}}?",
+      "description": "Spot {{from}} becomes free and {{to}} is taken.",
+      "submit": "Move"
+    },
+    "done": {
+      "title": "{{code}} moved to {{label}}",
+      "description": "The map and the lists are up to date.",
+      "back": "Go back"
+    },
+    "errors": {
+      "offline": "Instance unreachable: the booking was not moved.",
+      "forbidden": "Your role is not allowed to move bookings.",
+      "spot_unavailable": "The spot was just taken: pick another one.",
+      "version_conflict": "The booking changed meanwhile: open the move again.",
+      "not_modifiable": "This booking cannot be moved in its status.",
+      "policy": "This spot needs approval: move the booking from the panel.",
+      "invalid": "The package is not valid on this spot: pick another one.",
+      "not_found": "The booking or the spot no longer exists.",
+      "default": "Move failed. Try again."
+    }
   }
 }
