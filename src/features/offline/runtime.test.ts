@@ -215,6 +215,16 @@ describe('offline runtime', () => {
     expect(posts(api)[1]!.headers.get('If-Match')).toBe('*');
   });
 
+  it('never sends an operation of another pairing with the current client', async () => {
+    const { runtime, api } = await attached({ routes: { [NOTE]: () => json(200, {}) } });
+    const other = { instanceUrl: 'https://altro.example.it', establishmentId: 'est-9' };
+    // An operation left by the previous pairing, flushed by a drain started for it.
+    await runtime.queue.enqueue({ ...note, scope: other } as never);
+    const result = await runtime.queue.flush(other);
+    expect(result).toMatchObject({ sent: 0, blocked: true });
+    expect(posts(api)).toHaveLength(0);
+  });
+
   it('empties queue and cache on a voluntary unpair', async () => {
     const { runtime, store } = await attached({ connected: false });
     await runtime.enqueue(note);

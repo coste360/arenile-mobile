@@ -17,7 +17,7 @@ import type { KeyValueStore } from '@/lib/storage';
 import { applyOptimistic, invalidateAfter } from './optimistic';
 import { createOfflineCache, type OfflineCache } from './persist';
 import { prefetchOfflineWindow } from './prefetch';
-import { createOperationQueue, type FlushResult, type OperationQueue } from './queue';
+import { createOperationQueue, sameScope, type FlushResult, type OperationQueue } from './queue';
 import { sendOfflineOperation } from './senders';
 import type {
   ConnectionState,
@@ -98,7 +98,11 @@ export function createOfflineRuntime(options: OfflineRuntimeOptions): OfflineRun
   const queue = createOperationQueue<OfflineOperation>({
     store,
     send: (op) => {
-      if (!client) return Promise.reject(new NetworkError('unreachable'));
+      // Only the token of the operation's pairing may send it: a drain still
+      // running for a previous pairing must not use the new session's client.
+      if (!client || !scope || !sameScope(op.scope, scope)) {
+        return Promise.reject(new NetworkError('unreachable'));
+      }
       return sendOfflineOperation(client, op);
     },
     now,
