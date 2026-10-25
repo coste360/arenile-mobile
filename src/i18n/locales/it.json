@@ -1180,37 +1180,5 @@
       "notFound": "L'iscrizione non esiste più.",
       "default": "Operazione non riuscita. Riprova."
     }
-  },
-  "push": {
-    "title": "Notifiche push",
-    "privacy": "Facoltative. Passano dal relay di Coste360, che riceve solo l'identificativo del telefono dato da Apple o Google e un testo generico (es. \"Nuova prenotazione online\"), mai dati dei clienti. Toccando la notifica l'app rilegge i dati dall'istanza.",
-    "onlineOnly": "Per gestire le notifiche serve la connessione con l'istanza.",
-    "blocked": {
-      "relay": "Questa istanza non ha il relay delle notifiche configurato: chi gestisce il server può attivarlo.",
-      "establishment": "Il gestore non ha attivato le notifiche dello stabilimento: si attivano dal pannello, in Configurazione → Dispositivi."
-    },
-    "on": "Attive su questo dispositivo",
-    "off": "Spente su questo dispositivo",
-    "topicsLabel": "Avvisami per",
-    "topics": {
-      "booking_new_online": "Nuove prenotazioni online",
-      "booking_approval_requested": "Prenotazioni da approvare",
-      "payment_failed": "Pagamenti non riusciti"
-    },
-    "noTopics": "Il tuo ruolo non riceve nessun tipo di notifica attivo nello stabilimento.",
-    "pickTopic": "Scegli almeno un tipo di avviso.",
-    "turnOn": "Attiva le notifiche",
-    "turnOff": "Disattiva le notifiche",
-    "saveTopics": "Salva gli avvisi scelti",
-    "openSettings": "Apri le impostazioni del telefono",
-    "channel": "Avvisi dello stabilimento",
-    "errors": {
-      "permission": "Le notifiche sono bloccate per Arenile nelle impostazioni del telefono.",
-      "unavailable": "Le notifiche non sono attive sull'istanza o nello stabilimento.",
-      "offline": "Istanza non raggiungibile: riprova quando torna la connessione.",
-      "forbidden": "Non consentito per il tuo ruolo.",
-      "token": "Il telefono non ha fornito l'identificativo per le notifiche: questa versione dell'app potrebbe non supportarle.",
-      "default": "Operazione non riuscita. Riprova."
-    }
   }
 }

@@ -1180,37 +1180,5 @@
       "notFound": "L'inscription n'existe plus.",
       "default": "Opération non aboutie. Réessayez."
     }
-  },
-  "push": {
-    "title": "Notifications push",
-    "privacy": "Facultatives. Elles passent par le relais de Coste360, qui ne reçoit que l'identifiant du téléphone fourni par Apple ou Google et un texte générique (ex. \"Nouvelle réservation en ligne\"), jamais de données clients. En touchant la notification, l'app relit les données depuis l'instance.",
-    "onlineOnly": "Gérer les notifications nécessite la connexion à l'instance.",
-    "blocked": {
-      "relay": "Cette instance n'a pas de relais de notifications configuré : la personne qui gère le serveur peut l'activer.",
-      "establishment": "Le gérant n'a pas activé les notifications de l'établissement : elles s'activent dans le panneau, sous Configuration → Appareils."
-    },
-    "on": "Activées sur cet appareil",
-    "off": "Désactivées sur cet appareil",
-    "topicsLabel": "Me prévenir pour",
-    "topics": {
-      "booking_new_online": "Nouvelles réservations en ligne",
-      "booking_approval_requested": "Réservations à approuver",
-      "payment_failed": "Paiements échoués"
-    },
-    "noTopics": "Votre rôle ne reçoit aucune des notifications activées pour l'établissement.",
-    "pickTopic": "Choisissez au moins un type de notification.",
-    "turnOn": "Activer les notifications",
-    "turnOff": "Désactiver les notifications",
-    "saveTopics": "Enregistrer les notifications choisies",
-    "openSettings": "Ouvrir les réglages du téléphone",
-    "channel": "Notifications de l'établissement",
-    "errors": {
-      "permission": "Les notifications sont bloquées pour Arenile dans les réglages du téléphone.",
-      "unavailable": "Les notifications ne sont pas activées sur l'instance ou dans l'établissement.",
-      "offline": "Instance injoignable : réessayez quand la connexion revient.",
-      "forbidden": "Non autorisé pour votre rôle.",
-      "token": "Le téléphone n'a pas fourni l'identifiant de notification : cette version de l'app ne les prend peut-être pas en charge.",
-      "default": "Opération non aboutie. Réessayez."
-    }
   }
 }

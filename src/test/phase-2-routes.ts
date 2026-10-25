@@ -132,7 +132,6 @@ export interface Phase2Setup {
   permissions?: Permission[];
   day?: OperationsDay;
   features?: string[];
-  pushNotifications?: boolean;
   extra?: Record<string, Handler>;
 }
 
@@ -141,7 +140,6 @@ export function phase2Instance({
   permissions,
   day = PHASE2_DAY,
   features = ['bookings', 'cash', 'season_passes'],
-  pushNotifications = false,
   extra: overrides = {},
 }: Phase2Setup = {}) {
   let unreachable = false;
@@ -151,14 +149,7 @@ export function phase2Instance({
       unreachable ? networkDown(r) : h(r);
   const base: Record<string, Handler> = {
     'GET /api/device/v1/self': () => json(200, { ...DEVICE, role }),
-    'GET /api/admin/v1/meta': () =>
-      json(
-        200,
-        meta({
-          features,
-          capabilities: { ...meta().capabilities, push_notifications: pushNotifications },
-        }),
-      ),
+    'GET /api/admin/v1/meta': () => json(200, meta({ features })),
     'GET /api/admin/v1/auth/me': () =>
       json(200, {
         principal_type: 'user',

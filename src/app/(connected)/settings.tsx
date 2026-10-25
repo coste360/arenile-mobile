@@ -5,7 +5,6 @@ import { View } from 'react-native';
 
 import { DetailRow } from '@/components/detail-row';
 import { Screen } from '@/components/layout/screen';
-import { PushSettingsCard } from '@/components/push/push-settings-card';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -93,8 +92,6 @@ export default function SettingsScreen() {
         onChange={(v) => setTheme(v as ThemePreference)}
         options={THEMES.map((v) => ({ value: v, label: t(`settings.theme.${v}`) }))}
       />
-
-      <PushSettingsCard />
 
       <Card>
         <CardHeader>

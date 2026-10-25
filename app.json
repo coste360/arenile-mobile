@@ -54,19 +54,10 @@
       "expo-localization",
       "expo-sqlite",
       [
-        "expo-notifications",
-        {
-          "mode": "production",
-          "enableBackgroundRemoteNotifications": false
-        }
-      ],
-      "./plugins/with-fcm-privacy",
-      [
         "expo-widgets",
         {
           "groupIdentifier": "group.app.arenile.mobile",
           "enableAndroid": true,
-          "enablePushNotifications": false,
           "frequentUpdates": false,
           "widgets": [
             {

@@ -1180,37 +1180,5 @@
       "notFound": "The entry no longer exists.",
       "default": "Operation failed. Try again."
     }
-  },
-  "push": {
-    "title": "Push notifications",
-    "privacy": "Optional. They go through the Coste360 relay, which only receives the phone identifier given by Apple or Google and a generic text (e.g. \"New online booking\"), never customer data. Tapping the notification makes the app read the data again from the instance.",
-    "onlineOnly": "Managing notifications needs the connection to the instance.",
-    "blocked": {
-      "relay": "This instance has no notification relay configured: whoever runs the server can set it up.",
-      "establishment": "The manager has not turned on notifications for the establishment: they are turned on in the panel, under Configuration → Devices."
-    },
-    "on": "On for this device",
-    "off": "Off for this device",
-    "topicsLabel": "Notify me about",
-    "topics": {
-      "booking_new_online": "New online bookings",
-      "booking_approval_requested": "Bookings to approve",
-      "payment_failed": "Failed payments"
-    },
-    "noTopics": "Your role receives none of the notifications turned on for the establishment.",
-    "pickTopic": "Pick at least one kind of notification.",
-    "turnOn": "Turn on notifications",
-    "turnOff": "Turn off notifications",
-    "saveTopics": "Save the chosen notifications",
-    "openSettings": "Open the phone settings",
-    "channel": "Establishment notifications",
-    "errors": {
-      "permission": "Notifications are blocked for Arenile in the phone settings.",
-      "unavailable": "Notifications are not on for the instance or the establishment.",
-      "offline": "Instance unreachable: try again when the connection is back.",
-      "forbidden": "Not allowed for your role.",
-      "token": "The phone did not provide the notification identifier: this version of the app may not support them.",
-      "default": "Operation failed. Try again."
-    }
   }
 }
