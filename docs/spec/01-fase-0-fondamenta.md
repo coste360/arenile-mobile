@@ -88,6 +88,16 @@ certificato con quell'impronta (ADR 0006). In dettaglio:
   di navigazione laterale con il dettaglio a destra; su iPad in Slide Over o Split View stretta il
   layout da telefono. Tutte le orientazioni.
 
+## Stato
+
+Implementata. Collegamento da QR, link e modulo manuale, compatibilità, token nel portachiavi e revoca,
+lingue, tema e layout telefono/tablet sono coperti dai test delle schermate. La rete locale del desktop
+usa il modulo nativo `modules/pinned-fetch` (ADR 0006, accettato): logica JS e test Swift del
+fingerprint verificati, ma il modulo iOS completo e il modulo Kotlin con il suo test JUnit non sono mai
+stati compilati (servono Xcode, JDK e Android SDK o una build EAS). Da provare su iPhone, iPad e Android
+contro l'app desktop in rete locale: impronta giusta, sbagliata, certificato rinnovato e permesso "Rete
+locale" di iOS.
+
 ## Criteri di accettazione
 
 - Collegamento da QR (app e fotocamera di sistema) e a mano, con tutti gli errori sopra, coperti da test.

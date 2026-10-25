@@ -9,6 +9,10 @@
 
 ## Stato
 
+Implementata. I report sono verificati dai test; il widget no su dispositivo: serve una build EAS con
+l'estensione iOS `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile`
+registrati nell'account Apple di Coste360.
+
 - **Report:** schermata _Report_ (scorciatoia nell'intestazione del telefono, voce del pannello di
   navigazione su tablet) solo per i ruoli con `reports.read`. Giorno o settimana (lunedì–domenica), con
   navigazione all'indietro fino a quella corrente; incassato, occupazione, prenotazioni e prenotato

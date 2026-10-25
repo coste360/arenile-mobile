@@ -61,6 +61,24 @@ Stesse regole del pannello (sezione 21.2 del core):
   server);
 - indicatore della connessione sempre visibile e numero di operazioni in attesa.
 
+## Stato
+
+Implementata, non ancora pubblicata.
+
+- **Oggi**, **Prenotazioni del giorno** con la scheda, **Mappa del giorno** (ADR 0008), **Operazioni**
+  (check-in da QR o codice, ingresso al varco, rilasci, note, incasso in contanti, blocchi; ADR 0009) e
+  **Offline** (cache di oggi e domani, coda con chiavi di idempotenza, indicatore della connessione; ADR 0007) sono fatti, con test a larghezza di telefono e di tablet. Sul desktop in rete locale anche la
+  coda passa dal trasporto con pinning.
+- Ingressi al varco e blocchi delle postazioni sono **solo online** (ADR 0009), diversamente dalla prima
+  stesura di questa fase.
+- La mappa disegna le postazioni come forme geometriche: le illustrazioni dei kit della mappa del core e
+  l'immagine di sfondo non sono usate (ADR 0008, decisione 7; servono una release del core che pubblichi
+  i kit e una decisione sulla licenza dell'app).
+- Da provare su dispositivo: fluidità dei gesti con centinaia di postazioni, fotocamera per i QR,
+  avvio a freddo senza rete, coda dopo la riconnessione. `expo-sqlite` è un modulo nativo nuovo: serve
+  una nuova build EAS.
+- La pubblicazione (sotto) non è iniziata: mancano gli account e la decisione sulla licenza.
+
 ## Pubblicazione
 
 - Build e invio con EAS Build/Submit, account Apple Developer e Google Play di Coste360.

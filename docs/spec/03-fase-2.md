@@ -14,7 +14,9 @@
 ## Stato
 
 Decisioni in [ADR 0011](../adr/0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md). Tutte le
-funzioni di questa fase sono **solo online**: disattivate senza connessione, mai in coda.
+funzioni di questa fase sono **solo online**: disattivate senza connessione, mai in coda. Implementate e
+coperte da test delle schermate; nessuna è stata provata su un dispositivo o con una stampante reale. Le
+notifiche push restano spente finché non escono la release del core e gli account (sotto).
 
 - **Vendita giornaliera rapida:** pulsante _Vendita giornaliera_ nella scheda di una postazione libera o
   rilasciata (oggi o domani), per i ruoli con `bookings.write` e `cash.operate` (titolare, gestore,

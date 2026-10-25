@@ -101,3 +101,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 - Strumenti: `Makefile`, ESLint, Prettier, guardia degli stili, Jest con test delle schermate a
   larghezza di telefono e di tablet, CI su GitHub Actions (`make check`, `expo-doctor`, bundle iOS e
   Android), regole e agenti per Claude Code, ADR 0001–0006, piano dell'app per fasi.
+
+### Corretto
+
+- Desktop in rete locale: la coda offline usa lo stesso trasporto con pinning del resto dell'app (prima
+  non poteva inviare nulla) e, se il certificato del desktop cambia, le operazioni restano in attesa per
+  il nuovo abbinamento invece di risultare "non inviate".

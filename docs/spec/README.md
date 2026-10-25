@@ -27,10 +27,15 @@ traduce in fasi di rilascio; le decisioni tecniche sono negli [ADR](../adr/READM
 
 ## Fasi
 
-| Fase | Documento                                                 | Contenuto                                                                            |
-| ---- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| 0    | [Fondamenta](01-fase-0-fondamenta.md)                     | Collegamento, token, versioni, lingue, tema, layout                                  |
-| 1    | [Prima versione negli store](02-fase-1-prima-versione.md) | Oggi, mappa, prenotazioni, check-in, rilasci, incassi in contanti, offline           |
-| 2    | [Fase 2](03-fase-2.md)                                    | Notifiche push facoltative, vendita giornaliera, spostamenti, lista d'attesa, stampa |
-| 3    | [Fase 3](04-fase-3.md)                                    | Report essenziali, widget                                                            |
-| —    | [Esclusi per decisione](05-esclusi.md)                    | Cosa l'app non farà                                                                  |
+| Fase | Documento                                                 | Contenuto                                                                            | Stato                                                   |
+| ---- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| 0    | [Fondamenta](01-fase-0-fondamenta.md)                     | Collegamento, token, versioni, lingue, tema, layout                                  | implementata, da provare su dispositivo                 |
+| 1    | [Prima versione negli store](02-fase-1-prima-versione.md) | Oggi, mappa, prenotazioni, check-in, rilasci, incassi in contanti, offline           | implementata, da provare su dispositivo; non pubblicata |
+| 2    | [Fase 2](03-fase-2.md)                                    | Notifiche push facoltative, vendita giornaliera, spostamenti, lista d'attesa, stampa | implementata; push in attesa del core e degli account   |
+| 3    | [Fase 3](04-fase-3.md)                                    | Report essenziali, widget                                                            | implementata, widget da provare su dispositivo          |
+| —    | [Esclusi per decisione](05-esclusi.md)                    | Cosa l'app non farà                                                                  | —                                                       |
+
+"Implementata" vuol dire: codice, test di unità e delle schermate (telefono e tablet) e `make check-full`
+verdi. Nessuna fase è stata ancora provata su un iPhone, un iPad o un telefono Android reale né
+compilata con EAS Build: servono gli account Expo/EAS, Apple Developer e Google Play di Coste360. Il
+dettaglio di cosa manca è nella sezione _Stato_ di ogni fase.
