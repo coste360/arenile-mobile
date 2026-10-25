@@ -34,3 +34,10 @@ export type BookingDetail = Schemas['BookingDetail'];
 export type BeachMap = Schemas['Map'];
 export type MapDocument = Schemas['MapDocument'];
 export type PaymentMethod = Schemas['PaymentMethod'];
+
+// Phase 3: essential reports (core spec 15.3).
+export type YearComparisonReport = Schemas['YearComparisonReport'];
+export type ComparisonMetric = Schemas['ComparisonMetric'];
+export type ComparisonMetricKey = Schemas['ComparisonMetricKey'];
+export type ComparisonPoint = Schemas['ComparisonPoint'];
+export type ComparisonAlign = Schemas['ComparisonAlign'];
