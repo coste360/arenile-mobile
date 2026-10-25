@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { request } from '@/api/client';
 import { isForbidden, NetworkError, ProblemError } from '@/api/errors';
+import { useIdempotencyKeys } from '@/api/idempotency';
 import { estKeys } from '@/api/query-keys';
 import type { Slots } from '@/api/types';
 import { useApiClient, usePairedSession } from '@/features/session/session-provider';
@@ -21,17 +22,27 @@ export interface BlockInput {
   reason?: string;
 }
 
-/** POST spot-blocks for one spot, one day and slot, with an Idempotency-Key. */
+/**
+ * POST spot-blocks for one spot, one day and slot. The Idempotency-Key stays
+ * the same across retries after a lost answer, so a block that was applied is
+ * not refused as spot_unavailable by its own retry (src/api/idempotency.ts).
+ */
 export function useBlockSpot() {
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
   const { randomId } = useDependencies();
   const qc = useQueryClient();
+  const keys = useIdempotencyKeys(randomId);
   return useMutation({
     mutationFn: ({ spotId, date, slot, reason }: BlockInput) =>
       request(() =>
         client.POST(`${EST}/spot-blocks`, {
-          params: { path: { establishmentId }, header: { 'Idempotency-Key': randomId() } },
+          params: {
+            path: { establishmentId },
+            header: {
+              'Idempotency-Key': keys.keyFor(JSON.stringify([spotId, date, slot, reason])),
+            },
+          },
           body: {
             spot_ids: [spotId],
             starts_on: date,
@@ -41,8 +52,10 @@ export function useBlockSpot() {
           },
         }),
       ),
-    onSettled: () =>
-      qc.invalidateQueries({ queryKey: estKeys.area(establishmentId, 'operations') }),
+    onSettled: (_data, error) => {
+      keys.settled(error);
+      return qc.invalidateQueries({ queryKey: estKeys.area(establishmentId, 'operations') });
+    },
   });
 }
 

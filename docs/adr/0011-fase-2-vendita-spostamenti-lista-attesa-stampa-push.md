@@ -25,7 +25,11 @@ si modifica e la versione fissata del core non si cambia senza una decisione (AD
    coda offline né nella cache persistita (le loro chiavi non sono nella lista ammessa, con test).
 2. **Idempotenza delle creazioni.** Vendita, offerta e lavoro di stampa mandano un `Idempotency-Key` che
    resta lo stesso finché la richiesta non cambia: un doppio tocco o un nuovo tentativo dopo un timeout
-   producono un solo effetto; dopo l'esito la richiesta successiva ha una chiave nuova.
+   producono un solo effetto. La chiave si tiene solo quando l'esito è ignoto (rete, timeout, 5xx,
+   429, `idempotency_in_progress`); dopo una risposta che il core memorizza (successo o rifiuto 4xx,
+   rigiocato per 24 ore alla stessa chiave) il tentativo successivo ha una chiave nuova, altrimenti un
+   rifiuto come `cash_session_closed` tornerebbe identico anche dopo averne tolto la causa
+   (`src/api/idempotency.ts`, anche per i blocchi dell'ADR 0009).
 3. **Vendita giornaliera solo per postazione.** Dalla scheda di una postazione libera (o con il giorno
    rilasciato dall'abbonato), ruoli con `bookings.write` e `cash.operate` e istanza con la funzione
    `cash`: fascia, pacchetti vendibili in cassa nella zona, extra del pacchetto, nome facoltativo,

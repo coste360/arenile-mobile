@@ -3,8 +3,8 @@
 // apply (409 spot_unavailable). Like create/move booking (spec 21.2) they are
 // online-only and never queued (ADR 0009 of this app).
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRef } from 'react';
 
+import { useIdempotencyKeys } from '@/api/idempotency';
 import { request, type ApiClient } from '@/api/client';
 import { estKeys } from '@/api/query-keys';
 import type { OperationalSpot, Slots, SpotBlockCreate } from '@/api/types';
@@ -98,25 +98,21 @@ export async function deleteSpotBlock(
 /**
  * Blocks a spot. The Idempotency-Key stays the same while the request does
  * not change, so a double tap or a retry after a timeout blocks once; a
- * new request gets a new key.
+ * new request, or a retry after an answer, gets a new key (src/api/idempotency.ts).
  */
 export function useCreateSpotBlock() {
   const qc = useQueryClient();
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
   const { randomId } = useDependencies();
-  const last = useRef<{ body: string; key: string } | null>(null);
+  const keys = useIdempotencyKeys(randomId);
   return useMutation({
-    mutationFn: (body: SpotBlockCreate) => {
-      const serialized = JSON.stringify(body);
-      if (last.current?.body !== serialized) last.current = { body: serialized, key: randomId() };
-      return createSpotBlock(client, establishmentId, body, last.current.key);
+    mutationFn: (body: SpotBlockCreate) =>
+      createSpotBlock(client, establishmentId, body, keys.keyFor(JSON.stringify(body))),
+    onSettled: (_data, error) => {
+      keys.settled(error);
+      return qc.invalidateQueries({ queryKey: estKeys.area(establishmentId, 'operations') });
     },
-    onSuccess: () => {
-      last.current = null;
-    },
-    onSettled: () =>
-      qc.invalidateQueries({ queryKey: estKeys.area(establishmentId, 'operations') }),
   });
 }
 

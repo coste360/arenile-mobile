@@ -107,3 +107,6 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 - Desktop in rete locale: la coda offline usa lo stesso trasporto con pinning del resto dell'app (prima
   non poteva inviare nulla) e, se il certificato del desktop cambia, le operazioni restano in attesa per
   il nuovo abbinamento invece di risultare "non inviate".
+- Vendita, offerta della lista d'attesa, stampa e blocchi: dopo un rifiuto del server il nuovo tentativo
+  usa una chiave di idempotenza nuova (prima il core rigiocava lo stesso rifiuto per 24 ore); la stampa
+  riusa la chiave dopo una risposta persa, così non stampa due volte.

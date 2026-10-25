@@ -3,8 +3,8 @@
 // is never queued (spec 21.2 of the core: it needs the server's availability
 // guarantees and ticket numbering).
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRef } from 'react';
 
+import { useIdempotencyKeys } from '@/api/idempotency';
 import { request, type ApiClient } from '@/api/client';
 import { estKeys } from '@/api/query-keys';
 import type {
@@ -107,19 +107,18 @@ export function useSaleQuote(body: DailySaleQuoteRequest | null) {
 /**
  * Creates the sale. The Idempotency-Key stays the same while the request
  * does not change, so a double tap or a retry after a timeout sells once;
- * after a sale the next one gets a new key.
+ * after a sale or a refusal the next attempt gets a new key
+ * (src/api/idempotency.ts).
  */
 export function useCreateDailySale() {
   const qc = useQueryClient();
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
   const { randomId } = useDependencies();
-  const last = useRef<{ body: string; key: string } | null>(null);
+  const keys = useIdempotencyKeys(randomId);
   return useMutation<DailySaleResult, Error, DailySaleCreate>({
     mutationFn: (body) => {
-      const serialized = JSON.stringify(body);
-      if (last.current?.body !== serialized) last.current = { body: serialized, key: randomId() };
-      const key = last.current.key;
+      const key = keys.keyFor(JSON.stringify(body));
       return request(() =>
         client.POST(`${EST}/daily-sales`, {
           params: { path: { establishmentId }, header: { 'Idempotency-Key': key } },
@@ -127,10 +126,8 @@ export function useCreateDailySale() {
         }),
       );
     },
-    onSuccess: () => {
-      last.current = null;
-    },
-    onSettled: async () => {
+    onSettled: async (_data, error) => {
+      keys.settled(error);
       // The spot is taken (or the price changed): the map, the lists and the quote change.
       await Promise.all([
         qc.invalidateQueries({ queryKey: estKeys.area(establishmentId, 'operations') }),

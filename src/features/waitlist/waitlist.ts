@@ -4,11 +4,11 @@
 // offer is a timed hold created by the server under the database
 // constraints, so it is online only and never queued.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRef } from 'react';
 import { z } from 'zod';
 
 import { request, type ApiClient } from '@/api/client';
 import { isForbidden, NetworkError, ProblemError } from '@/api/errors';
+import { useIdempotencyKeys } from '@/api/idempotency';
 import { estKeys } from '@/api/query-keys';
 import type {
   WaitlistEntry,
@@ -207,21 +207,18 @@ export function useWaitlistSettings(enabled: boolean) {
 
 /**
  * Offers a spot to an entry now. The Idempotency-Key stays the same while
- * the request does not change, so a double tap holds and emails once.
+ * the request does not change, so a double tap holds and emails once; after an answer
+ * (offer made or refused) the next attempt gets a new key (src/api/idempotency.ts).
  */
 export function useOfferWaitlistEntry() {
   const qc = useQueryClient();
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
   const { randomId } = useDependencies();
-  const last = useRef<{ request: string; key: string } | null>(null);
+  const keys = useIdempotencyKeys(randomId);
   return useMutation<WaitlistOffer, Error, { entryId: string; body: WaitlistOfferCreate }>({
     mutationFn: ({ entryId, body }) => {
-      const serialized = JSON.stringify([entryId, body]);
-      if (last.current?.request !== serialized) {
-        last.current = { request: serialized, key: randomId() };
-      }
-      const key = last.current.key;
+      const key = keys.keyFor(JSON.stringify([entryId, body]));
       return request(() =>
         client.POST(`${EST}/waitlist/{entryId}/offer`, {
           params: { path: { establishmentId, entryId }, header: { 'Idempotency-Key': key } },
@@ -229,10 +226,8 @@ export function useOfferWaitlistEntry() {
         }),
       );
     },
-    onSuccess: () => {
-      last.current = null;
-    },
-    onSettled: async () => {
+    onSettled: async (_data, error) => {
+      keys.settled(error);
       // The entry is now offered and the spot held: the list and the map change.
       await Promise.all([
         qc.invalidateQueries({ queryKey: estKeys.area(establishmentId, 'waitlist') }),

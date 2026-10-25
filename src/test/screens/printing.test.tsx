@@ -101,6 +101,32 @@ describe('ticket printing', () => {
     expect(requestsTo(network.calls, 'POST', `${EST}/print-jobs`)).toHaveLength(0);
   });
 
+  it('prints once: a retry after a lost answer reuses the Idempotency-Key, a reprint does not', async () => {
+    let attempts = 0;
+    const { screen, network } = await openTicketSpot({
+      extra: {
+        [`POST ${EST}/print-jobs`]: () => {
+          attempts += 1;
+          return attempts === 1 ? problem(503, 'internal_error') : json(202, JOB);
+        },
+        [`GET ${EST}/print-jobs/job-1`]: () => json(200, { ...JOB, status: 'printed' }),
+      },
+    });
+    const print = async () =>
+      fireEvent.press(await screen.findByRole('button', { name: /Stampa il biglietto #037/ }));
+    await print();
+    await waitFor(() => expect(attempts).toBe(1));
+    await print();
+    expect(await screen.findByText('Biglietto #037 stampato.')).toBeOnTheScreen();
+    await print();
+    await waitFor(() => expect(attempts).toBe(3));
+    const keys = requestsTo(network.calls, 'POST', `${EST}/print-jobs`).map((r) =>
+      r.headers.get('Idempotency-Key'),
+    );
+    expect(keys[1]).toBe(keys[0]);
+    expect(keys[2]).not.toBe(keys[1]);
+  });
+
   it('shows the server refusal', async () => {
     const { screen } = await openTicketSpot({
       extra: { [`POST ${EST}/print-jobs`]: () => problem(409, 'printing_unavailable') },

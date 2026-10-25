@@ -5,10 +5,10 @@
 // desktop edition has: on the server edition the route is never ready and
 // the panel prints from the browser.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRef } from 'react';
 
 import { request, type ApiClient } from '@/api/client';
 import { isForbidden, NetworkError, ProblemError } from '@/api/errors';
+import { useIdempotencyKeys } from '@/api/idempotency';
 import { estKeys } from '@/api/query-keys';
 import type {
   PrintDocumentKind,
@@ -160,11 +160,10 @@ export function usePrintTicket(registerId?: string) {
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
   const { randomId } = useDependencies();
-  const last = useRef<{ ticketId: string; key: string } | null>(null);
+  const keys = useIdempotencyKeys(randomId);
   return useMutation({
-    mutationFn: (ticketId: string) => {
-      if (last.current?.ticketId !== ticketId) last.current = { ticketId, key: randomId() };
-      return createPrintJob(
+    mutationFn: (ticketId: string) =>
+      createPrintJob(
         client,
         establishmentId,
         {
@@ -172,12 +171,9 @@ export function usePrintTicket(registerId?: string) {
           document_id: ticketId,
           ...(registerId ? { register_id: registerId } : {}),
         },
-        last.current.key,
-      );
-    },
-    onSettled: () => {
-      last.current = null;
-    },
+        keys.keyFor(ticketId),
+      ),
+    onSettled: (_data, error) => keys.settled(error),
   });
 }
 

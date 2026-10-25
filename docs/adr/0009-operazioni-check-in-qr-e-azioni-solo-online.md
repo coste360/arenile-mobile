@@ -38,7 +38,8 @@ varco e i blocchi, e come trovare una prenotazione dal QR senza rete.
 4. **Blocchi solo online:** un blocco è un'allocazione come una prenotazione (409 `spot_unavailable`):
    servono le garanzie di disponibilità del server, come per creare e spostare (core §21.2). Non entra
    mai nella coda; senza istanza il modulo lascia il posto alla spiegazione. La `Idempotency-Key` resta
-   la stessa finché la richiesta non cambia (doppio tocco o nuovo tentativo dopo un timeout).
+   la stessa finché la richiesta non cambia (doppio tocco o nuovo tentativo dopo un timeout) e cambia
+   dopo una risposta memorizzata dal core (vedi ADR 0011, punto 2).
 5. **Incasso:** solo su una prenotazione con saldo, mai oltre il saldo (niente eccedenza a credito
    dall'app), con conferma. Online l'app legge la sessione di cassa aperta (`cash-sessions/current`) e,
    se è chiusa, spiega di aprirla dal pannello invece di offrire l'incasso; offline avvisa che non può

@@ -237,6 +237,34 @@ describe('daily quick sale', () => {
     expect(keys[0]).toBe(keys[1]);
   });
 
+  it('takes a new Idempotency-Key after a refusal, so the retried sale is not refused again', async () => {
+    let attempts = 0;
+    const { screen, network } = await openSale({
+      extra: {
+        [`POST ${EST}/daily-sales`]: () => {
+          attempts += 1;
+          // The core stores the refusal and would replay it to the same key.
+          return attempts === 1
+            ? problem(409, 'cash_session_closed')
+            : json(201, saleResult(2500, 0));
+        },
+      },
+    });
+    for (let i = 0; i < 2; i++) {
+      await fireEvent.press(
+        await screen.findByRole('button', { name: nbsp('Incassa 25,00 € in contanti') }),
+      );
+      await fireEvent.press(screen.getByRole('button', { name: 'Conferma la vendita' }));
+      if (i === 0) await waitFor(() => expect(attempts).toBe(1));
+    }
+    await screen.findByTestId('sale-done');
+    const keys = requestsTo(network.calls, 'POST', `${EST}/daily-sales`).map((r) =>
+      r.headers.get('Idempotency-Key'),
+    );
+    expect(keys).toHaveLength(2);
+    expect(keys[1]).not.toBe(keys[0]);
+  });
+
   it('is disabled in the spot sheet while the instance is unreachable', async () => {
     const { screen, connectivity } = await openSpotA1();
     const button = await screen.findByRole('button', { name: 'Vendita giornaliera' });
