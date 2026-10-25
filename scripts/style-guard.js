@@ -44,6 +44,11 @@ const STYLE_ALLOW = new Set([
   // Reanimated shared values (useAnimatedStyle) and the drawing is placed in dp
   // around the viewport; neither can be expressed as a class.
   'src/features/day-map/components/map-viewport.tsx',
+  // Android home screen widget (ADR 0010): rendered by Jetpack Glance through
+  // Expo UI, outside React Native, where NativeWind does not exist. Its
+  // `style` is a Compose TextStyle with Material typography roles (no sizes,
+  // no colours); the colours come from the theme as props (features/widget/colors.ts).
+  'src/widgets/day-summary-widget.android.tsx',
 ]);
 
 const CSS_IN_JS = [

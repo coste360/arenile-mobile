@@ -19,6 +19,7 @@ quando riguardano il contratto API, il marchio o la licenza.
 | [0007](0007-offline-cache-e-coda-delle-operazioni.md)             | Offline: cache persistita di oggi e domani (SQLite, lista di chiavi ammesse), coda con chiavi di idempotenza, conflitti visibili   | accettato |
 | [0008](0008-mappa-del-giorno-renderer-svg.md)                     | Mappa del giorno: SVG tagliato all'area visibile, gesti sul thread UI, palette di stato del pannello, kit rinviati                 | proposto  |
 | [0009](0009-operazioni-check-in-qr-e-azioni-solo-online.md)       | Operazioni: check-in dal QR della prenotazione (anche offline), ingressi al varco e blocchi delle postazioni solo online           | accettato |
+| [0010](0010-report-essenziali-e-widget.md)                        | Report dal confronto con l'anno precedente (solo online, `reports.read`); widget con `expo-widgets` alimentato dalla cache         | proposto  |
 
 ## Come aggiungere un ADR
 

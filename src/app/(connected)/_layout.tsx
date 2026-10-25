@@ -1,6 +1,7 @@
 import { Redirect, router, Stack, usePathname } from 'expo-router';
 import {
   CalendarDaysIcon,
+  ChartColumnIcon,
   ClipboardCheckIcon,
   ClipboardListIcon,
   HouseIcon,
@@ -17,14 +18,25 @@ import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import type { Abilities } from '@/features/permissions/permissions';
+import { useAbilities } from '@/features/permissions/use-abilities';
 import { useSession } from '@/features/session/session-provider';
 import { cn } from '@/lib/utils';
 
-type NavItem = {
-  href: '/home' | '/map' | '/operations' | '/settings' | '/today' | '/bookings';
-  label: 'nav.home' | 'nav.map' | 'nav.operations' | 'nav.settings' | 'nav.today' | 'nav.bookings';
+interface NavItem {
+  href: '/home' | '/map' | '/operations' | '/reports' | '/settings' | '/today' | '/bookings';
+  label:
+    | 'nav.home'
+    | 'nav.map'
+    | 'nav.operations'
+    | 'nav.reports'
+    | 'nav.settings'
+    | 'nav.today'
+    | 'nav.bookings';
   icon: LucideIcon;
-};
+  /** Shown only when the role may open it (hidden, the server stays the judge). */
+  visible?: (abilities: Abilities) => boolean;
+}
 
 const NAV: NavItem[] = [
   { href: '/home', label: 'nav.home', icon: HouseIcon },
@@ -32,6 +44,12 @@ const NAV: NavItem[] = [
   { href: '/bookings', label: 'nav.bookings', icon: ClipboardListIcon },
   { href: '/map', label: 'nav.map', icon: MapIcon },
   { href: '/operations', label: 'nav.operations', icon: ClipboardCheckIcon },
+  {
+    href: '/reports',
+    label: 'nav.reports',
+    icon: ChartColumnIcon,
+    visible: (a) => a.canSeeReports,
+  },
   { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
 ];
 
@@ -98,6 +116,7 @@ export default function ConnectedLayout() {
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
             {dayScreens(t)}
             {operationsScreens(t)}
+            <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
           </Stack>
         </View>
       </View>
@@ -118,13 +137,13 @@ export default function ConnectedLayout() {
           headerRight: () => (
             <View className="flex-row items-center">
               <ConnectionIndicator />
+              <ReportsHeaderButton />
               <Button
                 variant="ghost"
                 size="icon"
                 accessibilityLabel={t('nav.map')}
                 onPress={() => router.push('/map')}
               >
-                <Icon as={MapIcon} size={22} />
                 <Icon as={MapIcon} size={22} />
               </Button>
               <Button
@@ -152,7 +171,25 @@ export default function ConnectedLayout() {
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
       {dayScreens(t)}
       {operationsScreens(t)}
+      <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
     </Stack>
+  );
+}
+
+/** Phone header shortcut to the reports, only for the roles that may read them. */
+function ReportsHeaderButton() {
+  const { t } = useTranslation();
+  const abilities = useAbilities();
+  if (!abilities.canSeeReports) return null;
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      accessibilityLabel={t('nav.reports')}
+      onPress={() => router.push('/reports')}
+    >
+      <Icon as={ChartColumnIcon} size={22} />
+    </Button>
   );
 }
 
@@ -160,6 +197,7 @@ export default function ConnectedLayout() {
 function Sidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const abilities = useAbilities();
   return (
     <View
       className="pb-safe pt-safe w-72 gap-1 border-r border-border bg-card px-3"
@@ -172,7 +210,7 @@ function Sidebar() {
       <View className="mb-2 rounded-md border border-border">
         <ConnectionIndicator variant="full" />
       </View>
-      {NAV.map((item) => {
+      {NAV.filter((item) => !item.visible || item.visible(abilities)).map((item) => {
         const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <Pressable

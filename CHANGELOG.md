@@ -39,6 +39,16 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   prenotazione con check-in, incasso rapido in contanti (con conferma, mai oltre il saldo, avviso se la
   cassa è chiusa), rilascio del giorno degli abbonati e note interne, tutte nella coda offline;
   postazioni di oggi con ricerca e blocco/sblocco (solo online). Azioni mostrate secondo il ruolo.
+- Fase 3 — report essenziali per titolare, gestore e sola lettura (ADR 0010): incassato, occupazione,
+  prenotazioni e prenotato del giorno o della settimana a confronto con l'anno precedente (stessa data
+  o stesso giorno della settimana), con il giorno per giorno della settimana, dal confronto del core
+  (`GET reports/comparison`); solo online; le esportazioni restano nel pannello.
+- Fase 3 — widget della schermata principale per iOS e Android con arrivi, da saldare, presenti e
+  postazioni libere di oggi, calcolati dai dati già in cache sul dispositivo, senza nessuna connessione;
+  solo conteggi; "dati di ieri" alla mezzanotte su iOS; svuotato allo scollegamento. Richiede una
+  nuova build nativa (estensione widget e app group `group.app.arenile.mobile`).
+- Dipendenze: `expo-widgets` e `@expo/ui` (MIT, Expo).
+
 - Fase 1 — fondamenta dei dati e dell'offline (ADR 0007): cache di mappa e prenotazioni di oggi e
   domani (nel fuso dello stabilimento) consultabile senza rete, anche all'avvio, e cancellata a ogni
   scollegamento; coda di check-in, rilasci del giorno, note e incassi in contanti inviata in ordine

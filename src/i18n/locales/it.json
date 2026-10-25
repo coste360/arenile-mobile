@@ -148,7 +148,8 @@
     "bookings": "Prenotazioni",
     "booking": "Prenotazione",
     "spots": "Postazioni",
-    "operations": "Operazioni"
+    "operations": "Operazioni",
+    "reports": "Report"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -843,6 +844,92 @@
       "spot_unavailable": "La postazione non è libera nel periodo scelto.",
       "not_found": "Non trovato: i dati potrebbero essere cambiati. Aggiorna e riprova.",
       "default": "L'istanza ha rifiutato l'operazione."
+    }
+  },
+  "reports": {
+    "description": "Incassi e occupazione a confronto con l'anno precedente.",
+    "range": {
+      "label": "Periodo",
+      "day": "Giorno",
+      "week": "Settimana"
+    },
+    "previous": {
+      "day": "Giorno precedente",
+      "week": "Settimana precedente"
+    },
+    "next": {
+      "day": "Giorno successivo",
+      "week": "Settimana successiva"
+    },
+    "periodLabel": {
+      "week": "{{from}} – {{to}}"
+    },
+    "today": "Oggi",
+    "thisWeek": "Questa settimana",
+    "align": {
+      "label": "Confronta con",
+      "calendar": "Stessa data",
+      "weekday": "Stesso giorno della settimana"
+    },
+    "comparedWith": "Anno precedente: dal {{from}} al {{to}}",
+    "metrics": {
+      "revenue_collected": "Incassato",
+      "occupancy_bp": "Occupazione",
+      "bookings": "Prenotazioni",
+      "revenue_booked": "Prenotato"
+    },
+    "metricHints": {
+      "revenue_collected": "Pagamenti registrati nel periodo, al netto dei rimborsi.",
+      "occupancy_bp": "Postazioni occupate sulla capacità dei giorni aperti.",
+      "bookings": "Prenotazioni con il primo giorno nel periodo.",
+      "revenue_booked": "Valore delle prenotazioni con il primo giorno nel periodo."
+    },
+    "previousValue": "{{year}}: {{value}}",
+    "delta": {
+      "up": "In aumento",
+      "down": "In calo",
+      "flat": "Invariato",
+      "new": "nuovo",
+      "points": "p.p."
+    },
+    "metricA11y": "{{metric}}: {{value}}. Nel {{year}}: {{previous}}. {{trend}} {{delta}}.",
+    "daily": {
+      "title": "Giorno per giorno",
+      "revenue": "Incassato",
+      "occupancy": "Occupazione",
+      "rowA11y": "{{day}}: incassato {{revenue}}, nel {{year}} {{previousRevenue}}; occupazione {{occupancy}}, nel {{year}} {{previousOccupancy}}."
+    },
+    "refresh": "Aggiorna",
+    "exportsHint": "Le esportazioni dei report restano nel pannello web.",
+    "states": {
+      "loading": "Caricamento dei report…",
+      "forbiddenTitle": "Non consentito",
+      "forbidden": "I report sono riservati a titolare, gestore e sola lettura.",
+      "offlineTitle": "Report non disponibili senza rete",
+      "offline": "I report si leggono dall'istanza: riprova quando torna la connessione.",
+      "unavailableTitle": "Report non disponibili",
+      "notImplemented": "Questa istanza non fornisce i report.",
+      "error": "Non è stato possibile caricare i report dall'istanza.",
+      "stale": "Dati non aggiornati. {{reason}}",
+      "retry": "Riprova"
+    }
+  },
+  "widget": {
+    "unpaired": "Collega questo dispositivo in Arenile per vedere il riepilogo del giorno.",
+    "restricted": "Il riepilogo del giorno non è disponibile per il tuo ruolo.",
+    "noData": "Nessun dato di oggi sul dispositivo: apri Arenile con la rete per scaricarlo.",
+    "closed": "Stabilimento chiuso oggi.",
+    "stale": "Dati di {{day}}: apri Arenile per aggiornare il riepilogo.",
+    "updatedAt": "Aggiornato alle {{time}}",
+    "items": {
+      "arrivals_one": "arrivo",
+      "arrivals_other": "arrivi",
+      "toSettle_one": "da saldare",
+      "toSettle_other": "da saldare",
+      "checkedIn_one": "presente",
+      "checkedIn_other": "presenti",
+      "free_one": "libera",
+      "free_other": "libere"
     }
   }
 }

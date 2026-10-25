@@ -53,6 +53,7 @@ accessibilità da mantenere da soli).
   pacchetto `@rn-primitives/*`; i colori di React Navigation sono duplicati (protetti da un test).
 - Verifiche: `scripts/style-guard.js` in `npm run lint` (con i propri test) rifiuta fogli di stile,
   CSS-in-JS, `StyleSheet`, `style={}`, colori grezzi, palette predefinita e valori arbitrari, con le
-  sole esenzioni elencate nello script (componenti generati, tema di navigazione); ESLint blocca `Alert`,
+  sole esenzioni elencate nello script (componenti generati, tema di navigazione, layout del widget
+  Android che gira in Jetpack Glance fuori da React Native, ADR 0010); ESLint blocca `Alert`,
   `Text`, `TextInput` e `Button` di React Native fuori dai componenti generati; `theme.test.ts`;
   test delle schermate a larghezza di telefono e di tablet; regola `.claude/rules/frontend.md`.

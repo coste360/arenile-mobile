@@ -13,6 +13,7 @@ import OperationsScreen from '@/app/(connected)/operations/index';
 import OperationsScanScreen from '@/app/(connected)/operations/scan';
 import SpotOperationsScreen from '@/app/(connected)/operations/spot/[spotId]';
 import PendingScreen from '@/app/(connected)/pending';
+import ReportsScreen from '@/app/(connected)/reports';
 import SettingsScreen from '@/app/(connected)/settings';
 import SpotsScreen from '@/app/(connected)/spots';
 import TodayScreen from '@/app/(connected)/today';
@@ -31,6 +32,7 @@ import { AppProviders } from '@/providers/app-providers';
 import type { Dependencies } from '@/providers/dependencies';
 
 import { fakeFetch, type Handler } from './fake-fetch';
+import { createFakeWidget } from './fake-widget';
 import { sequentialIds } from './ids';
 
 export const WINDOWS = {
@@ -92,6 +94,7 @@ export async function renderApp({
   const network = fakeFetch(routes);
   const offlineStore = createMemoryKeyValueStore(offlineData);
   const connectivity = createFakeNetworkMonitor(connected);
+  const widget = createFakeWidget();
   const dependencies: Dependencies = {
     kv,
     offlineStore,
@@ -103,6 +106,7 @@ export async function renderApp({
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],
     openSystemSettings: jest.fn(),
+    widget,
   };
 
   function TestRootLayout() {
@@ -134,10 +138,11 @@ export async function renderApp({
       '(connected)/operations/scan': OperationsScanScreen,
       '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,
       '(connected)/operations/spot/[spotId]': SpotOperationsScreen,
+      '(connected)/reports': ReportsScreen,
     },
     { initialUrl },
   );
-  return { ...result, kv, offlineStore, connectivity, network, dependencies, screen };
+  return { ...result, kv, offlineStore, connectivity, network, widget, dependencies, screen };
 }
 
 /** "METHOD /path" of every request, in order. */

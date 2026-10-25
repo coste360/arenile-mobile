@@ -52,12 +52,15 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   operation queue, runtime and hooks), `day-map` (operational map of the day: status, search,
   camera, SVG renderer, spot sheet; ADR 0008), `check-in` (booking/ticket QR formats, code resolution, gate
   admission), `booking-actions` (booking facts, operation rules, form schemas, queued actions, cash
-  desk state), `spot-blocks` (online-only blocks, spot search). **Read `docs/data-and-offline.md` before adding a feature.**
+  desk state), `spot-blocks` (online-only blocks, spot search), `reports` (year comparison, periods,
+  formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`). **Read `docs/data-and-offline.md` before adding a feature.**
+- `src/widgets/` home screen widget layouts for expo-widgets (`'widget'` directive: isolated runtime,
+  only Expo UI components, data only through props; ADR 0010)
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
   `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
   `ConnectionIndicator`, `OnlineOnlyNotice`, `FilterChip`, `CachedNotice`); `bookings/` (list, row,
   badges, sheet), `today/` (figure card, home shortcuts) and `operations/` (the embeddable operation
-  panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms)
+  panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms) and `reports/`
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
 - `src/lib/` shared primitives (version compare, base64url, storage, offline storage, network,
@@ -111,6 +114,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   create/move booking, spot blocks and gate admission are online-only (ADR 0009). Only allowlisted
   queries are persisted; the cache is removed on every sign-out. Hide actions with `useAbilities()`;
   a 403 is "non consentito".
+- Home screen widget (ADR 0010): it shows only props the app publishes from data already cached
+  (counts, never names or amounts) and never fetches; the widget is cleared on sign-out.
 - No new runtime dependency without explaining why in the PR; licences must be compatible with both
   BSL 1.1 and AGPL-3.0 (MIT, BSD, Apache-2.0...).
 - Code comments and identifiers in English.

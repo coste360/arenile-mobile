@@ -29,7 +29,7 @@ writing its own fetching, caching or permission logic.
 
 `features/permissions`: `useAbilities()` returns what the paired user may do (`canCheckIn`,
 `canReleaseDay`, `canBlockSpot`, `canAddNote`, `canCollectCash`, `canWriteBookings`,
-`canSeeTakings`, `canViewBookings`, `has(permission)`, `known`). It mirrors the core matrix
+`canSeeTakings`, `canSeeReports`, `canViewBookings`, `has(permission)`, `known`). It mirrors the core matrix
 (`internal/domain/auth/roles.go`, spec 16.1): the permissions reported by `/auth/me` win, the matrix
 on the device role is the offline fallback, nothing is offered while unknown. **Hide** what the role
 cannot do; when the server refuses anyway, `isForbidden(error)` (`src/api/errors.ts`) → show
@@ -74,6 +74,18 @@ await enqueue({ kind: 'day_release', bookingId: passBookingId, date, slots, labe
 - A new queued kind needs: the type in `features/offline/types.ts`, the request in `senders.ts`
   (with `Idempotency-Key`), its optimistic effect in `optimistic.ts`, i18n labels
   (`offline.pending.kinds`), tests; and it must be low-risk per core spec 21.2.
+
+## Reports and widget (phase 3)
+
+- **Reports** — `features/reports`: `useYearComparison({ from, to, align })` (GET reports/comparison,
+  daily series), periods in `period.ts` (`periodOf`, `shiftAnchor`, `canGoForward`), presentation in
+  `format.ts` (truncated basis points like the panel). Online only: report keys are deliberately not
+  persistable. Gate on `useAbilities().canSeeReports`.
+- **Widget** — `features/widget`: `widgetEntries()` turns the cached operational day of today into the
+  props of the home screen widget (`src/widgets/day-summary-widget.{ios,android}.tsx`); `WidgetSync`
+  (mounted in the root navigator) republishes on every change of that cache entry and on unpair. The
+  widget never triggers a request: do not add a fetch to it. Native writes go through
+  `Dependencies.widget` (fake in tests: `src/test/fake-widget.ts`, returned by `renderApp()`).
 
 ## Connection indicator
 

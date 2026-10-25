@@ -8,11 +8,11 @@
 // - Device, instance and session keys stay in features/session/queries.ts.
 import type { CalendarDate } from '@/lib/calendar';
 
-import type { Slots } from './types';
+import type { ComparisonAlign, Slots } from './types';
 
 /** Areas of the establishment data (second element after the id). */
 export type EstablishmentArea =
-  'operations' | 'bookings' | 'maps' | 'season-passes' | 'payments' | 'cash';
+  'operations' | 'bookings' | 'maps' | 'season-passes' | 'payments' | 'cash' | 'reports';
 
 export const estKeys = {
   /** Every query of the establishment. */
@@ -39,6 +39,12 @@ export const estKeys = {
 
   /** GET cash-sessions/current: the open session of the main register (never persisted). */
   cashSession: (establishmentId: string) => ['est', establishmentId, 'cash', 'current'] as const,
+
+  /** GET reports/comparison: a period against the previous year (phase 3, online only). */
+  reportComparison: (
+    establishmentId: string,
+    params: { from: CalendarDate; to: CalendarDate; align: ComparisonAlign },
+  ) => ['est', establishmentId, 'reports', 'comparison', params] as const,
 };
 
 export const authKeys = {

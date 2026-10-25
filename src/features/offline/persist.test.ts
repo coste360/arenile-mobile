@@ -52,6 +52,12 @@ describe('isPersistable', () => {
     ['another establishment', estKeys.operationsDay('other', '2026-10-25'), undefined, false],
     ['payments', ['est', EST_ID, 'payments', 'list'], undefined, false],
     ['customers', ['est', EST_ID, 'customers', 'list'], undefined, false],
+    [
+      "today's report",
+      estKeys.reportComparison(EST_ID, { from: '2026-10-25', to: '2026-10-25', align: 'calendar' }),
+      undefined,
+      false,
+    ],
     ['anything else', ['x'], undefined, false],
   ])('%s → %p', (_name, key, data, expected) => {
     expect(isPersistable(key, data, ctx())).toBe(expected);

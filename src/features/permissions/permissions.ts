@@ -79,6 +79,7 @@ export function grantedPermissions(
  * | Quick cash collection          | cash.operate     | payment.Service.RecordManual     |
  * | Create / move a booking        | bookings.write   | booking.Service.Create/Move      |
  * | See takings and reports        | cash.operate or reports.read |                      |
+ * | Essential reports (phase 3)    | reports.read     | report endpoints (spec 15.3)     |
  */
 export interface Abilities {
   /** Permissions are known (from /auth/me or the device role). */
@@ -91,6 +92,8 @@ export interface Abilities {
   canCollectCash: boolean;
   canWriteBookings: boolean;
   canSeeTakings: boolean;
+  /** Reports of takings and occupancy: owner, manager, viewer (spec 16.1). */
+  canSeeReports: boolean;
   has(permission: Permission): boolean;
 }
 
@@ -106,6 +109,7 @@ export function abilitiesFrom(granted: ReadonlySet<Permission>, known: boolean):
     canCollectCash: has('cash.operate'),
     canWriteBookings: has('bookings.write'),
     canSeeTakings: has('cash.operate') || has('reports.read'),
+    canSeeReports: has('reports.read'),
     has,
   };
 }

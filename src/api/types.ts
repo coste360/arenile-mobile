@@ -41,3 +41,10 @@ export type GateCheckInResult = Schemas['GateCheckInResult'];
 export type CashSessionDetail = Schemas['CashSessionDetail'];
 export type SpotBlockCreate = Schemas['SpotBlockCreate'];
 export type SpotBlockList = Schemas['SpotBlockList'];
+
+// Phase 3: essential reports (core spec 15.3).
+export type YearComparisonReport = Schemas['YearComparisonReport'];
+export type ComparisonMetric = Schemas['ComparisonMetric'];
+export type ComparisonMetricKey = Schemas['ComparisonMetricKey'];
+export type ComparisonPoint = Schemas['ComparisonPoint'];
+export type ComparisonAlign = Schemas['ComparisonAlign'];

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@expo/ui": "~58.0.23",
     "@hookform/resolvers": "^5.9.2",
     "@rn-primitives/alert-dialog": "^1.5.2",
     "@rn-primitives/label": "^1.5.2",
@@ -30,6 +31,7 @@
     "expo-sqlite": "~58.0.14",
     "expo-status-bar": "~58.0.4",
     "expo-system-ui": "~58.0.6",
+    "expo-widgets": "~58.0.23",
     "i18next": "^26.5.10",
     "lucide-react-native": "^1.61.0",
     "nativewind": "^4.2.7",

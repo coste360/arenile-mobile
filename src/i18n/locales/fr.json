@@ -148,7 +148,8 @@
     "bookings": "Réservations",
     "booking": "Réservation",
     "spots": "Emplacements",
-    "operations": "Opérations"
+    "operations": "Opérations",
+    "reports": "Rapports"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -843,6 +844,92 @@
       "spot_unavailable": "L'emplacement n'est pas libre sur la période choisie.",
       "not_found": "Introuvable : les données ont peut-être changé. Actualisez et réessayez.",
       "default": "L'instance a refusé l'opération."
+    }
+  },
+  "reports": {
+    "description": "Recettes et occupation comparées à l'année précédente.",
+    "range": {
+      "label": "Période",
+      "day": "Jour",
+      "week": "Semaine"
+    },
+    "previous": {
+      "day": "Jour précédent",
+      "week": "Semaine précédente"
+    },
+    "next": {
+      "day": "Jour suivant",
+      "week": "Semaine suivante"
+    },
+    "periodLabel": {
+      "week": "{{from}} – {{to}}"
+    },
+    "today": "Aujourd'hui",
+    "thisWeek": "Cette semaine",
+    "align": {
+      "label": "Comparer avec",
+      "calendar": "Même date",
+      "weekday": "Même jour de la semaine"
+    },
+    "comparedWith": "Année précédente : du {{from}} au {{to}}",
+    "metrics": {
+      "revenue_collected": "Encaissé",
+      "occupancy_bp": "Occupation",
+      "bookings": "Réservations",
+      "revenue_booked": "Valeur réservée"
+    },
+    "metricHints": {
+      "revenue_collected": "Paiements enregistrés sur la période, remboursements déduits.",
+      "occupancy_bp": "Emplacements occupés par rapport à la capacité des jours ouverts.",
+      "bookings": "Réservations dont le premier jour est dans la période.",
+      "revenue_booked": "Valeur des réservations dont le premier jour est dans la période."
+    },
+    "previousValue": "{{year}} : {{value}}",
+    "delta": {
+      "up": "En hausse",
+      "down": "En baisse",
+      "flat": "Inchangé",
+      "new": "nouveau",
+      "points": "pts"
+    },
+    "metricA11y": "{{metric}} : {{value}}. En {{year}} : {{previous}}. {{trend}} {{delta}}.",
+    "daily": {
+      "title": "Jour par jour",
+      "revenue": "Encaissé",
+      "occupancy": "Occupation",
+      "rowA11y": "{{day}} : encaissé {{revenue}}, en {{year}} {{previousRevenue}} ; occupation {{occupancy}}, en {{year}} {{previousOccupancy}}."
+    },
+    "refresh": "Actualiser",
+    "exportsHint": "Les exports des rapports restent dans le panneau web.",
+    "states": {
+      "loading": "Chargement des rapports…",
+      "forbiddenTitle": "Non autorisé",
+      "forbidden": "Les rapports sont réservés aux propriétaires, gérants et utilisateurs en lecture seule.",
+      "offlineTitle": "Rapports indisponibles sans réseau",
+      "offline": "Les rapports sont lus depuis l'instance : réessayez quand la connexion revient.",
+      "unavailableTitle": "Rapports indisponibles",
+      "notImplemented": "Cette instance ne fournit pas de rapports.",
+      "error": "Les rapports n'ont pas pu être chargés depuis l'instance.",
+      "stale": "Données non à jour. {{reason}}",
+      "retry": "Réessayer"
+    }
+  },
+  "widget": {
+    "unpaired": "Associez cet appareil dans Arenile pour voir le résumé du jour.",
+    "restricted": "Le résumé du jour n'est pas disponible pour votre rôle.",
+    "noData": "Aucune donnée du jour sur l'appareil : ouvrez Arenile avec une connexion pour la télécharger.",
+    "closed": "Établissement fermé aujourd'hui.",
+    "stale": "Données du {{day}} : ouvrez Arenile pour mettre à jour le résumé.",
+    "updatedAt": "Mis à jour à {{time}}",
+    "items": {
+      "arrivals_one": "arrivée",
+      "arrivals_other": "arrivées",
+      "toSettle_one": "à régler",
+      "toSettle_other": "à régler",
+      "checkedIn_one": "présent",
+      "checkedIn_other": "présents",
+      "free_one": "libre",
+      "free_other": "libres"
     }
   }
 }
