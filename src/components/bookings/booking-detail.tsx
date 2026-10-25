@@ -32,9 +32,9 @@ import {
 } from '@/features/bookings/detail';
 import { useBooking } from '@/features/bookings/queries';
 import { useOfflineQueue } from '@/features/offline/offline-provider';
-import { useOperationalDays } from '@/features/operations/queries';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
+import { useEstablishment } from '@/features/session/queries';
 import { formatDayLabel } from '@/lib/calendar';
 import { formatInstant } from '@/lib/datetime';
 import { formatCents } from '@/lib/money';
@@ -93,7 +93,8 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
 function BookingSheet({ booking: b }: { booking: Booking }) {
   const { t } = useTranslation();
   const { locale } = usePreferences();
-  const { timeZone } = useOperationalDays();
+  // Instants read in the establishment zone (UTC until it is known).
+  const timeZone = useEstablishment().data?.timezone;
   const abilities = useAbilities();
   const { operations } = useOfflineQueue();
   const queued = queuedFor(operations, b.id);

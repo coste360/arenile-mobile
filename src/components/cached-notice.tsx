@@ -4,8 +4,8 @@ import { View } from 'react-native';
 
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { useOperationalDays } from '@/features/operations/queries';
 import { usePreferences } from '@/features/preferences/preferences-provider';
+import { useEstablishment } from '@/features/session/queries';
 import { formatTime } from '@/lib/datetime';
 
 /**
@@ -24,7 +24,7 @@ export function servedFromCache(q: { data: unknown; isError: boolean; isPaused: 
 export function CachedNotice({ stale, updatedAt }: { stale: boolean; updatedAt: number }) {
   const { t } = useTranslation();
   const { locale } = usePreferences();
-  const { timeZone } = useOperationalDays();
+  const timeZone = useEstablishment().data?.timezone;
   if (!stale || !updatedAt) return null;
   return (
     <View
