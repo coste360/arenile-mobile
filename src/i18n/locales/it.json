@@ -347,5 +347,23 @@
       "stale": "Dati non aggiornati. {{reason}}",
       "retry": "Riprova"
     }
+  },
+  "widget": {
+    "unpaired": "Collega questo dispositivo in Arenile per vedere il riepilogo del giorno.",
+    "restricted": "Il riepilogo del giorno non è disponibile per il tuo ruolo.",
+    "noData": "Nessun dato di oggi sul dispositivo: apri Arenile con la rete per scaricarlo.",
+    "closed": "Stabilimento chiuso oggi.",
+    "stale": "Dati di {{day}}: apri Arenile per aggiornare il riepilogo.",
+    "updatedAt": "Aggiornato alle {{time}}",
+    "items": {
+      "arrivals_one": "arrivo",
+      "arrivals_other": "arrivi",
+      "toSettle_one": "da saldare",
+      "toSettle_other": "da saldare",
+      "checkedIn_one": "presente",
+      "checkedIn_other": "presenti",
+      "free_one": "libera",
+      "free_other": "libere"
+    }
   }
 }

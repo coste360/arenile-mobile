@@ -347,5 +347,23 @@
       "stale": "Daten nicht aktuell. {{reason}}",
       "retry": "Erneut versuchen"
     }
+  },
+  "widget": {
+    "unpaired": "Verbinde dieses Gerät in Arenile, um die Tagesübersicht zu sehen.",
+    "restricted": "Die Tagesübersicht ist für deine Rolle nicht verfügbar.",
+    "noData": "Keine Daten von heute auf dem Gerät: Öffne Arenile mit Verbindung, um sie zu laden.",
+    "closed": "Betrieb heute geschlossen.",
+    "stale": "Daten vom {{day}}: Öffne Arenile, um die Übersicht zu aktualisieren.",
+    "updatedAt": "Aktualisiert um {{time}}",
+    "items": {
+      "arrivals_one": "Ankunft",
+      "arrivals_other": "Ankünfte",
+      "toSettle_one": "offen",
+      "toSettle_other": "offen",
+      "checkedIn_one": "eingecheckt",
+      "checkedIn_other": "eingecheckt",
+      "free_one": "frei",
+      "free_other": "frei"
+    }
   }
 }

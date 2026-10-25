@@ -347,5 +347,23 @@
       "stale": "Données non à jour. {{reason}}",
       "retry": "Réessayer"
     }
+  },
+  "widget": {
+    "unpaired": "Associez cet appareil dans Arenile pour voir le résumé du jour.",
+    "restricted": "Le résumé du jour n'est pas disponible pour votre rôle.",
+    "noData": "Aucune donnée du jour sur l'appareil : ouvrez Arenile avec une connexion pour la télécharger.",
+    "closed": "Établissement fermé aujourd'hui.",
+    "stale": "Données du {{day}} : ouvrez Arenile pour mettre à jour le résumé.",
+    "updatedAt": "Mis à jour à {{time}}",
+    "items": {
+      "arrivals_one": "arrivée",
+      "arrivals_other": "arrivées",
+      "toSettle_one": "à régler",
+      "toSettle_other": "à régler",
+      "checkedIn_one": "présent",
+      "checkedIn_other": "présents",
+      "free_one": "libre",
+      "free_other": "libres"
+    }
   }
 }

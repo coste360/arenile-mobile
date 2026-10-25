@@ -347,5 +347,23 @@
       "stale": "Data not up to date. {{reason}}",
       "retry": "Try again"
     }
+  },
+  "widget": {
+    "unpaired": "Pair this device in Arenile to see the summary of the day.",
+    "restricted": "The summary of the day is not available for your role.",
+    "noData": "No data for today on this device: open Arenile with a connection to download it.",
+    "closed": "Establishment closed today.",
+    "stale": "Data of {{day}}: open Arenile to update the summary.",
+    "updatedAt": "Updated at {{time}}",
+    "items": {
+      "arrivals_one": "arrival",
+      "arrivals_other": "arrivals",
+      "toSettle_one": "to settle",
+      "toSettle_other": "to settle",
+      "checkedIn_one": "checked in",
+      "checkedIn_other": "checked in",
+      "free_one": "free",
+      "free_other": "free"
+    }
   }
 }
