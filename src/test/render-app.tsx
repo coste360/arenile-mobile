@@ -5,6 +5,7 @@ import { Dimensions } from 'react-native';
 
 import ConnectedLayout from '@/app/(connected)/_layout';
 import HomeScreen from '@/app/(connected)/home';
+import PendingScreen from '@/app/(connected)/pending';
 import SettingsScreen from '@/app/(connected)/settings';
 import ConnectScreen from '@/app/connect';
 import Index from '@/app/index';
@@ -54,7 +55,6 @@ export interface RenderAppOptions {
   /** Device connectivity at start (the returned `connectivity` changes it). */
   connected?: boolean;
 }
-
 
 export async function renderApp({
   initialUrl = '/',
@@ -115,6 +115,7 @@ export async function renderApp({
       '(connected)/_layout': ConnectedLayout,
       '(connected)/home': HomeScreen,
       '(connected)/settings': SettingsScreen,
+      '(connected)/pending': PendingScreen,
     },
     { initialUrl },
   );

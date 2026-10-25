@@ -141,7 +141,8 @@
   },
   "nav": {
     "home": "Home",
-    "settings": "Settings"
+    "settings": "Settings",
+    "pending": "Pending operations"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -203,12 +204,79 @@
       "working": "Disconnecting",
       "offlineTitle": "Instance unreachable",
       "offlineDescription": "The instance could not be notified. You can disconnect this device only: its access stays in the panel until you revoke it under Configuration → Devices.",
-      "forceConfirm": "Disconnect here only"
+      "forceConfirm": "Disconnect here only",
+      "pendingWarning_one": "Warning: {{count}} operation not sent yet will be lost.",
+      "pendingWarning_other": "Warning: {{count}} operations not sent yet will be lost."
     }
   },
   "errorBoundary": {
     "title": "Something went wrong",
     "description": "An unexpected error occurred in the app.",
     "retry": "Try again"
+  },
+  "offline": {
+    "indicator": {
+      "online": "Connected",
+      "unreachable": "Instance unreachable",
+      "offline": "No network",
+      "syncing": "Sending",
+      "short": {
+        "unreachable": "Unreachable",
+        "offline": "No network",
+        "syncing": "Sending…"
+      },
+      "pending_one": "{{count}} operation pending",
+      "pending_other": "{{count}} operations pending",
+      "attention_one": "{{count}} operation to review",
+      "attention_other": "{{count}} operations to review",
+      "hint": "Opens the list of pending operations"
+    },
+    "pending": {
+      "title": "Pending operations",
+      "description": "Operations made without network are sent in order as soon as the instance is reachable again. None is sent twice.",
+      "emptyTitle": "No pending operations",
+      "emptyDescription": "Check-ins, releases, notes and cash payments made without network appear here until they reach the instance.",
+      "sendNow": "Send now",
+      "paused": "This device was disconnected: these operations will be sent after it is paired again with the same establishment.",
+      "queuedAt": "Recorded at {{time}}",
+      "retry": "Retry",
+      "discard": "Delete",
+      "status": {
+        "pending": "Pending",
+        "sending": "Sending",
+        "conflict": "To review",
+        "failed": "Not sent"
+      },
+      "kinds": {
+        "check_in": "Check-in",
+        "day_release": "Day release {{date}}",
+        "note": "Note",
+        "cash_payment": "Cash payment of {{amount}}"
+      },
+      "discardConfirm": {
+        "title": "Delete this operation?",
+        "description": "The operation will not be sent to the instance. If it was a payment, record it again from the panel or the booking.",
+        "confirm": "Delete"
+      }
+    },
+    "errors": {
+      "invalid_transition": "The booking changed meanwhile (for example it was already checked in or it was cancelled).",
+      "version_conflict": "The booking was changed meanwhile from another device.",
+      "conflict": "The operation conflicts with the current state on the instance.",
+      "cash_session_closed": "The cash desk is closed: open a cash session and retry.",
+      "booking_outside_period": "Check-in is possible only during the stay.",
+      "idempotency_key_reused": "The instance already received a different operation with the same identifier.",
+      "validation_failed": "The instance rejected the data of the operation.",
+      "forbidden": "Not allowed for your role.",
+      "not_found": "The booking no longer exists.",
+      "not_implemented": "This instance does not support the operation.",
+      "other_establishment": "Recorded with a previous pairing to another establishment: it cannot be sent from here.",
+      "unauthorized": "This device was disconnected.",
+      "default": "The instance rejected the operation."
+    },
+    "onlineOnly": {
+      "title": "Connection needed",
+      "description": "Creating or moving a booking needs the instance to be reachable, as it guarantees the availability of the spots."
+    }
   }
 }

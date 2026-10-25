@@ -141,7 +141,8 @@
   },
   "nav": {
     "home": "Start",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "pending": "Ausstehende Vorgänge"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -203,12 +204,79 @@
       "working": "Wird getrennt",
       "offlineTitle": "Instanz nicht erreichbar",
       "offlineDescription": "Die Instanz konnte nicht benachrichtigt werden. Du kannst nur dieses Gerät trennen: Der Zugang bleibt im Panel, bis du ihn unter Konfiguration → Geräte widerrufst.",
-      "forceConfirm": "Nur hier trennen"
+      "forceConfirm": "Nur hier trennen",
+      "pendingWarning_one": "Achtung: {{count}} noch nicht gesendeter Vorgang geht verloren.",
+      "pendingWarning_other": "Achtung: {{count}} noch nicht gesendete Vorgänge gehen verloren."
     }
   },
   "errorBoundary": {
     "title": "Etwas ist schiefgelaufen",
     "description": "In der App ist ein unerwarteter Fehler aufgetreten.",
     "retry": "Erneut versuchen"
+  },
+  "offline": {
+    "indicator": {
+      "online": "Verbunden",
+      "unreachable": "Instanz nicht erreichbar",
+      "offline": "Kein Netz",
+      "syncing": "Wird gesendet",
+      "short": {
+        "unreachable": "Nicht erreichbar",
+        "offline": "Kein Netz",
+        "syncing": "Senden…"
+      },
+      "pending_one": "{{count}} Vorgang ausstehend",
+      "pending_other": "{{count}} Vorgänge ausstehend",
+      "attention_one": "{{count}} Vorgang zu prüfen",
+      "attention_other": "{{count}} Vorgänge zu prüfen",
+      "hint": "Öffnet die Liste der ausstehenden Vorgänge"
+    },
+    "pending": {
+      "title": "Ausstehende Vorgänge",
+      "description": "Ohne Netz erfasste Vorgänge werden der Reihe nach gesendet, sobald die Instanz wieder erreichbar ist. Keiner wird doppelt gesendet.",
+      "emptyTitle": "Keine ausstehenden Vorgänge",
+      "emptyDescription": "Check-ins, Freigaben, Notizen und Barzahlungen ohne Netz erscheinen hier, bis sie die Instanz erreichen.",
+      "sendNow": "Jetzt senden",
+      "paused": "Dieses Gerät wurde getrennt: Die Vorgänge werden nach einer neuen Kopplung mit demselben Betrieb gesendet.",
+      "queuedAt": "Erfasst um {{time}}",
+      "retry": "Erneut versuchen",
+      "discard": "Löschen",
+      "status": {
+        "pending": "Ausstehend",
+        "sending": "Wird gesendet",
+        "conflict": "Zu prüfen",
+        "failed": "Nicht gesendet"
+      },
+      "kinds": {
+        "check_in": "Check-in",
+        "day_release": "Tagesfreigabe {{date}}",
+        "note": "Notiz",
+        "cash_payment": "Barzahlung über {{amount}}"
+      },
+      "discardConfirm": {
+        "title": "Vorgang löschen?",
+        "description": "Der Vorgang wird nicht an die Instanz gesendet. War es eine Zahlung, erfasse sie erneut im Panel oder in der Buchung.",
+        "confirm": "Löschen"
+      }
+    },
+    "errors": {
+      "invalid_transition": "Die Buchung hat sich inzwischen geändert (zum Beispiel war der Check-in schon erfolgt oder sie wurde storniert).",
+      "version_conflict": "Die Buchung wurde inzwischen von einem anderen Gerät geändert.",
+      "conflict": "Der Vorgang steht im Konflikt mit dem aktuellen Stand der Instanz.",
+      "cash_session_closed": "Die Kasse ist geschlossen: Öffne eine Kassensitzung und versuche es erneut.",
+      "booking_outside_period": "Der Check-in ist nur während des Aufenthalts möglich.",
+      "idempotency_key_reused": "Die Instanz hat bereits einen anderen Vorgang mit derselben Kennung erhalten.",
+      "validation_failed": "Die Instanz hat die Daten des Vorgangs abgelehnt.",
+      "forbidden": "Für deine Rolle nicht erlaubt.",
+      "not_found": "Die Buchung existiert nicht mehr.",
+      "not_implemented": "Diese Instanz unterstützt den Vorgang nicht.",
+      "other_establishment": "Mit einer früheren Kopplung an einen anderen Betrieb erfasst: Er kann von hier nicht gesendet werden.",
+      "unauthorized": "Dieses Gerät wurde getrennt.",
+      "default": "Die Instanz hat den Vorgang abgelehnt."
+    },
+    "onlineOnly": {
+      "title": "Verbindung erforderlich",
+      "description": "Eine Buchung anzulegen oder zu verschieben erfordert die erreichbare Instanz, die die Verfügbarkeit der Plätze garantiert."
+    }
   }
 }

@@ -28,7 +28,8 @@ describe('launch with a stored session', () => {
       expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
       expect(getPathname()).toBe('/home');
       expect(screen.getByText('Lido Azzurro')).toBeOnTheScreen();
-      expect(screen.getByText('Connesso')).toBeOnTheScreen();
+      // Once in the connection card; on tablets also in the always-visible indicator.
+      expect(screen.getAllByText('Connesso').length).toBeGreaterThan(0);
       expect(await screen.findByText('1.0.1')).toBeOnTheScreen();
       expect(screen.getByText('https://lido.example.it')).toBeOnTheScreen();
       expect(requestsOf(network.calls)).toEqual(

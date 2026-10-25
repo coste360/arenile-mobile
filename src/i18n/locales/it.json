@@ -141,7 +141,8 @@
   },
   "nav": {
     "home": "Inizio",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "pending": "Operazioni in attesa"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -203,12 +204,79 @@
       "working": "Scollegamento in corso",
       "offlineTitle": "Istanza non raggiungibile",
       "offlineDescription": "Non è stato possibile avvisare l'istanza. Puoi scollegare solo questo dispositivo: l'accesso resterà nel pannello finché non lo revochi da Configurazione → Dispositivi.",
-      "forceConfirm": "Scollega solo qui"
+      "forceConfirm": "Scollega solo qui",
+      "pendingWarning_one": "Attenzione: {{count}} operazione non ancora inviata andrà persa.",
+      "pendingWarning_other": "Attenzione: {{count}} operazioni non ancora inviate andranno perse."
     }
   },
   "errorBoundary": {
     "title": "Qualcosa è andato storto",
     "description": "Si è verificato un errore imprevisto nell'app.",
     "retry": "Riprova"
+  },
+  "offline": {
+    "indicator": {
+      "online": "Connesso",
+      "unreachable": "Istanza non raggiungibile",
+      "offline": "Senza rete",
+      "syncing": "Invio in corso",
+      "short": {
+        "unreachable": "Non raggiungibile",
+        "offline": "Senza rete",
+        "syncing": "Invio…"
+      },
+      "pending_one": "{{count}} operazione in attesa",
+      "pending_other": "{{count}} operazioni in attesa",
+      "attention_one": "{{count}} operazione da controllare",
+      "attention_other": "{{count}} operazioni da controllare",
+      "hint": "Apre l'elenco delle operazioni in attesa"
+    },
+    "pending": {
+      "title": "Operazioni in attesa",
+      "description": "Le operazioni fatte senza rete partono in ordine appena l'istanza torna raggiungibile. Nessuna viene inviata due volte.",
+      "emptyTitle": "Nessuna operazione in attesa",
+      "emptyDescription": "Check-in, rilasci, note e incassi fatti senza rete compaiono qui finché non arrivano all'istanza.",
+      "sendNow": "Invia ora",
+      "paused": "Il dispositivo è stato scollegato: queste operazioni partiranno dopo un nuovo collegamento allo stesso stabilimento.",
+      "queuedAt": "Registrata alle {{time}}",
+      "retry": "Riprova",
+      "discard": "Elimina",
+      "status": {
+        "pending": "In attesa",
+        "sending": "Invio in corso",
+        "conflict": "Da controllare",
+        "failed": "Non inviata"
+      },
+      "kinds": {
+        "check_in": "Check-in",
+        "day_release": "Rilascio del giorno {{date}}",
+        "note": "Nota",
+        "cash_payment": "Incasso in contanti di {{amount}}"
+      },
+      "discardConfirm": {
+        "title": "Eliminare l'operazione?",
+        "description": "L'operazione non verrà inviata all'istanza. Se era un incasso, registralo di nuovo dal pannello o dalla scheda della prenotazione.",
+        "confirm": "Elimina"
+      }
+    },
+    "errors": {
+      "invalid_transition": "La prenotazione è cambiata nel frattempo (ad esempio il check-in era già stato fatto o la prenotazione è stata annullata).",
+      "version_conflict": "La prenotazione è stata modificata nel frattempo da un'altra postazione.",
+      "conflict": "L'operazione è in conflitto con lo stato attuale sull'istanza.",
+      "cash_session_closed": "La cassa è chiusa: apri una sessione di cassa e riprova.",
+      "booking_outside_period": "Il check-in è possibile solo durante il soggiorno.",
+      "idempotency_key_reused": "L'istanza ha già ricevuto un'operazione diversa con lo stesso identificativo.",
+      "validation_failed": "L'istanza ha rifiutato i dati dell'operazione.",
+      "forbidden": "Non consentito per il tuo ruolo.",
+      "not_found": "La prenotazione non esiste più.",
+      "not_implemented": "Questa istanza non supporta l'operazione.",
+      "other_establishment": "Registrata con un collegamento precedente a un altro stabilimento: non può essere inviata da qui.",
+      "unauthorized": "Il dispositivo è stato scollegato.",
+      "default": "L'istanza ha rifiutato l'operazione."
+    },
+    "onlineOnly": {
+      "title": "Serve la connessione",
+      "description": "Creare o spostare una prenotazione richiede l'istanza raggiungibile, che garantisce la disponibilità delle postazioni."
+    }
   }
 }

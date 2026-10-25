@@ -21,6 +21,7 @@ import { Icon } from '@/components/ui/icon';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Text } from '@/components/ui/text';
+import { useOfflineQueue, useOfflineStatus } from '@/features/offline/offline-provider';
 import type { LanguagePreference, ThemePreference } from '@/features/preferences/preferences';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { useCurrentDevice, useEstablishment, useUnpair } from '@/features/session/queries';
@@ -139,16 +140,36 @@ function ChoiceCard({
   );
 }
 
+/** Longest wait for the pending operations to be sent before unpairing. */
+const FLUSH_BEFORE_UNPAIR_MS = 5_000;
+
 /**
- * "Scollega dispositivo": revokes the token on the instance, then forgets it.
- * When the instance is unreachable the user may forget it on this device only.
+ * "Scollega dispositivo": sends what is still queued while the token is
+ * valid, revokes the token on the instance, then forgets it. When the
+ * instance is unreachable the user may forget it on this device only.
+ * Operations not sent yet are deleted with the session: the dialog says how
+ * many, so they are never lost silently.
  */
 function UnpairDialog({ establishmentName }: { establishmentName: string }) {
   const { t } = useTranslation();
   const { signOut } = useSession();
   const unpair = useUnpair();
+  const { flush } = useOfflineQueue();
+  const status = useOfflineStatus();
   const [open, setOpen] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const offline = unpair.isError;
+  const busy = unpair.isPending || preparing;
+  const unsent = status.pending + status.conflicts + status.failed;
+
+  const confirm = () => {
+    const timeout = new Promise<void>((resolve) => setTimeout(resolve, FLUSH_BEFORE_UNPAIR_MS));
+    setPreparing(true);
+    void Promise.race([flush().catch(() => undefined), timeout]).then(() => {
+      setPreparing(false);
+      unpair.mutate();
+    });
+  };
 
   return (
     <AlertDialog
@@ -174,9 +195,14 @@ function UnpairDialog({ establishmentName }: { establishmentName: string }) {
               ? t('settings.unpair.offlineDescription')
               : t('settings.unpair.description', { name: establishmentName })}
           </AlertDialogDescription>
+          {unsent > 0 ? (
+            <Text className="text-destructive" role="alert">
+              {t('settings.unpair.pendingWarning', { count: unsent })}
+            </Text>
+          ) : null}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={unpair.isPending}>
+          <AlertDialogCancel disabled={busy}>
             <Text>{t('common.cancel')}</Text>
           </AlertDialogCancel>
           {offline ? (
@@ -184,14 +210,8 @@ function UnpairDialog({ establishmentName }: { establishmentName: string }) {
               <Text>{t('settings.unpair.forceConfirm')}</Text>
             </Button>
           ) : (
-            <Button
-              variant="destructive"
-              disabled={unpair.isPending}
-              onPress={() => unpair.mutate()}
-            >
-              <Text>
-                {unpair.isPending ? t('settings.unpair.working') : t('settings.unpair.confirm')}
-              </Text>
+            <Button variant="destructive" disabled={busy} onPress={confirm}>
+              <Text>{busy ? t('settings.unpair.working') : t('settings.unpair.confirm')}</Text>
             </Button>
           )}
         </AlertDialogFooter>

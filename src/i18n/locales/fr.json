@@ -141,7 +141,8 @@
   },
   "nav": {
     "home": "Accueil",
-    "settings": "Réglages"
+    "settings": "Réglages",
+    "pending": "Opérations en attente"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -203,12 +204,79 @@
       "working": "Déconnexion en cours",
       "offlineTitle": "Instance injoignable",
       "offlineDescription": "L'instance n'a pas pu être prévenue. Vous pouvez déconnecter uniquement cet appareil : son accès reste dans le panneau jusqu'à ce que vous le révoquiez sous Configuration → Appareils.",
-      "forceConfirm": "Déconnecter ici seulement"
+      "forceConfirm": "Déconnecter ici seulement",
+      "pendingWarning_one": "Attention : {{count}} opération non encore envoyée sera perdue.",
+      "pendingWarning_other": "Attention : {{count}} opérations non encore envoyées seront perdues."
     }
   },
   "errorBoundary": {
     "title": "Un problème est survenu",
     "description": "Une erreur inattendue s'est produite dans l'application.",
     "retry": "Réessayer"
+  },
+  "offline": {
+    "indicator": {
+      "online": "Connecté",
+      "unreachable": "Instance injoignable",
+      "offline": "Pas de réseau",
+      "syncing": "Envoi en cours",
+      "short": {
+        "unreachable": "Injoignable",
+        "offline": "Pas de réseau",
+        "syncing": "Envoi…"
+      },
+      "pending_one": "{{count}} opération en attente",
+      "pending_other": "{{count}} opérations en attente",
+      "attention_one": "{{count}} opération à vérifier",
+      "attention_other": "{{count}} opérations à vérifier",
+      "hint": "Ouvre la liste des opérations en attente"
+    },
+    "pending": {
+      "title": "Opérations en attente",
+      "description": "Les opérations faites sans réseau partent dans l'ordre dès que l'instance est de nouveau joignable. Aucune n'est envoyée deux fois.",
+      "emptyTitle": "Aucune opération en attente",
+      "emptyDescription": "Les check-ins, libérations, notes et encaissements faits sans réseau apparaissent ici jusqu'à ce qu'ils arrivent à l'instance.",
+      "sendNow": "Envoyer maintenant",
+      "paused": "Cet appareil a été déconnecté : ces opérations partiront après un nouveau jumelage avec le même établissement.",
+      "queuedAt": "Enregistrée à {{time}}",
+      "retry": "Réessayer",
+      "discard": "Supprimer",
+      "status": {
+        "pending": "En attente",
+        "sending": "Envoi en cours",
+        "conflict": "À vérifier",
+        "failed": "Non envoyée"
+      },
+      "kinds": {
+        "check_in": "Check-in",
+        "day_release": "Libération du jour {{date}}",
+        "note": "Note",
+        "cash_payment": "Encaissement en espèces de {{amount}}"
+      },
+      "discardConfirm": {
+        "title": "Supprimer l'opération ?",
+        "description": "L'opération ne sera pas envoyée à l'instance. S'il s'agissait d'un encaissement, enregistrez-le à nouveau depuis le panneau ou la réservation.",
+        "confirm": "Supprimer"
+      }
+    },
+    "errors": {
+      "invalid_transition": "La réservation a changé entre-temps (par exemple le check-in était déjà fait ou elle a été annulée).",
+      "version_conflict": "La réservation a été modifiée entre-temps depuis un autre appareil.",
+      "conflict": "L'opération est en conflit avec l'état actuel de l'instance.",
+      "cash_session_closed": "La caisse est fermée : ouvrez une session de caisse et réessayez.",
+      "booking_outside_period": "Le check-in n'est possible que pendant le séjour.",
+      "idempotency_key_reused": "L'instance a déjà reçu une opération différente avec le même identifiant.",
+      "validation_failed": "L'instance a refusé les données de l'opération.",
+      "forbidden": "Non autorisé pour votre rôle.",
+      "not_found": "La réservation n'existe plus.",
+      "not_implemented": "Cette instance ne prend pas en charge l'opération.",
+      "other_establishment": "Enregistrée avec un jumelage précédent à un autre établissement : elle ne peut pas être envoyée d'ici.",
+      "unauthorized": "Cet appareil a été déconnecté.",
+      "default": "L'instance a refusé l'opération."
+    },
+    "onlineOnly": {
+      "title": "Connexion nécessaire",
+      "description": "Créer ou déplacer une réservation nécessite que l'instance soit joignable, car elle garantit la disponibilité des emplacements."
+    }
   }
 }

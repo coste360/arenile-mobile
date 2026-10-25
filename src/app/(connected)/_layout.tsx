@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { BrandMark } from '@/components/brand-mark';
+import { ConnectionIndicator } from '@/components/connection-indicator';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
@@ -20,7 +21,8 @@ const NAV: { href: '/home' | '/settings'; label: 'nav.home' | 'nav.settings'; ic
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
  * "Collega" with the reason) and picks the layout: a stack on phones, a
- * master/detail split with a navigation pane on tablets.
+ * master/detail split with a navigation pane on tablets. The connection
+ * indicator is always visible: in every phone header, in the tablet pane.
  */
 export default function ConnectedLayout() {
   const { t } = useTranslation();
@@ -45,6 +47,7 @@ export default function ConnectedLayout() {
           <Stack screenOptions={{ animation: 'none', headerBackVisible: false }}>
             <Stack.Screen name="home" options={{ title: t('nav.home') }} />
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
+            <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
           </Stack>
         </View>
       </View>
@@ -52,24 +55,33 @@ export default function ConnectedLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
+    <Stack
+      screenOptions={{
+        headerBackButtonDisplayMode: 'minimal',
+        headerRight: () => <ConnectionIndicator />,
+      }}
+    >
       <Stack.Screen
         name="home"
         options={{
           title: t('nav.home'),
           headerRight: () => (
-            <Button
-              variant="ghost"
-              size="icon"
-              accessibilityLabel={t('nav.settings')}
-              onPress={() => router.push('/settings')}
-            >
-              <Icon as={SettingsIcon} size={22} />
-            </Button>
+            <View className="flex-row items-center">
+              <ConnectionIndicator />
+              <Button
+                variant="ghost"
+                size="icon"
+                accessibilityLabel={t('nav.settings')}
+                onPress={() => router.push('/settings')}
+              >
+                <Icon as={SettingsIcon} size={22} />
+              </Button>
+            </View>
           ),
         }}
       />
       <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
+      <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
     </Stack>
   );
 }
@@ -86,6 +98,9 @@ function Sidebar() {
       <View className="flex-row items-center gap-3 px-3 py-6">
         <BrandMark className="h-10 w-10" />
         <Text variant="large">{t('common.appName')}</Text>
+      </View>
+      <View className="mb-2 rounded-md border border-border">
+        <ConnectionIndicator variant="full" />
       </View>
       {NAV.map((item) => {
         const active = pathname === item.href;
