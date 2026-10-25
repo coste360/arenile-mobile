@@ -36,7 +36,7 @@ import { createMemoryKeyValueStore } from '@/lib/storage';
 import { AppProviders } from '@/providers/app-providers';
 import type { Dependencies } from '@/providers/dependencies';
 
-import { fakeFetch, type Handler } from './fake-fetch';
+import { fakeFetch, fakePinnedFetch, type Handler } from './fake-fetch';
 import { createFakeWidget } from './fake-widget';
 import { sequentialIds } from './ids';
 
@@ -72,6 +72,11 @@ export interface RenderAppOptions {
   connected?: boolean;
   /** Native push of the build (phase 2); absent means no push module. */
   push?: PushNative;
+  /**
+   * Certificate fingerprint of the desktop LAN server answering `routes`:
+   * gives the app a fake pinned transport. Omitted: the build has none.
+   */
+  lanServerFingerprint?: string;
 }
 
 export async function renderApp({
@@ -84,6 +89,7 @@ export async function renderApp({
   offlineData = {},
   connected = true,
   push,
+  lanServerFingerprint,
 }: RenderAppOptions = {}) {
   setWindow(size);
   const kv = createMemoryKeyValueStore({
@@ -110,6 +116,9 @@ export async function renderApp({
     randomId: sequentialIds(),
     clock: fixedClock('2026-10-25T08:00:00Z'),
     fetch: network.fetch,
+    pinnedFetch: lanServerFingerprint
+      ? fakePinnedFetch(network.fetch, lanServerFingerprint).pinnedFetch
+      : null,
     device: { name: 'iPhone di Anna', platform: 'ios' },
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],

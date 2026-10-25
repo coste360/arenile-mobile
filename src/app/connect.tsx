@@ -1,5 +1,11 @@
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { KeyboardIcon, QrCodeIcon, ShieldCheckIcon, UnplugIcon } from 'lucide-react-native';
+import {
+  KeyboardIcon,
+  QrCodeIcon,
+  ShieldAlertIcon,
+  ShieldCheckIcon,
+  UnplugIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -9,7 +15,11 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { useSession } from '@/features/session/session-provider';
+import { useSession, type SignOutReason } from '@/features/session/session-provider';
+
+const REASONS: readonly SignOutReason[] = ['revoked', 'unpaired', 'certificate_changed'];
+const isReason = (value: string | undefined): value is SignOutReason =>
+  REASONS.includes(value as SignOutReason);
 
 /** Welcome / "Collega a un'istanza": the app has no default server, the user pairs it. */
 export default function ConnectScreen() {
@@ -29,8 +39,11 @@ export default function ConnectScreen() {
         <Text className="text-center text-muted-foreground">{t('connect.description')}</Text>
       </View>
 
-      {reason === 'revoked' || reason === 'unpaired' ? (
-        <Alert icon={UnplugIcon} variant={reason === 'revoked' ? 'destructive' : 'default'}>
+      {isReason(reason) ? (
+        <Alert
+          icon={reason === 'certificate_changed' ? ShieldAlertIcon : UnplugIcon}
+          variant={reason === 'unpaired' ? 'default' : 'destructive'}
+        >
           <AlertTitle>{t(`connect.${reason}.title`)}</AlertTitle>
           <AlertDescription>{t(`connect.${reason}.description`)}</AlertDescription>
         </Alert>

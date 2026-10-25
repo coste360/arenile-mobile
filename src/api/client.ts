@@ -5,8 +5,13 @@
 // No cookies (spec 29.2): credentials are never sent implicitly.
 import createClient, { type Client, type Middleware } from 'openapi-fetch';
 
-import { errorForStatus, NetworkError, UnexpectedResponseError } from '@/api/errors';
-import { selectTransport, type Transport } from '@/api/transport';
+import {
+  CertificateMismatchError,
+  errorForStatus,
+  NetworkError,
+  UnexpectedResponseError,
+} from '@/api/errors';
+import { selectTransport, type PinnedFetch, type Transport } from '@/api/transport';
 import type { paths } from '@/api/types';
 
 export type ApiClient = Client<paths>;
@@ -22,6 +27,8 @@ export interface ApiClientOptions {
   fingerprint?: string;
   /** fetch implementation, for tests. */
   fetch?: typeof fetch;
+  /** Pinned transport for `fingerprint` (undefined: the native module of this build). */
+  pinnedFetch?: PinnedFetch | null;
   timeoutMs?: number;
 }
 
@@ -53,10 +60,15 @@ function bearer(token: string): Middleware {
 
 /**
  * Creates the client for one instance. Throws LanTransportUnavailableError
- * when the instance needs certificate pinning this build cannot do yet.
+ * when the instance needs certificate pinning and this build has no pinned
+ * transport (Expo Go, web).
  */
 export function createApiClient(options: ApiClientOptions): ApiClient {
-  const transport = selectTransport({ fingerprint: options.fingerprint, fetch: options.fetch });
+  const transport = selectTransport({
+    fingerprint: options.fingerprint,
+    fetch: options.fetch,
+    pinnedFetch: options.pinnedFetch,
+  });
   const client = createClient<paths>({
     baseUrl: options.baseUrl,
     fetch: withTimeout(transport, options.timeoutMs ?? DEFAULT_TIMEOUT_MS),
@@ -75,7 +87,8 @@ interface FetchResult<T> {
 
 /**
  * Runs one openapi-fetch call and returns its data, or throws a typed error:
- * NetworkError (unreachable, timeout), UnexpectedResponseError (2xx that is
+ * NetworkError (unreachable, timeout), CertificateMismatchError (desktop LAN
+ * certificate is not the pinned one), UnexpectedResponseError (2xx that is
  * not the expected JSON), UnauthorizedError (401), ProblemError (other non-2xx).
  */
 export async function request<T>(call: () => Promise<FetchResult<T>>): Promise<T> {
@@ -83,7 +96,7 @@ export async function request<T>(call: () => Promise<FetchResult<T>>): Promise<T
   try {
     result = await call();
   } catch (e) {
-    if (e instanceof NetworkError) throw e;
+    if (e instanceof NetworkError || e instanceof CertificateMismatchError) throw e;
     if (e instanceof SyntaxError) throw new UnexpectedResponseError(200);
     throw new NetworkError('unreachable', { cause: e });
   }

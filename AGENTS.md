@@ -68,6 +68,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms) and `reports/`
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
+- `modules/pinned-fetch/` local Expo module (Swift, Kotlin, JS adapter): the certificate-pinning
+  transport for desktop LAN instances (ADR 0006); its JS tests run in `make test`
 - `src/lib/` shared primitives (version compare, base64url, storage, offline storage, network,
   clock, calendar dates, instants in the establishment zone, localised API texts, money in cents,
   navigation theme, `cn`)
@@ -96,7 +98,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - The app never imports core code. API types come only from the generated contract of a pinned core
   release (ADR 0002); a missing endpoint is a core change first.
 - One API client factory (`createApiClient`) and one transport selection (`selectTransport`). Never
-  disable or weaken TLS; self-signed desktop LAN instances wait for the pinned transport (ADR 0006).
+  disable or weaken TLS; self-signed desktop LAN instances go only through the pinned transport of
+  `modules/pinned-fetch` (exact SHA-256 of the leaf certificate, ADR 0006).
 - The device token lives only in the keychain through `SessionStore` (ADR 0003): never logged,
   never in a URL, never shown. A 401 problem+json `unauthorized` is handled only by `SessionProvider`
   (sign-out + explanation). External pairing links need the user's confirmation; a code is single use.

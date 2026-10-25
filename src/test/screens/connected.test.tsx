@@ -3,7 +3,16 @@ import { fireEvent, waitFor } from 'expo-router/testing-library';
 
 import { PREFERENCES_KEY } from '@/features/preferences/preferences';
 import { SESSION_KEY } from '@/features/session/session';
-import { DEVICE, json, meta, networkDown, problem, type Handler } from '@/test/fake-fetch';
+import {
+  DEVICE,
+  json,
+  LAN_FINGERPRINT,
+  meta,
+  networkDown,
+  problem,
+  RENEWED_FINGERPRINT,
+  type Handler,
+} from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { renderApp, requestsOf, type WindowSize } from '@/test/render-app';
 
@@ -186,4 +195,77 @@ describe('settings', () => {
 
     expect(await screen.findByText('Anna · Kassierer')).toBeOnTheScreen();
   });
+});
+
+describe('desktop LAN instance (pinned certificate, ADR 0006)', () => {
+  const LAN_SESSION = {
+    ...SESSION,
+    instanceUrl: 'https://192.168.1.20:8443',
+    fingerprint: LAN_FINGERPRINT,
+  };
+  const lanMeta = (renewsAt: string) =>
+    meta({
+      edition: 'desktop',
+      desktop: {
+        mode: 'lan',
+        lan_url: 'https://192.168.1.20:8443',
+        lan_cert_fingerprint: LAN_FINGERPRINT,
+        lan_cert_renews_at: renewsAt,
+      },
+    });
+  const routes = (renewsAt = '2027-12-01T00:00:00Z'): Record<string, Handler> => ({
+    ...ONLINE,
+    'GET /api/admin/v1/meta': () => json(200, lanMeta(renewsAt)),
+  });
+
+  it('works through the pinned certificate', async () => {
+    const { screen } = await renderApp({
+      session: LAN_SESSION,
+      routes: routes(),
+      lanServerFingerprint: LAN_FINGERPRINT,
+    });
+
+    expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
+    expect(screen.getByText('Connesso')).toBeOnTheScreen();
+    expect(await screen.findByText('Desktop')).toBeOnTheScreen();
+    expect(screen.queryByText('Rinnovo del certificato in arrivo')).toBeNull();
+  });
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'warns before the certificate renewal on a %s',
+    async (size) => {
+      const { screen } = await renderApp({
+        session: LAN_SESSION,
+        routes: routes('2026-11-04T08:00:00Z'),
+        lanServerFingerprint: LAN_FINGERPRINT,
+        size,
+      });
+
+      expect(await screen.findByText('Rinnovo del certificato in arrivo')).toBeOnTheScreen();
+      expect(screen.getByText(/Il 4 novembre 2026 l'app desktop rinnova/)).toBeOnTheScreen();
+    },
+  );
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'asks to pair again after the renewal and signs out on request (%s)',
+    async (size) => {
+      const { screen, kv, network, getPathname } = await renderApp({
+        session: LAN_SESSION,
+        routes: routes(),
+        lanServerFingerprint: RENEWED_FINGERPRINT,
+        size,
+      });
+
+      expect(await screen.findByText('Certificato del desktop cambiato')).toBeOnTheScreen();
+      expect(screen.queryByText(/L'app riprova appena/)).toBeNull();
+      expect(network.calls).toHaveLength(0);
+
+      await fireEvent.press(screen.getByRole('button', { name: 'Abbina di nuovo' }));
+
+      expect(await screen.findByText("Collega a un'istanza")).toBeOnTheScreen();
+      expect(getPathname()).toBe('/connect');
+      expect(screen.getByText(/revoca il vecchio abbinamento/)).toBeOnTheScreen();
+      await waitFor(() => expect(kv.snapshot()[SESSION_KEY]).toBeUndefined());
+    },
+  );
 });

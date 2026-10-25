@@ -14,9 +14,12 @@ paths:
   type that the contract already defines.
 - One place builds clients: `createApiClient()` in `src/api/client.ts` (base URL, bearer device
   token, timeout, no cookies); one place picks the transport: `selectTransport()` in
-  `src/api/transport.ts`. Self-signed instances (desktop LAN mode, fingerprint in the QR) are refused
-  with `LanTransportUnavailableError` until the pinned native transport of ADR 0006 exists. Never
-  disable or weaken TLS validation, never add a "trust all certificates" switch.
+  `src/api/transport.ts`. Self-signed instances (desktop LAN mode, fingerprint in the QR) go only
+  through the pinned transport of `modules/pinned-fetch` (ADR 0006), injected as
+  `Dependencies.pinnedFetch`; builds without the native module refuse them with
+  `LanTransportUnavailableError`. A certificate that is not the pinned one is `CertificateMismatchError`
+  (never retried, never "unreachable"). Never disable or weaken TLS validation, never add a "trust all
+  certificates" switch, never use the pinned transport for instances without a fingerprint.
 - Every call goes through `request()`, which maps failures to typed errors (`NetworkError`,
   `UnexpectedResponseError`, `ProblemError` with the stable problem `type` slug, `UnauthorizedError`).
   Branch on types and slugs, never on `title`/`detail` text.

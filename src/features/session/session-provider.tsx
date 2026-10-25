@@ -20,7 +20,11 @@ import { errorKind } from '@/lib/log';
 
 import type { Session, SessionStore } from './session';
 
-export type SignOutReason = 'revoked' | 'unpaired';
+/**
+ * revoked: 401 from the instance; unpaired: the user unpaired the device;
+ * certificate_changed: the desktop LAN certificate is no longer the pinned one.
+ */
+export type SignOutReason = 'revoked' | 'unpaired' | 'certificate_changed';
 
 export type SessionState =
   { status: 'unpaired'; reason?: SignOutReason } | { status: 'paired'; session: Session };
@@ -109,7 +113,7 @@ export function usePairedSession(): Session {
 /** API client of the paired instance (the single factory, src/api/client.ts). */
 export function useApiClient(): ApiClient {
   const session = usePairedSession();
-  const { fetch } = useDependencies();
+  const { fetch, pinnedFetch } = useDependencies();
   return useMemo(
     () =>
       createApiClient({
@@ -117,7 +121,8 @@ export function useApiClient(): ApiClient {
         token: session.token,
         fingerprint: session.fingerprint,
         fetch,
+        pinnedFetch,
       }),
-    [session.instanceUrl, session.token, session.fingerprint, fetch],
+    [session.instanceUrl, session.token, session.fingerprint, fetch, pinnedFetch],
   );
 }

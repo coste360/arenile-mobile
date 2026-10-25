@@ -7,6 +7,7 @@ import { getLocales } from 'expo-localization';
 import { createContext, useContext, type ReactNode } from 'react';
 import { Linking, Platform } from 'react-native';
 
+import type { PinnedFetch } from '@/api/transport';
 import { APP_VERSION } from '@/config/app';
 import type { DeviceInfo } from '@/features/pairing/pair';
 import { createExpoPushNative, type PushNative } from '@/features/push/native';
@@ -28,6 +29,11 @@ export interface Dependencies {
   clock: Clock;
   /** fetch implementation; undefined means the platform fetch. */
   fetch?: typeof fetch;
+  /**
+   * Certificate-pinning transport for desktop LAN instances (ADR 0006);
+   * undefined means the native module of this build, null means none.
+   */
+  pinnedFetch?: PinnedFetch | null;
   device: DeviceInfo;
   /** Version of this app (app.json), sent at pairing and checked against the instance. */
   appVersion: string;

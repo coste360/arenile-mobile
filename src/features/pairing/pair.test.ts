@@ -2,10 +2,13 @@ import { fixedClock } from '@/lib/clock';
 import {
   DEVICE,
   fakeFetch,
+  fakePinnedFetch,
   json,
+  LAN_FINGERPRINT,
   meta,
   networkDown,
   problem,
+  RENEWED_FINGERPRINT,
   type Handler,
 } from '@/test/fake-fetch';
 
@@ -24,13 +27,19 @@ const PAIR_RESULT = {
   establishment_id: DEVICE.establishment_id,
 };
 
-function deps(routes: Record<string, Handler>): PairDeps & { calls: Request[] } {
+function deps(
+  routes: Record<string, Handler>,
+  lanServerFingerprint?: string,
+): PairDeps & { calls: Request[] } {
   const f = fakeFetch(routes);
   return {
     versions: { app: '1.0.0', minInstance: '1.0.0' },
     device: { name: 'iPhone di Anna', platform: 'ios' },
     clock: fixedClock('2026-10-25T08:00:00Z'),
     fetch: f.fetch,
+    pinnedFetch: lanServerFingerprint
+      ? fakePinnedFetch(f.fetch, lanServerFingerprint).pinnedFetch
+      : null,
     calls: f.calls,
   };
 }
@@ -191,11 +200,45 @@ describe('pairDevice', () => {
     expect(await failure(TARGET, deps(routes))).toBe(reason);
   });
 
-  it('refuses a self-signed desktop instance without any request (ADR 0006)', async () => {
-    const d = deps(okRoutes);
+  describe('desktop LAN instance (ADR 0006)', () => {
+    const LAN: PairingTarget = {
+      url: 'https://192.168.1.20:8443',
+      code: 'ABCDEFGH',
+      fingerprint: LAN_FINGERPRINT,
+    };
+    const lanRoutes: Record<string, Handler> = {
+      ...okRoutes,
+      'GET /api/admin/v1/meta': () => json(200, meta({ edition: 'desktop' })),
+      [`GET /api/admin/v1/establishments/${DEVICE.establishment_id}`]: () =>
+        json(200, { id: DEVICE.establishment_id, name: 'Lido Sirena' }),
+    };
 
-    expect(await failure({ ...TARGET, fingerprint: 'AA:BB' }, d)).toBe('lan_unsupported');
-    expect(d.calls).toHaveLength(0);
+    it('pairs through the pinned transport and keeps the fingerprint in the session', async () => {
+      const d = deps(lanRoutes, LAN_FINGERPRINT);
+
+      const { session } = await pairDevice(LAN, d);
+
+      expect(session).toMatchObject({
+        instanceUrl: 'https://192.168.1.20:8443',
+        fingerprint: LAN_FINGERPRINT,
+        establishmentName: 'Lido Sirena',
+      });
+      expect(d.calls.map((r) => r.method)).toEqual(['GET', 'POST', 'GET']);
+    });
+
+    it('never sends the code to a server with another certificate', async () => {
+      const d = deps(lanRoutes, RENEWED_FINGERPRINT);
+
+      expect(await failure(LAN, d)).toBe('certificate_mismatch');
+      expect(d.calls).toHaveLength(0);
+    });
+
+    it('refuses it without any request when the build has no pinned transport', async () => {
+      const d = deps(lanRoutes);
+
+      expect(await failure(LAN, d)).toBe('lan_unsupported');
+      expect(d.calls).toHaveLength(0);
+    });
   });
 
   it('never sends the code when the instance is incompatible', async () => {

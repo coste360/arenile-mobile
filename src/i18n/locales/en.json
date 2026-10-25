@@ -32,6 +32,10 @@
     "unpaired": {
       "title": "Device disconnected",
       "description": "This device no longer has access to the establishment."
+    },
+    "certificate_changed": {
+      "title": "Desktop certificate changed",
+      "description": "The security certificate of the desktop app has changed, usually because of the periodic renewal. Pair this device again with a new QR code and revoke the old pairing in the panel, under Configuration → Devices."
     }
   },
   "scan": {
@@ -86,8 +90,12 @@
     },
     "errors": {
       "lan_unsupported": {
-        "title": "Desktop local network: coming soon",
-        "description": "This QR code comes from the desktop app in local network mode, which uses its own security certificate. Connecting the app to this mode is coming soon: for now use the panel in the browser."
+        "title": "Desktop local network not supported",
+        "description": "This QR code comes from the desktop app in local network mode, which uses its own security certificate. This version of the app cannot verify it (for example Expo Go or the web version): install the Arenile app from the App Store or Google Play, or use the panel in the browser."
+      },
+      "certificate_mismatch": {
+        "title": "Certificate differs from the QR code",
+        "description": "The local network server presented a security certificate different from the one in the QR code, so the app did not connect. The QR code may be old (the certificate is renewed periodically) or another computer answers at that address: generate a new QR code in the desktop app and scan it."
       },
       "unreachable": {
         "title": "Instance unreachable",
@@ -176,6 +184,14 @@
     "editions": {
       "server": "Server",
       "desktop": "Desktop"
+    },
+    "lanCertificate": {
+      "mismatchTitle": "Desktop certificate changed",
+      "mismatchDescription": "The desktop app now presents a security certificate different from the one verified at pairing, usually because of the periodic renewal. For your security the app does not connect: pair this device again with a new QR code.",
+      "pairAgain": "Pair again",
+      "renewalTitle": "Certificate renewal coming up",
+      "renewalDescription": "On {{date}} the desktop app renews its local network security certificate: from then on this device must be paired again with a new QR code.",
+      "renewalDueDescription": "The desktop app renews its local network security certificate at its next start: from then on this device must be paired again with a new QR code."
     }
   },
   "settings": {

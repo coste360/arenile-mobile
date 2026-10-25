@@ -32,6 +32,10 @@
     "unpaired": {
       "title": "Dispositivo scollegato",
       "description": "Questo dispositivo non ha più accesso allo stabilimento."
+    },
+    "certificate_changed": {
+      "title": "Certificato del desktop cambiato",
+      "description": "Il certificato di sicurezza dell'app desktop è cambiato, di solito per il rinnovo periodico. Abbina di nuovo questo dispositivo con un nuovo QR code e revoca il vecchio abbinamento dal pannello, in Configurazione → Dispositivi."
     }
   },
   "scan": {
@@ -86,8 +90,12 @@
     },
     "errors": {
       "lan_unsupported": {
-        "title": "Rete locale del desktop: in arrivo",
-        "description": "Questo QR code viene dall'app desktop in modalità rete locale, che usa un certificato di sicurezza proprio. Il collegamento dell'app a questa modalità è in arrivo: per ora usa il pannello dal browser."
+        "title": "Rete locale del desktop non supportata",
+        "description": "Questo QR code viene dall'app desktop in modalità rete locale, che usa un certificato di sicurezza proprio. Questa versione dell'app non può verificarlo (ad esempio Expo Go o la versione web): installa l'app Arenile dall'App Store o da Google Play, oppure usa il pannello dal browser."
+      },
+      "certificate_mismatch": {
+        "title": "Certificato diverso da quello del QR",
+        "description": "Il server in rete locale ha presentato un certificato di sicurezza diverso da quello indicato nel QR code, quindi l'app non si è collegata. Il QR potrebbe essere vecchio (il certificato si rinnova periodicamente) oppure a quell'indirizzo risponde un altro computer: genera un nuovo QR code dall'app desktop e inquadralo."
       },
       "unreachable": {
         "title": "Istanza non raggiungibile",
@@ -176,6 +184,14 @@
     "editions": {
       "server": "Server",
       "desktop": "Desktop"
+    },
+    "lanCertificate": {
+      "mismatchTitle": "Certificato del desktop cambiato",
+      "mismatchDescription": "L'app desktop ora presenta un certificato di sicurezza diverso da quello verificato all'abbinamento, di solito per il rinnovo periodico. Per sicurezza l'app non si collega: abbina di nuovo questo dispositivo con un nuovo QR code.",
+      "pairAgain": "Abbina di nuovo",
+      "renewalTitle": "Rinnovo del certificato in arrivo",
+      "renewalDescription": "Il {{date}} l'app desktop rinnova il certificato di sicurezza della rete locale: da quel momento questo dispositivo andrà abbinato di nuovo con un nuovo QR code.",
+      "renewalDueDescription": "L'app desktop rinnova il certificato di sicurezza della rete locale al prossimo avvio: da quel momento questo dispositivo andrà abbinato di nuovo con un nuovo QR code."
     }
   },
   "settings": {

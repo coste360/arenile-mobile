@@ -2,6 +2,8 @@
 // typed by hand. Same rules as ParseInput / NormalizeInstanceURL of the core
 // desktop client (internal/desktop/remote/pair.go) and NormalizePairingCode
 // (internal/domain/device/token.go).
+import { normalizeFingerprint } from '@/api/transport';
+
 import { parseAuthority } from './authority';
 import { decodeQR, decodeQRData, type QRPayload } from './qr';
 
@@ -10,7 +12,7 @@ export interface PairingTarget {
   url: string;
   /** Canonical 8-character pairing code. */
   code: string;
-  /** SHA-256 of the self-signed certificate (desktop LAN mode), upper case. */
+  /** SHA-256 of the self-signed certificate (desktop LAN mode), canonical `AA:BB:…` form. */
   fingerprint?: string;
   establishmentName?: string;
 }
@@ -80,7 +82,13 @@ export function targetFromPayload(p: QRPayload): TargetResult {
   const code = normalizePairingCode(p.code);
   if (!code) return { ok: false, error: 'invalid_input' };
   const target: PairingTarget = { url: u.url, code };
-  if (p.fingerprint) target.fingerprint = p.fingerprint.trim().toUpperCase();
+  if (p.fingerprint) {
+    // The pinned transport accepts exactly this certificate: a malformed
+    // fingerprint is an invalid QR, never "no pinning".
+    const fingerprint = normalizeFingerprint(p.fingerprint);
+    if (!fingerprint) return { ok: false, error: 'invalid_input' };
+    target.fingerprint = fingerprint;
+  }
   if (p.establishment_name) target.establishmentName = p.establishment_name;
   return { ok: true, target };
 }

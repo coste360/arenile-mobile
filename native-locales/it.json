@@ -3,7 +3,8 @@
     "CFBundleDisplayName": "Arenile",
     "NSCameraUsageDescription": "Arenile usa la fotocamera per inquadrare il QR di abbinamento e i QR di prenotazioni e biglietti.",
     "NSMicrophoneUsageDescription": "Arenile non registra audio.",
-    "NSFaceIDUsageDescription": "Arenile non usa Face ID."
+    "NSFaceIDUsageDescription": "Arenile non usa Face ID.",
+    "NSLocalNetworkUsageDescription": "Arenile si collega all'app desktop del tuo stabilimento sulla rete locale, quando la usi in modalità rete locale."
   },
   "android": {
     "app_name": "Arenile"

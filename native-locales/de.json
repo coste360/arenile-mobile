@@ -3,7 +3,8 @@
     "CFBundleDisplayName": "Arenile",
     "NSCameraUsageDescription": "Arenile verwendet die Kamera, um den Kopplungs-QR-Code und die QR-Codes von Buchungen und Tickets zu scannen.",
     "NSMicrophoneUsageDescription": "Arenile nimmt keinen Ton auf.",
-    "NSFaceIDUsageDescription": "Arenile verwendet Face ID nicht."
+    "NSFaceIDUsageDescription": "Arenile verwendet Face ID nicht.",
+    "NSLocalNetworkUsageDescription": "Arenile verbindet sich im lokalen Netzwerk mit der Desktop-App deines Strandbads, wenn du sie im lokalen Netzwerkmodus nutzt."
   },
   "android": {
     "app_name": "Arenile"

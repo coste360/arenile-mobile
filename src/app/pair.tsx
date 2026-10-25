@@ -1,6 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { CircleAlertIcon, Link2Icon, MonitorSmartphoneIcon } from 'lucide-react-native';
+import {
+  CircleAlertIcon,
+  Link2Icon,
+  MonitorSmartphoneIcon,
+  ShieldAlertIcon,
+} from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,6 +36,8 @@ const RETRYABLE: readonly FailureReason[] = [
   'storage',
 ];
 const NEW_CODE: readonly FailureReason[] = ['code_invalid', 'invalid_input'];
+/** Only a new QR from the desktop app carries the new certificate fingerprint. */
+const NEW_QR: readonly FailureReason[] = [...NEW_CODE, 'certificate_mismatch'];
 
 /** Thrown when the keychain refuses the new session: the token is kept for a retry. */
 class StorageError extends Error {
@@ -78,6 +85,7 @@ export default function PairScreen() {
             device: deps.device,
             clock: deps.clock,
             fetch: deps.fetch,
+            pinnedFetch: deps.pinnedFetch,
           })
         ).session;
       try {
@@ -90,7 +98,7 @@ export default function PairScreen() {
   });
 
   const unpaired = state.status === 'unpaired';
-  const lanOnly = target.ok && !!target.target.fingerprint && !canPinCertificates();
+  const lanOnly = target.ok && !!target.target.fingerprint && !canPinCertificates(deps.pinnedFetch);
   const started = useRef<string | null>(null);
   const { mutate } = mutation;
   useEffect(() => {
@@ -157,7 +165,13 @@ export default function PairScreen() {
   return (
     <Screen className="flex-1">
       <StateView
-        icon={reason === 'lan_unsupported' ? MonitorSmartphoneIcon : CircleAlertIcon}
+        icon={
+          reason === 'lan_unsupported'
+            ? MonitorSmartphoneIcon
+            : reason === 'certificate_mismatch'
+              ? ShieldAlertIcon
+              : CircleAlertIcon
+        }
         tone={reason === 'lan_unsupported' ? 'default' : 'destructive'}
         title={t(`pair.errors.${reason}.title`)}
         description={t(`pair.errors.${reason}.description`, { min: MIN_INSTANCE_VERSION, name })}
@@ -172,7 +186,7 @@ export default function PairScreen() {
             <Text>{t('pair.actions.retry')}</Text>
           </Button>
         ) : null}
-        {NEW_CODE.includes(reason) ? (
+        {NEW_QR.includes(reason) ? (
           <Button size="lg" onPress={() => router.replace('/scan')}>
             <Text>{t('pair.actions.scanAgain')}</Text>
           </Button>

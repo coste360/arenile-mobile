@@ -17,4 +17,18 @@ describe('Collega (connect) screen', () => {
     expect(await screen.findByText('Dispositivo scollegato')).toBeOnTheScreen();
     expect(screen.getByText(/revocato dal pannello/)).toBeOnTheScreen();
   });
+
+  it('explains a changed desktop certificate', async () => {
+    const { screen } = await renderApp({ initialUrl: '/connect?reason=certificate_changed' });
+
+    expect(await screen.findByText('Certificato del desktop cambiato')).toBeOnTheScreen();
+    expect(screen.getByText(/revoca il vecchio abbinamento/)).toBeOnTheScreen();
+  });
+
+  it('ignores an unknown reason', async () => {
+    const { screen } = await renderApp({ initialUrl: '/connect?reason=whatever' });
+
+    expect(await screen.findByText("Collega a un'istanza")).toBeOnTheScreen();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
 });

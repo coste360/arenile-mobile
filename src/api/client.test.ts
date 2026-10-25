@@ -1,12 +1,29 @@
 import { createApiClient, request } from '@/api/client';
 import {
+  CertificateMismatchError,
   LanTransportUnavailableError,
   NetworkError,
   ProblemError,
   UnauthorizedError,
   UnexpectedResponseError,
 } from '@/api/errors';
-import { DEVICE, fakeFetch, json, meta, networkDown, problem } from '@/test/fake-fetch';
+import {
+  DEVICE,
+  fakeFetch,
+  fakePinnedFetch,
+  json,
+  LAN_FINGERPRINT,
+  meta,
+  networkDown,
+  problem,
+  RENEWED_FINGERPRINT,
+} from '@/test/fake-fetch';
+
+import {
+  createPinnedFetch,
+  NATIVE_ERROR_CODES,
+  type PinnedFetchNativeModule,
+} from '../../modules/pinned-fetch';
 
 const BASE = 'https://lido.example.it';
 
@@ -32,10 +49,109 @@ describe('createApiClient', () => {
     expect(f.calls[0]?.headers.has('Authorization')).toBe(false);
   });
 
-  it('refuses instances that need certificate pinning (desktop LAN mode, ADR 0006)', () => {
-    expect(() => createApiClient({ baseUrl: BASE, fingerprint: 'AA:BB' })).toThrow(
-      LanTransportUnavailableError,
-    );
+  it('refuses pinned instances when the build has no pinned transport (ADR 0006)', () => {
+    const f = fakeFetch({});
+    expect(() =>
+      createApiClient({
+        baseUrl: BASE,
+        fingerprint: LAN_FINGERPRINT,
+        fetch: f.fetch,
+        pinnedFetch: null,
+      }),
+    ).toThrow(LanTransportUnavailableError);
+    expect(f.calls).toHaveLength(0);
+  });
+});
+
+describe('desktop LAN instance (pinned transport, ADR 0006)', () => {
+  const LAN = 'https://192.168.1.20:8443';
+
+  it('sends every request through the pinned transport, never the platform fetch', async () => {
+    const server = fakeFetch({ 'GET /api/device/v1/self': () => json(200, DEVICE) });
+    const platform = fakeFetch({});
+    const pinned = fakePinnedFetch(server.fetch, LAN_FINGERPRINT);
+    const client = createApiClient({
+      baseUrl: LAN,
+      token: 'ar_dev_x',
+      fingerprint: LAN_FINGERPRINT.toLowerCase(),
+      fetch: platform.fetch,
+      pinnedFetch: pinned.pinnedFetch,
+    });
+
+    const device = await request(() => client.GET('/api/device/v1/self'));
+
+    expect(device.id).toBe(DEVICE.id);
+    expect(pinned.pins).toEqual([LAN_FINGERPRINT]);
+    expect(server.calls[0]?.headers.get('Authorization')).toBe('Bearer ar_dev_x');
+    expect(platform.calls).toHaveLength(0);
+  });
+
+  it('reports a renewed certificate as CertificateMismatchError, not as unreachable', async () => {
+    const server = fakeFetch({ 'GET /api/device/v1/self': () => json(200, DEVICE) });
+    const pinned = fakePinnedFetch(server.fetch, RENEWED_FINGERPRINT);
+    const client = createApiClient({
+      baseUrl: LAN,
+      token: 'ar_dev_x',
+      fingerprint: LAN_FINGERPRINT,
+      pinnedFetch: pinned.pinnedFetch,
+    });
+
+    const err = await request(() => client.GET('/api/device/v1/self')).catch((e: unknown) => e);
+
+    expect(err).toBeInstanceOf(CertificateMismatchError);
+    expect(server.calls).toHaveLength(0);
+  });
+
+  describe('with the module adapter and a mocked native module', () => {
+    const native = (fetchImpl: PinnedFetchNativeModule['fetch']): PinnedFetchNativeModule => ({
+      fetch: jest.fn(fetchImpl),
+      cancel: jest.fn(async () => {}),
+    });
+    const client = (module: PinnedFetchNativeModule, timeoutMs?: number) =>
+      createApiClient({
+        baseUrl: LAN,
+        token: 'ar_dev_x',
+        fingerprint: LAN_FINGERPRINT,
+        pinnedFetch: createPinnedFetch(module),
+        timeoutMs,
+      });
+
+    it('parses the JSON answer of the native module', async () => {
+      const module = native(async () => ({
+        status: 200,
+        statusText: 'OK',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(meta({ edition: 'desktop' })),
+        url: `${LAN}/api/admin/v1/meta`,
+      }));
+      const m = await request(() => client(module).GET('/api/admin/v1/meta'));
+      expect(m.edition).toBe('desktop');
+      expect(module.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ fingerprint: LAN_FINGERPRINT, method: 'GET' }),
+      );
+    });
+
+    it.each([
+      [NATIVE_ERROR_CODES.certificateMismatch, CertificateMismatchError],
+      [NATIVE_ERROR_CODES.network, NetworkError],
+    ])('maps the native rejection %s', async (code, type) => {
+      const module = native(() => Promise.reject(Object.assign(new Error(code), { code })));
+      const err = await request(() => client(module).GET('/api/admin/v1/meta')).catch(
+        (e: unknown) => e,
+      );
+      expect(err).toBeInstanceOf(type);
+    });
+
+    it('cancels the native request on timeout', async () => {
+      const module = native(() => new Promise(() => {}));
+      const err = await request(() => client(module, 20).GET('/api/admin/v1/meta')).catch(
+        (e: unknown) => e,
+      );
+      expect(err).toBeInstanceOf(NetworkError);
+      expect(err).toMatchObject({ reason: 'timeout' });
+      expect(module.cancel).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
