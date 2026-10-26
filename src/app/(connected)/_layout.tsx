@@ -147,12 +147,16 @@ export default function ConnectedLayout() {
       <NavPaneProvider>
         <TabletShell>
           <Stack
-            screenOptions={{
+            screenOptions={({ navigation }) => ({
               ...OPAQUE_HEADER,
               animation: 'none',
-              headerBackVisible: false,
-              headerLeft: () => <NavToggle />,
-            }}
+              // The pane replaces the stack, so its screens have nothing under
+              // them and get the ≡ toggle; a screen opened from another one
+              // (spot, booking, scanner, move) keeps the back button.
+              ...(navigation.canGoBack()
+                ? { headerBackButtonDisplayMode: 'minimal' as const }
+                : { headerBackVisible: false, headerLeft: () => <NavToggle /> }),
+            })}
           >
             <Stack.Screen name="home" options={{ title: t('nav.home') }} />
             <Stack.Screen name="map" options={{ title: t('nav.map') }} />
