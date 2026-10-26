@@ -25,7 +25,9 @@
     "description": "Verbinde die App mit deinem Strandbad über den QR-Code im Panel: Konfiguration → Geräte → Gerät koppeln.",
     "scan": "QR-Code scannen",
     "manual": "Adresse und Code eingeben",
-    "privacy": "Die App spricht nur mit deiner Arenile-Instanz: Keine Daten laufen über Coste360, keine Telemetrie.",
+    "demo": "Demo ausprobieren",
+    "demoHint": "Öffnet einen Beispielbetrieb auf dem Demo-Server von Coste360, mit erfundenen Daten, die jede Nacht zurückgesetzt werden.",
+    "privacy": "Die App spricht nur mit der Instanz, mit der du sie verbindest, ohne Telemetrie: Mit deiner verbunden laufen keine Daten über Coste360.",
     "revoked": {
       "title": "Gerät getrennt",
       "description": "Der Zugang dieses Geräts wurde im Panel widerrufen oder ist abgelaufen. Kopple es mit einem neuen Code erneut."
@@ -76,6 +78,7 @@
   "pair": {
     "title": "Verbindung",
     "progress": "Verbindung mit {{target}} wird hergestellt",
+    "demoTarget": "die Arenile-Demo",
     "confirm": {
       "title": "Dieses Gerät verbinden?",
       "description": "Der Link möchte die App mit der Instanz {{host}} verbinden. Fahre nur fort, wenn das die Adresse deines Strandbads ist.",
@@ -118,6 +121,10 @@
         "title": "Koppeln nicht verfügbar",
         "description": "Die Instanz nimmt derzeit keine neuen Geräte an. Wenn du die Desktop-App nutzt, aktiviere den lokalen Netzwerkmodus."
       },
+      "demo_unavailable": {
+        "title": "Demo nicht verfügbar",
+        "description": "Die Arenile-Demo nimmt gerade keine neuen Geräte an. Versuche es später erneut oder verbinde die App mit deinem Betrieb."
+      },
       "code_invalid": {
         "title": "Ungültiger Code",
         "description": "Der Code ist ungültig, abgelaufen oder wurde bereits verwendet. Erzeuge im Panel einen neuen."
@@ -125,6 +132,10 @@
       "rate_limited": {
         "title": "Zu viele Versuche",
         "description": "Aus Sicherheitsgründen sind die Versuche begrenzt. Warte eine Minute und versuche es erneut."
+      },
+      "demo_rate_limited": {
+        "title": "Zu viele Demo-Versuche",
+        "description": "Die Demo nimmt pro Stunde nur eine begrenzte Zahl von Sitzungen an. Versuche es in einer Stunde erneut."
       },
       "unexpected": {
         "title": "Etwas ist schiefgelaufen",

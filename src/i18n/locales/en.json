@@ -25,7 +25,9 @@
     "description": "Connect the app to your establishment with the QR code in the panel: Configuration → Devices → Pair a device.",
     "scan": "Scan the QR code",
     "manual": "Enter address and code",
-    "privacy": "The app talks only to your Arenile instance: no data goes through Coste360, no telemetry.",
+    "demo": "Try the demo",
+    "demoHint": "Opens a sample establishment on Coste360's demo server, with made-up data reset every night.",
+    "privacy": "The app talks only to the instance you pair it with, without telemetry: paired with yours, no data goes through Coste360.",
     "revoked": {
       "title": "Device disconnected",
       "description": "This device's access was revoked from the panel or has expired. Pair it again with a new code."
@@ -76,6 +78,7 @@
   "pair": {
     "title": "Connecting",
     "progress": "Connecting to {{target}}",
+    "demoTarget": "the Arenile demo",
     "confirm": {
       "title": "Connect this device?",
       "description": "The link asks to connect the app to the instance {{host}}. Continue only if it is your establishment's address.",
@@ -118,6 +121,10 @@
         "title": "Pairing not available",
         "description": "The instance does not accept new devices right now. If you use the desktop app, turn on local network mode."
       },
+      "demo_unavailable": {
+        "title": "Demo unavailable",
+        "description": "The Arenile demo is not accepting new devices right now. Try again later or pair the app with your establishment."
+      },
       "code_invalid": {
         "title": "Invalid code",
         "description": "The code is invalid, expired or already used. Generate a new one in the panel."
@@ -125,6 +132,10 @@
       "rate_limited": {
         "title": "Too many attempts",
         "description": "Attempts are limited for security. Wait a minute and try again."
+      },
+      "demo_rate_limited": {
+        "title": "Too many demo attempts",
+        "description": "The demo accepts a limited number of sessions every hour. Try again in an hour."
       },
       "unexpected": {
         "title": "Something went wrong",

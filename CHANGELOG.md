@@ -11,6 +11,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- **Prova la demo** nella schermata "Collega" (ADR 0015): abbina l'app allo stabilimento di esempio
+  sul server dimostrativo di Coste360 (`demo.arenile.app`) con un codice chiesto alla demo, senza
+  server proprio; serve un'istanza demo del core v1.0.4 o successiva.
 - **Calendario** per mappa e prenotazioni (ADR 0014): "Oggi · Domani · 📅", qualsiasi giorno con il
   calendario nativo; oggi e domani anche offline, gli altri giorni solo online.
 - Operazioni su tablet come lista e dettaglio: check-in e postazioni a sinistra, la postazione o il
@@ -116,6 +119,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Modificato
 
+- Contratto API e kit della mappa dalla release **v1.0.5** del core (prima v1.0.1). La versione minima
+  di Arenile supportata resta la 1.0.0.
 - Su tablet ogni schermata usa tutta la larghezza con lo stesso margine delle liste; le card si
   affiancano quando c'è spazio (Impostazioni).
 - Avviso "Stabilimento chiuso" uguale su Oggi e sulla mappa, con il giorno mostrato.

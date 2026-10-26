@@ -14,8 +14,8 @@ import { StateView } from '@/components/state-view';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { canPinCertificates } from '@/api/transport';
-import { MIN_INSTANCE_VERSION } from '@/config/app';
-import { pairDevice, PairingError, type PairingFailure } from '@/features/pairing/pair';
+import { DEMO_INSTANCE_URL, MIN_INSTANCE_VERSION } from '@/config/app';
+import { pairDemo, pairDevice, PairingError, type PairingFailure } from '@/features/pairing/pair';
 import { usePairingIntent } from '@/features/pairing/pairing-intent';
 import {
   targetFromLinkData,
@@ -38,6 +38,8 @@ const RETRYABLE: readonly FailureReason[] = [
 const NEW_CODE: readonly FailureReason[] = ['code_invalid', 'invalid_input'];
 /** Only a new QR from the desktop app carries the new certificate fingerprint. */
 const NEW_QR: readonly FailureReason[] = [...NEW_CODE, 'certificate_mismatch'];
+/** The demo mints a new code on every attempt: a retry is always worth it. */
+const DEMO_RETRYABLE: readonly FailureReason[] = [...RETRYABLE, 'demo_unavailable', 'code_invalid'];
 
 /** Thrown when the keychain refuses the new session: the token is kept for a retry. */
 class StorageError extends Error {
@@ -55,7 +57,8 @@ const hostOf = (url: string) => url.replace(/^https?:\/\//, '');
  * Pairing in progress and its outcomes. Reached from the in-app scanner and
  * manual form (target handed over in memory, pairing starts at once) and from
  * the link `arenile://pair?d=…` opened by the system camera or any other app
- * (pairing starts only after the user confirms the instance address).
+ * (pairing starts only after the user confirms the instance address), and
+ * from "Prova la demo" (the demo instance mints the code, ADR 0015).
  */
 export default function PairScreen() {
   const { t } = useTranslation();
@@ -64,12 +67,21 @@ export default function PairScreen() {
   const { state, signIn } = useSession();
   const params = useLocalSearchParams<{ d?: string }>();
 
-  const [request] = useState<{ target: TargetResult; fromApp: boolean }>(() => {
+  const [request] = useState<{ target: TargetResult; fromApp: boolean; demo: boolean }>(() => {
     const inApp = intent.peek();
-    if (inApp) return { target: inApp, fromApp: true };
-    if (params.d) return { target: targetFromLinkData(params.d), fromApp: false };
-    return { target: { ok: false, error: 'invalid_input' }, fromApp: false };
+    if (inApp === 'demo') {
+      // No code yet: pairDemo asks the demo instance for one.
+      return {
+        target: { ok: true, target: { url: DEMO_INSTANCE_URL, code: '' } },
+        fromApp: true,
+        demo: true,
+      };
+    }
+    if (inApp) return { target: inApp, fromApp: true, demo: false };
+    if (params.d) return { target: targetFromLinkData(params.d), fromApp: false, demo: false };
+    return { target: { ok: false, error: 'invalid_input' }, fromApp: false, demo: false };
   });
+  const demo = request.demo;
   useEffect(() => intent.clear(), [intent]);
   const target = request.target;
   const [confirmed, setConfirmed] = useState(request.fromApp);
@@ -77,17 +89,15 @@ export default function PairScreen() {
   const mutation = useMutation({
     mutationFn: async ({ t, saved }: { t: PairingTarget; saved: Session | null }) => {
       // A code is single use: after a keychain failure retry only the save.
+      const pairDeps = {
+        versions: { app: deps.appVersion, minInstance: MIN_INSTANCE_VERSION },
+        device: deps.device,
+        clock: deps.clock,
+        fetch: deps.fetch,
+        pinnedFetch: deps.pinnedFetch,
+      };
       const session =
-        saved ??
-        (
-          await pairDevice(t, {
-            versions: { app: deps.appVersion, minInstance: MIN_INSTANCE_VERSION },
-            device: deps.device,
-            clock: deps.clock,
-            fetch: deps.fetch,
-            pinnedFetch: deps.pinnedFetch,
-          })
-        ).session;
+        saved ?? (await (demo ? pairDemo(t.url, pairDeps) : pairDevice(t, pairDeps))).session;
       try {
         // Still pending while the session is saved: no "already paired" flash.
         await signIn(session);
@@ -103,10 +113,11 @@ export default function PairScreen() {
   const { mutate } = mutation;
   useEffect(() => {
     if (!target.ok || !unpaired || !confirmed || lanOnly) return;
-    if (started.current === target.target.code) return;
-    started.current = target.target.code;
+    const key = demo ? 'demo' : target.target.code;
+    if (started.current === key) return;
+    started.current = key;
     mutate({ t: target.target, saved: null });
-  }, [target, unpaired, confirmed, lanOnly, mutate]);
+  }, [target, demo, unpaired, confirmed, lanOnly, mutate]);
 
   if (state.status === 'paired' && (mutation.isPending || mutation.isSuccess)) {
     return <Redirect href="/home" />;
@@ -145,7 +156,11 @@ export default function PairScreen() {
   }
 
   if (!reason) {
-    const where = target.ok ? (target.target.establishmentName ?? hostOf(target.target.url)) : '';
+    const where = demo
+      ? t('pair.demoTarget')
+      : target.ok
+        ? (target.target.establishmentName ?? hostOf(target.target.url))
+        : '';
     return (
       <Screen className="flex-1">
         <StateView busy title={t('pair.progress', { target: where })} />
@@ -156,6 +171,7 @@ export default function PairScreen() {
   const name =
     state.status === 'paired' ? (state.session.establishmentName ?? state.session.instanceUrl) : '';
   const manualUrl = target.ok ? target.target.url : undefined;
+  const retryable = (demo ? DEMO_RETRYABLE : RETRYABLE).includes(reason);
   const retry = () => {
     if (!target.ok) return;
     const saved = mutation.error instanceof StorageError ? mutation.error.session : null;
@@ -181,17 +197,17 @@ export default function PairScreen() {
             <Text>{t('pair.actions.home')}</Text>
           </Button>
         ) : null}
-        {RETRYABLE.includes(reason) && target.ok ? (
+        {retryable && target.ok ? (
           <Button size="lg" onPress={retry}>
             <Text>{t('pair.actions.retry')}</Text>
           </Button>
         ) : null}
-        {NEW_QR.includes(reason) ? (
+        {NEW_QR.includes(reason) && !demo ? (
           <Button size="lg" onPress={() => router.replace('/scan')}>
             <Text>{t('pair.actions.scanAgain')}</Text>
           </Button>
         ) : null}
-        {NEW_CODE.includes(reason) || reason === 'insecure_url' ? (
+        {(NEW_CODE.includes(reason) && !demo) || reason === 'insecure_url' ? (
           <Button
             size="lg"
             variant="outline"

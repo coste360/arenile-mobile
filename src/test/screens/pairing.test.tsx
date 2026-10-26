@@ -264,3 +264,86 @@ describe('manual pairing form', () => {
     await waitFor(() => expect(router.canGoBack()).toBe(false));
   });
 });
+
+describe('"Prova la demo" (ADR 0015)', () => {
+  const DEMO_CODE = {
+    code: 'WXYZ-2345',
+    expires_at: '2026-10-25T08:05:00Z',
+    establishment_id: DEVICE.establishment_id,
+    user_id: DEVICE.user_id,
+    qr_payload: { v: 1, url: 'https://demo.arenile.app', code: 'WXYZ-2345' },
+    qr_text: 'arenile://pair?d=x',
+  };
+  const DEMO_ROUTES: Record<string, Handler> = {
+    ...PAIRED_ROUTES,
+    'POST /api/device/v1/demo-pairing': () => json(201, DEMO_CODE),
+  };
+
+  async function tryDemo(options: RenderAppOptions) {
+    const app = await renderApp({ initialUrl: '/connect', ...options });
+    await fireEvent.press(await app.screen.findByRole('button', { name: 'Prova la demo' }));
+    return app;
+  }
+
+  it.each(['phone', 'tablet'] as const)(
+    'pairs with the demo instance of Coste360 without confirmation on a %s',
+    async (size) => {
+      const { screen, getPathname, network, kv } = await tryDemo({ size, routes: DEMO_ROUTES });
+
+      expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
+      expect(getPathname()).toBe('/home');
+      expect(network.calls.slice(0, 3).map((r) => `${r.method} ${r.url}`)).toEqual([
+        'GET https://demo.arenile.app/api/admin/v1/meta',
+        'POST https://demo.arenile.app/api/device/v1/demo-pairing',
+        'POST https://demo.arenile.app/api/device/v1/pair',
+      ]);
+      expect(JSON.parse(kv.snapshot()[SESSION_KEY] ?? '{}')).toMatchObject({
+        instanceUrl: 'https://demo.arenile.app',
+      });
+      // "Collega" and the progress are gone from the history.
+      await waitFor(() => expect(router.canGoBack()).toBe(false));
+    },
+  );
+
+  it('says the demo is unavailable and retries with a new code', async () => {
+    let demo = false;
+    const codes: string[] = [];
+    const { screen, getPathname, network } = await tryDemo({
+      routes: {
+        ...DEMO_ROUTES,
+        'POST /api/device/v1/demo-pairing': () =>
+          demo ? json(201, { ...DEMO_CODE, code: 'NEWC-0DE1' }) : problem(404, 'not_found'),
+        'POST /api/device/v1/pair': async (req) => {
+          codes.push((await req.json()).code);
+          return PAIRED_ROUTES['POST /api/device/v1/pair']!(req);
+        },
+      },
+    });
+    expect(await screen.findByText('Demo non disponibile')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Inquadra un nuovo QR code' })).toBeNull();
+    expect(posts(network.calls)).toBe(0);
+
+    demo = true;
+    await fireEvent.press(screen.getByRole('button', { name: 'Riprova' }));
+
+    expect(await screen.findByText('Anna · Cassiere')).toBeOnTheScreen();
+    expect(getPathname()).toBe('/home');
+    const mints = requestsOf(network.calls).filter((r) => r === 'POST /api/device/v1/demo-pairing');
+    expect(mints).toHaveLength(2);
+    expect(codes).toEqual(['NEWC0DE1']);
+  });
+
+  it('explains the hourly demo limit', async () => {
+    const { screen } = await tryDemo({
+      routes: {
+        ...DEMO_ROUTES,
+        'POST /api/device/v1/demo-pairing': () => problem(429, 'rate_limited'),
+      },
+    });
+
+    expect(await screen.findByText('Troppe prove della demo')).toBeOnTheScreen();
+    expect(screen.getByText(/Riprova tra un'ora/)).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: "Torna all'inizio" })).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Riprova' })).toBeNull();
+  });
+});

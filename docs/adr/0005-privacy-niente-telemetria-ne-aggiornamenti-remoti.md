@@ -1,6 +1,6 @@
 # 0005 — Privacy: niente telemetria, niente aggiornamenti remoti del codice
 
-- **Stato:** accettato
+- **Stato:** accettato; eccezione in [0015](0015-prova-la-demo.md)
 - **Data:** 2026-10-25
 - **Sezioni della specifica:** core §29.2 ("Privacy first"), core §23 (privacy e GDPR), core ADR 0025
 
@@ -16,7 +16,8 @@ reporting e analytics, la telemetria della CLI Expo durante lo sviluppo.
 1. **Nessuna telemetria, nessun SDK di analisi, pubblicità o crash reporting** nell'app.
 2. **Niente `expo-updates` né EAS Update:** il codice cambia solo con una nuova versione negli store.
    `eas update` è negato anche nelle impostazioni di Claude Code del repository.
-3. L'app non contatta altri host oltre all'istanza abbinata. Le notifiche push, che per vincolo di
+3. L'app non contatta altri host oltre all'istanza abbinata (unica eccezione: l'istanza demo di
+   Coste360, solo dopo il tocco su "Prova la demo", ADR 0015). Le notifiche push, che per vincolo di
    Apple e Google passerebbero da un relay, non fanno parte dell'app pubblica (ADR 0012).
 4. Anche gli strumenti di sviluppo non inviano dati d'uso: `EXPO_NO_TELEMETRY=1` nel `Makefile` e in CI.
 5. Un nuovo pacchetto che apre connessioni di rete proprie va dichiarato e motivato nella PR.

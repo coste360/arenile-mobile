@@ -1,6 +1,7 @@
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import {
   KeyboardIcon,
+  PlayIcon,
   QrCodeIcon,
   ShieldAlertIcon,
   ShieldCheckIcon,
@@ -15,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
+import { usePairingIntent } from '@/features/pairing/pairing-intent';
 import { useSession, type SignOutReason } from '@/features/session/session-provider';
 
 const REASONS: readonly SignOutReason[] = ['revoked', 'unpaired', 'certificate_changed'];
@@ -25,6 +27,7 @@ const isReason = (value: string | undefined): value is SignOutReason =>
 export default function ConnectScreen() {
   const { t } = useTranslation();
   const { state } = useSession();
+  const intent = usePairingIntent();
   const { reason } = useLocalSearchParams<{ reason?: string }>();
 
   if (state.status === 'paired') return <Redirect href="/home" />;
@@ -58,6 +61,23 @@ export default function ConnectScreen() {
           <Icon as={KeyboardIcon} size={18} />
           <Text>{t('connect.manual')}</Text>
         </Button>
+      </View>
+
+      <View className="gap-2">
+        <Button
+          size="lg"
+          variant="secondary"
+          onPress={() => {
+            intent.set('demo');
+            router.push('/pair');
+          }}
+        >
+          <Icon as={PlayIcon} size={18} />
+          <Text>{t('connect.demo')}</Text>
+        </Button>
+        <Text variant="muted" className="text-center">
+          {t('connect.demoHint')}
+        </Text>
       </View>
 
       <View className="flex-row items-start gap-2">

@@ -3,7 +3,8 @@
 Arenile mobile is the staff app of [Arenile](https://github.com/coste360/arenile), the source-available
 management system for beach establishments (stabilimenti balneari) maintained by Coste360 SRL. One app,
 published by Coste360 on the App Store and Google Play, that each establishment pairs with **its own**
-Arenile instance (VPS, managed hosting, or the desktop edition in LAN mode): it has no default server.
+Arenile instance (VPS, managed hosting, or the desktop edition in LAN mode): it has no default server (the only exception is "Prova la demo", which pairs with Coste360's
+demo instance on an explicit tap, ADR 0015).
 Expo + React Native + TypeScript, phone and tablet/iPad. The product plan (Italian) lives in
 `docs/spec/`; the authoritative specification is the core's `docs/spec/` (section 29.2 for the app,
 16 for roles, 21.2 for offline). Decisions are in `docs/adr/`.
@@ -98,7 +99,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 
 ## Non-negotiable rules
 
-- The app talks only to the user's instance. No telemetry, no analytics, crash-reporting or ads SDK,
+- The app talks only to the user's instance (the one exception: Coste360's demo instance after an
+  explicit "Prova la demo", ADR 0015). No telemetry, no analytics, crash-reporting or ads SDK,
   no `expo-updates`/EAS Update (it would contact Expo servers), no remote config (ADR 0005).
 - The app never imports core code. API types come only from the generated contract of a pinned core
   release (ADR 0002); a missing endpoint is a core change first.

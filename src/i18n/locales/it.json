@@ -25,7 +25,9 @@
     "description": "Collega l'app al tuo stabilimento con il QR code del pannello: Configurazione → Dispositivi → Abbina un dispositivo.",
     "scan": "Inquadra il QR code",
     "manual": "Inserisci indirizzo e codice",
-    "privacy": "L'app parla solo con la tua istanza Arenile: nessun dato passa da Coste360, nessuna telemetria.",
+    "demo": "Prova la demo",
+    "demoHint": "Apre uno stabilimento di esempio sul server dimostrativo di Coste360, con dati inventati azzerati ogni notte.",
+    "privacy": "L'app parla solo con l'istanza a cui la colleghi, senza telemetria: collegata alla tua, nessun dato passa da Coste360.",
     "revoked": {
       "title": "Dispositivo scollegato",
       "description": "L'accesso di questo dispositivo è stato revocato dal pannello o è scaduto. Abbinalo di nuovo con un nuovo codice."
@@ -76,6 +78,7 @@
   "pair": {
     "title": "Collegamento",
     "progress": "Collegamento a {{target}} in corso",
+    "demoTarget": "la demo di Arenile",
     "confirm": {
       "title": "Collegare questo dispositivo?",
       "description": "Il link chiede di collegare l'app all'istanza {{host}}. Continua solo se è l'indirizzo del tuo stabilimento.",
@@ -118,6 +121,10 @@
         "title": "Abbinamento non disponibile",
         "description": "L'istanza ora non accetta nuovi dispositivi. Se usi l'app desktop, attiva la modalità rete locale."
       },
+      "demo_unavailable": {
+        "title": "Demo non disponibile",
+        "description": "La demo di Arenile ora non accetta nuovi dispositivi. Riprova più tardi oppure collega l'app al tuo stabilimento."
+      },
       "code_invalid": {
         "title": "Codice non valido",
         "description": "Il codice non è valido, è scaduto o è già stato usato. Generane uno nuovo nel pannello."
@@ -125,6 +132,10 @@
       "rate_limited": {
         "title": "Troppi tentativi",
         "description": "Per sicurezza i tentativi sono limitati. Attendi un minuto e riprova."
+      },
+      "demo_rate_limited": {
+        "title": "Troppe prove della demo",
+        "description": "La demo accetta un numero limitato di prove ogni ora. Riprova tra un'ora."
       },
       "unexpected": {
         "title": "Qualcosa è andato storto",

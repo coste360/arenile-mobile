@@ -25,7 +25,9 @@
     "description": "Connectez l'application à votre établissement avec le QR code du panneau : Configuration → Appareils → Associer un appareil.",
     "scan": "Scanner le QR code",
     "manual": "Saisir l'adresse et le code",
-    "privacy": "L'application ne parle qu'à votre instance Arenile : aucune donnée ne passe par Coste360, aucune télémétrie.",
+    "demo": "Essayer la démo",
+    "demoHint": "Ouvre un établissement d'exemple sur le serveur de démonstration de Coste360, avec des données fictives réinitialisées chaque nuit.",
+    "privacy": "L'application ne parle qu'à l'instance à laquelle vous l'associez, sans télémétrie : associée à la vôtre, aucune donnée ne passe par Coste360.",
     "revoked": {
       "title": "Appareil déconnecté",
       "description": "L'accès de cet appareil a été révoqué depuis le panneau ou a expiré. Associez-le de nouveau avec un nouveau code."
@@ -76,6 +78,7 @@
   "pair": {
     "title": "Connexion",
     "progress": "Connexion à {{target}} en cours",
+    "demoTarget": "la démo d'Arenile",
     "confirm": {
       "title": "Connecter cet appareil ?",
       "description": "Le lien demande de connecter l'application à l'instance {{host}}. Continuez seulement s'il s'agit de l'adresse de votre établissement.",
@@ -118,6 +121,10 @@
         "title": "Association indisponible",
         "description": "L'instance n'accepte pas de nouveaux appareils pour le moment. Si vous utilisez l'application de bureau, activez le mode réseau local."
       },
+      "demo_unavailable": {
+        "title": "Démo indisponible",
+        "description": "La démo d'Arenile n'accepte pas de nouveaux appareils pour le moment. Réessayez plus tard ou associez l'application à votre établissement."
+      },
       "code_invalid": {
         "title": "Code non valide",
         "description": "Le code n'est pas valide, a expiré ou a déjà été utilisé. Générez-en un nouveau dans le panneau."
@@ -125,6 +132,10 @@
       "rate_limited": {
         "title": "Trop de tentatives",
         "description": "Les tentatives sont limitées par sécurité. Attendez une minute et réessayez."
+      },
+      "demo_rate_limited": {
+        "title": "Trop d'essais de la démo",
+        "description": "La démo accepte un nombre limité de sessions par heure. Réessayez dans une heure."
       },
       "unexpected": {
         "title": "Un problème est survenu",

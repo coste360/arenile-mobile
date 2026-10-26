@@ -97,6 +97,7 @@ Implementata, non ancora pubblicata.
 ## Pubblicazione
 
 - Build e invio con EAS Build/Submit, account Apple Developer e Google Play di Coste360.
-- Revisione degli store sulla demo pubblica azzerata ogni notte (sezione 26 del core).
+- Revisione degli store sulla demo pubblica azzerata ogni notte (sezione 26 del core), raggiunta con
+  "Prova la demo" dalla schermata "Collega" (ADR 0015).
 - Licenza dell'app decisa da Coste360 prima della pubblicazione.
 - Icone e schermata di avvio con il marchio ufficiale; schede degli store in quattro lingue.
