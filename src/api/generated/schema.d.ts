@@ -1,6 +1,6 @@
 /**
  * GENERATED FILE, DO NOT EDIT.
- * Source: openapi.yaml of Arenile core v1.0.5 (sha256 5684eacf5132798531c98bc2a7f0ced1ee7e07a5e7d530d9fdb0331c5b59204a).
+ * Source: openapi.yaml of Arenile core v1.0.6 (sha256 5684eacf5132798531c98bc2a7f0ced1ee7e07a5e7d530d9fdb0331c5b59204a).
  * Regenerate with 'make gen' (scripts/gen-api.mjs, openapi-typescript).
  */
 
