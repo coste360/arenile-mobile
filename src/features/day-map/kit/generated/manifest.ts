@@ -1,5 +1,5 @@
 // GENERATED FILE, DO NOT EDIT.
-// Catalogue of the kits from assets/map-kits of Arenile core v1.0.1 (scripts/gen-map-kits.mjs,
+// Catalogue of the kits from assets/map-kits of Arenile core v1.0.5 (scripts/gen-map-kits.mjs,
 // 'make gen'). Artwork © Coste360 SRL, BSL 1.1: see assets/map-kits/*/NOTICE.md.
 
 /** Kits of the core, the default first. */

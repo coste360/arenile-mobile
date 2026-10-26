@@ -1,5 +1,5 @@
 // GENERATED FILE, DO NOT EDIT.
-// Art of the "classic" kit (v2.1.0) from assets/map-kits of Arenile core v1.0.1 (scripts/gen-map-kits.mjs,
+// Art of the "classic" kit (v2.1.0) from assets/map-kits of Arenile core v1.0.5 (scripts/gen-map-kits.mjs,
 // 'make gen'). Artwork © Coste360 SRL, BSL 1.1: see assets/map-kits/*/NOTICE.md.
 
 import type { KitArt } from '../art-types';
