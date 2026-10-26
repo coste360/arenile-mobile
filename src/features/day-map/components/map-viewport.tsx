@@ -227,7 +227,7 @@ export function MapViewport({
   const percent = Math.round((camera.k / fit.k) * 100);
 
   return (
-    <GestureHandlerRootView className="flex-1 overflow-hidden bg-map-sand">
+    <GestureHandlerRootView className="flex-1 overflow-hidden bg-muted/40">
       <View className="flex-1" onLayout={onLayout}>
         <GestureDetector gesture={gesture}>
           <View

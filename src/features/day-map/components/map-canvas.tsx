@@ -1,4 +1,4 @@
-// SVG drawing of the day map (react-native-svg): sand, sea band, and the
+// SVG drawing of the day map (react-native-svg): sand, sea band (MapBackdrop), and the
 // decorations and spots drawn with the illustrations of the establishment's
 // kit (ADR 0013), with the status colour, glyph badge and label pill.
 // Drawn in map units under one transform, so panning or zooming changes a
@@ -14,7 +14,6 @@ import {
   labelFontSize,
   MIN_LABEL_DP,
   quantiseScale,
-  seaRect,
   visibleRect,
   type Camera,
   type Size,
@@ -34,6 +33,7 @@ import {
 } from '../kit/kits';
 import { localized, type DaySpot } from '../model';
 import type { MapPalette } from '../palette';
+import { MapBackdrop } from './map-backdrop';
 
 export interface MapCanvasProps {
   document: MapDocument;
@@ -87,8 +87,6 @@ export function MapCanvas({
   );
   const art = useMemo(() => kitArt(kit), [kit]);
   const { map } = document;
-  const sea = seaRect(map);
-  const seaFont = Math.min(sea.width, sea.height) * 0.35;
 
   return (
     <Svg
@@ -100,19 +98,7 @@ export function MapCanvas({
     >
       <KitDefs art={art} symbols={symbols} palette={palette} />
       <G transform={`translate(${camera.tx + ox} ${camera.ty + oy}) scale(${camera.k})`}>
-        <Rect x={0} y={0} width={map.width} height={map.height} fill={palette.sand} />
-        <Rect x={sea.x} y={sea.y} width={sea.width} height={sea.height} fill={palette.sea} />
-        {seaFont * camera.k >= MIN_LABEL_DP ? (
-          <SvgText
-            x={sea.x + sea.width / 2}
-            y={sea.y + sea.height / 2 + seaFont * 0.35}
-            fontSize={seaFont}
-            fill={palette.seaLabel}
-            textAnchor="middle"
-          >
-            {seaLabel}
-          </SvgText>
-        ) : null}
+        <MapBackdrop map={map} palette={palette} seaLabel={seaLabel} k={kq} />
         {decorations.map((d) => (
           <DecorationNode
             key={d.id}
@@ -240,6 +226,7 @@ function LabelPill({
   font,
   palette,
   bold,
+  muted,
 }: {
   x: number;
   y: number;
@@ -247,11 +234,13 @@ function LabelPill({
   font: number;
   palette: MapPalette;
   bold?: boolean;
+  /** Unavailable spot: the pill fades as the panel's (opacity-60). */
+  muted?: boolean;
 }) {
   const w = Math.max(text.length, 1) * font * 0.62 + font * 0.9;
   const h = font * 1.32;
   return (
-    <G>
+    <G opacity={muted ? 0.6 : 1}>
       <Rect
         x={x - w / 2}
         y={y - h / 2}
@@ -451,7 +440,15 @@ const SpotNode = memo(function SpotNode({
         </G>
       ) : null}
       {font > 0 ? (
-        <LabelPill x={0} y={labelY} text={spot.label} font={font} palette={palette} bold />
+        <LabelPill
+          x={0}
+          y={labelY}
+          text={spot.label}
+          font={font}
+          palette={palette}
+          bold
+          muted={spot.status === 'unavailable'}
+        />
       ) : null}
       {showCaption && spot.caption ? (
         <LabelPill

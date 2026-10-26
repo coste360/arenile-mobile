@@ -16,8 +16,7 @@ export interface StatusColours {
 
 export interface MapPalette {
   status: Readonly<Record<SpotStatus, StatusColours>>;
-  sand: string;
-  sea: string;
+  /** "Mare" label of the sea band; sand and sea are the --beach-* tokens (backdrop.ts, as the panel). */
   seaLabel: string;
   decoration: string;
   decorationStroke: string;
@@ -113,8 +112,6 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
       renewal_hold: { fill: 'hsl(333.3 71.4% 50.6%)', foreground: WHITE },
       unavailable: { fill: 'hsl(216 12.2% 83.9%)', foreground: INK },
     },
-    sand: 'hsl(42.2 72.5% 90%)',
-    sea: 'hsl(200 70.1% 69.8%)',
     seaLabel: 'hsl(202 80.3% 23.9%)',
     decoration: 'hsl(42.2 43.5% 83.3%)',
     decorationStroke: 'hsl(40.4 25.9% 62.9%)',
@@ -141,8 +138,6 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
       renewal_hold: { fill: 'hsl(328.6 85.5% 70.2%)', foreground: INK },
       unavailable: { fill: 'hsl(240 5.2% 33.9%)', foreground: WHITE },
     },
-    sand: 'hsl(40 18.4% 19.2%)',
-    sea: 'hsl(203 58.3% 27.3%)',
     seaLabel: 'hsl(200 72.4% 88.6%)',
     decoration: 'hsl(40 19.4% 24.3%)',
     decorationStroke: 'hsl(41.1 22.1% 52.2%)',

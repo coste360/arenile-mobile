@@ -23,8 +23,6 @@ function pairs(p: MapPalette): [string, string][] {
     out.push([v, p.status[s].fill], [`${v}-foreground`, p.status[s].foreground]);
   }
   out.push(
-    ['map-sand', p.sand],
-    ['map-sea', p.sea],
     ['map-sea-label', p.seaLabel],
     ['map-decoration', p.decoration],
     ['map-decoration-stroke', p.decorationStroke],
