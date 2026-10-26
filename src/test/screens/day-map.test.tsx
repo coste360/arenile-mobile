@@ -137,6 +137,25 @@ describe('day map', () => {
     });
   });
 
+  it('commits a pinch zoom when the fingers lift', async () => {
+    const { screen } = await openMap();
+    await screen.findByTestId('day-map-viewport');
+    const at = { focalX: 195, focalY: 232 };
+    await act(async () => {
+      fireGestureHandler(getByGestureTestId('day-map-pinch'), [
+        { state: State.BEGAN, scale: 1, scaleChange: 1, ...at },
+        { state: State.ACTIVE, scale: 1, scaleChange: 1, ...at },
+        { state: State.ACTIVE, scale: 2, scaleChange: 2, ...at },
+        { state: State.END, scale: 2, scaleChange: 1, ...at },
+      ]);
+    });
+    await waitFor(() =>
+      expect(screen.getByTestId('day-map-viewport')).toHaveProp('accessibilityValue', {
+        text: 'Zoom 200%',
+      }),
+    );
+  });
+
   it('opens the spot sheet with a tap on the map', async () => {
     const { screen } = await openMap();
     await screen.findByTestId('day-map-viewport');
@@ -174,6 +193,22 @@ describe('day map', () => {
       expect(within(sheet).getByLabelText('Codice: AR-7K3Q9')).toBeOnTheScreen();
       // On a tablet the map stays visible beside the sheet.
       if (size === 'tablet') expect(screen.getByTestId('day-map-viewport')).toBeOnTheScreen();
+    },
+  );
+
+  it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletLandscape'])(
+    'clears the search with the one in-field button (%s)',
+    async (size) => {
+      const { screen } = await openMap({}, size);
+      const search = await screen.findByLabelText('Cerca una postazione');
+      expect(screen.queryByRole('button', { name: 'Cancella la ricerca' })).toBeNull();
+      await fireEvent.changeText(search, 'niccolo');
+      expect(await screen.findByText('1 postazione trovata')).toBeOnTheScreen();
+      expect(screen.getAllByRole('button', { name: 'Cancella la ricerca' })).toHaveLength(1);
+      await fireEvent.press(screen.getByRole('button', { name: 'Cancella la ricerca' }));
+      await waitFor(() => expect(screen.queryByText('1 postazione trovata')).toBeNull());
+      expect(screen.getByLabelText('Cerca una postazione')).toHaveDisplayValue('');
+      expect(screen.queryByRole('button', { name: 'Cancella la ricerca' })).toBeNull();
     },
   );
 
@@ -355,5 +390,43 @@ describe('day map', () => {
   it('explains that maps are drawn in the panel when there are none', async () => {
     const { screen } = await openMap({ documents: [] });
     expect(await screen.findByText('Nessuna mappa')).toBeOnTheScreen();
+  });
+});
+
+describe('day map: spot sheet placement on tablets', () => {
+  type Element = ReturnType<Awaited<ReturnType<typeof openMap>>['screen']['getByTestId']>;
+  const ancestors = (node: Element) => {
+    const chain: Element[] = [];
+    for (let n = node.parent as Element | null; n; n = n.parent as Element | null) chain.push(n);
+    return chain;
+  };
+
+  it.each([
+    // 834 − rail 64 − sheet 384 < 420: no room for the map beside the sheet.
+    ['tabletPortrait', 'under the map, in its column', false],
+    ['tabletLandscape', 'beside the map column', true],
+  ] as const)('opens the sheet at %s %s', async (size, _where, beside) => {
+    const { screen } = await openMap({}, size);
+    await fireEvent.changeText(await screen.findByLabelText('Cerca una postazione'), 'niccolo');
+    await fireEvent.press(
+      within(await screen.findByTestId('day-map-results')).getByRole('button', {
+        name: 'A2, Da incassare, Niccolò Bianchi',
+      }),
+    );
+    const sheet = await screen.findByTestId('spot-sheet');
+    expect(within(sheet).getByText('Postazione A2')).toBeOnTheScreen();
+    const viewport = screen.getByTestId('day-map-viewport');
+    expect(viewport).toBeOnTheScreen();
+
+    // The closest element holding both: the map column when the sheet is
+    // under the map (the sheet sits in a wrapper of that column), the row
+    // of column and sheet when it is beside (the sheet is a direct child).
+    const ofViewport = ancestors(viewport);
+    const common = ancestors(sheet).find((a) => ofViewport.includes(a))!;
+    expect(sheet.parent === common).toBe(beside);
+    const column = beside ? ofViewport.find((a) => a.parent === common)! : common;
+    // The toolbar is in the map column either way; the sheet only when under the map.
+    expect(within(column).getByLabelText('Cerca una postazione')).toBeOnTheScreen();
+    expect(within(column).queryByTestId('spot-sheet') !== null).toBe(!beside);
   });
 });

@@ -32,6 +32,8 @@ function pairs(p: MapPalette): [string, string][] {
     ['map-spot-stroke', p.spotStroke],
     ['map-spot-selected', p.spotSelected],
     ['status-unavailable', p.unknown],
+    ['background', p.labelBackground],
+    ['foreground', p.labelForeground],
   );
   return out;
 }

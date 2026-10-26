@@ -12,6 +12,23 @@ const viewport = { width: 390, height: 460 };
 // The SVG is hidden from screen readers (the list and the sheet carry the content).
 const HIDDEN = { includeHiddenElements: true };
 
+type JsonNode = { props: Record<string, unknown>; children: (JsonNode | string)[] | null };
+
+/** Sprite symbols (their ids) and the symbol id every <Use> of the drawn SVG points to. */
+function sprite(): { symbols: string[]; uses: string[] } {
+  const out = { symbols: [] as string[], uses: [] as string[] };
+  const walk = (n: JsonNode | JsonNode[] | string | null) => {
+    if (!n || typeof n === 'string') return;
+    if (Array.isArray(n)) return n.forEach(walk);
+    const id = n.props.name ?? n.props.id;
+    if (typeof id === 'string' && id.startsWith('kit-')) out.symbols.push(id);
+    if (typeof n.props.href === 'string') out.uses.push(n.props.href.replace(/^#/, ''));
+    n.children?.forEach(walk);
+  };
+  walk(screen.toJSON() as JsonNode | JsonNode[] | null);
+  return out;
+}
+
 describe('MapCanvas', () => {
   // 30 × 20 = 600 umbrellas: a large lido.
   const document = gridDocument(30, 20);
@@ -57,6 +74,21 @@ describe('MapCanvas', () => {
     await draw(fit, { matches: new Set([first]) });
     expect(screen.getByTestId(`spot-${first}`, HIDDEN)).toHaveProp('opacity', 1);
     expect(screen.getByTestId(`spot-${spots[1]!.id}`, HIDDEN)).toHaveProp('opacity', 0.3);
+  });
+
+  it('draws every spot with the kit art, one symbol per illustration and status colour', async () => {
+    await draw();
+    const { symbols, uses } = sprite();
+    expect(uses.length).toBeGreaterThanOrEqual(600);
+    // The day is not known yet: every umbrella is drawn in the neutral colour, so once.
+    const umbrellas = symbols.filter((id) => id.startsWith('kit-ombrellone_2_lettini-'));
+    expect(umbrellas).toHaveLength(1);
+    expect(uses.filter((href) => href === umbrellas[0])).toHaveLength(600);
+  });
+
+  it('draws the classic kit without recolouring the art', async () => {
+    await draw(fit, { kit: 'classic' });
+    expect(sprite().symbols).toContain('kit-ombrellone_2_lettini-_-_');
   });
 
   it('truncates captions to the room they have', () => {

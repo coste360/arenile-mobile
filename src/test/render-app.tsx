@@ -42,6 +42,12 @@ import { sequentialIds } from './ids';
 export const WINDOWS = {
   phone: { width: 390, height: 844 },
   tablet: { width: 1024, height: 1366 },
+  /** iPad 11" portrait: navigation pane collapsed to the icon rail. */
+  tabletPortrait: { width: 834, height: 1194 },
+  /** iPad 11" landscape: navigation pane expanded beside the content. */
+  tabletLandscape: { width: 1194, height: 834 },
+  /** iPad in Split View: still a tablet (short side ≥ 600), but no room for list and detail. */
+  tabletSplitView: { width: 678, height: 1032 },
 } as const;
 
 export type WindowSize = keyof typeof WINDOWS;

@@ -4,7 +4,8 @@
     "back": "Back",
     "cancel": "Cancel",
     "retry": "Try again",
-    "loading": "Loading"
+    "loading": "Loading",
+    "clearSearch": "Clear the search"
   },
   "languages": {
     "it": "Italiano",
@@ -161,7 +162,9 @@
     "sale": "Daily sale",
     "move": "Move booking",
     "waitlist": "Waitlist",
-    "waitlistEntry": "Entry"
+    "waitlistEntry": "Entry",
+    "toggleMenu": "Show or hide the menu",
+    "closeMenu": "Close the menu"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -371,7 +374,6 @@
       "label": "Search for a spot",
       "placeholder": "Spot, customer or code",
       "placeholderNoCustomers": "Spot or code",
-      "clear": "Clear the search",
       "results_one": "{{count}} spot found",
       "results_other": "{{count}} spots found",
       "none": "No spot matches the search"
@@ -1179,6 +1181,8 @@
       "invalid": "Invalid data: check the spot and the duration.",
       "notFound": "The entry no longer exists.",
       "default": "Operation failed. Try again."
-    }
+    },
+    "results_one": "{{count}} entry",
+    "results_other": "{{count}} entries"
   }
 }

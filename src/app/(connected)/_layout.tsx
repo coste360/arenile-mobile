@@ -7,17 +7,23 @@ import {
   HouseIcon,
   ListOrderedIcon,
   MapIcon,
+  MenuIcon,
   SettingsIcon,
   type LucideIcon,
 } from 'lucide-react-native';
+import { useEffect, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, View } from 'react-native';
+import { BackHandler, Pressable, View } from 'react-native';
+import { FadeIn, FadeOut, ReduceMotion, SlideInLeft } from 'react-native-reanimated';
 
 import { BrandMark } from '@/components/brand-mark';
 import { ConnectionIndicator } from '@/components/connection-indicator';
+import { NavPaneProvider, useNavPane } from '@/components/layout/nav-pane';
+import { OPAQUE_HEADER } from '@/components/layout/stack-options';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
 import { Text } from '@/components/ui/text';
 import type { Abilities } from '@/features/permissions/permissions';
 import { useAbilities } from '@/features/permissions/use-abilities';
@@ -118,7 +124,7 @@ function phase2Screens(
 /**
  * Area for paired devices. Guards the session (a revoked token lands on
  * "Collega" with the reason) and picks the layout: a stack on phones, a
- * master/detail split with a navigation pane on tablets. The connection
+ * master/detail split with a collapsible navigation pane on tablets. The connection
  * indicator is always visible: in every phone header, in the tablet pane.
  */
 export default function ConnectedLayout() {
@@ -138,10 +144,16 @@ export default function ConnectedLayout() {
 
   if (layout === 'tablet') {
     return (
-      <View className="flex-1 flex-row bg-background">
-        <Sidebar />
-        <View className="flex-1">
-          <Stack screenOptions={{ animation: 'none', headerBackVisible: false }}>
+      <NavPaneProvider>
+        <TabletShell>
+          <Stack
+            screenOptions={{
+              ...OPAQUE_HEADER,
+              animation: 'none',
+              headerBackVisible: false,
+              headerLeft: () => <NavToggle />,
+            }}
+          >
             <Stack.Screen name="home" options={{ title: t('nav.home') }} />
             <Stack.Screen name="map" options={{ title: t('nav.map') }} />
             <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
@@ -151,14 +163,15 @@ export default function ConnectedLayout() {
             {phase2Screens(t)}
             <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
           </Stack>
-        </View>
-      </View>
+        </TabletShell>
+      </NavPaneProvider>
     );
   }
 
   return (
     <Stack
       screenOptions={{
+        ...OPAQUE_HEADER,
         headerBackButtonDisplayMode: 'minimal',
         headerRight: () => <ConnectionIndicator />,
       }}
@@ -227,22 +240,106 @@ function ReportsHeaderButton() {
   );
 }
 
-/** Navigation pane of the tablet layout. */
-function Sidebar() {
+/** The ≡ button of every tablet header: collapses or expands the navigation pane. */
+function NavToggle() {
+  const { t } = useTranslation();
+  const pane = useNavPane();
+  if (!pane) return null;
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      accessibilityLabel={t('nav.toggleMenu')}
+      accessibilityState={{ expanded: pane.mode !== 'rail' }}
+      onPress={pane.toggle}
+    >
+      <Icon as={MenuIcon} size={22} />
+    </Button>
+  );
+}
+
+/**
+ * Tablet layout: the navigation and the screens. Navigation is an icon rail
+ * when collapsed; expanded, a pane beside the content when it fits,
+ * otherwise a drawer over it (the content keeps its width) with a scrim that
+ * closes it, as does the Android back button. While the drawer is open it is
+ * the only thing screen readers reach.
+ */
+function TabletShell({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
+  const pane = useNavPane();
+  const mode = pane?.mode ?? 'beside';
+  const drawer = mode === 'drawer';
+  const close = pane?.close;
+
+  useEffect(() => {
+    if (!drawer || !close) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      close();
+      return true;
+    });
+    return () => sub.remove();
+  }, [drawer, close]);
+
+  const hidden = {
+    accessibilityElementsHidden: drawer,
+    importantForAccessibility: drawer ? ('no-hide-descendants' as const) : ('auto' as const),
+  };
+  return (
+    <View className="flex-1 flex-row bg-background">
+      {mode === 'beside' ? (
+        <NavList expanded />
+      ) : (
+        <View {...hidden}>
+          <NavList expanded={false} />
+        </View>
+      )}
+      <View className="flex-1" {...hidden}>
+        {children}
+      </View>
+      {drawer ? (
+        <NativeOnlyAnimatedView
+          entering={FadeIn.duration(150).reduceMotion(ReduceMotion.System)}
+          exiting={FadeOut.duration(150).reduceMotion(ReduceMotion.System)}
+          className="absolute inset-0 z-10 flex-row"
+          accessibilityViewIsModal
+        >
+          <NativeOnlyAnimatedView
+            entering={SlideInLeft.duration(200).reduceMotion(ReduceMotion.System)}
+          >
+            <NavList expanded onNavigate={close} />
+          </NativeOnlyAnimatedView>
+          <Pressable
+            className="flex-1 bg-foreground/30"
+            accessibilityLabel={t('nav.closeMenu')}
+            role="button"
+            onPress={close}
+          />
+        </NativeOnlyAnimatedView>
+      ) : null}
+    </View>
+  );
+}
+
+/** The navigation items, with their labels (pane, drawer) or icons only (rail). */
+function NavList({ expanded, onNavigate }: { expanded: boolean; onNavigate?: () => void }) {
   const { t } = useTranslation();
   const pathname = usePathname();
   const abilities = useAbilities();
   return (
     <View
-      className="pb-safe pt-safe w-72 gap-1 border-r border-border bg-card px-3"
+      className={cn(
+        'pb-safe pt-safe h-full gap-1 border-r border-border bg-card',
+        expanded ? 'w-72 px-3' : 'w-16 items-center px-2',
+      )}
       role="navigation"
     >
-      <View className="flex-row items-center gap-3 px-3 py-6">
-        <BrandMark className="h-10 w-10" />
-        <Text variant="large">{t('common.appName')}</Text>
+      <View className={cn('flex-row items-center gap-3 py-6', expanded && 'px-3')}>
+        <BrandMark className={expanded ? 'h-10 w-10' : 'h-8 w-8'} />
+        {expanded ? <Text variant="large">{t('common.appName')}</Text> : null}
       </View>
-      <View className="mb-2 rounded-md border border-border">
-        <ConnectionIndicator variant="full" />
+      <View className={cn('mb-2 rounded-md border border-border', !expanded && 'self-center')}>
+        <ConnectionIndicator variant={expanded ? 'full' : 'rail'} />
       </View>
       {NAV.filter((item) => !item.visible || item.visible(abilities)).map((item) => {
         const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -250,10 +347,15 @@ function Sidebar() {
           <Pressable
             key={item.href}
             role="link"
+            accessibilityLabel={t(item.label)}
             accessibilityState={{ selected: active }}
-            onPress={() => router.replace(item.href)}
+            onPress={() => {
+              onNavigate?.();
+              router.replace(item.href);
+            }}
             className={cn(
-              'min-h-12 flex-row items-center gap-3 rounded-md px-3 active:bg-accent',
+              'min-h-12 flex-row items-center rounded-md active:bg-accent',
+              expanded ? 'gap-3 px-3' : 'w-12 justify-center',
               active && 'bg-accent',
             )}
           >
@@ -262,9 +364,11 @@ function Sidebar() {
               size={20}
               className={active ? 'text-accent-foreground' : 'text-muted-foreground'}
             />
-            <Text className={cn(active && 'font-semibold text-accent-foreground')}>
-              {t(item.label)}
-            </Text>
+            {expanded ? (
+              <Text className={cn(active && 'font-semibold text-accent-foreground')}>
+                {t(item.label)}
+              </Text>
+            ) : null}
           </Pressable>
         );
       })}

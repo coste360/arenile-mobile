@@ -1,14 +1,15 @@
-import { CircleAlertIcon, MapIcon, SearchIcon, XIcon } from 'lucide-react-native';
+import { CircleAlertIcon, ListIcon, MapIcon } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 
+import { SearchField } from '@/components/search-field';
 import { StateView } from '@/components/state-view';
+import { useContentWidth } from '@/components/layout/nav-pane';
+import { SHEET_PANE } from '@/components/layout/panes';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
-import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { isForbidden } from '@/api/errors';
 import type { BeachMap, Slots } from '@/api/types';
@@ -16,9 +17,12 @@ import { useMapDocument, useMaps } from '@/features/maps/queries';
 import { useOperationalDays, useOperationsDay } from '@/features/operations/queries';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
+import { useEstablishment } from '@/features/session/queries';
 import { cn } from '@/lib/utils';
 
 import { contentRect, hitTest, type Point } from '../geometry';
+import { mapKitOf } from '../kit/kits';
+import { sheetBesideMap } from '../layout';
 import {
   buildDaySpots,
   compareLabels,
@@ -37,10 +41,6 @@ import { StatusLegend } from './status-legend';
 
 /** Zoom (relative to the fit) at which a spot chosen from a list is shown. */
 const FOCUS_ZOOM = 3;
-/** Width of the tablet navigation pane and of the spot sheet beside the map (w-72, w-96). */
-const TABLET_PANE = 288;
-const TABLET_SHEET = 384;
-
 /**
  * Day map (phase 1 "Mappa del giorno", core spec 11.3): the operational map
  * of today or tomorrow with the panel's status colours, glyphs and labels,
@@ -130,6 +130,9 @@ function MapPane({
   const tablet = layout === 'tablet';
   const window = useWindowDimensions();
   const palette = useMapPalette();
+  const paneWidth = useContentWidth();
+  const establishment = useEstablishment();
+  const kit = mapKitOf(establishment.data?.theme);
   const abilities = useAbilities();
   const { today, tomorrow, timeZone } = useOperationalDays();
   const { day: dayChoice, slot, view } = settings;
@@ -195,46 +198,38 @@ function MapPane({
   }
 
   const name = mapName(doc.data.map, locale, t('dayMap.mapFallback'));
+  const beside = sheetBesideMap(tablet, paneWidth);
   const initialSize = tablet
     ? {
-        width: Math.max(320, window.width - TABLET_PANE - (selected ? TABLET_SHEET : 0)),
-        height: Math.max(320, window.height - 260),
+        width: Math.max(320, paneWidth - (selected && beside ? SHEET_PANE : 0)),
+        height: Math.max(320, (window.height - 260) * (selected && !beside ? 0.5 : 1)),
       }
     : { width: window.width, height: Math.max(240, window.height * (selected ? 0.3 : 0.55)) };
 
   const toolbar = (
     <View className="gap-3 px-4 pt-3">
       <View className="flex-row items-center gap-2">
-        <View className="flex-1">
-          <Input
-            value={query}
-            onChangeText={setQuery}
-            placeholder={
-              abilities.canViewBookings
-                ? t('dayMap.search.placeholder')
-                : t('dayMap.search.placeholderNoCustomers')
-            }
-            accessibilityLabel={t('dayMap.search.label')}
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
-            className="pl-9"
-          />
-          <View className="absolute bottom-0 left-3 top-0 justify-center" pointerEvents="none">
-            <Icon as={SearchIcon} size={16} className="text-muted-foreground" />
-          </View>
-        </View>
-        {query ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-11 w-11"
-            accessibilityLabel={t('dayMap.search.clear')}
-            onPress={() => setQuery('')}
-          >
-            <Icon as={XIcon} size={18} />
-          </Button>
-        ) : null}
+        <SearchField
+          className="flex-1"
+          value={query}
+          onChangeText={setQuery}
+          label={t('dayMap.search.label')}
+          placeholder={
+            abilities.canViewBookings
+              ? t('dayMap.search.placeholder')
+              : t('dayMap.search.placeholderNoCustomers')
+          }
+        />
+        <ChoiceGroup<'map' | 'list'>
+          segmented
+          label={t('dayMap.view.label')}
+          value={view}
+          onChange={setView}
+          choices={[
+            { value: 'map', label: t('dayMap.view.map'), icon: MapIcon },
+            { value: 'list', label: t('dayMap.view.list'), icon: ListIcon },
+          ]}
+        />
       </View>
       <DayToolbar
         day={dayChoice}
@@ -244,34 +239,23 @@ function MapPane({
         onSlot={setSlot}
         locale={locale}
       />
-      <View className="flex-row flex-wrap items-center gap-x-4 gap-y-2">
-        {maps.length > 1 ? (
-          <View className="flex-1">
-            <ChoiceGroup
-              label={t('dayMap.maps')}
-              value={mapId}
-              onChange={(id) => {
-                setSelectedId(null);
-                onMap(id);
-              }}
-              scroll
-              choices={maps.map((m) => ({
-                value: m.id,
-                label: mapName(m, locale, t('dayMap.mapFallback')),
-              }))}
-            />
-          </View>
-        ) : null}
-        <ChoiceGroup<'map' | 'list'>
-          label={t('dayMap.view.label')}
-          value={view}
-          onChange={setView}
-          choices={[
-            { value: 'map', label: t('dayMap.view.map') },
-            { value: 'list', label: t('dayMap.view.list') },
-          ]}
-        />
-      </View>
+      {maps.length > 1 ? (
+        <View>
+          <ChoiceGroup
+            label={t('dayMap.maps')}
+            value={mapId}
+            onChange={(id) => {
+              setSelectedId(null);
+              onMap(id);
+            }}
+            scroll
+            choices={maps.map((m) => ({
+              value: m.id,
+              label: mapName(m, locale, t('dayMap.mapFallback')),
+            }))}
+          />
+        </View>
+      ) : null}
     </View>
   );
 
@@ -308,7 +292,11 @@ function MapPane({
       <SpotList
         spots={results}
         selectedId={selectedId ?? undefined}
-        onSelect={select}
+        onSelect={(spot) => {
+          // The result is chosen: give the room of the list back to the map.
+          setQuery('');
+          select(spot);
+        }}
         testID="day-map-results"
       />
     </View>
@@ -339,6 +327,7 @@ function MapPane({
             viewport={viewport}
             overscan={OVERSCAN}
             palette={palette}
+            kit={kit}
             locale={locale}
             seaLabel={t('dayMap.seaLabel')}
             selectedId={selectedId ?? undefined}
@@ -357,7 +346,7 @@ function MapPane({
       locale={locale}
       timeZone={timeZone}
       onClose={() => setSelectedId(null)}
-      className={tablet ? 'w-96 border-l border-border' : 'flex-1 border-t border-border'}
+      className={beside ? 'w-96 border-l border-border' : 'flex-1 border-t border-border'}
     />
   ) : null;
 
@@ -366,14 +355,14 @@ function MapPane({
       <View className="flex-1 flex-row bg-background">
         <View className="pb-safe flex-1 gap-3">
           {toolbar}
-          <View className="px-4">
-            <StatusLegend counts={counts} wrap />
-          </View>
+          <StatusLegend counts={counts} />
           {banners}
           {searchResults}
           <View className="flex-1">{surface}</View>
+          {/* The column already pads the bottom safe area. */}
+          {sheet && !beside ? <View className="h-2/5">{sheet}</View> : null}
         </View>
-        {sheet}
+        {beside ? sheet : null}
       </View>
     );
   }
@@ -385,7 +374,7 @@ function MapPane({
       {banners}
       {searchResults}
       <View className="flex-1">{surface}</View>
-      {sheet ? <View className="pb-safe h-1/2">{sheet}</View> : null}
+      {sheet ? <View className="pb-safe h-2/5">{sheet}</View> : null}
     </View>
   );
 }

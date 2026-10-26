@@ -4,7 +4,8 @@
     "back": "Zurück",
     "cancel": "Abbrechen",
     "retry": "Erneut versuchen",
-    "loading": "Wird geladen"
+    "loading": "Wird geladen",
+    "clearSearch": "Suche löschen"
   },
   "languages": {
     "it": "Italiano",
@@ -161,7 +162,9 @@
     "sale": "Tagesverkauf",
     "move": "Buchung verschieben",
     "waitlist": "Warteliste",
-    "waitlistEntry": "Eintrag"
+    "waitlistEntry": "Eintrag",
+    "toggleMenu": "Menü ein- oder ausblenden",
+    "closeMenu": "Menü schließen"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -371,7 +374,6 @@
       "label": "Platz suchen",
       "placeholder": "Platz, Gast oder Code",
       "placeholderNoCustomers": "Platz oder Code",
-      "clear": "Suche löschen",
       "results_one": "{{count}} Platz gefunden",
       "results_other": "{{count}} Plätze gefunden",
       "none": "Kein Platz entspricht der Suche"
@@ -1179,6 +1181,8 @@
       "invalid": "Ungültige Daten: Prüfe Platz und Dauer.",
       "notFound": "Der Eintrag existiert nicht mehr.",
       "default": "Vorgang fehlgeschlagen. Versuche es erneut."
-    }
+    },
+    "results_one": "{{count}} Eintrag",
+    "results_other": "{{count}} Einträge"
   }
 }

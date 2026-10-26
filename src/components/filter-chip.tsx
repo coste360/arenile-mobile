@@ -56,15 +56,21 @@ export function FilterChip({
   );
 }
 
-/** A labelled row of chips; scrolls sideways when it does not fit. */
+/**
+ * A labelled row of chips; scrolls sideways when it does not fit. `bleed`
+ * (list headers, whose parent pads `px-4`) lets the scroll reach the pane
+ * edges with the first chip still on the 16 pt gutter.
+ */
 export function ChipRow({
   label,
   children,
   scroll = true,
+  bleed = false,
 }: {
   label: string;
   children: ReactNode;
   scroll?: boolean;
+  bleed?: boolean;
 }) {
   const content = <View className="flex-row flex-wrap gap-2">{children}</View>;
   return (
@@ -74,7 +80,8 @@ export function ChipRow({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-2 pr-4"
+          className={bleed ? '-mx-4' : undefined}
+          contentContainerClassName={bleed ? 'gap-2 px-4' : 'gap-2 pr-4'}
           keyboardShouldPersistTaps="handled"
         >
           {children}

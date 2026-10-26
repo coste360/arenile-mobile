@@ -4,7 +4,13 @@ const { defineConfig, globalIgnores } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 
 module.exports = defineConfig([
-  globalIgnores(['dist/*', '.expo/*', 'src/api/generated/*', 'coverage/*']),
+  globalIgnores([
+    'dist/*',
+    '.expo/*',
+    'src/api/generated/*',
+    'src/features/day-map/kit/generated/*',
+    'coverage/*',
+  ]),
   expoConfig,
   {
     rules: {

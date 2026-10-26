@@ -140,6 +140,18 @@ export function MapViewport({
     oy.set(0);
   }, [chosen, s, ox, oy]);
 
+  // When the last finger of pan and pinch lifts, commit what moved. Declared
+  // before the gestures: a worklet copies its closure when it is created, so a
+  // worklet defined later would be captured as undefined and crash the UI thread.
+  const finish = () => {
+    'worklet';
+    active.set(Math.max(0, active.get() - 1));
+    const ls = s.get();
+    const lx = ox.get();
+    const ly = oy.get();
+    if (active.get() === 0 && (ls !== 1 || lx !== 0 || ly !== 0)) scheduleOnRN(commit, ls, lx, ly);
+  };
+
   const pan = usePanGesture({
     averageTouches: true,
     onBegin: () => {
@@ -158,6 +170,7 @@ export function MapViewport({
   });
 
   const pinch = usePinchGesture({
+    testID: 'day-map-pinch',
     onBegin: () => {
       'worklet';
       active.set(active.get() + 1);
@@ -176,16 +189,6 @@ export function MapViewport({
       finish();
     },
   });
-
-  // When the last finger of pan and pinch lifts, commit what moved.
-  function finish() {
-    'worklet';
-    active.set(Math.max(0, active.get() - 1));
-    const ls = s.get();
-    const lx = ox.get();
-    const ly = oy.get();
-    if (active.get() === 0 && (ls !== 1 || lx !== 0 || ly !== 0)) scheduleOnRN(commit, ls, lx, ly);
-  }
 
   const tap = useTapGesture({
     runOnJS: true,

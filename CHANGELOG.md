@@ -97,6 +97,12 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   larghezza di telefono e di tablet, CI su GitHub Actions (`make check`, `expo-doctor`, bundle iOS e
   Android), regole e agenti per Claude Code, ADR 0001–0006, piano dell'app per fasi.
 
+- Mappa del giorno con le illustrazioni dei kit del pannello (ADR 0013): ombrelloni, lettini,
+  gazebo, passerelle, bar e servizi come nel pannello, nel kit scelto dallo stabilimento (_Moderno_ con
+  lo stato sul disegno, _Classico_ con l'alone), in tema chiaro e scuro; codice della postazione su una
+  pillola leggibile. I kit vengono dalla release del core fissata, verificati con SHA-256
+  (`make gen`).
+
 ### Rimosso
 
 - Notifiche push: per decisione di Coste360 non fanno parte dell'app pubblica (ADR 0012, sostituisce la
@@ -108,6 +114,23 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Corretto
 
+- Mappa del giorno: l'app si chiudeva alla fine di ogni spostamento o zoom con le dita (il worklet di
+  fine gesto veniva catturato prima di essere definito); ora lo zoom e lo spostamento restano.
+- iPad: il menu laterale si chiude in una barra di icone con il pulsante ≡ dell'intestazione; in
+  verticale parte chiuso e, aperto, scorre da sinistra sopra il contenuto (si chiude toccando fuori o
+  scegliendo una voce), in orizzontale sta accanto. Prenotazioni e Lista d'attesa usano lo stesso
+  elenco + dettaglio: in verticale il dettaglio ha di nuovo spazio (prima circa 220 pt), con l'elenco
+  vuoto o in errore niente "Seleziona…" accanto, il dettaglio segue rotazione e Split View. Stessa
+  intestazione delle liste (ricerca con l'icona e il tasto per cancellare nel campo, filtri che
+  scorrono fino al bordo, conteggio), stati vuoti in alto, campi e pulsanti alti 44 pt anche su iPad.
+- Mappa del giorno su iPad in verticale (e finestre strette): la scheda della postazione si apriva
+  accanto alla mappa lasciandole pochi punti di larghezza; ora si apre sotto quando accanto non c'è
+  spazio. Barra più compatta (giorno e fascia su una riga, Mappa/Elenco accanto alla ricerca, legenda
+  su una riga scorrevole) e risultati della ricerca chiusi quando si sceglie una postazione.
+- iOS 26: ricerca e filtri di Prenotazioni, Lista d'attesa e Mappa finivano sotto l'intestazione
+  trasparente; l'intestazione è ora opaca in tutte le schermate.
+- Expo Go e build senza widget: il widget non viene più caricato se manca il suo modulo nativo (prima
+  in sviluppo compariva una schermata rossa all'avvio).
 - Desktop in rete locale: la coda offline usa lo stesso trasporto con pinning del resto dell'app (prima
   non poteva inviare nulla) e, se il certificato del desktop cambia, le operazioni restano in attesa per
   il nuovo abbinamento invece di risultare "non inviate".

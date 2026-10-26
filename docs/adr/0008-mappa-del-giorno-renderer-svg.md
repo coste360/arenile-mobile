@@ -1,6 +1,6 @@
 # 0008 — Mappa del giorno: renderer SVG, gesti sul thread UI, palette di stato del pannello
 
-- **Stato:** proposto
+- **Stato:** proposto; decisione 7 (kit) sostituita da [0013](0013-illustrazioni-dei-kit-della-mappa.md)
 - **Data:** 2026-10-25
 - **Sezioni della specifica:** `docs/spec/02-fase-1-prima-versione.md` ("Mappa del giorno"), core §11.3
   (vista operativa), §16.1, §21.2; core ADR 0012 e 0024 (kit della mappa); ADR 0004 e 0007
@@ -62,7 +62,7 @@ pinch), `SvgXml` con le stringhe dei kit (parsing a runtime, niente stato per po
    rilascio del giorno dell'abbonato passano dalla coda di ADR 0007; blocco e sblocco della postazione
    per il giorno e la fascia mostrati sono **solo online** (tolgono disponibilità, che garantisce il
    server) con `Idempotency-Key`; un 403 si mostra come "non consentito".
-7. **Illustrazioni dei kit: rinviate.** In questa versione le postazioni sono forme geometriche con lo
+7. **Illustrazioni dei kit: rinviate** (sostituita da ADR 0013). In questa versione le postazioni sono forme geometriche con lo
    stato, non le illustrazioni dei kit. Per usarle serve: una release del core che pubblichi i kit
    sanificati come asset versionato (come `openapi.yaml`, ADR 0002) o la decisione di Coste360 di
    vendorizzarli; la licenza dell'app compatibile con quella dei kit (BSL 1.1); una conversione dei

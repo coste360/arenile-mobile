@@ -4,7 +4,8 @@
     "back": "Indietro",
     "cancel": "Annulla",
     "retry": "Riprova",
-    "loading": "Caricamento in corso"
+    "loading": "Caricamento in corso",
+    "clearSearch": "Cancella la ricerca"
   },
   "languages": {
     "it": "Italiano",
@@ -161,7 +162,9 @@
     "sale": "Vendita giornaliera",
     "move": "Sposta prenotazione",
     "waitlist": "Lista d'attesa",
-    "waitlistEntry": "Iscrizione"
+    "waitlistEntry": "Iscrizione",
+    "toggleMenu": "Mostra o nascondi il menu",
+    "closeMenu": "Chiudi il menu"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -371,7 +374,6 @@
       "label": "Cerca una postazione",
       "placeholder": "Postazione, cliente o codice",
       "placeholderNoCustomers": "Postazione o codice",
-      "clear": "Cancella la ricerca",
       "results_one": "{{count}} postazione trovata",
       "results_other": "{{count}} postazioni trovate",
       "none": "Nessuna postazione corrisponde alla ricerca"
@@ -1179,6 +1181,8 @@
       "invalid": "Dati non validi: controlla la postazione e la durata.",
       "notFound": "L'iscrizione non esiste più.",
       "default": "Operazione non riuscita. Riprova."
-    }
+    },
+    "results_one": "{{count}} iscrizione",
+    "results_other": "{{count}} iscrizioni"
   }
 }

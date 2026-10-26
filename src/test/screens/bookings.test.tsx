@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
 import { QUEUE_KEY } from '@/features/offline/queue';
 import type { OfflineOperation } from '@/features/offline/types';
@@ -7,7 +7,7 @@ import { dayRoutes, EST } from '@/test/day-routes';
 import { problem } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { bookingDetail, customer } from '@/test/operations-fixtures';
-import { renderApp, type RenderAppOptions } from '@/test/render-app';
+import { renderApp, setWindow, type RenderAppOptions, type WindowSize } from '@/test/render-app';
 
 async function open(path: string, options: RenderAppOptions = {}) {
   const app = await renderApp({ session: SESSION, routes: dayRoutes(), ...options });
@@ -245,5 +245,163 @@ describe('tablet: list and sheet side by side', () => {
     expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
     await waitFor(() => expect(getPathname()).toBe('/bookings'));
     expect(await screen.findByTestId('booking-row-b-2')).toBeOnTheScreen();
+  });
+});
+
+describe('adaptive split of the bookings (tablet portrait and landscape)', () => {
+  // The region is not an accessibility element, so it is found by its label.
+  const detailRegion = (screen: Awaited<ReturnType<typeof open>>['screen']) =>
+    screen.queryAllByLabelText('Prenotazione').find((e) => e.props.role === 'region') ?? null;
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'shows the list beside the detail region and keeps it on selection (%s)',
+    async (size) => {
+      const { screen, getPathname } = await open('/bookings', { size });
+      expect(await screen.findByText('3 prenotazioni')).toBeOnTheScreen();
+      const region = detailRegion(screen);
+      expect(region).toBeOnTheScreen();
+      expect(within(region!).getByText('Seleziona una prenotazione')).toBeOnTheScreen();
+
+      await fireEvent.press(screen.getByTestId('booking-row-b-1'));
+      expect(
+        await within(detailRegion(screen)!).findByText('Postazione e periodo'),
+      ).toBeOnTheScreen();
+      expect(screen.queryByText('Seleziona una prenotazione')).toBeNull();
+      expect(getPathname()).toBe('/bookings');
+      expect(rowIds(screen)).toEqual(['b-1', 'b-2', 'b-3']);
+    },
+  );
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'has no detail region nor placeholder with an empty day (%s)',
+    async (size) => {
+      const { screen } = await open('/bookings', { size, routes: dayRoutes({ bookings: [] }) });
+      expect(await screen.findByText('Nessuna prenotazione')).toBeOnTheScreen();
+      await waitFor(() => expect(detailRegion(screen)).toBeNull());
+      expect(screen.queryByText('Seleziona una prenotazione')).toBeNull();
+    },
+  );
+
+  it('has no detail region when the instance refuses the list', async () => {
+    const routes = dayRoutes();
+    routes[`GET ${EST}/bookings`] = () => problem(403, 'forbidden');
+    const { screen } = await open('/bookings', { routes, size: 'tabletPortrait' });
+    expect(await screen.findByText('Non consentito per il tuo ruolo.')).toBeOnTheScreen();
+    await waitFor(() => expect(detailRegion(screen)).toBeNull());
+  });
+
+  it('leaves the detail blank when the search matches nothing', async () => {
+    const { screen } = await open('/bookings', { size: 'tabletPortrait' });
+    await fireEvent.changeText(await screen.findByLabelText('Cerca prenotazioni'), 'zz9');
+    expect(await screen.findByText('Nessun risultato')).toBeOnTheScreen();
+    const region = detailRegion(screen);
+    expect(region).toBeOnTheScreen();
+    expect(within(region!).queryByText('Seleziona una prenotazione')).toBeNull();
+    expect(region!.children).toHaveLength(0);
+  });
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'redirects a booking link to the split (%s)',
+    async (size) => {
+      const { screen, getPathname } = await open('/bookings/b-1', { size });
+      await waitFor(() => expect(getPathname()).toBe('/bookings'));
+      expect(await screen.findByTestId('booking-row-b-2')).toBeOnTheScreen();
+      expect(
+        await within(detailRegion(screen)!).findByText('Postazione e periodo'),
+      ).toBeOnTheScreen();
+    },
+  );
+});
+
+describe('search field of the bookings', () => {
+  it.each<WindowSize>(['phone', 'tabletPortrait'])(
+    'shows the clear button only with text and empties the search (%s)',
+    async (size) => {
+      const { screen } = await open('/bookings', { size });
+      const search = await screen.findByLabelText('Cerca prenotazioni');
+      expect(screen.queryByRole('button', { name: 'Cancella la ricerca' })).toBeNull();
+      await fireEvent.changeText(search, 'nicolo');
+      await waitFor(() => expect(rowIds(screen)).toEqual(['b-2']));
+      await fireEvent.press(screen.getByRole('button', { name: 'Cancella la ricerca' }));
+      await waitFor(() => expect(rowIds(screen)).toEqual(['b-1', 'b-2', 'b-3']));
+      expect(screen.getByLabelText('Cerca prenotazioni')).toHaveDisplayValue('');
+      expect(screen.queryByRole('button', { name: 'Cancella la ricerca' })).toBeNull();
+    },
+  );
+});
+
+describe('bookings in Split View (tablet without room for the sheet beside the list)', () => {
+  const detailRegion = (screen: Awaited<ReturnType<typeof open>>['screen']) =>
+    screen.queryAllByLabelText('Prenotazione').find((e) => e.props.role === 'region') ?? null;
+
+  it('shows the list alone and pushes the sheet like on phones', async () => {
+    const { screen, getPathname } = await open('/bookings', { size: 'tabletSplitView' });
+    expect(await screen.findByText('3 prenotazioni')).toBeOnTheScreen();
+    expect(detailRegion(screen)).toBeNull();
+    expect(screen.queryByText('Seleziona una prenotazione')).toBeNull();
+
+    await fireEvent.press(screen.getByTestId('booking-row-b-1'));
+    await waitFor(() => expect(getPathname()).toBe('/bookings/b-1'));
+    expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
+    expect(detailRegion(screen)).toBeNull();
+  });
+
+  it('opens a booking link as the sheet, without redirecting to the list', async () => {
+    const { screen, getPathname } = await open('/bookings/b-1', { size: 'tabletSplitView' });
+    expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
+    expect(getPathname()).toBe('/bookings/b-1');
+    expect(screen.queryByTestId('booking-row-b-2')).toBeNull();
+  });
+});
+
+describe('bookings across a resize (rotation, Split View)', () => {
+  const detailRegion = (screen: Awaited<ReturnType<typeof open>>['screen']) =>
+    screen.queryAllByLabelText('Prenotazione').find((e) => e.props.role === 'region') ?? null;
+
+  it('moves the open sheet into the split when the window widens', async () => {
+    const { screen, getPathname, getSearchParams } = await open('/bookings');
+    await fireEvent.press(await screen.findByTestId('booking-row-b-1'));
+    await waitFor(() => expect(getPathname()).toBe('/bookings/b-1'));
+    expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
+
+    await act(async () => setWindow('tabletPortrait'));
+
+    await waitFor(() => expect(getPathname()).toBe('/bookings'));
+    expect(getSearchParams()).toEqual(expect.objectContaining({ selected: 'b-1' }));
+    expect(
+      await within(detailRegion(screen)!).findByText('Postazione e periodo'),
+    ).toBeOnTheScreen();
+    expect(screen.getByTestId('booking-row-b-1').props.accessibilityState).toEqual(
+      expect.objectContaining({ selected: true }),
+    );
+
+    // Back leaves the bookings: no second list without the selection under it.
+    await act(async () => router.back());
+    await waitFor(() => expect(getPathname()).not.toBe('/bookings'));
+    expect(getPathname()).toBe('/home');
+  });
+
+  it('pushes the selected sheet when the window narrows to a phone', async () => {
+    const { screen, getPathname, getSearchParams } = await open('/bookings', {
+      size: 'tabletPortrait',
+    });
+    await fireEvent.press(await screen.findByTestId('booking-row-b-1'));
+    expect(
+      await within(detailRegion(screen)!).findByText('Postazione e periodo'),
+    ).toBeOnTheScreen();
+
+    await act(async () => setWindow('phone'));
+
+    await waitFor(() => expect(getPathname()).toBe('/bookings/b-1'));
+    expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
+    expect(detailRegion(screen)).toBeNull();
+
+    // Back shows the list without a selection that would push the sheet again.
+    await act(async () => router.back());
+    await waitFor(() => expect(getPathname()).toBe('/bookings'));
+    expect(await screen.findByTestId('booking-row-b-2')).toBeOnTheScreen();
+    expect(getPathname()).toBe('/bookings');
+    // The list cleared its selection before pushing the sheet (BookingsScreen effect).
+    expect(getSearchParams().selected).toBeUndefined();
   });
 });

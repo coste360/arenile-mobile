@@ -1,6 +1,6 @@
 import type { DaySummaryWidget } from '@/widgets/day-summary-widget';
 
-import { createExpoWidgetBridge } from './bridge';
+import { createExpoWidgetBridge, loadDaySummaryWidget } from './bridge';
 import { WIDGET_COLORS } from './colors';
 import type { DaySummaryWidgetProps, WidgetEntry } from './types';
 
@@ -81,5 +81,23 @@ describe('createExpoWidgetBridge', () => {
     const widget = fakeWidget();
     createExpoWidgetBridge(() => widget, 'ios').publish([]);
     expect(widget.updateTimeline).not.toHaveBeenCalled();
+  });
+});
+
+describe('loadDaySummaryWidget', () => {
+  it('does not load the widget module when its native module is missing (Expo Go)', () => {
+    const requireWidget = jest.fn(fakeWidget);
+    expect(loadDaySummaryWidget(() => false, requireWidget)).toBeNull();
+    expect(requireWidget).not.toHaveBeenCalled();
+  });
+
+  it('loads the widget module when the build has it', () => {
+    const widget = fakeWidget();
+    expect(
+      loadDaySummaryWidget(
+        () => true,
+        () => widget,
+      ),
+    ).toBe(widget);
   });
 });

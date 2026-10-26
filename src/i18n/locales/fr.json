@@ -4,7 +4,8 @@
     "back": "Retour",
     "cancel": "Annuler",
     "retry": "Réessayer",
-    "loading": "Chargement en cours"
+    "loading": "Chargement en cours",
+    "clearSearch": "Effacer la recherche"
   },
   "languages": {
     "it": "Italiano",
@@ -161,7 +162,9 @@
     "sale": "Vente du jour",
     "move": "Déplacer la réservation",
     "waitlist": "Liste d'attente",
-    "waitlistEntry": "Inscription"
+    "waitlistEntry": "Inscription",
+    "toggleMenu": "Afficher ou masquer le menu",
+    "closeMenu": "Fermer le menu"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -371,7 +374,6 @@
       "label": "Rechercher un emplacement",
       "placeholder": "Emplacement, client ou code",
       "placeholderNoCustomers": "Emplacement ou code",
-      "clear": "Effacer la recherche",
       "results_one": "{{count}} emplacement trouvé",
       "results_other": "{{count}} emplacements trouvés",
       "none": "Aucun emplacement ne correspond à la recherche"
@@ -1179,6 +1181,8 @@
       "invalid": "Données non valides : vérifiez l'emplacement et la durée.",
       "notFound": "L'inscription n'existe plus.",
       "default": "Opération non aboutie. Réessayez."
-    }
+    },
+    "results_one": "{{count}} inscription",
+    "results_other": "{{count}} inscriptions"
   }
 }

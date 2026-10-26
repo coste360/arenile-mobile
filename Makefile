@@ -14,7 +14,7 @@ SHELL := /bin/bash
 export EXPO_NO_TELEMETRY := 1
 
 # Generated code: never edited by hand, checked by gen-check.
-GENERATED := api/openapi.yaml src/api/generated
+GENERATED := api/openapi.yaml src/api/generated assets/map-kits src/features/day-map/kit/generated
 # Pinned core release of the API contract (api/core-version.json).
 CORE_VERSION = $(shell node -p "require('./api/core-version.json').version" 2>/dev/null)
 
@@ -46,12 +46,14 @@ dev: ## Avvia Metro (Expo) per una build di sviluppo o Expo Go
 # ---------------------------------------------------------------------------
 
 .PHONY: gen
-gen: ## Verifica api/openapi.yaml sulla release fissata e rigenera i tipi in src/api/generated
+gen: ## Verifica contratto e kit della mappa sulla release fissata del core e rigenera il codice generato
 	node scripts/gen-api.mjs
+	node scripts/gen-map-kits.mjs
 
 .PHONY: gen-check
 gen-check: ## Verifica (senza rete) che contratto e tipi generati siano allineati a quelli versionati
 	@node scripts/gen-api.mjs --offline
+	@node scripts/gen-map-kits.mjs --offline
 	@set -euo pipefail; \
 	if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then echo "gen-check: not a git repository, skipped"; exit 0; fi; \
 	changes="$$(git status --porcelain --untracked-files=all -- $(GENERATED))"; \

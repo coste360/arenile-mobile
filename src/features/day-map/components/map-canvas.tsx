@@ -1,10 +1,11 @@
-// SVG drawing of the day map (react-native-svg): sand, sea band,
-// decorations and the spots with their status colour, glyph and label.
+// SVG drawing of the day map (react-native-svg): sand, sea band, and the
+// decorations and spots drawn with the illustrations of the establishment's
+// kit (ADR 0013), with the status colour, glyph badge and label pill.
 // Drawn in map units under one transform, so panning or zooming changes a
 // single attribute; spots are memoised and culled to the visible area, so a
 // map of hundreds of spots stays smooth (ADR 0008).
 import { memo, useMemo } from 'react';
-import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Rect, Text as SvgText, Use } from 'react-native-svg';
 
 import type { MapDocument } from '@/api/types';
 
@@ -19,8 +20,20 @@ import {
   type Size,
 } from '../geometry';
 import { GLYPH_PATHS, glyphStrokeWidth, STATUS_GLYPHS } from '../glyphs';
+import { KitDefs, kitSymbolId, type KitSymbolRequest } from '../kit/kit-art';
+import {
+  badgeOffset,
+  DEFAULT_MAP_KIT,
+  decorationAsset,
+  decorationLayout,
+  kitArt,
+  MAP_KIT_STYLE,
+  spotArtSize,
+  spotAsset,
+  type MapKitKey,
+} from '../kit/kits';
 import { localized, type DaySpot } from '../model';
-import { SPOT_STROKE_OPACITY, type MapPalette } from '../palette';
+import type { MapPalette } from '../palette';
 
 export interface MapCanvasProps {
   document: MapDocument;
@@ -30,6 +43,8 @@ export interface MapCanvasProps {
   /** Extra drawn area around the viewport, in viewports per side (pan without blanks). */
   overscan: number;
   palette: MapPalette;
+  /** Illustration kit of the establishment (`theme.map_kit`). */
+  kit?: MapKitKey;
   locale: string;
   seaLabel: string;
   selectedId?: string;
@@ -44,6 +59,7 @@ export function MapCanvas({
   viewport,
   overscan,
   palette,
+  kit = DEFAULT_MAP_KIT,
   locale,
   seaLabel,
   selectedId,
@@ -53,9 +69,9 @@ export function MapCanvas({
   const oy = viewport.height * overscan;
   const kq = quantiseScale(camera.k);
   const rect = visibleRect(camera, viewport, overscan);
-  // Labels and captions hang below the shapes: a margin keeps them drawn at the edges.
+  // The art is 1.3 times the footprint and captions hang below: a margin keeps them drawn at the edges.
   const visible = useMemo(
-    () => cull(spots, rect, 40),
+    () => cull(spots, rect, 60),
     // The rect is recomputed every render; its numbers are what matters.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [spots, rect.x, rect.y, rect.width, rect.height],
@@ -65,6 +81,11 @@ export function MapCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [document.decorations, rect.x, rect.y, rect.width, rect.height],
   );
+  const symbols = useMemo(
+    () => symbolsOf(visible, decorations, kit, palette),
+    [visible, decorations, kit, palette],
+  );
+  const art = useMemo(() => kitArt(kit), [kit]);
   const { map } = document;
   const sea = seaRect(map);
   const seaFont = Math.min(sea.width, sea.height) * 0.35;
@@ -77,6 +98,7 @@ export function MapCanvas({
       importantForAccessibility="no-hide-descendants"
       testID="day-map-canvas"
     >
+      <KitDefs art={art} symbols={symbols} palette={palette} />
       <G transform={`translate(${camera.tx + ox} ${camera.ty + oy}) scale(${camera.k})`}>
         <Rect x={0} y={0} width={map.width} height={map.height} fill={palette.sand} />
         <Rect x={sea.x} y={sea.y} width={sea.width} height={sea.height} fill={palette.sea} />
@@ -98,6 +120,9 @@ export function MapCanvas({
             y={d.y}
             rotation={d.rotation}
             shape={d.shape}
+            kind={d.kind}
+            asset={d.asset}
+            variant={d.variant}
             label={localized(d.label, locale)}
             k={kq}
             palette={palette}
@@ -107,6 +132,7 @@ export function MapCanvas({
           <SpotNode
             key={s.id}
             spot={s}
+            kit={kit}
             k={kq}
             palette={palette}
             selected={s.id === selectedId}
@@ -124,6 +150,9 @@ const DecorationNode = memo(function DecorationNode({
   y,
   rotation,
   shape,
+  kind,
+  asset,
+  variant,
   label,
   k,
   palette,
@@ -132,10 +161,38 @@ const DecorationNode = memo(function DecorationNode({
   y: number;
   rotation: number;
   shape: MapDocument['decorations'][number]['shape'];
+  kind: string;
+  asset?: string;
+  variant?: string;
   label?: string;
   k: number;
   palette: MapPalette;
 }) {
+  const art = decorationAsset({ kind, asset, shape });
+  if (art) {
+    const h = shape.type === 'circle' ? shape.w : shape.h;
+    const layout = decorationLayout(art, x, y, shape);
+    const href = `#${kitSymbolId({ asset: layout.asset, flag: flagColour(palette, variant) })}`;
+    const font = Math.max(Math.min(shape.w, h) * 0.2, MIN_LABEL_DP / k);
+    return (
+      <G>
+        <G transform={rotation ? `rotate(${rotation} ${x} ${y})` : undefined}>
+          {layout.origins.map((o, i) => (
+            <Use key={i} href={href} x={o.x} y={o.y} width={layout.side} height={layout.side} />
+          ))}
+        </G>
+        {label ? (
+          <LabelPill
+            x={x}
+            y={y + h / 2 + font * 0.5}
+            text={truncate(label, Math.max(shape.w, h) * 1.5, font)}
+            font={font}
+            palette={palette}
+          />
+        ) : null}
+      </G>
+    );
+  }
   const font = labelFontSize(Math.min(shape.w, shape.h), 0.4, k, 0.9);
   return (
     <G transform={`translate(${x} ${y})`}>
@@ -169,14 +226,102 @@ const DecorationNode = memo(function DecorationNode({
   );
 });
 
+function flagColour(palette: MapPalette, variant: string | undefined): string | undefined {
+  return variant && variant in palette.flags
+    ? palette.flags[variant as keyof MapPalette['flags']]
+    : undefined;
+}
+
+/** A spot code or a caption on a soft pill, readable over any art (panel MapLabel). */
+function LabelPill({
+  x,
+  y,
+  text,
+  font,
+  palette,
+  bold,
+}: {
+  x: number;
+  y: number;
+  text: string;
+  font: number;
+  palette: MapPalette;
+  bold?: boolean;
+}) {
+  const w = Math.max(text.length, 1) * font * 0.62 + font * 0.9;
+  const h = font * 1.32;
+  return (
+    <G>
+      <Rect
+        x={x - w / 2}
+        y={y - h / 2}
+        width={w}
+        height={h}
+        rx={h / 2}
+        fill={palette.labelBackground}
+        fillOpacity={0.9}
+        stroke={palette.labelForeground}
+        strokeOpacity={0.15}
+        strokeWidth={font * 0.08}
+      />
+      <SvgText
+        x={x}
+        y={y + font * 0.35}
+        fontSize={font}
+        fontWeight={bold ? '600' : '500'}
+        fill={palette.labelForeground}
+        textAnchor="middle"
+      >
+        {text}
+      </SvgText>
+    </G>
+  );
+}
+
 /** Shortens `text` to what fits in `width` map units at `font` (average glyph ≈ 0.55 em). */
 export function truncate(text: string, width: number, font: number): string {
   const max = Math.max(1, Math.floor(width / (font * 0.55)));
   return text.length <= max ? text : `${text.slice(0, Math.max(1, max - 1))}…`;
 }
 
+/**
+ * Symbol of the art of a spot: the modern kit paints the status on the art
+ * (one symbol per status colour), the classic kit draws it in a halo (one
+ * symbol per asset).
+ */
+function spotSymbol(spot: DaySpot, kit: MapKitKey, palette: MapPalette): KitSymbolRequest | null {
+  const asset = spotAsset(spot);
+  if (!asset) return null;
+  if (MAP_KIT_STYLE[kit] === 'halo') return { asset };
+  return { asset, state: spot.status ? palette.status[spot.status].fill : palette.unknown };
+}
+
+/** Every symbol the visible spots and decorations draw, deduplicated. */
+function symbolsOf(
+  spots: readonly DaySpot[],
+  decorations: MapDocument['decorations'],
+  kit: MapKitKey,
+  palette: MapPalette,
+): KitSymbolRequest[] {
+  const out = new Map<string, KitSymbolRequest>();
+  const add = (s: KitSymbolRequest | null) => {
+    if (s) out.set(kitSymbolId(s), s);
+  };
+  for (const s of spots) add(spotSymbol(s, kit, palette));
+  for (const d of decorations) {
+    const a = decorationAsset(d);
+    if (!a) continue;
+    add({
+      asset: decorationLayout(a, d.x, d.y, d.shape).asset,
+      flag: flagColour(palette, d.variant),
+    });
+  }
+  return [...out.values()].sort((a, b) => kitSymbolId(a).localeCompare(kitSymbolId(b)));
+}
+
 const SpotNode = memo(function SpotNode({
   spot,
+  kit,
   k,
   palette,
   selected,
@@ -184,6 +329,7 @@ const SpotNode = memo(function SpotNode({
   dimmed,
 }: {
   spot: DaySpot;
+  kit: MapKitKey;
   k: number;
   palette: MapPalette;
   selected: boolean;
@@ -191,33 +337,26 @@ const SpotNode = memo(function SpotNode({
   dimmed: boolean;
 }) {
   const { shape } = spot;
-  const w = shape.w;
-  const h = shape.type === 'circle' ? shape.w : shape.h;
+  const S = spotArtSize(shape);
+  const circle = shape.type === 'circle';
   const colours = spot.status ? palette.status[spot.status] : null;
-  const fill = colours?.fill ?? palette.unknown;
-  const fg = colours?.foreground ?? palette.spotStroke;
+  const halo = MAP_KIT_STYLE[kit] === 'halo';
+  const symbol = spotSymbol(spot, kit, palette);
   const glyph = spot.status ? STATUS_GLYPHS[spot.status] : null;
-  // The badge stays at least 14 dp wide, in the top-right corner of the shape.
-  const badgeR = Math.max(Math.min(w, h) * 0.22, 7 / k);
-  const badgeX = w * 0.36;
-  const badgeY = -h * 0.36;
-  const font = labelFontSize(Math.min(w, h), 0.34, k);
+  const corner = S * badgeOffset(kit);
+  const badgeR = Math.min(Math.max(S * 0.12, 6.5 / k), S * 0.2);
+  const font = labelFontSize(S, 0.2, k, 0.42);
+  const labelY = S * 0.36;
   const captionFont = (MIN_LABEL_DP * 1.1) / k;
-  const showCaption = !!spot.caption && captionFont <= h * 0.45;
-  const ring = (outset: number, props: object) =>
-    shape.type === 'circle' ? (
-      <Circle r={w / 2 + outset} fill="none" {...props} />
+  const showCaption = !!spot.caption && captionFont <= S * 0.3;
+  const rotate = spot.rotation ? `rotate(${spot.rotation})` : undefined;
+  const square = (side: number, props: object) =>
+    circle ? (
+      <Circle r={side / 2} {...props} />
     ) : (
-      <Rect
-        x={-w / 2 - outset}
-        y={-h / 2 - outset}
-        width={w + outset * 2}
-        height={h + outset * 2}
-        rx={Math.min(w, h) * 0.15 + outset}
-        fill="none"
-        {...props}
-      />
+      <Rect x={-side / 2} y={-side / 2} width={side} height={side} rx={side * 0.22} {...props} />
     );
+  const free = spot.status === 'free';
 
   return (
     <G
@@ -225,66 +364,84 @@ const SpotNode = memo(function SpotNode({
       opacity={dimmed ? 0.3 : 1}
       testID={`spot-${spot.id}`}
     >
-      <G transform={spot.rotation ? `rotate(${spot.rotation})` : undefined}>
-        {shape.type === 'circle' ? (
+      {halo && colours
+        ? square(S * 1.08, {
+            fill: colours.fill,
+            fillOpacity: free && !selected ? 0.16 : 0.42,
+            stroke: colours.fill,
+            strokeWidth: free ? 0 : S * 0.035,
+            strokeDasharray: spot.status === 'unavailable' ? [S * 0.06, S * 0.05] : undefined,
+          })
+        : null}
+      <G transform={rotate} opacity={spot.status === 'unavailable' ? 0.4 : 1}>
+        {symbol ? (
+          <Use href={`#${kitSymbolId(symbol)}`} x={-S / 2} y={-S / 2} width={S} height={S} />
+        ) : circle ? (
           <Circle
-            r={w / 2}
-            fill={fill}
-            stroke={palette.spotStroke}
-            strokeOpacity={SPOT_STROKE_OPACITY}
-            strokeWidth={1 / k}
+            r={shape.w * 0.42}
+            fill={halo ? palette.beach.canvas : (colours?.fill ?? palette.unknown)}
+            stroke={palette.beach.ink}
+            strokeWidth={shape.w * 0.05}
           />
         ) : (
           <Rect
-            x={-w / 2}
-            y={-h / 2}
-            width={w}
-            height={h}
-            rx={Math.min(w, h) * 0.15}
-            fill={fill}
-            stroke={palette.spotStroke}
-            strokeOpacity={SPOT_STROKE_OPACITY}
-            strokeWidth={1 / k}
+            x={-shape.w / 2}
+            y={-shape.h / 2}
+            width={shape.w}
+            height={shape.h}
+            rx={Math.min(shape.w, shape.h) * 0.18}
+            fill={halo ? palette.beach.canvas : (colours?.fill ?? palette.unknown)}
+            stroke={palette.beach.ink}
+            strokeWidth={Math.min(shape.w, shape.h) * 0.05}
           />
         )}
-        {spot.status === 'blocked' ? (
+      </G>
+      {spot.status === 'blocked' ? (
+        <G>
           <Line
-            x1={-w * 0.35}
-            y1={h * 0.35}
-            x2={w * 0.35}
-            y2={-h * 0.35}
-            stroke={fg}
-            strokeWidth={Math.max(2 / k, w * 0.06)}
+            x1={-S * 0.3}
+            y1={-S * 0.3}
+            x2={S * 0.3}
+            y2={S * 0.3}
+            stroke={palette.labelBackground}
+            strokeWidth={S * 0.13}
             strokeLinecap="round"
           />
-        ) : null}
-        {matched && !selected
-          ? ring(3 / k, {
-              stroke: palette.spotSelected,
-              strokeWidth: 2 / k,
-              strokeDasharray: [4 / k, 3 / k],
-            })
-          : null}
-        {selected ? ring(4 / k, { stroke: palette.spotSelected, strokeWidth: 3 / k }) : null}
-      </G>
-      {font > 0 ? (
-        <SvgText y={font * 0.35} fontSize={font} fontWeight="600" fill={fg} textAnchor="middle">
-          {spot.label}
-        </SvgText>
+          <Line
+            x1={-S * 0.3}
+            y1={-S * 0.3}
+            x2={S * 0.3}
+            y2={S * 0.3}
+            stroke={palette.labelForeground}
+            strokeWidth={S * 0.06}
+            strokeLinecap="round"
+          />
+        </G>
       ) : null}
+      {matched && !selected
+        ? square(S * 0.94, {
+            fill: 'none',
+            stroke: palette.spotSelected,
+            strokeWidth: 2 / k,
+            strokeDasharray: [4 / k, 3 / k],
+          })
+        : null}
+      {selected
+        ? square(S * 0.94, { fill: 'none', stroke: palette.spotSelected, strokeWidth: 3 / k })
+        : null}
       {glyph && colours ? (
         <G>
           <Circle
-            cx={badgeX}
-            cy={badgeY}
+            cx={corner}
+            cy={-corner}
             r={badgeR}
             fill={colours.fill}
-            stroke={palette.sand}
-            strokeWidth={1.5 / k}
+            stroke={palette.labelBackground}
+            strokeWidth={badgeR * 0.28}
           />
           <Path
             d={GLYPH_PATHS[glyph]}
-            transform={`translate(${badgeX - badgeR * 0.8} ${badgeY - badgeR * 0.8}) scale(${(badgeR * 1.6) / 24})`}
+            transform={`translate(${corner - badgeR * 0.72} ${-corner - badgeR * 0.72}) scale(${(badgeR * 1.44) / 24})`}
             stroke={colours.foreground}
             strokeWidth={glyphStrokeWidth(glyph)}
             strokeLinecap="round"
@@ -293,15 +450,17 @@ const SpotNode = memo(function SpotNode({
           />
         </G>
       ) : null}
+      {font > 0 ? (
+        <LabelPill x={0} y={labelY} text={spot.label} font={font} palette={palette} bold />
+      ) : null}
       {showCaption && spot.caption ? (
-        <SvgText
-          y={h / 2 + captionFont * 1.1}
-          fontSize={captionFont}
-          fill={palette.spotStroke}
-          textAnchor="middle"
-        >
-          {truncate(spot.caption, w * 1.5, captionFont)}
-        </SvgText>
+        <LabelPill
+          x={0}
+          y={labelY + Math.max(font, captionFont) * 1.5}
+          text={truncate(spot.caption, S * 1.5, captionFont)}
+          font={captionFont}
+          palette={palette}
+        />
       ) : null}
     </G>
   );

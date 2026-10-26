@@ -2,6 +2,7 @@
 // screens and tests never touch the native module. The production bridge
 // writes to the app group (iOS) / shared preferences (Android) through
 // expo-widgets; nothing leaves the device.
+import { requireOptionalNativeModule } from 'expo';
 import { Platform } from 'react-native';
 
 import { errorKind } from '@/lib/log';
@@ -55,7 +56,20 @@ export function createExpoWidgetBridge(
   };
 }
 
-function loadDaySummaryWidget(): DaySummaryWidget | null {
+/**
+ * Loads the widget module only when its native module is in the build. In
+ * development Metro reports a module that throws while loading as a fatal
+ * error (red screen in Expo Go) even inside a try/catch, so the check comes
+ * before the require.
+ */
+export function loadDaySummaryWidget(
+  hasNativeModule: () => boolean = () => requireOptionalNativeModule('ExpoWidgets') != null,
+  requireWidget: () => DaySummaryWidget | null = requireDaySummaryWidget,
+): DaySummaryWidget | null {
+  return hasNativeModule() ? requireWidget() : null;
+}
+
+function requireDaySummaryWidget(): DaySummaryWidget | null {
   // Lazy on purpose (see above): a static import would load the native module at start.
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const mod = require('@/widgets/day-summary-widget') as { default: DaySummaryWidget | null };

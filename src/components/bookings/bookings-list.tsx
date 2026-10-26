@@ -3,11 +3,10 @@ import {
   CircleAlertIcon,
   LockIcon,
   RefreshCwIcon,
-  SearchIcon,
   SearchXIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react-native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, View } from 'react-native';
 
@@ -15,10 +14,11 @@ import { isForbidden } from '@/api/errors';
 import type { BookingSummary } from '@/api/types';
 import { CachedNotice, servedFromCache } from '@/components/cached-notice';
 import { ChipRow, FilterChip } from '@/components/filter-chip';
+import type { ListState } from '@/components/layout/master-detail';
+import { SearchField } from '@/components/search-field';
 import { StateView } from '@/components/state-view';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import {
   CHANNEL_FILTERS,
@@ -48,11 +48,14 @@ export function BookingsList({
   initialDay = 'today',
   selectedId,
   onSelect,
+  onListState,
 }: {
   initialFilter?: DayFilter;
   initialDay?: ListDay;
   selectedId?: string;
   onSelect: (booking: BookingSummary) => void;
+  /** What the list shows, for the detail beside it (MasterDetail). */
+  onListState?: (state: ListState) => void;
 }) {
   const { t } = useTranslation();
   const days = useOperationalDays();
@@ -86,6 +89,17 @@ export function BookingsList({
     [all, date, channel, search, includeClosed],
   );
 
+  const listState: ListState = all
+    ? all.length === 0
+      ? 'empty'
+      : shown.length === 0
+        ? 'noMatch'
+        : 'items'
+    : query.isError || query.isPaused
+      ? 'empty'
+      : 'loading';
+  useEffect(() => onListState?.(listState), [listState, onListState]);
+
   const extraActive =
     (channel !== DEFAULT_DAY_LIST_QUERY.channel ? 1 : 0) +
     (sort !== DEFAULT_DAY_LIST_QUERY.sort ? 1 : 0) +
@@ -109,21 +123,13 @@ export function BookingsList({
   return (
     <View className="flex-1 bg-background">
       <View className="gap-3 border-b border-border px-4 pb-3 pt-4">
-        <View className="flex-row items-center gap-2">
-          <Icon as={SearchIcon} size={18} className="text-muted-foreground" />
-          <Input
-            className="flex-1"
-            value={search}
-            onChangeText={setSearch}
-            accessibilityLabel={t('bookings.list.searchLabel')}
-            placeholder={t('bookings.list.searchPlaceholder')}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="search"
-            clearButtonMode="while-editing"
-          />
-        </View>
-        <ChipRow label={t('bookings.list.filtersLabel')}>
+        <SearchField
+          value={search}
+          onChangeText={setSearch}
+          label={t('bookings.list.searchLabel')}
+          placeholder={t('bookings.list.searchPlaceholder')}
+        />
+        <ChipRow bleed label={t('bookings.list.filtersLabel')}>
           {DAY_FILTERS.map((f) => (
             <FilterChip
               key={f}
@@ -142,7 +148,7 @@ export function BookingsList({
             />
           ))}
         </ChipRow>
-        <View className="flex-row flex-wrap items-end justify-between gap-2">
+        <View className="flex-row flex-wrap items-end justify-between gap-x-2 gap-y-1">
           <ChipRow label={t('bookings.list.dayLabel')} scroll={false}>
             {(['today', 'tomorrow'] as const).map((d) => (
               <FilterChip
@@ -170,7 +176,7 @@ export function BookingsList({
         </View>
         {expanded ? (
           <View className="gap-3">
-            <ChipRow label={t('bookings.list.channelLabel')}>
+            <ChipRow bleed label={t('bookings.list.channelLabel')}>
               {CHANNEL_FILTERS.map((c) => (
                 <FilterChip
                   key={c}
@@ -180,7 +186,7 @@ export function BookingsList({
                 />
               ))}
             </ChipRow>
-            <ChipRow label={t('bookings.list.sortLabel')}>
+            <ChipRow bleed label={t('bookings.list.sortLabel')}>
               {DAY_SORTS.map((s) => (
                 <FilterChip
                   key={s}
@@ -230,12 +236,14 @@ export function BookingsList({
             ListEmptyComponent={
               all.length === 0 ? (
                 <StateView
+                  align="top"
                   icon={CalendarXIcon}
                   title={t('bookings.list.emptyTitle')}
                   description={t('bookings.list.emptyDescription')}
                 />
               ) : (
                 <StateView
+                  align="top"
                   icon={SearchXIcon}
                   title={t('bookings.list.noMatchTitle')}
                   description={t('bookings.list.noMatchDescription')}
@@ -252,9 +260,10 @@ export function BookingsList({
         </>
       ) : query.isError || query.isPaused ? (
         isForbidden(query.error) ? (
-          <StateView icon={LockIcon} title={t('offline.errors.forbidden')} />
+          <StateView align="top" icon={LockIcon} title={t('offline.errors.forbidden')} />
         ) : (
           <StateView
+            align="top"
             icon={CircleAlertIcon}
             tone="destructive"
             title={t('today.errorTitle')}
@@ -267,7 +276,7 @@ export function BookingsList({
           </StateView>
         )
       ) : (
-        <StateView busy title={t('common.loading')} />
+        <StateView align="top" busy title={t('common.loading')} />
       )}
     </View>
   );

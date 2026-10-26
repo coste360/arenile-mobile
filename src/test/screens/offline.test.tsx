@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
 import { QueryClient } from '@tanstack/react-query';
 
@@ -161,6 +161,53 @@ describe('connection indicator', () => {
     expect(
       await screen.findByRole('button', { name: 'Connesso, 1 operazione da controllare' }),
     ).toBeOnTheScreen();
+  });
+});
+
+describe('connection indicator in the collapsed tablet rail', () => {
+  it.each([
+    ['pending only', [queued()], '1', 'Senza rete, 1 operazione in attesa'],
+    [
+      'pending and to check',
+      [
+        queued(),
+        queued({
+          id: 'op-2',
+          idempotencyKey: 'key-0002-abcd',
+          seq: 2,
+          status: 'conflict',
+          error: { status: 409, type: 'cash_session_closed' },
+        } as Partial<OfflineOperation>),
+      ],
+      '2',
+      'Senza rete, 1 operazione in attesa, 1 operazione da controllare',
+    ],
+  ] as const)(
+    'shows the icon with a count badge and no text (%s)',
+    async (_, ops, badge, description) => {
+      const { screen } = await renderApp({
+        session: SESSION,
+        routes: OFFLINE,
+        size: 'tabletPortrait',
+        connected: false,
+        offlineData: queue(...ops),
+      });
+      const indicator = await screen.findByRole('button', { name: description });
+      expect(indicator).toHaveProp('testID', 'connection-indicator');
+      expect(within(indicator).getByText(badge)).toBeOnTheScreen();
+      expect(within(indicator).queryByText('Senza rete')).toBeNull();
+      expect(within(indicator).queryByText(/operazion/)).toBeNull();
+    },
+  );
+
+  it('shows no badge while nothing waits', async () => {
+    const { screen } = await renderApp({
+      session: SESSION,
+      routes: ONLINE,
+      size: 'tabletPortrait',
+    });
+    const indicator = await screen.findByRole('button', { name: 'Connesso' });
+    expect(within(indicator).queryByText(/\S/)).toBeNull();
   });
 });
 

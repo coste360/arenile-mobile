@@ -73,6 +73,8 @@ export interface DaySpot extends PlacedShape {
   id: string;
   label: string;
   kind: string;
+  /** Kit illustration chosen in the panel; absent = the default of the kind. */
+  asset?: string;
   /** Server status for the slot; undefined while the day is not known. */
   serverStatus?: OperationalSpotStatus;
   /** Colour status; null while the day is not known (drawn neutral, no glyph). */
@@ -122,6 +124,7 @@ export function buildDaySpots({
       id: spot.id,
       label: spot.label,
       kind: spot.kind,
+      asset: spot.asset,
       x: spot.x,
       y: spot.y,
       rotation: spot.rotation,
