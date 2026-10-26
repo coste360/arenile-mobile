@@ -64,8 +64,10 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
   `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
   `ConnectionIndicator`, `OnlineOnlyNotice`, `FilterChip`, `CachedNotice`); `bookings/` (list, row,
-  badges, sheet), `today/` (figure card, home shortcuts) and `operations/` (the embeddable operation
-  panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms) and `reports/`
+  badges, sheet), `today/` (figure card and grid, slot occupancy, home shortcuts) and `operations/` (the
+  embeddable operation panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms),
+  `reports/` (metric cards, week chart) and `charts/` (`useChartColors`: theme colours for
+  react-native-svg props, from `src/lib/theme.ts`)
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
 - `modules/pinned-fetch/` local Expo module (Swift, Kotlin, JS adapter): the certificate-pinning

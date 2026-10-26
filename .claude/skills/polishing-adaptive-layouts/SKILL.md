@@ -37,7 +37,8 @@ missing): `NAV_RAIL` 64, `NAV_PANE` 288, `LIST_PANE` 320, `MIN_DETAIL` 360,
 content). Every width rule (`sheetBesideMap` of the day map included) reads them, never 288 or a
 breakpoint.
 
-1. **Navigation (tablet):** a ≡ button as `headerLeft` of every tablet screen (label
+1. **Navigation (tablet):** a ≡ button as `headerLeft` of every screen opened from the pane (a
+   screen pushed from another one keeps the back button instead; label
    `nav.toggleMenu`) toggles the pane; state kept in the tablet layout, not per screen. Collapsed =
    icon rail of `NAV_RAIL` (icons only, `accessibilityLabel` per item, active state kept, connection
    status as its icon). Expanded: beside the content when the content keeps
@@ -66,6 +67,13 @@ breakpoint.
    has `numberOfLines`.
 6. **Titles:** the header title names the column it belongs to; a split shows the list title, the
    detail names itself in its own heading.
+
+7. **Width:** every screen uses the full content width with the 16 pt gutter (`Screen`, list
+   headers, `DetailScroll`): no centred column. Cards go side by side with `Columns`
+   (`columnsFor`, `MIN_COLUMN` 320) and `grow` on each card; only the pre-pairing forms
+   (`connect`, `manual`) stay a centred `max-w-lg`.
+8. **Day:** map and bookings choose the day with `DayPicker` (Oggi · Domani · calendar, ADR 0014),
+   never a local today/tomorrow control.
 
 ## Workflow
 

@@ -313,11 +313,6 @@
     "mapFallback": "Map",
     "seaLabel": "Sea",
     "maps": "Maps",
-    "day": {
-      "label": "Day",
-      "today": "Today",
-      "tomorrow": "Tomorrow"
-    },
     "slot": {
       "label": "Slot",
       "FULL": "Full day",
@@ -405,7 +400,6 @@
       "forbidden": {
         "title": "Not allowed"
       },
-      "closed": "Closing day or out of season.",
       "dayLoading": "Loading the statuses of the day…",
       "dayError": "Statuses of the day not available: the map shows the spots only."
     },
@@ -476,8 +470,6 @@
   },
   "today": {
     "heading": "Today, {{date}}",
-    "closedTitle": "Establishment closed",
-    "closedDescription": "Today is a closing day or out of season.",
     "figures": {
       "arrivals": "Arrivals",
       "present": "Present",
@@ -496,6 +488,19 @@
       "title": "The day",
       "today": "Today's summary",
       "bookings": "The day's bookings"
+    },
+    "slots": {
+      "title": "Occupancy by slot",
+      "AM": "Morning",
+      "PM": "Afternoon",
+      "uses": {
+        "occupied": "Occupied",
+        "free": "Free",
+        "closed": "Unavailable"
+      },
+      "count": "{{label}} {{count}}",
+      "rowA11y": "{{slot}}: {{occupied}} occupied, {{free}} free, {{closed}} unavailable, out of {{total}} spots.",
+      "hint": "Free includes the days released by season pass holders; unavailable means closed or blocked spots."
     }
   },
   "spots": {
@@ -562,11 +567,6 @@
         "season_pass": "Pass holders"
       },
       "chipLabel": "{{label}}, {{count}}",
-      "dayLabel": "Day",
-      "days": {
-        "today": "Today",
-        "tomorrow": "Tomorrow"
-      },
       "channelLabel": "Channel",
       "channels": {
         "all": "All channels",
@@ -699,7 +699,12 @@
       "spotsSearchPlaceholder": "For example A1",
       "spotsEmpty": "No spot found.",
       "spotsUnavailable": "Today's map is not available: a connection is needed at least once.",
-      "spotsMore": "Refine the search to see the other spots."
+      "spotsMore": "Refine the search to see the other spots.",
+      "detailLabel": "Operation detail",
+      "selectTitle": "Choose a spot",
+      "selectDescription": "Or look up the code of a booking or a ticket.",
+      "spotsCount_one": "{{count}} spot",
+      "spotsCount_other": "{{count}} spots"
     },
     "scan": {
       "cameraLabel": "Camera preview for booking and ticket QR codes",
@@ -937,6 +942,13 @@
       "error": "The reports could not be loaded from the instance.",
       "stale": "Data not up to date. {{reason}}",
       "retry": "Try again"
+    },
+    "chart": {
+      "title": "Week at a glance",
+      "scale": "Scale up to {{value}}",
+      "a11y": "Chart: {{metric}} day by day, {{year}} compared with {{previousYear}}. {{days}}",
+      "dayA11y": "{{day}}: {{value}}, in {{year}} {{previous}}.",
+      "empty": "No values this week, this year or last year."
     }
   },
   "widget": {
@@ -1184,5 +1196,21 @@
     },
     "results_one": "{{count}} entry",
     "results_other": "{{count}} entries"
+  },
+  "dayPicker": {
+    "label": "Day",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "other": "Choose another day",
+    "change": "change day",
+    "title": "Choose the day"
+  },
+  "closedDay": {
+    "title": "Establishment closed",
+    "today": "Today is a closure day or out of season.",
+    "tomorrow": "Tomorrow is a closure day or out of season.",
+    "other": "{{date}}: closure day or out of season.",
+    "offlineTitle": "Day available online only",
+    "offlineDescription": "Only today and tomorrow are kept on this device. Other days need a connection to the instance."
   }
 }

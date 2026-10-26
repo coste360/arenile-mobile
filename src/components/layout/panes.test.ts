@@ -1,4 +1,4 @@
-import { contentWidth, detailFitsBeside, navFitsBeside, navMode } from './panes';
+import { columnsFor, contentWidth, detailFitsBeside, navFitsBeside, navMode } from './panes';
 
 describe('tablet panes', () => {
   it.each([
@@ -38,5 +38,20 @@ describe('tablet panes', () => {
     [906, true],
   ])('detail beside the list in %d pt of content: %s', (content, fits) => {
     expect(detailFitsBeside(content)).toBe(fits);
+  });
+
+  it.each([
+    // Phone and narrow Split View: one card per row.
+    [390, 2, 1],
+    [584, 2, 1],
+    // Two cards of 320 pt, the gap and both gutters.
+    [688, 2, 2],
+    // iPad 11" portrait with the rail, landscape with the pane beside.
+    [770, 2, 2],
+    [906, 3, 2],
+    [1130, 3, 3],
+    [1130, 2, 2],
+  ])('cards side by side in %d pt of content (at most %d): %d', (content, max, columns) => {
+    expect(columnsFor(content, max)).toBe(columns);
   });
 });

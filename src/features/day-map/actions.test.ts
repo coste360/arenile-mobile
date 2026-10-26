@@ -43,6 +43,15 @@ describe('spotActions', () => {
     ['block a free spot', free, 'manager', TODAY, { block: true }],
     ['viewer cannot block', free, 'viewer', TODAY, {}],
     ['unblock a manual block', blocked, 'owner', TODAY, { unblock: true }],
+    // Days from the calendar (ADR 0014): the queued release stays in the
+    // offline window, blocks are online and may be planned ahead, past days
+    // are read only.
+    ['no release the day after tomorrow', pass, 'cashier', '2026-10-27', {}],
+    ['no release on a past day', pass, 'cashier', '2026-10-20', {}],
+    ['block a free spot next week', free, 'manager', '2026-11-01', { block: true }],
+    ['no block on a past day', free, 'manager', '2026-10-20', {}],
+    ['unblock next week', blocked, 'owner', '2026-11-01', { unblock: true }],
+    ['no unblock on a past day', blocked, 'owner', '2026-10-20', {}],
   ])('%s', (_name, s, role, date, expected) => {
     expect(spotActions(s, abilitiesOf(role), { date, today: TODAY, slot: 'FULL' })).toEqual({
       ...NO_ACTIONS,

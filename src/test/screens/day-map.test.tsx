@@ -5,7 +5,8 @@ import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-han
 
 import type { MapDocument, OperationsDay, Permission, Role } from '@/api/types';
 import { ROLE_PERMISSIONS } from '@/features/permissions/permissions';
-import { DEVICE, json, meta, problem, type Handler } from '@/test/fake-fetch';
+import { datesRequested, OTHER_DAY, pickDay } from '@/test/day-picker';
+import { DEVICE, json, meta, networkDown, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { beachMap, mapDocument } from '@/test/map-fixtures';
 import { operationalBooking, operationsDay, spot } from '@/test/operations-fixtures';
@@ -384,7 +385,9 @@ describe('day map', () => {
 
   it('says the day is closed', async () => {
     const { screen } = await openMap({ day: operationsDay({ closed: true, spots: [] }) });
-    expect(await screen.findByText('Giorno di chiusura o fuori stagione.')).toBeOnTheScreen();
+    expect(
+      await screen.findByText('Oggi è un giorno di chiusura o fuori stagione.'),
+    ).toBeOnTheScreen();
   });
 
   it('explains that maps are drawn in the panel when there are none', async () => {
@@ -428,5 +431,94 @@ describe('day map: spot sheet placement on tablets', () => {
     // The toolbar is in the map column either way; the sheet only when under the map.
     expect(within(column).getByLabelText('Cerca una postazione')).toBeOnTheScreen();
     expect(within(column).queryByTestId('spot-sheet') !== null).toBe(!beside);
+  });
+});
+
+describe('day map: days beyond today and tomorrow (ADR 0014)', () => {
+  const DAY_PATH = `${EST}/operations/day`;
+
+  it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletLandscape'])(
+    'loads a day chosen in the calendar and shows its date in the third segment (%s)',
+    async (size) => {
+      const { screen, network } = await openMap({}, size);
+      expect(await screen.findByLabelText('Libero: 1')).toBeOnTheScreen();
+      expect(screen.getByRole('radio', { name: 'Scegli un altro giorno' })).not.toBeChecked();
+
+      await pickDay(screen, '2026-11-03');
+
+      await waitFor(() => expect(datesRequested(network.calls, DAY_PATH)).toContain('2026-11-03'));
+      const other = await screen.findByRole('radio', { name: 'mar 3 nov, cambia giorno' });
+      expect(other).toBeChecked();
+      expect(within(other).getByText('mar 3 nov')).toBeOnTheScreen();
+      expect(screen.getByRole('radio', { name: /^Oggi/ })).not.toBeChecked();
+      expect(screen.queryByTestId('day-picker-calendar')).toBeNull();
+    },
+  );
+
+  it('offers no pass day release beyond tomorrow: the release is queued offline', async () => {
+    const { screen } = await openMap({ role: 'beach_staff' });
+    expect(await screen.findByLabelText('Libero: 1')).toBeOnTheScreen();
+    await pickDay(screen, '2026-10-30');
+    expect(await screen.findByRole('radio', { name: /cambia giorno$/ })).toBeChecked();
+    await fireEvent.press(await screen.findByRole('radio', { name: 'Elenco' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'B1, Abbonato, Verdi Anna' }));
+    expect(await screen.findByText('B1')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Rilascia il giorno' })).toBeNull();
+  });
+
+  it('goes back to "Oggi" when today\'s date is chosen in the calendar', async () => {
+    const { screen } = await openMap();
+    expect(await screen.findByLabelText('Libero: 1')).toBeOnTheScreen();
+    await pickDay(screen, '2026-11-03');
+    expect(await screen.findByRole('radio', { name: 'mar 3 nov, cambia giorno' })).toBeChecked();
+
+    await pickDay(screen, '2026-10-25');
+
+    expect(await screen.findByRole('radio', { name: /^Oggi/ })).toBeChecked();
+    expect(screen.getByRole('radio', { name: OTHER_DAY })).toHaveProp(
+      'accessibilityLabel',
+      'Scegli un altro giorno',
+    );
+  });
+
+  it('says a day outside today and tomorrow is online only, and today still shows offline', async () => {
+    const window = new Set(['2026-10-25', '2026-10-26']);
+    const { screen, connectivity } = await openMap({
+      extra: {
+        [`GET ${DAY_PATH}`]: (r) =>
+          window.has(new URL(r.url).searchParams.get('date') ?? '')
+            ? json(200, DAY)
+            : networkDown(r),
+      },
+    });
+    expect(await screen.findByLabelText('Libero: 1')).toBeOnTheScreen();
+    await act(async () => connectivity.set(false));
+
+    await pickDay(screen, '2026-11-03');
+    expect(await screen.findByText('Giorno disponibile solo online')).toBeOnTheScreen();
+    expect(screen.getByText(/Sul dispositivo restano solo oggi e domani/)).toBeOnTheScreen();
+    expect(screen.queryByText(/Stati del giorno non disponibili/)).toBeNull();
+
+    await fireEvent.press(screen.getByRole('radio', { name: /^Oggi/ }));
+    expect(await screen.findByLabelText('Libero: 1')).toBeOnTheScreen();
+    expect(screen.queryByText('Giorno disponibile solo online')).toBeNull();
+  });
+
+  it('says tomorrow is a closure day', async () => {
+    const { screen } = await openMap({
+      extra: {
+        [`GET ${DAY_PATH}`]: (r) =>
+          new URL(r.url).searchParams.get('date') === '2026-10-26'
+            ? json(200, operationsDay({ date: '2026-10-26', closed: true, spots: [] }))
+            : json(200, DAY),
+      },
+    });
+    expect(await screen.findByLabelText('Libero: 1')).toBeOnTheScreen();
+    expect(screen.queryByText('Stabilimento chiuso')).toBeNull();
+    await fireEvent.press(screen.getByRole('radio', { name: /^Domani/ }));
+    expect(
+      await screen.findByText('Domani è un giorno di chiusura o fuori stagione.'),
+    ).toBeOnTheScreen();
+    expect(screen.getByText('Stabilimento chiuso')).toBeOnTheScreen();
   });
 });

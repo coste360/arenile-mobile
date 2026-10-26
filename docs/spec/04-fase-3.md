@@ -17,7 +17,12 @@ registrati nell'account Apple di Coste360.
   navigazione su tablet) solo per i ruoli con `reports.read`. Giorno o settimana (lunedì–domenica), con
   navigazione all'indietro fino a quella corrente; incassato, occupazione, prenotazioni e prenotato
   rispetto all'anno precedente (stessa data o stesso giorno della settimana) e, per la settimana, il
-  giorno per giorno. Dati dal confronto con l'anno precedente del core (`GET reports/comparison`); solo
+  giorno per giorno: un grafico a barre (lunedì–domenica) di incassato e occupazione, anno corrente
+  accanto all'anno precedente (più chiaro), con legenda e scala scritte e un riepilogo con tutti i
+  valori per i lettori di schermo, e sotto l'elenco con i numeri di ogni giorno. Il grafico usa la serie
+  giornaliera della stessa risposta (`series`, `granularity=day`); l'occupazione è sempre in scala
+  0–100%, l'incassato sul giorno più alto dei due anni. Per il singolo giorno nessun grafico (un solo
+  punto). Dati dal confronto con l'anno precedente del core (`GET reports/comparison`); solo
   online, non salvati nella cache offline ([ADR 0010](../adr/0010-report-essenziali-e-widget.md)).
 - **Widget:** `DaySummary` per iOS (piccolo e medio) e Android con arrivi, da saldare, presenti e
   postazioni libere di oggi, calcolati dall'app dal giorno operativo già in cache; solo conteggi, nessun

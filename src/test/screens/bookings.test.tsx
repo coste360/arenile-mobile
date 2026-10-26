@@ -1,10 +1,11 @@
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
 import { QUEUE_KEY } from '@/features/offline/queue';
 import type { OfflineOperation } from '@/features/offline/types';
+import { datesRequested, pickDay } from '@/test/day-picker';
 import { dayRoutes, EST } from '@/test/day-routes';
-import { problem } from '@/test/fake-fetch';
+import { networkDown, problem } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { bookingDetail, customer } from '@/test/operations-fixtures';
 import { renderApp, setWindow, type RenderAppOptions, type WindowSize } from '@/test/render-app';
@@ -12,7 +13,7 @@ import { renderApp, setWindow, type RenderAppOptions, type WindowSize } from '@/
 async function open(path: string, options: RenderAppOptions = {}) {
   const app = await renderApp({ session: SESSION, routes: dayRoutes(), ...options });
   expect(await app.screen.findByText('Lido Azzurro')).toBeOnTheScreen();
-  await act(async () => router.push(path));
+  await act(async () => router.push(path as Href));
   return app;
 }
 
@@ -81,7 +82,7 @@ describe('bookings of the day', () => {
   it("switches to tomorrow's bookings", async () => {
     const { screen } = await open('/bookings');
     await screen.findByText('3 prenotazioni');
-    await fireEvent.press(screen.getByRole('button', { name: 'Domani' }));
+    await fireEvent.press(screen.getByRole('radio', { name: /^Domani/ }));
     expect(await screen.findByText('Nessuna prenotazione')).toBeOnTheScreen();
   });
 
@@ -403,5 +404,65 @@ describe('bookings across a resize (rotation, Split View)', () => {
     expect(getPathname()).toBe('/bookings');
     // The list cleared its selection before pushing the sheet (BookingsScreen effect).
     expect(getSearchParams().selected).toBeUndefined();
+  });
+});
+
+describe('bookings of any day (ADR 0014)', () => {
+  const BOOKINGS = `${EST}/bookings`;
+
+  it.each<WindowSize>(['phone', 'tabletPortrait'])(
+    'loads a day chosen in the calendar and shows its date in the third segment (%s)',
+    async (size) => {
+      const { screen, network } = await open('/bookings', { size });
+      expect(await screen.findByText('3 prenotazioni')).toBeOnTheScreen();
+
+      await pickDay(screen, '2026-11-03');
+
+      await waitFor(() =>
+        expect(datesRequested(network.calls, BOOKINGS, 'from')).toContain('2026-11-03'),
+      );
+      expect(await screen.findByText('Nessuna prenotazione')).toBeOnTheScreen();
+      expect(screen.getByRole('radio', { name: 'mar 3 nov, cambia giorno' })).toBeChecked();
+      expect(screen.getByRole('radio', { name: /^Oggi/ })).not.toBeChecked();
+    },
+  );
+
+  it('goes back to "Oggi" when today\'s date is chosen in the calendar', async () => {
+    const { screen } = await open('/bookings');
+    expect(await screen.findByText('3 prenotazioni')).toBeOnTheScreen();
+    await pickDay(screen, '2026-11-03');
+    expect(await screen.findByText('Nessuna prenotazione')).toBeOnTheScreen();
+
+    await pickDay(screen, '2026-10-25');
+
+    expect(await screen.findByText('3 prenotazioni')).toBeOnTheScreen();
+    expect(screen.getByRole('radio', { name: /^Oggi/ })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Scegli un altro giorno' })).not.toBeChecked();
+  });
+
+  it('opens the day of a ?day=YYYY-MM-DD link', async () => {
+    const { screen, network } = await open('/bookings?day=2026-11-03');
+    expect(await screen.findByText('Nessuna prenotazione')).toBeOnTheScreen();
+    expect(screen.getByRole('radio', { name: 'mar 3 nov, cambia giorno' })).toBeChecked();
+    // Today and tomorrow are also asked by the home (offline window); the list asks its day.
+    expect(datesRequested(network.calls, BOOKINGS, 'from')).toContain('2026-11-03');
+  });
+
+  it('says a day outside today and tomorrow is online only', async () => {
+    const routes = dayRoutes();
+    const online = routes[`GET ${BOOKINGS}`]!;
+    routes[`GET ${BOOKINGS}`] = (r) =>
+      ['2026-10-25', '2026-10-26'].includes(new URL(r.url).searchParams.get('from') ?? '')
+        ? online(r)
+        : networkDown(r);
+    const { screen, connectivity } = await open('/bookings', { routes });
+    expect(await screen.findByText('3 prenotazioni')).toBeOnTheScreen();
+    await act(async () => connectivity.set(false));
+
+    await pickDay(screen, '2026-11-03');
+
+    expect(await screen.findByText('Giorno disponibile solo online')).toBeOnTheScreen();
+    expect(screen.getByText(/Sul dispositivo restano solo oggi e domani/)).toBeOnTheScreen();
+    expect(rowIds(screen)).toEqual([]);
   });
 });

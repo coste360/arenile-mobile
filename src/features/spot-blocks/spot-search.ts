@@ -12,6 +12,7 @@ const collator = new Intl.Collator('it', { numeric: true, sensitivity: 'base' })
 export function matchSpots(
   spots: readonly OperationalSpot[],
   query: string,
+  max: number = SPOT_RESULTS_MAX,
 ): { spots: OperationalSpot[]; more: boolean } {
   const q = query.trim().toUpperCase();
   const active = spots.filter((s) => s.status !== 'inactive');
@@ -24,5 +25,5 @@ export function matchSpots(
   }
   const byLabel = (a: OperationalSpot, b: OperationalSpot) => collator.compare(a.label, b.label);
   const all = [...starts.sort(byLabel), ...contains.sort(byLabel)];
-  return { spots: all.slice(0, SPOT_RESULTS_MAX), more: all.length > SPOT_RESULTS_MAX };
+  return { spots: all.slice(0, max), more: all.length > max };
 }

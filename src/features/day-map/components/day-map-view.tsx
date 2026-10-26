@@ -1,23 +1,27 @@
-import { CircleAlertIcon, ListIcon, MapIcon } from 'lucide-react-native';
+import { CircleAlertIcon, CloudOffIcon, ListIcon, MapIcon } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 
+import { ClosedDayNotice } from '@/components/closed-day-notice';
 import { SearchField } from '@/components/search-field';
+import { ChoiceGroup } from '@/components/segmented-choice';
 import { StateView } from '@/components/state-view';
 import { useContentWidth } from '@/components/layout/nav-pane';
 import { SHEET_PANE } from '@/components/layout/panes';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { isForbidden } from '@/api/errors';
 import type { BeachMap, Slots } from '@/api/types';
 import { useMapDocument, useMaps } from '@/features/maps/queries';
+import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useOperationalDays, useOperationsDay } from '@/features/operations/queries';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { useEstablishment } from '@/features/session/queries';
+import { inOfflineWindow, resolveDay, type DaySelection } from '@/lib/calendar';
 import { cn } from '@/lib/utils';
 
 import { contentRect, hitTest, type Point } from '../geometry';
@@ -31,7 +35,7 @@ import {
   searchSpots,
   type DaySpot,
 } from '../model';
-import { ChoiceGroup, DayToolbar, type DayChoice } from './day-toolbar';
+import { DayToolbar } from './day-toolbar';
 import { MapCanvas } from './map-canvas';
 import { MapViewport, OVERSCAN, type FocusRequest } from './map-viewport';
 import { SpotList } from './spot-list';
@@ -106,7 +110,7 @@ function ErrorState({ forbidden, onRetry }: { forbidden: boolean; onRetry: () =>
 }
 
 interface PaneSettings {
-  day: DayChoice;
+  day: DaySelection;
   slot: Slots;
   view: 'map' | 'list';
 }
@@ -136,14 +140,15 @@ function MapPane({
   const abilities = useAbilities();
   const { today, tomorrow, timeZone } = useOperationalDays();
   const { day: dayChoice, slot, view } = settings;
-  const setDayChoice = (day: DayChoice) => onSettings({ day });
+  const setDayChoice = (day: DaySelection) => onSettings({ day });
   const setSlot = (value: Slots) => onSettings({ slot: value });
   const setView = (value: 'map' | 'list') => onSettings({ view: value });
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [focus, setFocus] = useState<FocusRequest | undefined>();
   const nonce = useRef(0);
-  const date = dayChoice === 'today' ? today : tomorrow;
+  const date = resolveDay(dayChoice, { today, tomorrow });
+  const { available: online } = useOnlineOnly();
 
   const doc = useMapDocument(mapId);
   // The whole day (FULL) is what the offline cache keeps: the half-day
@@ -262,11 +267,14 @@ function MapPane({
   const banners = (
     <View className="gap-2 px-4">
       {day.data?.closed ? (
-        <Alert icon={CircleAlertIcon}>
-          <AlertDescription>{t('dayMap.states.closed')}</AlertDescription>
-        </Alert>
+        <ClosedDayNotice date={date} days={{ today, tomorrow }} locale={locale} />
       ) : null}
-      {!day.data && day.isError ? (
+      {!day.data && !online && !inOfflineWindow(date, { today, tomorrow }) ? (
+        <Alert icon={CloudOffIcon} accessibilityLiveRegion="polite">
+          <AlertTitle>{t('closedDay.offlineTitle')}</AlertTitle>
+          <AlertDescription>{t('closedDay.offlineDescription')}</AlertDescription>
+        </Alert>
+      ) : !day.data && day.isError ? (
         <Alert icon={CircleAlertIcon} variant="destructive" accessibilityLiveRegion="polite">
           <AlertDescription>
             {isForbidden(day.error) ? t('offline.errors.forbidden') : t('dayMap.states.dayError')}

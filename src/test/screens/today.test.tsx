@@ -10,6 +10,7 @@ import { createMemoryKeyValueStore } from '@/lib/storage';
 import { DAY, DAY_BOOKINGS, dayRoutes, EST, TODAY } from '@/test/day-routes';
 import { DEVICE, networkDown } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
+import { spot } from '@/test/operations-fixtures';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 async function openToday(size: WindowSize = 'phone', routes = dayRoutes()) {
@@ -32,6 +33,64 @@ describe('Oggi', () => {
     expect(
       screen.getByRole('button', { name: 'Giorni rilasciati dagli abbonati: 1' }),
     ).toBeOnTheScreen();
+  });
+
+  it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletLandscape'])(
+    'shows the occupancy of the morning and the afternoon on a %s',
+    async (size) => {
+      const { screen } = await openToday(
+        size,
+        dayRoutes({
+          day: {
+            ...DAY,
+            spots: [
+              ...DAY.spots,
+              spot({
+                spot_id: 's-5',
+                label: 'C1',
+                status: 'booked',
+                am_status: 'booked',
+                pm_status: 'free',
+              }),
+              spot({ spot_id: 's-6', label: 'C2', status: 'blocked' }),
+            ],
+          },
+        }),
+      );
+      expect(await screen.findByText('Occupazione per fascia')).toBeOnTheScreen();
+      // A1 booked, A2 present, A10 free, B4 released, C1 booked in the morning only, C2 blocked.
+      expect(
+        screen.getByLabelText('Mattina: occupate 3, libere 2, non disponibili 1, su 6 postazioni.'),
+      ).toBeOnTheScreen();
+      expect(
+        screen.getByLabelText(
+          'Pomeriggio: occupate 2, libere 3, non disponibili 1, su 6 postazioni.',
+        ),
+      ).toBeOnTheScreen();
+      // The counts are written, not only drawn.
+      expect(screen.getByText('Occupate 3 · Libere 2 · Non disponibili 1')).toBeOnTheScreen();
+      expect(screen.getByText('Occupate 2 · Libere 3 · Non disponibili 1')).toBeOnTheScreen();
+    },
+  );
+
+  it.each<[WindowSize, number, string[]]>([
+    // Estimated from the window until the grid is measured.
+    ['phone', 0, ['figure-row-1', 'figure-row-2', 'figure-row-2']],
+    // Measured: the tablet column, then a column wide enough for every card.
+    ['tabletPortrait', 608, ['figure-row-1', 'figure-row-2', 'figure-row-2']],
+    ['tabletPortrait', 650, ['figure-row-1', 'figure-row-4']],
+    ['tabletLandscape', 860, ['figure-row-5']],
+  ])('lays out the figures in full rows on a %s (%i pt)', async (size, width, rows) => {
+    const { screen } = await openToday(size);
+    expect(await screen.findByRole('button', { name: 'Arrivi: 2' })).toBeOnTheScreen();
+    if (width > 0) {
+      await fireEvent(screen.getByTestId('figure-grid'), 'layout', {
+        nativeEvent: { layout: { width, height: 300, x: 0, y: 0 } },
+      });
+    }
+    expect(screen.getAllByTestId(/^figure-row-/).map((r) => r.props.testID as string)).toEqual(
+      rows,
+    );
   });
 
   it('opens the arrivals list from its figure', async () => {

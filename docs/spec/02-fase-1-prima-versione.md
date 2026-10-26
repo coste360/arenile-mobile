@@ -15,6 +15,18 @@ Regole dei numeri (le stesse dei totali operativi del core, `DayMovementsOn` e `
 `totals.free`); **giorni rilasciati** = postazioni rilasciate anche solo per mezza giornata. Ogni numero
 è calcolato con lo stesso filtro dell'elenco che apre, quindi coincide con la sua lunghezza.
 
+I cinque numeri stanno sempre in righe piene: tutti in una riga se c'è spazio, altrimenti il primo
+(arrivi) a tutta larghezza e gli altri in righe uguali (1 + 4 o 1 + 2 + 2 sul telefono), mai una riga
+corta che sembri un riquadro mancante.
+
+**Occupazione per fascia**: per la mattina e il pomeriggio, quante postazioni sono occupate, libere e
+non disponibili, in una barra con i numeri scritti accanto e una frase per i lettori di schermo. Lo
+stato di ogni postazione nella fascia è quello della mappa del giorno (`am_status`/`pm_status`, se
+assenti lo stato del giorno, con le regole di colore della mappa): libere = libere o rilasciate
+dall'abbonato; non disponibili = chiuse, inattive o bloccate; occupate = tutto il resto (prenotate,
+presenti, abbonati, trattenute, offerte di rinnovo). Calcolata dal giorno operativo in cache, quindi
+anche offline.
+
 ## Mappa del giorno
 
 - Vista operativa della mappa (sezione 11.3 del core) con i colori di stato del pannello, sempre
@@ -23,6 +35,8 @@ Regole dei numeri (le stesse dei totali operativi del core, `DayMovementsOn` e `
 - **Scheda postazione:** stato, prenotazione o abbonamento, cliente (solo i dati che il ruolo può
   vedere), saldo, azioni consentite.
 - Su tablet la mappa occupa il dettaglio e la scheda si apre accanto, senza coprire la mappa.
+- Giorno: "Oggi · Domani · calendario"; oggi e domani anche offline, gli altri giorni solo online
+  ([ADR 0014](../adr/0014-giorni-oltre-la-finestra-offline.md)).
 
 ## Prenotazioni del giorno
 
@@ -30,7 +44,8 @@ Elenco con filtri (arrivi, presenti, da saldare, abbonati, online/cassa), ricerc
 **Scheda prenotazione:** postazione, periodo e fasce, cliente, importi in centesimi formattati in
 italiano, pagamenti, note, cronologia essenziale.
 
-- L'elenco copre oggi e domani (la finestra offline); cancellate, scadute, rifiutate e bozze sono
+- L'elenco copre qualsiasi giorno scelto con lo stesso selettore della mappa: oggi e domani anche
+  offline (la finestra della cache), gli altri solo online (ADR 0014); cancellate, scadute, rifiutate e bozze sono
   nascoste salvo richiesta. "Online" comprende la pagina pubblica e le integrazioni API (il badge le
   distingue). La ricerca trova codice, cliente (anche senza accenti) e postazione.
 - **Cliente secondo il ruolo:** nome ed etichette per tutti i ruoli con `bookings.read`; email,

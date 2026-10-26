@@ -1,7 +1,13 @@
 import {
   addDays,
+  fromPickerDate,
+  inOfflineWindow,
+  resolveDay,
+  selectionOf,
+  toPickerDate,
   daysBetween,
   formatDayLabel,
+  formatWeekdayShort,
   isCalendarDate,
   operationalDays,
   stayIncludes,
@@ -84,5 +90,53 @@ describe('formatDayLabel', () => {
   it('formats the calendar day whatever the device zone', () => {
     expect(formatDayLabel('2026-10-25', 'it-IT')).toMatch(/25/);
     expect(formatDayLabel('2026-10-25', 'it-IT')).toMatch(/ott/);
+  });
+});
+
+describe('day selection', () => {
+  const days = { today: '2026-10-26', tomorrow: '2026-10-27' };
+
+  it.each([
+    ['today', '2026-10-26'],
+    ['tomorrow', '2026-10-27'],
+    ['2026-11-03', '2026-11-03'],
+    ['2026-10-01', '2026-10-01'],
+  ])('%s is %s', (selection, date) => {
+    expect(resolveDay(selection, days)).toBe(date);
+  });
+
+  it.each([
+    ['2026-10-26', 'today'],
+    ['2026-10-27', 'tomorrow'],
+    ['2026-10-28', '2026-10-28'],
+    ['2026-10-25', '2026-10-25'],
+  ])('choosing %s selects %s', (date, selection) => {
+    expect(selectionOf(date, days)).toBe(selection);
+  });
+
+  it.each([
+    ['2026-10-26', true],
+    ['2026-10-27', true],
+    ['2026-10-25', false],
+    ['2026-10-28', false],
+  ])('%s in the offline window: %s', (date, inside) => {
+    expect(inOfflineWindow(date, days)).toBe(inside);
+  });
+
+  it.each(['2026-10-25', '2026-03-29', '2026-01-01', '2026-12-31', '2028-02-29'])(
+    '%s survives the native picker round trip',
+    (date) => {
+      expect(fromPickerDate(toPickerDate(date))).toBe(date);
+    },
+  );
+});
+
+describe('formatWeekdayShort', () => {
+  it.each([
+    ['2026-10-19', 'it-IT', 'lun'],
+    ['2026-10-25', 'it-IT', 'dom'],
+    ['2026-10-19', 'en', 'Mon'],
+  ])('%s in %s → %s', (date, locale, expected) => {
+    expect(formatWeekdayShort(date, locale)).toBe(expected);
   });
 });

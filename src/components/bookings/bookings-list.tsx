@@ -1,6 +1,7 @@
 import {
   CalendarXIcon,
   CircleAlertIcon,
+  CloudOffIcon,
   LockIcon,
   RefreshCwIcon,
   SearchXIcon,
@@ -13,6 +14,7 @@ import { FlatList, RefreshControl, View } from 'react-native';
 import { isForbidden } from '@/api/errors';
 import type { BookingSummary } from '@/api/types';
 import { CachedNotice, servedFromCache } from '@/components/cached-notice';
+import { DayPicker } from '@/components/day-picker';
 import { ChipRow, FilterChip } from '@/components/filter-chip';
 import type { ListState } from '@/components/layout/master-detail';
 import { SearchField } from '@/components/search-field';
@@ -32,14 +34,22 @@ import {
   type DaySort,
 } from '@/features/bookings/day-list';
 import { useBookingsOfDay } from '@/features/bookings/queries';
+import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useOperationalDays } from '@/features/operations/queries';
+import { usePreferences } from '@/features/preferences/preferences-provider';
+import { inOfflineWindow, isCalendarDate, resolveDay, type DaySelection } from '@/lib/calendar';
 
 import { BookingRow } from './booking-row';
 
-export type ListDay = 'today' | 'tomorrow';
+/** The `day` route parameter: today, tomorrow or a calendar date (default today). */
+export function daySelectionParam(value: unknown): DaySelection {
+  if (value === 'tomorrow' || value === 'today') return value;
+  return isCalendarDate(value) ? value : 'today';
+}
 
 /**
- * Bookings of today or tomorrow (the offline window) with the filters of
+ * Bookings of a day (today and tomorrow also offline, other days online
+ * only; ADR 0014) with the filters of
  * phase 1, search and sort. Selecting a row is up to the screen: the phone
  * opens the sheet, the tablet shows it beside the list.
  */
@@ -51,7 +61,7 @@ export function BookingsList({
   onListState,
 }: {
   initialFilter?: DayFilter;
-  initialDay?: ListDay;
+  initialDay?: DaySelection;
   selectedId?: string;
   onSelect: (booking: BookingSummary) => void;
   /** What the list shows, for the detail beside it (MasterDetail). */
@@ -59,7 +69,7 @@ export function BookingsList({
 }) {
   const { t } = useTranslation();
   const days = useOperationalDays();
-  const [day, setDay] = useState<ListDay>(initialDay);
+  const [day, setDay] = useState<DaySelection>(initialDay);
   const [filter, setFilter] = useState<DayFilter>(initialFilter);
   const [channel, setChannel] = useState<ChannelFilter>(DEFAULT_DAY_LIST_QUERY.channel);
   const [sort, setSort] = useState<DaySort>(DEFAULT_DAY_LIST_QUERY.sort);
@@ -76,7 +86,9 @@ export function BookingsList({
     setDay(initialDay);
   }
 
-  const date = day === 'today' ? days.today : days.tomorrow;
+  const date = resolveDay(day, days);
+  const { available: online } = useOnlineOnly();
+  const { locale } = usePreferences();
   const query = useBookingsOfDay(date);
   const all = query.data;
 
@@ -149,16 +161,7 @@ export function BookingsList({
           ))}
         </ChipRow>
         <View className="flex-row flex-wrap items-end justify-between gap-x-2 gap-y-1">
-          <ChipRow label={t('bookings.list.dayLabel')} scroll={false}>
-            {(['today', 'tomorrow'] as const).map((d) => (
-              <FilterChip
-                key={d}
-                label={t(`bookings.list.days.${d}`)}
-                selected={day === d}
-                onPress={() => setDay(d)}
-              />
-            ))}
-          </ChipRow>
+          <DayPicker value={day} onChange={setDay} days={days} locale={locale} />
           <Button
             variant="ghost"
             onPress={() => setExpanded((v) => !v)}
@@ -258,6 +261,13 @@ export function BookingsList({
             }
           />
         </>
+      ) : (query.isError || query.isPaused) && !online && !inOfflineWindow(date, days) ? (
+        <StateView
+          align="top"
+          icon={CloudOffIcon}
+          title={t('closedDay.offlineTitle')}
+          description={t('closedDay.offlineDescription')}
+        />
       ) : query.isError || query.isPaused ? (
         isForbidden(query.error) ? (
           <StateView align="top" icon={LockIcon} title={t('offline.errors.forbidden')} />

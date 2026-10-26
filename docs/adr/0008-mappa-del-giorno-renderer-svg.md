@@ -1,6 +1,6 @@
 # 0008 — Mappa del giorno: renderer SVG, gesti sul thread UI, palette di stato del pannello
 
-- **Stato:** proposto; decisione 7 (kit) sostituita da [0013](0013-illustrazioni-dei-kit-della-mappa.md)
+- **Stato:** proposto; decisione 7 (kit) sostituita da [0013](0013-illustrazioni-dei-kit-della-mappa.md); decisione 5 (giorni) modificata da [0014](0014-giorni-oltre-la-finestra-offline.md)
 - **Data:** 2026-10-25
 - **Sezioni della specifica:** `docs/spec/02-fase-1-prima-versione.md` ("Mappa del giorno"), core §11.3
   (vista operativa), §16.1, §21.2; core ADR 0012 e 0024 (kit della mappa); ADR 0004 e 0007
@@ -55,8 +55,8 @@ pinch), `SvgXml` con le stringhe dei kit (parsing a runtime, niente stato per po
    un nome accessibile con il numero di postazioni e il livello di zoom.
 5. **Dati:** documento della mappa (`useMapDocument`) e giorno operativo **intero** (`useOperationsDay`
    con `FULL`, quello che la cache offline conserva); mattina e pomeriggio vengono da `am_status` /
-   `pm_status` con le regole del pannello (`slotStatus`, `toSpotStatus`). Solo oggi e domani, la
-   finestra offline; gli altri giorni restano nel pannello. Nomi dei clienti (mappa, scheda, ricerca)
+   `pm_status` con le regole del pannello (`slotStatus`, `toSpotStatus`). Oggi e domani, la
+   finestra offline; gli altri giorni dal calendario, solo online (ADR 0014). Nomi dei clienti (mappa, scheda, ricerca)
    solo con `bookings.read`; mai email o telefono.
 6. **Azioni della scheda:** dai permessi di `useAbilities()`. Check-in (oggi, prenotazione confermata) e
    rilascio del giorno dell'abbonato passano dalla coda di ADR 0007; blocco e sblocco della postazione

@@ -15,6 +15,10 @@ export const MIN_DETAIL = 360;
 export const SHEET_PANE = 384;
 /** Narrowest day map beside its sheet; below it the sheet opens under the map. */
 export const MIN_MAP = 420;
+/** Narrowest card of a `Columns` row; below two of them the cards stack. */
+export const MIN_COLUMN = 320;
+/** Horizontal gutter of every screen (px-4) and gap between columns (gap-4). */
+export const GUTTER = 16;
 /** Narrowest content beside the expanded navigation; below it the pane is a drawer over it. */
 export const MIN_CONTENT_BESIDE_NAV = 600;
 
@@ -40,4 +44,10 @@ export function contentWidth(width: number, mode: NavMode | null): number {
 /** Whether a master/detail screen keeps the detail beside the list in `content` points. */
 export function detailFitsBeside(content: number): boolean {
   return content - LIST_PANE >= MIN_DETAIL;
+}
+
+/** How many cards of at least MIN_COLUMN fit side by side in `content` points (gutters included). */
+export function columnsFor(content: number, max: number): number {
+  const fit = Math.floor((content - GUTTER * 2 + GUTTER) / (MIN_COLUMN + GUTTER));
+  return Math.max(1, Math.min(max, fit));
 }

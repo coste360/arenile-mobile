@@ -30,7 +30,7 @@ export default function ConnectScreen() {
   if (state.status === 'paired') return <Redirect href="/home" />;
 
   return (
-    <Screen topInset className="max-w-lg flex-1 justify-center gap-6">
+    <Screen topInset className="max-w-lg flex-1 justify-center gap-6 self-center">
       <View className="items-center gap-4">
         <BrandMark />
         <Text variant="h1" role="heading">

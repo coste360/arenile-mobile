@@ -11,6 +11,17 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- **Calendario** per mappa e prenotazioni (ADR 0014): "Oggi · Domani · 📅", qualsiasi giorno con il
+  calendario nativo; oggi e domani anche offline, gli altri giorni solo online.
+- Operazioni su tablet come lista e dettaglio: check-in e postazioni a sinistra, la postazione o il
+  codice cercato a destra.
+- _Report_: per la settimana, grafico a barre giorno per giorno di incassato e occupazione rispetto
+  all'anno precedente, dalla serie giornaliera del confronto del core; legenda, scala e riepilogo
+  accessibile con tutti i valori.
+- _Oggi_: occupazione per fascia (mattina e pomeriggio: occupate, libere, non disponibili) dal giorno
+  operativo in cache, con le regole di stato della mappa; i cinque numeri in righe piene a ogni
+  larghezza (niente più 3 + 2 su tablet).
+
 - Fase 2 (ADR 0011), tutto solo online e mai in coda:
   - _Vendita giornaliera rapida_ dalla scheda di una postazione libera: fascia, pacchetto, extra, nome
     facoltativo, totale dal server, contanti con il resto o carta, biglietto numerato.
@@ -103,6 +114,15 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   pillola leggibile. I kit vengono dalla release del core fissata, verificati con SHA-256
   (`make gen`).
 
+### Modificato
+
+- Su tablet ogni schermata usa tutta la larghezza con lo stesso margine delle liste; le card si
+  affiancano quando c'è spazio (Impostazioni).
+- Avviso "Stabilimento chiuso" uguale su Oggi e sulla mappa, con il giorno mostrato.
+- Mappa del giorno con lo stesso fondo del pannello: sabbia chiara con la grana, mare tenue con le
+  onde e la battigia, scritta "Mare" spaziata e sfumata, codici delle postazioni non disponibili
+  sfumati (prima due rettangoli pieni con i colori della vecchia mappa).
+
 ### Rimosso
 
 - Notifiche push: per decisione di Coste360 non fanno parte dell'app pubblica (ADR 0012, sostituisce la
@@ -113,6 +133,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   primo piano.
 
 ### Corretto
+
+- Su tablet le schermate aperte da un'altra (postazione, prenotazione, scanner, spostamento) non
+  avevano il pulsante Indietro.
 
 - Mappa del giorno: l'app si chiudeva alla fine di ogni spostamento o zoom con le dita (il worklet di
   fine gesto veniva catturato prima di essere definito); ora lo zoom e lo spostamento restano.

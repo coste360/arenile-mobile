@@ -66,7 +66,7 @@ export function MasterDetail({
   );
 }
 
-/** Scrolling body of a detail beside its list: the readable column of `Screen`. */
+/** Scrolling body of a detail beside its list, with the gutter of `Screen`. */
 export function DetailScroll({
   children,
   refreshing = false,
@@ -79,13 +79,13 @@ export function DetailScroll({
   return (
     <ScrollView
       className="flex-1"
-      contentContainerClassName="grow px-6 pt-6 pb-safe"
+      contentContainerClassName="grow px-4 pt-4 pb-safe"
       keyboardShouldPersistTaps="handled"
       refreshControl={
         onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> : undefined
       }
     >
-      <View className="w-full max-w-2xl gap-4 self-center pb-6">{children}</View>
+      <View className="w-full gap-4 pb-6">{children}</View>
     </ScrollView>
   );
 }

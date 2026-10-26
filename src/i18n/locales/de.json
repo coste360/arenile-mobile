@@ -313,11 +313,6 @@
     "mapFallback": "Karte",
     "seaLabel": "Meer",
     "maps": "Karten",
-    "day": {
-      "label": "Tag",
-      "today": "Heute",
-      "tomorrow": "Morgen"
-    },
     "slot": {
       "label": "Zeitfenster",
       "FULL": "Ganzer Tag",
@@ -405,7 +400,6 @@
       "forbidden": {
         "title": "Nicht erlaubt"
       },
-      "closed": "Ruhetag oder außerhalb der Saison.",
       "dayLoading": "Status des Tages werden geladen…",
       "dayError": "Status des Tages nicht verfügbar: Die Karte zeigt nur die Plätze."
     },
@@ -476,8 +470,6 @@
   },
   "today": {
     "heading": "Heute, {{date}}",
-    "closedTitle": "Betrieb geschlossen",
-    "closedDescription": "Heute ist Ruhetag oder außerhalb der Saison.",
     "figures": {
       "arrivals": "Anreisen",
       "present": "Anwesend",
@@ -496,6 +488,19 @@
       "title": "Der Tag",
       "today": "Heutige Übersicht",
       "bookings": "Buchungen des Tages"
+    },
+    "slots": {
+      "title": "Belegung nach Zeitfenster",
+      "AM": "Vormittag",
+      "PM": "Nachmittag",
+      "uses": {
+        "occupied": "Belegt",
+        "free": "Frei",
+        "closed": "Nicht verfügbar"
+      },
+      "count": "{{label}} {{count}}",
+      "rowA11y": "{{slot}}: belegt {{occupied}}, frei {{free}}, nicht verfügbar {{closed}}, von {{total}} Plätzen.",
+      "hint": "Frei umfasst die von Abonnenten freigegebenen Tage; nicht verfügbar sind geschlossene oder gesperrte Plätze."
     }
   },
   "spots": {
@@ -562,11 +567,6 @@
         "season_pass": "Abonnenten"
       },
       "chipLabel": "{{label}}, {{count}}",
-      "dayLabel": "Tag",
-      "days": {
-        "today": "Heute",
-        "tomorrow": "Morgen"
-      },
       "channelLabel": "Kanal",
       "channels": {
         "all": "Alle Kanäle",
@@ -699,7 +699,12 @@
       "spotsSearchPlaceholder": "Zum Beispiel A1",
       "spotsEmpty": "Kein Platz gefunden.",
       "spotsUnavailable": "Der heutige Plan ist nicht verfügbar: Es braucht mindestens einmal eine Verbindung.",
-      "spotsMore": "Verfeinere die Suche, um die weiteren Plätze zu sehen."
+      "spotsMore": "Verfeinere die Suche, um die weiteren Plätze zu sehen.",
+      "detailLabel": "Details des Vorgangs",
+      "selectTitle": "Platz auswählen",
+      "selectDescription": "Oder suche den Code einer Buchung oder eines Tickets.",
+      "spotsCount_one": "{{count}} Platz",
+      "spotsCount_other": "{{count}} Plätze"
     },
     "scan": {
       "cameraLabel": "Kameravorschau für QR-Codes von Buchungen und Tickets",
@@ -937,6 +942,13 @@
       "error": "Die Berichte konnten nicht von der Instanz geladen werden.",
       "stale": "Daten nicht aktuell. {{reason}}",
       "retry": "Erneut versuchen"
+    },
+    "chart": {
+      "title": "Die Woche im Überblick",
+      "scale": "Skala bis {{value}}",
+      "a11y": "Diagramm: {{metric}} Tag für Tag, {{year}} im Vergleich zu {{previousYear}}. {{days}}",
+      "dayA11y": "{{day}}: {{value}}, {{year}} {{previous}}.",
+      "empty": "Keine Werte in dieser Woche, weder dieses noch letztes Jahr."
     }
   },
   "widget": {
@@ -1184,5 +1196,21 @@
     },
     "results_one": "{{count}} Eintrag",
     "results_other": "{{count}} Einträge"
+  },
+  "dayPicker": {
+    "label": "Tag",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "other": "Anderen Tag wählen",
+    "change": "Tag ändern",
+    "title": "Tag wählen"
+  },
+  "closedDay": {
+    "title": "Betrieb geschlossen",
+    "today": "Heute ist ein Schließtag oder außerhalb der Saison.",
+    "tomorrow": "Morgen ist ein Schließtag oder außerhalb der Saison.",
+    "other": "{{date}}: Schließtag oder außerhalb der Saison.",
+    "offlineTitle": "Tag nur online verfügbar",
+    "offlineDescription": "Auf dem Gerät bleiben nur heute und morgen gespeichert. Andere Tage brauchen eine Verbindung zur Instanz."
   }
 }

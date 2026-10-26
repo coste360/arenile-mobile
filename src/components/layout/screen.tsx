@@ -3,11 +3,11 @@ import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { cn } from '@/lib/utils';
 
-import { useDeviceLayout } from './use-device-layout';
-
 /**
- * Scrollable screen body: full width on phones, a centred readable column
- * on tablets. Safe-area bottom inset included (the native header handles the top).
+ * Scrollable screen body: full width with the 16 pt gutter of the list
+ * headers at every width, so every section of the app has the same edges
+ * (wide content goes side by side with `Columns`). Safe-area bottom inset
+ * included (the native header handles the top).
  */
 export function Screen({
   children,
@@ -24,7 +24,6 @@ export function Screen({
   refreshing?: boolean;
   onRefresh?: () => void;
 }) {
-  const layout = useDeviceLayout();
   return (
     <ScrollView
       className="flex-1 bg-background"
@@ -35,15 +34,7 @@ export function Screen({
         onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> : undefined
       }
     >
-      <View
-        className={cn(
-          'w-full gap-4 px-4 py-6',
-          layout === 'tablet' && 'max-w-2xl self-center px-8 py-10',
-          className,
-        )}
-      >
-        {children}
-      </View>
+      <View className={cn('w-full gap-4 px-4 pb-6 pt-4', className)}>{children}</View>
     </ScrollView>
   );
 }

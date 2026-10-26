@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { BookingSummary } from '@/api/types';
 import { BookingDetailView } from '@/components/bookings/booking-detail';
-import { BookingsList, type ListDay } from '@/components/bookings/bookings-list';
+import { BookingsList, daySelectionParam } from '@/components/bookings/bookings-list';
 import {
   DetailScroll,
   MasterDetail,
@@ -27,7 +27,7 @@ export default function BookingsScreen() {
   const navigation = useNavigation<{ setParams(params: { selected?: string }): void }>();
   const params = useLocalSearchParams<{ filter?: string; day?: string; selected?: string }>();
   const filter = isDayFilter(params.filter) ? params.filter : 'all';
-  const day: ListDay = params.day === 'tomorrow' ? 'tomorrow' : 'today';
+  const day = daySelectionParam(params.day);
   const selected = typeof params.selected === 'string' ? params.selected : undefined;
   const [listState, setListState] = useState<ListState>('loading');
 

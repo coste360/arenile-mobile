@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { DetailRow } from '@/components/detail-row';
+import { Columns } from '@/components/layout/columns';
 import { Screen } from '@/components/layout/screen';
 import {
   AlertDialog,
@@ -47,51 +48,58 @@ export default function SettingsScreen() {
 
   return (
     <Screen>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('settings.instance.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="gap-4">
-          <DetailRow label={t('settings.instance.establishment')} value={name} />
-          <DetailRow label={t('settings.instance.address')} value={session.instanceUrl} />
-        </CardContent>
-      </Card>
+      <Columns>
+        <Card className="grow">
+          <CardHeader>
+            <CardTitle>{t('settings.instance.title')}</CardTitle>
+          </CardHeader>
+          <CardContent className="gap-4">
+            <DetailRow label={t('settings.instance.establishment')} value={name} />
+            <DetailRow label={t('settings.instance.address')} value={session.instanceUrl} />
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('settings.device.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="gap-4">
-          <DetailRow
-            label={t('settings.device.name')}
-            value={device.data?.name ?? session.deviceName}
-          />
-          {device.data ? (
-            <>
-              <DetailRow label={t('settings.device.user')} value={device.data.user_name} />
-              <DetailRow label={t('settings.device.role')} value={t(`roles.${device.data.role}`)} />
-            </>
-          ) : null}
-          <DetailRow label={t('settings.device.pairedAt')} value={pairedAt} />
-        </CardContent>
-      </Card>
+        <Card className="grow">
+          <CardHeader>
+            <CardTitle>{t('settings.device.title')}</CardTitle>
+          </CardHeader>
+          <CardContent className="gap-4">
+            <DetailRow
+              label={t('settings.device.name')}
+              value={device.data?.name ?? session.deviceName}
+            />
+            {device.data ? (
+              <>
+                <DetailRow label={t('settings.device.user')} value={device.data.user_name} />
+                <DetailRow
+                  label={t('settings.device.role')}
+                  value={t(`roles.${device.data.role}`)}
+                />
+              </>
+            ) : null}
+            <DetailRow label={t('settings.device.pairedAt')} value={pairedAt} />
+          </CardContent>
+        </Card>
+      </Columns>
 
-      <ChoiceCard
-        title={t('settings.language.title')}
-        value={preferences.language}
-        onChange={(v) => setLanguage(v as LanguagePreference)}
-        options={[
-          { value: 'system', label: t('settings.language.system') },
-          ...SUPPORTED_LOCALES.map((l) => ({ value: l, label: t(`languages.${l}`) })),
-        ]}
-      />
+      <Columns>
+        <ChoiceCard
+          title={t('settings.language.title')}
+          value={preferences.language}
+          onChange={(v) => setLanguage(v as LanguagePreference)}
+          options={[
+            { value: 'system', label: t('settings.language.system') },
+            ...SUPPORTED_LOCALES.map((l) => ({ value: l, label: t(`languages.${l}`) })),
+          ]}
+        />
 
-      <ChoiceCard
-        title={t('settings.theme.title')}
-        value={preferences.theme}
-        onChange={(v) => setTheme(v as ThemePreference)}
-        options={THEMES.map((v) => ({ value: v, label: t(`settings.theme.${v}`) }))}
-      />
+        <ChoiceCard
+          title={t('settings.theme.title')}
+          value={preferences.theme}
+          onChange={(v) => setTheme(v as ThemePreference)}
+          options={THEMES.map((v) => ({ value: v, label: t(`settings.theme.${v}`) }))}
+        />
+      </Columns>
 
       <Card>
         <CardHeader>
@@ -120,7 +128,7 @@ function ChoiceCard({
   onChange: (value: string) => void;
 }) {
   return (
-    <Card>
+    <Card className="grow">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

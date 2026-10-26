@@ -313,11 +313,6 @@
     "mapFallback": "Mappa",
     "seaLabel": "Mare",
     "maps": "Mappe",
-    "day": {
-      "label": "Giorno",
-      "today": "Oggi",
-      "tomorrow": "Domani"
-    },
     "slot": {
       "label": "Fascia",
       "FULL": "Giornata",
@@ -405,7 +400,6 @@
       "forbidden": {
         "title": "Non consentito"
       },
-      "closed": "Giorno di chiusura o fuori stagione.",
       "dayLoading": "Caricamento degli stati del giorno…",
       "dayError": "Stati del giorno non disponibili: la mappa mostra solo le postazioni."
     },
@@ -476,8 +470,6 @@
   },
   "today": {
     "heading": "Oggi, {{date}}",
-    "closedTitle": "Stabilimento chiuso",
-    "closedDescription": "Oggi è un giorno di chiusura o fuori stagione.",
     "figures": {
       "arrivals": "Arrivi",
       "present": "Presenti",
@@ -496,6 +488,19 @@
       "title": "Giornata",
       "today": "Riepilogo di oggi",
       "bookings": "Prenotazioni del giorno"
+    },
+    "slots": {
+      "title": "Occupazione per fascia",
+      "AM": "Mattina",
+      "PM": "Pomeriggio",
+      "uses": {
+        "occupied": "Occupate",
+        "free": "Libere",
+        "closed": "Non disponibili"
+      },
+      "count": "{{label}} {{count}}",
+      "rowA11y": "{{slot}}: occupate {{occupied}}, libere {{free}}, non disponibili {{closed}}, su {{total}} postazioni.",
+      "hint": "Libere comprende i giorni rilasciati dagli abbonati; non disponibili sono le postazioni chiuse o bloccate."
     }
   },
   "spots": {
@@ -562,11 +567,6 @@
         "season_pass": "Abbonati"
       },
       "chipLabel": "{{label}}, {{count}}",
-      "dayLabel": "Giorno",
-      "days": {
-        "today": "Oggi",
-        "tomorrow": "Domani"
-      },
       "channelLabel": "Canale",
       "channels": {
         "all": "Tutti i canali",
@@ -699,7 +699,12 @@
       "spotsSearchPlaceholder": "Ad esempio A1",
       "spotsEmpty": "Nessuna postazione trovata.",
       "spotsUnavailable": "La mappa di oggi non è disponibile: serve la connessione almeno una volta.",
-      "spotsMore": "Affina la ricerca per vedere le altre postazioni."
+      "spotsMore": "Affina la ricerca per vedere le altre postazioni.",
+      "detailLabel": "Dettaglio dell'operazione",
+      "selectTitle": "Scegli una postazione",
+      "selectDescription": "Oppure cerca il codice di una prenotazione o di un biglietto.",
+      "spotsCount_one": "{{count}} postazione",
+      "spotsCount_other": "{{count}} postazioni"
     },
     "scan": {
       "cameraLabel": "Anteprima della fotocamera per i QR code di prenotazioni e biglietti",
@@ -937,6 +942,13 @@
       "error": "Non è stato possibile caricare i report dall'istanza.",
       "stale": "Dati non aggiornati. {{reason}}",
       "retry": "Riprova"
+    },
+    "chart": {
+      "title": "Andamento della settimana",
+      "scale": "Scala fino a {{value}}",
+      "a11y": "Grafico: {{metric}} giorno per giorno, {{year}} a confronto con {{previousYear}}. {{days}}",
+      "dayA11y": "{{day}}: {{value}}, nel {{year}} {{previous}}.",
+      "empty": "Nessun valore nella settimana, né quest'anno né l'anno precedente."
     }
   },
   "widget": {
@@ -1184,5 +1196,21 @@
     },
     "results_one": "{{count}} iscrizione",
     "results_other": "{{count}} iscrizioni"
+  },
+  "dayPicker": {
+    "label": "Giorno",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "other": "Scegli un altro giorno",
+    "change": "cambia giorno",
+    "title": "Scegli il giorno"
+  },
+  "closedDay": {
+    "title": "Stabilimento chiuso",
+    "today": "Oggi è un giorno di chiusura o fuori stagione.",
+    "tomorrow": "Domani è un giorno di chiusura o fuori stagione.",
+    "other": "{{date}}: giorno di chiusura o fuori stagione.",
+    "offlineTitle": "Giorno disponibile solo online",
+    "offlineDescription": "Sul dispositivo restano solo oggi e domani. Per vedere gli altri giorni serve la connessione all'istanza."
   }
 }
