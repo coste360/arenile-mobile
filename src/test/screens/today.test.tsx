@@ -125,7 +125,15 @@ describe('Oggi', () => {
     await fireEvent.press(await screen.findByTestId(figure));
     await waitFor(() => expect(getPathname()).toBe('/spots'));
     expect(await screen.findByText(count)).toBeOnTheScreen();
-    expect(screen.getAllByRole('listitem').map((i) => i.props.accessibilityLabel)).toEqual(rows);
+    // Each row is a link to the spot on the day map, wrapped in a list item
+    // (a plain View with a role, so not an accessibility element to query by role).
+    const links = screen.getAllByRole('link');
+    expect(links.map((l) => l.props.accessibilityLabel as string)).toEqual(rows);
+    for (const link of links) {
+      let item = link.parent;
+      while (item && item.props.role !== 'listitem') item = item.parent;
+      expect(item).not.toBeNull();
+    }
   });
 
   it('says when the establishment is closed', async () => {

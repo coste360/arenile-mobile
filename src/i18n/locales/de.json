@@ -524,7 +524,8 @@
     "released": "Freigegeben",
     "free": "Frei",
     "emptyFree": "Keine freien Plätze an diesem Tag.",
-    "emptyReleased": "Kein Abonnent hat seinen Platz für diesen Tag freigegeben."
+    "emptyReleased": "Kein Abonnent hat seinen Platz für diesen Tag freigegeben.",
+    "openOnMap": "Öffnet den Platz auf der Karte"
   },
   "bookings": {
     "status": {

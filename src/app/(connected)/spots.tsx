@@ -1,7 +1,13 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { CircleAlertIcon, RefreshCwIcon, TicketIcon, UmbrellaIcon } from 'lucide-react-native';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import {
+  ChevronRightIcon,
+  CircleAlertIcon,
+  RefreshCwIcon,
+  TicketIcon,
+  UmbrellaIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { CachedNotice, servedFromCache } from '@/components/cached-notice';
 import { Screen } from '@/components/layout/screen';
@@ -24,7 +30,8 @@ import { localizedText } from '@/lib/i18n-text';
 /**
  * Free spots, or spots released by their pass holders, of today: the lists
  * opened by the spot figures of "Oggi". Each released spot says which half
- * of the day is free.
+ * of the day is free; a tap opens the spot's sheet on the day map (sale,
+ * booking and the other actions of the role).
  */
 export default function SpotsScreen() {
   const { t } = useTranslation();
@@ -91,23 +98,32 @@ export default function SpotsScreen() {
                     : t('spots.free');
                   const map = mapName(s.map_id);
                   return (
-                    <View
-                      key={s.spot_id}
-                      role="listitem"
-                      accessible
-                      accessibilityLabel={[s.label, map, state].filter(Boolean).join(', ')}
-                      className="min-h-12 flex-row items-center gap-3 border-b border-border px-4 py-2"
-                    >
-                      <Icon
-                        as={released ? TicketIcon : UmbrellaIcon}
-                        size={18}
-                        className="text-muted-foreground"
-                      />
-                      <Text className="w-16 font-semibold">{s.label}</Text>
-                      <View className="flex-1">
-                        <Text>{state}</Text>
-                        {map ? <Text variant="muted">{map}</Text> : null}
-                      </View>
+                    <View key={s.spot_id} role="listitem">
+                      <Pressable
+                        role="link"
+                        accessibilityLabel={[s.label, map, state].filter(Boolean).join(', ')}
+                        accessibilityHint={t('spots.openOnMap')}
+                        onPress={() =>
+                          router.push({
+                            pathname: '/map',
+                            params: { spot: s.spot_id, map: s.map_id },
+                          })
+                        }
+                        testID={`spot-row-${s.spot_id}`}
+                        className="min-h-12 flex-row items-center gap-3 border-b border-border px-4 py-2 active:bg-accent"
+                      >
+                        <Icon
+                          as={released ? TicketIcon : UmbrellaIcon}
+                          size={18}
+                          className="text-muted-foreground"
+                        />
+                        <Text className="w-16 font-semibold">{s.label}</Text>
+                        <View className="flex-1">
+                          <Text>{state}</Text>
+                          {map ? <Text variant="muted">{map}</Text> : null}
+                        </View>
+                        <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
+                      </Pressable>
                     </View>
                   );
                 })}

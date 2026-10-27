@@ -16,6 +16,7 @@ import { Pressable, View } from 'react-native';
 import { isForbidden, ProblemError } from '@/api/errors';
 import type { BookingChangeResult, BookingDetail, Ticket } from '@/api/types';
 import { DetailRow } from '@/components/detail-row';
+import { ScrollToTop } from '@/components/layout/scroll-top';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { OnlineOnlyNotice } from '@/components/online-only-notice';
 import { ChoiceGroup } from '@/components/operations/choice-group';
@@ -147,6 +148,7 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
   if (moved) {
     return (
       <View className="gap-4" testID="move-done">
+        <ScrollToTop />
         <Alert icon={CircleCheckIcon} accessibilityLiveRegion="assertive">
           <AlertTitle>{t('move.done.title', { code: booking.code, label: moved })}</AlertTitle>
           <AlertDescription>{t('move.done.description')}</AlertDescription>

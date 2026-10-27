@@ -524,7 +524,8 @@
     "released": "Libéré",
     "free": "Libre",
     "emptyFree": "Aucun emplacement libre ce jour-là.",
-    "emptyReleased": "Aucun abonné n'a libéré son emplacement ce jour-là."
+    "emptyReleased": "Aucun abonné n'a libéré son emplacement ce jour-là.",
+    "openOnMap": "Ouvre l'emplacement sur le plan"
   },
   "bookings": {
     "status": {

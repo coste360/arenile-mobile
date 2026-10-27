@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { ScrollView } from 'react-native';
 
 import type { BookingDetail, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
@@ -105,6 +106,27 @@ describe('move a booking', () => {
       expect(await preview!.json()).toEqual({ line_id: 'l-2', spot_id: 's-1', dry_run: true });
       expect(await apply!.json()).toEqual({ line_id: 'l-2', spot_id: 's-1' });
       expect(apply!.headers.get('If-Match')).toBe('"3"');
+    },
+  );
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'opens the outcome at the top of the screen, not at the offset of the form (%s)',
+    async (size) => {
+      const { screen } = await openMove('A2', {}, size);
+      await fireEvent.press(await screen.findByRole('radio', { name: 'Postazione A1' }));
+      await screen.findByText(nbsp('Il totale resta 30,00 €.'));
+      const scrollTo = jest.spyOn(ScrollView.prototype, 'scrollTo');
+      try {
+        await fireEvent.press(screen.getByRole('button', { name: 'Sposta su A1' }));
+        // The form and its confirmation keep the user's scroll offset.
+        expect(scrollTo).not.toHaveBeenCalled();
+        await fireEvent.press(screen.getByRole('button', { name: 'Sposta' }));
+        await screen.findByTestId('move-done');
+        expect(scrollTo).toHaveBeenCalledTimes(1);
+        expect(scrollTo).toHaveBeenCalledWith({ y: 0, animated: false });
+      } finally {
+        scrollTo.mockRestore();
+      }
     },
   );
 

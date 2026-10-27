@@ -3,7 +3,7 @@ import { CalendarDaysIcon } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, View } from 'react-native';
+import { Keyboard, Platform, View } from 'react-native';
 
 import {
   AlertDialog,
@@ -80,8 +80,11 @@ export function DayPicker({
         label={t('dayPicker.label')}
         value={choice}
         onChange={(c) => {
-          if (c === 'other') setOpen(true);
-          else onChange(c);
+          if (c === 'other') {
+            // A focused search field would keep the keyboard over the calendar.
+            Keyboard.dismiss();
+            setOpen(true);
+          } else onChange(c);
         }}
         choices={[
           {
@@ -112,7 +115,8 @@ export function DayPicker({
       {open && Platform.OS === 'android' ? picker : null}
       {Platform.OS !== 'android' ? (
         <AlertDialog open={open} onOpenChange={setOpen}>
-          <AlertDialogContent>
+          {/* SwiftUI views do not draw inside FullWindowOverlay: the calendar would be blank. */}
+          <AlertDialogContent windowOverlay={false}>
             <AlertDialogHeader>
               <AlertDialogTitle>{t('dayPicker.title')}</AlertDialogTitle>
             </AlertDialogHeader>

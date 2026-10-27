@@ -524,7 +524,8 @@
     "released": "Released",
     "free": "Free",
     "emptyFree": "No free spots for this day.",
-    "emptyReleased": "No pass holder released their spot for this day."
+    "emptyReleased": "No pass holder released their spot for this day.",
+    "openOnMap": "Opens the spot on the map"
   },
   "bookings": {
     "status": {

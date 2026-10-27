@@ -37,6 +37,10 @@ radio-group, separator, text.
   and `icon` button sizes are `h-11`, `lg` is `h-12`, `sm` keeps `h-9` (callers add `min-h-11` when
   it is a touch target); no `sm:` heights.
 
+- `alert-dialog`: `AlertDialogContent` takes `windowOverlay` (default `true`). With `false` the
+  dialog skips react-native-screens' `FullWindowOverlay` on iOS and draws in the root `PortalHost`:
+  SwiftUI views of `@expo/ui` (the day picker's calendar, ADR 0014) stay blank inside that overlay.
+
 ## Theme
 
 `src/global.css` holds the tokens as HSL triplets (so `bg-primary/90` works), converted from the core

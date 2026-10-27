@@ -19,6 +19,7 @@ import type { DailySaleResult, Slots, TicketPaymentMethod } from '@/api/types';
 import { DetailRow } from '@/components/detail-row';
 import { FilterChip, ChipRow } from '@/components/filter-chip';
 import { FormField } from '@/components/form-field';
+import { ScrollToTop } from '@/components/layout/scroll-top';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { OnlineOnlyNotice } from '@/components/online-only-notice';
 import { ChoiceGroup } from '@/components/operations/choice-group';
@@ -390,6 +391,7 @@ function SaleDone({ result }: { result: DailySaleResult }) {
   const ticket = result.ticket;
   return (
     <View className="gap-4" testID="sale-done">
+      <ScrollToTop />
       <Alert icon={CircleCheckIcon} accessibilityLiveRegion="assertive">
         <AlertTitle>{t('sale.done.title', { number: ticket.number_label })}</AlertTitle>
         <AlertDescription>

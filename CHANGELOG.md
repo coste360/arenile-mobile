@@ -119,6 +119,11 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Modificato
 
+- La scheda della postazione sulla mappa copre tutta la mappa quando non c'è spazio per affiancarla
+  (telefono, tablet stretto), così dettagli e azioni si vedono insieme; chiudendola la mappa resta
+  dov'era. Su Android il tasto Indietro la chiude.
+- Le postazioni libere e i giorni rilasciati di _Oggi_ si toccano: aprono la postazione sulla mappa,
+  con vendita, prenotazione e le altre azioni del ruolo.
 - Contratto API e kit della mappa dalla release **v1.0.6** del core (prima v1.0.1). La versione minima
   di Arenile supportata resta la 1.0.0.
 - Su tablet ogni schermata usa tutta la larghezza con lo stesso margine delle liste; le card si
@@ -139,6 +144,12 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Corretto
 
+- Il calendario per scegliere il giorno su iOS si apriva vuoto: il calendario nativo non si disegna
+  nella finestra sovrapposta dei dialoghi; ora il dialogo si apre nell'app e la tastiera si chiude.
+- Su tablet le righe delle prenotazioni erano illeggibili nella lista stretta: l'importo da saldare
+  occupava una colonna propria e schiacciava nome e stato. Ora sta sotto il nome.
+- Dopo una vendita giornaliera o uno spostamento l'esito si apriva scorso sotto l'intestazione, con
+  lo scorrimento del modulo: ora riparte dall'inizio.
 - Su tablet le schermate aperte da un'altra (postazione, prenotazione, scanner, spostamento) non
   avevano il pulsante Indietro.
 

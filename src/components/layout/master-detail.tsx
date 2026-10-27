@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 import { useContentWidth } from './nav-pane';
 import { detailFitsBeside } from './panes';
+import { ScrollTopProvider, useScrollTop } from './scroll-top';
 import { useDeviceLayout } from './use-device-layout';
 
 /** What a list shows: still loading, rows, rows filtered out, or nothing (empty day, error). */
@@ -76,8 +77,10 @@ export function DetailScroll({
   refreshing?: boolean;
   onRefresh?: () => void;
 }) {
+  const { ref, scrollTop } = useScrollTop();
   return (
     <ScrollView
+      ref={ref}
       className="flex-1"
       contentContainerClassName="grow px-4 pt-4 pb-safe"
       keyboardShouldPersistTaps="handled"
@@ -85,7 +88,9 @@ export function DetailScroll({
         onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> : undefined
       }
     >
-      <View className="w-full gap-4 pb-6">{children}</View>
+      <View className="w-full gap-4 pb-6">
+        <ScrollTopProvider scrollTop={scrollTop}>{children}</ScrollTopProvider>
+      </View>
     </ScrollView>
   );
 }

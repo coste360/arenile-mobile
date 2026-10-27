@@ -524,7 +524,8 @@
     "released": "Rilasciata",
     "free": "Libera",
     "emptyFree": "Nessuna postazione libera per questo giorno.",
-    "emptyReleased": "Nessun abbonato ha rilasciato la postazione per questo giorno."
+    "emptyReleased": "Nessun abbonato ha rilasciato la postazione per questo giorno.",
+    "openOnMap": "Apre la postazione sulla mappa"
   },
   "bookings": {
     "status": {

@@ -7,7 +7,8 @@ I permessi seguono il ruolo come nel pannello (sezione 16 del core): ogni azione
 ## Oggi
 
 Riepilogo del giorno nel fuso dello stabilimento: arrivi, presenti, postazioni libere, prenotazioni da
-saldare, abbonati che hanno rilasciato il giorno. Ogni numero porta all'elenco filtrato.
+saldare, abbonati che hanno rilasciato il giorno. Ogni numero porta all'elenco filtrato; nell'elenco
+delle postazioni libere o rilasciate ogni postazione apre la sua scheda sulla mappa del giorno.
 
 Regole dei numeri (le stesse dei totali operativi del core, `DayMovementsOn` e `ActiveStatuses`):
 **arrivi** = prenotazioni attive non abbonamento che iniziano oggi; **presenti** = check-in fatto;
@@ -34,7 +35,9 @@ anche offline.
 - Zoom e spostamento con i gesti, ricerca per postazione, cliente o codice prenotazione.
 - **Scheda postazione:** stato, prenotazione o abbonamento, cliente (solo i dati che il ruolo può
   vedere), saldo, azioni consentite.
-- Su tablet la mappa occupa il dettaglio e la scheda si apre accanto, senza coprire la mappa.
+- La scheda si apre accanto alla mappa quando la mappa conserva almeno 420 pt (tablet largo);
+  altrimenti (telefono, tablet in verticale o in Split View) copre la mappa a tutta altezza, che resta
+  com'era alla chiusura; su Android il tasto Indietro la chiude.
 - Giorno: "Oggi · Domani · calendario"; oggi e domani anche offline, gli altri giorni solo online
   ([ADR 0014](../adr/0014-giorni-oltre-la-finestra-offline.md)).
 

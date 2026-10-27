@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { ScrollView } from 'react-native';
 
 import type { DailySaleQuoteRequest, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
@@ -195,6 +196,30 @@ describe('daily quick sale', () => {
     const [sale] = requestsTo(network.calls, 'POST', `${EST}/daily-sales`);
     expect((await sale!.json()).payment).toEqual({ method: 'card' });
   });
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'opens the outcome at the top of the screen, not at the offset of the form (%s)',
+    async (size) => {
+      const { screen } = await openSale(
+        { extra: { [`POST ${EST}/daily-sales`]: () => json(201, saleResult(2500, 0)) } },
+        size,
+      );
+      const scrollTo = jest.spyOn(ScrollView.prototype, 'scrollTo');
+      try {
+        await fireEvent.press(
+          await screen.findByRole('button', { name: nbsp('Incassa 25,00 € in contanti') }),
+        );
+        // The form and its confirmation keep the user's scroll offset.
+        expect(scrollTo).not.toHaveBeenCalled();
+        await fireEvent.press(screen.getByRole('button', { name: 'Conferma la vendita' }));
+        await screen.findByTestId('sale-done');
+        expect(scrollTo).toHaveBeenCalledTimes(1);
+        expect(scrollTo).toHaveBeenCalledWith({ y: 0, animated: false });
+      } finally {
+        scrollTo.mockRestore();
+      }
+    },
+  );
 
   it('says so when the spot was just taken, without leaving the form', async () => {
     const { screen } = await openSale({

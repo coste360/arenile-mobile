@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
+import { BackHandler } from 'react-native';
 import { State } from 'react-native-gesture-handler';
 import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
 
@@ -176,7 +177,7 @@ describe('day map', () => {
     expect(await screen.findByText('Postazione A2')).toBeOnTheScreen();
   });
 
-  it.each<WindowSize>(['phone', 'tablet'])(
+  it.each<WindowSize>(['phone', 'tablet', 'tabletLandscape'])(
     'searches by customer and opens the sheet with booking and balance (%s)',
     async (size) => {
       const { screen } = await openMap({}, size);
@@ -192,8 +193,13 @@ describe('day map', () => {
       expect(within(sheet).getByText('Niccolò Bianchi')).toBeOnTheScreen();
       expect(within(sheet).getByLabelText('Saldo: 20,00 €')).toBeOnTheScreen();
       expect(within(sheet).getByLabelText('Codice: AR-7K3Q9')).toBeOnTheScreen();
-      // On a tablet the map stays visible beside the sheet.
-      if (size === 'tablet') expect(screen.getByTestId('day-map-viewport')).toBeOnTheScreen();
+      // Beside the map (landscape) the map stays visible; otherwise the sheet covers it
+      // (1024 portrait: 1024 − nav 288 − sheet 384 < 420).
+      if (size === 'tabletLandscape') {
+        expect(screen.getByTestId('day-map-viewport')).toBeOnTheScreen();
+      } else {
+        expect(screen.queryByTestId('day-map-viewport')).toBeNull();
+      }
     },
   );
 
@@ -396,7 +402,7 @@ describe('day map', () => {
   });
 });
 
-describe('day map: spot sheet placement on tablets', () => {
+describe('day map: spot sheet placement', () => {
   type Element = ReturnType<Awaited<ReturnType<typeof openMap>>['screen']['getByTestId']>;
   const ancestors = (node: Element) => {
     const chain: Element[] = [];
@@ -404,33 +410,111 @@ describe('day map: spot sheet placement on tablets', () => {
     return chain;
   };
 
-  it.each([
-    // 834 − rail 64 − sheet 384 < 420: no room for the map beside the sheet.
-    ['tabletPortrait', 'under the map, in its column', false],
-    ['tabletLandscape', 'beside the map column', true],
-  ] as const)('opens the sheet at %s %s', async (size, _where, beside) => {
-    const { screen } = await openMap({}, size);
-    await fireEvent.changeText(await screen.findByLabelText('Cerca una postazione'), 'niccolo');
+  async function openA2(size: WindowSize) {
+    const app = await openMap({}, size);
+    await fireEvent.changeText(await app.screen.findByLabelText('Cerca una postazione'), 'niccolo');
     await fireEvent.press(
-      within(await screen.findByTestId('day-map-results')).getByRole('button', {
+      within(await app.screen.findByTestId('day-map-results')).getByRole('button', {
         name: 'A2, Da incassare, Niccolò Bianchi',
       }),
     );
-    const sheet = await screen.findByTestId('spot-sheet');
+    const sheet = await app.screen.findByTestId('spot-sheet');
     expect(within(sheet).getByText('Postazione A2')).toBeOnTheScreen();
+    return { ...app, sheet };
+  }
+
+  it('opens the sheet beside the map column at tabletLandscape', async () => {
+    const { screen, sheet } = await openA2('tabletLandscape');
     const viewport = screen.getByTestId('day-map-viewport');
     expect(viewport).toBeOnTheScreen();
-
-    // The closest element holding both: the map column when the sheet is
-    // under the map (the sheet sits in a wrapper of that column), the row
-    // of column and sheet when it is beside (the sheet is a direct child).
+    // The closest element holding both is the row of map column and sheet.
     const ofViewport = ancestors(viewport);
     const common = ancestors(sheet).find((a) => ofViewport.includes(a))!;
-    expect(sheet.parent === common).toBe(beside);
-    const column = beside ? ofViewport.find((a) => a.parent === common)! : common;
-    // The toolbar is in the map column either way; the sheet only when under the map.
+    expect(sheet.parent).toBe(common);
+    const column = ofViewport.find((a) => a.parent === common)!;
     expect(within(column).getByLabelText('Cerca una postazione')).toBeOnTheScreen();
-    expect(within(column).queryByTestId('spot-sheet') !== null).toBe(!beside);
+    expect(within(column).queryByTestId('spot-sheet')).toBeNull();
+  });
+
+  it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletSplitView'])(
+    'covers the map with the sheet, hidden from screen readers but still mounted, at %s',
+    async (size) => {
+      const { screen } = await openA2(size);
+      // Map, toolbar and legend are hidden from accessibility under the sheet…
+      expect(screen.queryByTestId('day-map-viewport')).toBeNull();
+      expect(screen.queryByLabelText('Cerca una postazione')).toBeNull();
+      expect(screen.queryByLabelText('Libero: 1')).toBeNull();
+      // …but stay mounted (the map keeps its zoom for when the sheet closes).
+      expect(screen.getByTestId('day-map-viewport', { includeHiddenElements: true })).toBeTruthy();
+      expect(screen.getByTestId('spot-sheet').parent).toHaveProp('accessibilityViewIsModal', true);
+
+      await fireEvent.press(screen.getByRole('button', { name: 'Chiudi la scheda' }));
+
+      expect(await screen.findByTestId('day-map-viewport')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Cerca una postazione')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Libero: 1')).toBeOnTheScreen();
+      expect(screen.queryByTestId('spot-sheet')).toBeNull();
+    },
+  );
+
+  it('closes a covering sheet with the Android back button, and only the sheet', async () => {
+    type Listener = Parameters<typeof BackHandler.addEventListener>[1];
+    const listeners: Listener[] = [];
+    const spy = jest
+      .spyOn(BackHandler, 'addEventListener')
+      .mockImplementation((event, listener) => {
+        if (event === 'hardwareBackPress') listeners.push(listener);
+        return {
+          remove: () => {
+            listeners.splice(listeners.indexOf(listener), 1);
+          },
+        };
+      });
+    try {
+      const { screen, getPathname } = await openMap();
+      await screen.findByTestId('day-map-viewport');
+      const baseline = listeners.length;
+      await fireEvent.changeText(screen.getByLabelText('Cerca una postazione'), 'niccolo');
+      await fireEvent.press(
+        within(await screen.findByTestId('day-map-results')).getByRole('button', {
+          name: 'A2, Da incassare, Niccolò Bianchi',
+        }),
+      );
+      await screen.findByTestId('spot-sheet');
+      expect(listeners).toHaveLength(baseline + 1);
+
+      let handled: boolean | null | undefined;
+      await act(async () => {
+        handled = listeners.at(-1)!({} as Parameters<Listener>[0]);
+      });
+      expect(handled).toBe(true);
+      expect(screen.queryByTestId('spot-sheet')).toBeNull();
+      expect(await screen.findByTestId('day-map-viewport')).toBeOnTheScreen();
+      expect(getPathname()).toBe('/map');
+      // Closed, the back button is the navigator's again.
+      expect(listeners).toHaveLength(baseline);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('leaves the Android back button alone when the sheet is beside the map', async () => {
+    const add = jest.spyOn(BackHandler, 'addEventListener');
+    try {
+      const { screen } = await openMap({}, 'tabletLandscape');
+      await screen.findByTestId('day-map-viewport');
+      const before = add.mock.calls.length;
+      await fireEvent.changeText(screen.getByLabelText('Cerca una postazione'), 'niccolo');
+      await fireEvent.press(
+        within(await screen.findByTestId('day-map-results')).getByRole('button', {
+          name: 'A2, Da incassare, Niccolò Bianchi',
+        }),
+      );
+      await screen.findByTestId('spot-sheet');
+      expect(add.mock.calls.length).toBe(before);
+    } finally {
+      add.mockRestore();
+    }
   });
 });
 
@@ -462,7 +546,8 @@ describe('day map: days beyond today and tomorrow (ADR 0014)', () => {
     expect(await screen.findByRole('radio', { name: /cambia giorno$/ })).toBeChecked();
     await fireEvent.press(await screen.findByRole('radio', { name: 'Elenco' }));
     await fireEvent.press(await screen.findByRole('button', { name: 'B1, Abbonato, Verdi Anna' }));
-    expect(await screen.findByText('B1')).toBeOnTheScreen();
+    const sheet = await screen.findByTestId('spot-sheet');
+    expect(within(sheet).getByText('Postazione B1')).toBeOnTheScreen();
     expect(screen.queryByRole('button', { name: 'Rilascia il giorno' })).toBeNull();
   });
 
@@ -520,5 +605,115 @@ describe('day map: days beyond today and tomorrow (ADR 0014)', () => {
       await screen.findByText('Domani è un giorno di chiusura o fuori stagione.'),
     ).toBeOnTheScreen();
     expect(screen.getByText('Stabilimento chiuso')).toBeOnTheScreen();
+  });
+});
+
+describe('day map: opened on a spot (/map?spot=…&map=…)', () => {
+  /** A second map "Terrazza" with T1 (s-9), free today. */
+  const TERRACE = mapDocument({
+    map: beachMap({ id: 'm-2', name: { it: 'Terrazza' }, sort_order: 1 }),
+    spots: [mapDocument().spots[0]!].map((s) => ({ ...s, id: 's-9', map_id: 'm-2', label: 'T1' })),
+    decorations: [],
+  });
+  const TWO_MAPS_DAY = operationsDay({
+    spots: [...DAY.spots, spot({ spot_id: 's-9', map_id: 'm-2', label: 'T1', status: 'free' })],
+  });
+
+  it.each<WindowSize>(['phone', 'tablet', 'tabletLandscape'])(
+    'a tap on a free spot of the spots list opens its sheet on the map (%s)',
+    async (size) => {
+      const { screen, getPathname, getSearchParams } = await renderApp({
+        session: SESSION,
+        routes: routes(),
+        size,
+      });
+      await screen.findByText(/Anna · /);
+      await act(async () => router.push('/spots?status=free'));
+      const row = await screen.findByTestId('spot-row-s-1');
+      expect(row).toHaveProp('role', 'link');
+      expect(row).toHaveProp('accessibilityHint', 'Apre la postazione sulla mappa');
+
+      await fireEvent.press(row);
+
+      await waitFor(() => expect(getPathname()).toBe('/map'));
+      expect(getSearchParams()).toEqual(expect.objectContaining({ spot: 's-1', map: 'm-1' }));
+      const sheet = await screen.findByTestId('spot-sheet');
+      expect(within(sheet).getByText('Postazione A1')).toBeOnTheScreen();
+      // Beside the map only in landscape; elsewhere the sheet covers the map.
+      if (size === 'tabletLandscape') {
+        expect(screen.getByTestId('day-map-viewport')).toBeOnTheScreen();
+      } else {
+        expect(screen.queryByTestId('day-map-viewport')).toBeNull();
+        await fireEvent.press(within(sheet).getByRole('button', { name: 'Chiudi la scheda' }));
+        expect(await screen.findByTestId('day-map-viewport')).toBeOnTheScreen();
+      }
+    },
+  );
+
+  it('selects the spot of the second map, choosing that map', async () => {
+    const { screen } = await renderApp({
+      session: SESSION,
+      routes: routes({ documents: [mapDocument(), TERRACE], day: TWO_MAPS_DAY }),
+    });
+    await screen.findByText(/Anna · /);
+    await act(async () => router.push('/map?spot=s-9&map=m-2'));
+
+    const sheet = await screen.findByTestId('spot-sheet');
+    expect(within(sheet).getByText('Postazione T1')).toBeOnTheScreen();
+    // The sheet covers the map on a phone: close it to see which map is shown.
+    await fireEvent.press(within(sheet).getByRole('button', { name: 'Chiudi la scheda' }));
+    expect(await screen.findByRole('radio', { name: 'Terrazza' })).toBeChecked();
+    expect(screen.getByTestId('day-map-viewport')).toHaveProp(
+      'accessibilityLabel',
+      expect.stringContaining('Mappa Terrazza con 1 postazione'),
+    );
+  });
+
+  it('a tap on a spot of the second map in the spots list opens that map', async () => {
+    const { screen } = await renderApp({
+      session: SESSION,
+      routes: routes({ documents: [mapDocument(), TERRACE], day: TWO_MAPS_DAY }),
+    });
+    await screen.findByText(/Anna · /);
+    await act(async () => router.push('/spots?status=free'));
+    // With two maps each row names its map.
+    const row = await screen.findByRole('link', { name: 'T1, Terrazza, Libera' });
+    await fireEvent.press(row);
+
+    const sheet = await screen.findByTestId('spot-sheet');
+    expect(within(sheet).getByText('Postazione T1')).toBeOnTheScreen();
+    await fireEvent.press(within(sheet).getByRole('button', { name: 'Chiudi la scheda' }));
+    expect(await screen.findByRole('radio', { name: 'Terrazza' })).toBeChecked();
+  });
+
+  it('does not reopen the route spot when the user comes back to its map', async () => {
+    const { screen } = await renderApp({
+      session: SESSION,
+      routes: routes({ documents: [mapDocument(), TERRACE], day: TWO_MAPS_DAY }),
+    });
+    await screen.findByText(/Anna · /);
+    await act(async () => router.push('/map?spot=s-1&map=m-1'));
+    const sheet = await screen.findByTestId('spot-sheet');
+    await fireEvent.press(within(sheet).getByRole('button', { name: 'Chiudi la scheda' }));
+    await fireEvent.press(await screen.findByRole('radio', { name: 'Terrazza' }));
+    await screen.findByLabelText(/Mappa Terrazza/);
+    await fireEvent.press(screen.getByRole('radio', { name: 'Spiaggia' }));
+    await screen.findByLabelText(/Mappa Spiaggia/, { includeHiddenElements: true });
+    // The user closed A1's sheet: coming back to its map must not open it again.
+    expect(screen.queryByTestId('spot-sheet')).toBeNull();
+    expect(screen.getByLabelText(/Mappa Spiaggia/)).toBeOnTheScreen();
+  });
+
+  it('selects the spot only once: closing the sheet keeps it closed', async () => {
+    const { screen } = await renderApp({ session: SESSION, routes: routes() });
+    await screen.findByText(/Anna · /);
+    await act(async () => router.push('/map?spot=s-1&map=m-1'));
+    expect(await screen.findByTestId('spot-sheet')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Chiudi la scheda' }));
+    await waitFor(() => expect(screen.queryByTestId('spot-sheet')).toBeNull());
+    // A new slot reloads the day's spots: the route's spot is not selected again.
+    await fireEvent.press(screen.getByRole('radio', { name: 'Pomeriggio' }));
+    expect(await screen.findByLabelText('Libero: 2')).toBeOnTheScreen();
+    expect(screen.queryByTestId('spot-sheet')).toBeNull();
   });
 });

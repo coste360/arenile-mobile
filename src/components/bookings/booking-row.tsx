@@ -70,20 +70,21 @@ export const BookingRow = memo(function BookingRow({
         <Text variant="muted" numberOfLines={1}>
           {[b.code, slot, stay].filter(Boolean).join(' · ')}
         </Text>
-        <View className="flex-row flex-wrap gap-1">
-          <BookingStatusBadge status={b.status} />
-          <BookingKindBadges booking={b} />
-        </View>
-      </View>
-      <View className="items-end gap-1">
+        {/* Under the name, not in a column of its own: in the 320 pt list
+            pane of tablets a long amount squeezed name and badges. */}
         <Text
           className={cn(
             'text-sm',
             b.balance_due > 0 ? 'font-semibold text-foreground' : 'text-muted-foreground',
           )}
+          numberOfLines={1}
         >
           {due}
         </Text>
+        <View className="flex-row flex-wrap gap-1">
+          <BookingStatusBadge status={b.status} />
+          <BookingKindBadges booking={b} />
+        </View>
       </View>
       <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
     </Pressable>

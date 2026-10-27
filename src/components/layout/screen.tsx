@@ -3,6 +3,8 @@ import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { cn } from '@/lib/utils';
 
+import { ScrollTopProvider, useScrollTop } from './scroll-top';
+
 /**
  * Scrollable screen body: full width with the 16 pt gutter of the list
  * headers at every width, so every section of the app has the same edges
@@ -24,8 +26,10 @@ export function Screen({
   refreshing?: boolean;
   onRefresh?: () => void;
 }) {
+  const { ref, scrollTop } = useScrollTop();
   return (
     <ScrollView
+      ref={ref}
       className="flex-1 bg-background"
       contentContainerClassName={cn('grow pb-safe', topInset && 'pt-safe')}
       keyboardShouldPersistTaps="handled"
@@ -34,7 +38,9 @@ export function Screen({
         onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> : undefined
       }
     >
-      <View className={cn('w-full gap-4 px-4 pb-6 pt-4', className)}>{children}</View>
+      <View className={cn('w-full gap-4 px-4 pb-6 pt-4', className)}>
+        <ScrollTopProvider scrollTop={scrollTop}>{children}</ScrollTopProvider>
+      </View>
     </ScrollView>
   );
 }
