@@ -24,6 +24,7 @@ function setup() {
     randomId: () => 'id',
     clock: fixedClock('2026-10-25T08:00:00Z'),
     device: { name: 'Test', platform: 'ios' },
+    formFactor: 'phone',
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],
     openSystemSettings: () => {},

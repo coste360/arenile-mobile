@@ -119,6 +119,7 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Modificato
 
+- Sul telefono l'app resta in verticale; tablet e iPad ruotano in ogni orientazione (ADR 0016).
 - La scheda della postazione sulla mappa copre tutta la mappa quando non c'è spazio per affiancarla
   (telefono, tablet stretto), così dettagli e azioni si vedono insieme; chiudendola la mappa resta
   dov'era. Su Android il tasto Indietro la chiude.

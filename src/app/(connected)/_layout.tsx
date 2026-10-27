@@ -19,8 +19,8 @@ import { FadeIn, FadeOut, ReduceMotion, SlideInLeft } from 'react-native-reanima
 import { BrandMark } from '@/components/brand-mark';
 import { ConnectionIndicator } from '@/components/connection-indicator';
 import { NavPaneProvider, useNavPane } from '@/components/layout/nav-pane';
-import { OPAQUE_HEADER } from '@/components/layout/stack-options';
-import { useDeviceLayout } from '@/components/layout/use-device-layout';
+import { OPAQUE_HEADER, orientationFor } from '@/components/layout/stack-options';
+import { useDeviceLayout, useFormFactor } from '@/components/layout/use-device-layout';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
@@ -131,6 +131,7 @@ export default function ConnectedLayout() {
   const { t } = useTranslation();
   const { state } = useSession();
   const layout = useDeviceLayout();
+  const formFactor = useFormFactor();
 
   if (state.status !== 'paired') {
     return (
@@ -177,6 +178,7 @@ export default function ConnectedLayout() {
       screenOptions={{
         ...OPAQUE_HEADER,
         headerBackButtonDisplayMode: 'minimal',
+        orientation: orientationFor(formFactor),
         headerRight: () => <ConnectionIndicator />,
       }}
     >

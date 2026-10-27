@@ -122,6 +122,7 @@ export async function renderApp({
       ? fakePinnedFetch(network.fetch, lanServerFingerprint).pinnedFetch
       : null,
     device: { name: 'iPhone di Anna', platform: 'ios' },
+    formFactor: size === 'phone' ? 'phone' : 'tablet',
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],
     openSystemSettings: jest.fn(),

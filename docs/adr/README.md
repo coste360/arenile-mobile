@@ -10,7 +10,7 @@ quando riguardano il contratto API, il marchio o la licenza.
 
 | N.                                                                  | Titolo                                                                                                                                             | Stato                                 |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| [0001](0001-stack-expo-react-native.md)                             | Stack: Expo SDK 58, React Native, expo-router, TypeScript strict, build con EAS (scartati Capacitor, Flutter, solo PWA)                            | accettato                             |
+| [0001](0001-stack-expo-react-native.md)                             | Stack: Expo SDK 58, React Native, expo-router, TypeScript strict, build con EAS (scartati Capacitor, Flutter, solo PWA)                            | accettato; orientazione in 0016       |
 | [0002](0002-repository-separato-e-contratto-api.md)                 | Repository separato e contratto API dall'`openapi.yaml` di una release fissata del core (tag + SHA-256), compatibilità con `/meta`                 | accettato                             |
 | [0003](0003-autenticazione-con-token-del-dispositivo.md)            | Autenticazione con il token del dispositivo nel portachiavi, niente cookie, 401 gestito in un solo punto                                           | accettato                             |
 | [0004](0004-ui-kit-reusables-nativewind.md)                         | UI kit: React Native Reusables su NativeWind 4 (Tailwind 3), solo token del tema del pannello, layout master/detail su tablet                      | accettato; eccezione in 0014          |
@@ -25,6 +25,7 @@ quando riguardano il contratto API, il marchio o la licenza.
 | [0013](0013-illustrazioni-dei-kit-della-mappa.md)                   | Illustrazioni dei kit della mappa dalla release fissata del core (vendorizzate, SHA-256), simboli SVG con colori per tema e stato                  | proposto                              |
 | [0014](0014-giorni-oltre-la-finestra-offline.md)                    | Calendario per mappa e prenotazioni: qualsiasi giorno online, oggi e domani anche offline; calendario nativo di `@expo/ui`                         | proposto                              |
 | [0015](0015-prova-la-demo.md)                                       | "Prova la demo": abbinamento allo stabilimento dimostrativo di Coste360 con `demo-pairing` del core, unica eccezione a "nessun server predefinito" | proposto                              |
+| [0016](0016-telefono-in-verticale.md)                               | Telefono solo in verticale (classe hardware, non finestra), tablet in ogni orientazione; Info.plist per iOS, opzione di schermata per Android      | proposto                              |
 
 ## Come aggiungere un ADR
 

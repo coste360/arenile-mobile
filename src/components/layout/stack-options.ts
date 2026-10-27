@@ -6,3 +6,14 @@
  * every screen below it, on phones and tablets.
  */
 export const OPAQUE_HEADER = { headerTransparent: false } as const;
+
+/**
+ * Phones stay in portrait: in landscape a phone keeps about 390 pt of height
+ * for header, toolbar and content. Tablets rotate freely (a counter stand is
+ * often landscape, and iPad multitasking needs every orientation).
+ * app.json declares the same for iOS, so the launch is already portrait.
+ */
+export function orientationFor(formFactor: 'phone' | 'tablet') {
+  // portrait_up: Android's 'portrait' also allows upside down, iPhone does not.
+  return formFactor === 'phone' ? ('portrait_up' as const) : ('default' as const);
+}

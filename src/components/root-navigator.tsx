@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/features/session/session-provider';
 import { WidgetSync } from '@/features/widget/widget-sync';
 import { NAV_THEME } from '@/lib/theme';
-import { OPAQUE_HEADER } from '@/components/layout/stack-options';
+import { OPAQUE_HEADER, orientationFor } from '@/components/layout/stack-options';
+import { useFormFactor } from '@/components/layout/use-device-layout';
 
 /**
  * Root stack of the app (also rendered by the screen tests, with fake
@@ -18,13 +19,20 @@ export function RootNavigator() {
   const { colorScheme } = useColorScheme();
   const { t } = useTranslation();
   const { state } = useSession();
+  const formFactor = useFormFactor();
   const paired = state.status === 'paired';
   const scheme = colorScheme === 'dark' ? 'dark' : 'light';
   return (
     <ThemeProvider value={NAV_THEME[scheme]}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <WidgetSync />
-      <Stack screenOptions={{ ...OPAQUE_HEADER, headerBackButtonDisplayMode: 'minimal' }}>
+      <Stack
+        screenOptions={{
+          ...OPAQUE_HEADER,
+          headerBackButtonDisplayMode: 'minimal',
+          orientation: orientationFor(formFactor),
+        }}
+      >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen
           name="pair"

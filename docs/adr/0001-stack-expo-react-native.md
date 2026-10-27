@@ -1,6 +1,6 @@
 # 0001 — Stack: Expo, React Native e TypeScript
 
-- **Stato:** accettato
+- **Stato:** accettato; orientazione in [0016](0016-telefono-in-verticale.md)
 - **Data:** 2026-10-25
 - **Sezioni della specifica:** core `docs/spec/29-edizione-desktop-e-app-mobile.md` §29.2,
   `docs/spec/01-fase-0-fondamenta.md`
@@ -35,7 +35,8 @@ Alternative considerate:
    `expo-localization`, `expo-device`, `expo-linking`.
 4. Stato del server con **TanStack Query**, form con **react-hook-form + zod**, testi con **i18next**
    (come il pannello); test con **jest-expo + Testing Library**.
-5. L'app è pensata per telefono e tablet/iPad (`ios.supportsTablet`, tutte le orientazioni).
+5. L'app è pensata per telefono e tablet/iPad (`ios.supportsTablet`); telefono in verticale, tablet
+   in ogni orientazione (ADR 0016).
 
 ## Conseguenze
 

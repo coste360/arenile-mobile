@@ -19,7 +19,7 @@ the defect catalogue and the device check before changing code.
 
 | Window                  | pt               | Layout                                 |
 | ----------------------- | ---------------- | -------------------------------------- |
-| iPhone                  | 390 × 844        | phone stack                            |
+| iPhone                  | 390 × 844        | phone stack, portrait only (ADR 0016)  |
 | iPad 11" portrait       | 834 × 1194       | tablet; nav pane must be the icon rail |
 | iPad 11" landscape      | 1194 × 834       | tablet; nav pane may be expanded       |
 | iPad 13" portrait       | 1032 × 1376      | tablet                                 |
