@@ -188,4 +188,38 @@ describe('Lista bagnini entry points', () => {
       await screen.findByRole('link', { name: 'Lista bagnini', selected: true }),
     ).toBeOnTheScreen();
   });
+
+  // /auth/me without bookings.read: the list names the guests, so it stays hidden.
+  const withoutBookingsRead = {
+    ...routes(),
+    'GET /api/admin/v1/auth/me': () =>
+      json(200, {
+        principal_type: 'user',
+        totp_enrolment_required: false,
+        memberships: [
+          {
+            organization_id: 'org-1',
+            establishment_id: SESSION.establishmentId,
+            role: 'beach_staff',
+            permissions: ['operations.run'],
+          },
+        ],
+      }),
+  };
+
+  it('is not on the phone home without bookings.read', async () => {
+    const { screen } = await renderApp({ session: SESSION, routes: withoutBookingsRead });
+    expect(await screen.findByText(/^Anna · /)).toBeOnTheScreen();
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Lista bagnini' })).toBeNull());
+  });
+
+  it('is not in the tablet navigation pane without bookings.read', async () => {
+    const { screen } = await renderApp({
+      session: SESSION,
+      routes: withoutBookingsRead,
+      size: 'tablet',
+    });
+    expect(await screen.findByRole('link', { name: 'Mappa' })).toBeOnTheScreen();
+    await waitFor(() => expect(screen.queryByRole('link', { name: 'Lista bagnini' })).toBeNull());
+  });
 });
