@@ -145,7 +145,12 @@ export default function SpotsScreen() {
                           onPress={() =>
                             router.push({
                               pathname: '/new-booking',
-                              params: { spotId: s.spot_id, from: today },
+                              params: {
+                                spotId: s.spot_id,
+                                from: today,
+                                // A half-day release is free for that half only.
+                                slot: released ? releasedHalf(s) : 'FULL',
+                              },
                             })
                           }
                           testID={`spot-book-${s.spot_id}`}

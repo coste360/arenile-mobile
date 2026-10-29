@@ -1164,6 +1164,8 @@
     "freeOn": "Libere {{day}} · {{slot}}; il server controlla gli altri giorni.",
     "noSpots": "Nessuna postazione libera con questa ricerca.",
     "more": "Ci sono altre postazioni: affina la ricerca.",
+    "loadingSpots": "Carico le postazioni del giorno…",
+    "dayError": "Impossibile leggere le postazioni di quel giorno.",
     "spotOption": "Postazione {{label}}",
     "from": "Dal",
     "to": "Al",
@@ -1185,7 +1187,8 @@
       "lastNameRequired": "Scrivi il cognome.",
       "phoneInvalid": "Numero non valido: usa il prefisso internazionale, es. +39 333 1234567.",
       "emailInvalid": "Email non valida.",
-      "tooLong": "Testo troppo lungo."
+      "tooLong": "Testo troppo lungo.",
+      "phonePlaceholder": "+39 333 1234567"
     },
     "summary": "Riepilogo",
     "stay": "Soggiorno",

@@ -4,8 +4,8 @@ import { act, fireEvent, waitFor } from 'expo-router/testing-library';
 import type { BookingCreate, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
-import { bookingDetail } from '@/test/operations-fixtures';
-import { EST, extra, pack, phase2Instance, requestsTo } from '@/test/phase-2-routes';
+import { bookingDetail, operationsDay, spot } from '@/test/operations-fixtures';
+import { EST, extra, pack, PHASE2_DAY, phase2Instance, requestsTo } from '@/test/phase-2-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const nbsp = (s: string) => s.replace(/ /g, ' ');
@@ -114,6 +114,15 @@ async function openNewBooking(
   return app;
 }
 
+type AppScreen = Awaited<ReturnType<typeof renderApp>>['screen'];
+
+/** Presses an action once the quote of the current form is in (the quote is debounced). */
+async function pressEnabled(screen: AppScreen, name: string) {
+  await screen.findByRole('button', { name });
+  await waitFor(() => expect(screen.getByRole('button', { name })).toBeEnabled());
+  await fireEvent.press(screen.getByRole('button', { name }));
+}
+
 const totalOf = (amount: string) => nbsp(`Totale stimato ${amount}`);
 
 describe('new booking on the fly', () => {
@@ -130,7 +139,7 @@ describe('new booking on the fly', () => {
 
       await fireEvent.changeText(screen.getByLabelText('Cognome'), 'Rossi');
       await fireEvent.changeText(screen.getByLabelText('Telefono'), '333 1234567');
-      await fireEvent.press(screen.getByRole('button', { name: nbsp('Prenota · 175,00 €') }));
+      await pressEnabled(screen, nbsp('Prenota · 175,00 €'));
       expect(await screen.findByText('Prenotare A1?')).toBeOnTheScreen();
       await fireEvent.press(screen.getByRole('button', { name: 'Prenota' }));
 
@@ -158,7 +167,7 @@ describe('new booking on the fly', () => {
 
   it('asks for the surname before booking', async () => {
     const { screen, network } = await openNewBooking();
-    await fireEvent.press(await screen.findByRole('button', { name: nbsp('Prenota · 25,00 €') }));
+    await pressEnabled(screen, nbsp('Prenota · 25,00 €'));
     expect(await screen.findByText('Scrivi il cognome.')).toBeOnTheScreen();
     expect(screen.queryByText('Prenotare A1?')).toBeNull();
     expect(requestsTo(network.calls, 'POST', `${EST}/bookings`)).toHaveLength(0);
@@ -168,7 +177,7 @@ describe('new booking on the fly', () => {
     'holds the spot, shows until when, and converts the hold into the booking (%s)',
     async (size) => {
       const { screen, network } = await openNewBooking({}, size);
-      await fireEvent.press(await screen.findByRole('button', { name: 'Blocca per 15 minuti' }));
+      await pressEnabled(screen, 'Blocca per 15 minuti');
       expect(await screen.findByText('A1 bloccata fino alle 09:15')).toBeOnTheScreen();
       // The stay of a hold cannot change: the controls make way for the explanation.
       expect(screen.queryByRole('button', { name: '7 giorni' })).toBeNull();
@@ -185,7 +194,7 @@ describe('new booking on the fly', () => {
       });
 
       await fireEvent.changeText(screen.getByLabelText('Cognome'), 'Rossi');
-      await fireEvent.press(screen.getByRole('button', { name: nbsp('Prenota · 25,00 €') }));
+      await pressEnabled(screen, nbsp('Prenota · 25,00 €'));
       await fireEvent.press(await screen.findByRole('button', { name: 'Prenota' }));
       await screen.findByTestId('new-booking-done');
       const [create] = requestsTo(network.calls, 'POST', `${EST}/bookings`);
@@ -197,14 +206,14 @@ describe('new booking on the fly', () => {
 
   it('releases the hold on request and when the screen is left', async () => {
     const { screen, network } = await openNewBooking();
-    await fireEvent.press(await screen.findByRole('button', { name: 'Blocca per 15 minuti' }));
+    await pressEnabled(screen, 'Blocca per 15 minuti');
     await fireEvent.press(await screen.findByRole('button', { name: 'Rilascia il blocco' }));
     await waitFor(() =>
       expect(requestsTo(network.calls, 'DELETE', `${EST}/holds/h-1`)).toHaveLength(1),
     );
     expect(await screen.findByRole('button', { name: '7 giorni' })).toBeOnTheScreen();
 
-    await fireEvent.press(screen.getByRole('button', { name: 'Blocca per 15 minuti' }));
+    await pressEnabled(screen, 'Blocca per 15 minuti');
     await screen.findByText('A1 bloccata fino alle 09:15');
     await act(async () => router.back());
     await waitFor(() =>
@@ -218,7 +227,7 @@ describe('new booking on the fly', () => {
         [`POST ${EST}/holds`]: () => json(201, { ...HOLD, expires_at: '2026-10-25T07:59:00Z' }),
       },
     });
-    await fireEvent.press(await screen.findByRole('button', { name: 'Blocca per 15 minuti' }));
+    await pressEnabled(screen, 'Blocca per 15 minuti');
     expect(
       await screen.findByText('Il blocco è scaduto: la postazione è di nuovo libera.'),
     ).toBeOnTheScreen();
@@ -229,10 +238,10 @@ describe('new booking on the fly', () => {
     const { screen } = await openNewBooking({
       extra: { [`POST ${EST}/bookings`]: () => problem(410, 'hold_expired') },
     });
-    await fireEvent.press(await screen.findByRole('button', { name: 'Blocca per 15 minuti' }));
+    await pressEnabled(screen, 'Blocca per 15 minuti');
     await screen.findByText('A1 bloccata fino alle 09:15');
     await fireEvent.changeText(screen.getByLabelText('Cognome'), 'Rossi');
-    await fireEvent.press(screen.getByRole('button', { name: nbsp('Prenota · 25,00 €') }));
+    await pressEnabled(screen, nbsp('Prenota · 25,00 €'));
     await fireEvent.press(await screen.findByRole('button', { name: 'Prenota' }));
     expect(
       await screen.findByText(
@@ -320,7 +329,7 @@ describe('new booking on the fly', () => {
       extra: { [`POST ${EST}/bookings`]: () => problem(409, 'spot_unavailable') },
     });
     await fireEvent.changeText(await screen.findByLabelText('Cognome'), 'Rossi');
-    await fireEvent.press(await screen.findByRole('button', { name: nbsp('Prenota · 25,00 €') }));
+    await pressEnabled(screen, nbsp('Prenota · 25,00 €'));
     await fireEvent.press(await screen.findByRole('button', { name: 'Prenota' }));
     expect(await screen.findByText('Prenotazione non riuscita')).toBeOnTheScreen();
     expect(
@@ -382,7 +391,7 @@ describe('new booking on the fly', () => {
     );
     // Four days from the 27th: the last day follows.
     expect(await screen.findByRole('button', { name: 'Al, ven 30 ott' })).toBeOnTheScreen();
-    expect(screen.getByLabelText(totalOf('100,00 €'))).toBeOnTheScreen();
+    expect(await screen.findByLabelText(totalOf('100,00 €'))).toBeOnTheScreen();
   });
 
   it('is disabled without a connection to the instance', async () => {
@@ -392,6 +401,151 @@ describe('new booking on the fly', () => {
     await waitFor(() =>
       expect(screen.getByRole('button', { name: 'Nuova prenotazione' })).toBeDisabled(),
     );
+  });
+
+  it('quotes a held stay with its hold, so changing an extra keeps the booking possible', async () => {
+    const quotes: BookingCreate[] = [];
+    let heldOnServer = false;
+    const { screen } = await openNewBooking({
+      extra: {
+        [`POST ${EST}/holds`]: () => {
+          heldOnServer = true;
+          return json(201, HOLD);
+        },
+        // Like the core: without hold_id the operator's own hold is a conflict.
+        [`POST ${EST}/bookings/quote`]: async (r) => {
+          const body = (await r.json()) as BookingCreate;
+          quotes.push(body);
+          const extras = (body.extras ?? []).reduce((n, x) => n + x.quantity, 0);
+          return json(
+            200,
+            quoteOf(body, {
+              breakdown: { ...BREAKDOWN, total: 2500 + extras * 500 },
+              available: !heldOnServer || !!body.hold_id,
+            }),
+          );
+        },
+      },
+    });
+    await pressEnabled(screen, 'Blocca per 15 minuti');
+    await screen.findByText('A1 bloccata fino alle 09:15');
+    await fireEvent.press(screen.getByRole('button', { name: 'Aggiungi un Lettino in più' }));
+    expect(await screen.findByLabelText(totalOf('30,00 €'))).toBeOnTheScreen();
+    expect(quotes[quotes.length - 1]).toMatchObject({
+      hold_id: 'h-1',
+      extras: [{ extra_id: 'x-1', quantity: 1 }],
+    });
+    expect(screen.queryByText(/non è libera per tutto il soggiorno/)).toBeNull();
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: nbsp('Prenota · 30,00 €') })).toBeEnabled(),
+    );
+  });
+
+  it('asks for one quote after a burst of taps', async () => {
+    const { screen, network } = await openNewBooking();
+    await screen.findByLabelText(totalOf('25,00 €'));
+    const before = requestsTo(network.calls, 'POST', `${EST}/bookings/quote`).length;
+    await fireEvent.press(screen.getByRole('button', { name: 'Aggiungi un Lettino in più' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Aggiungi un Lettino in più' }));
+    await fireEvent.press(screen.getByRole('button', { name: '7 giorni' }));
+    // The screens run on Jest's fake timers: nothing was asked during the burst.
+    expect(requestsTo(network.calls, 'POST', `${EST}/bookings/quote`)).toHaveLength(before);
+    await waitFor(() =>
+      expect(requestsTo(network.calls, 'POST', `${EST}/bookings/quote`)).toHaveLength(before + 1),
+    );
+    await act(async () => {
+      jest.advanceTimersByTime(400);
+    });
+    expect(requestsTo(network.calls, 'POST', `${EST}/bookings/quote`)).toHaveLength(before + 1);
+  });
+
+  it('keeps the hold when releasing it fails, and releases it when the screen is left', async () => {
+    let deletes = 0;
+    const { screen, network } = await openNewBooking({
+      extra: {
+        [`DELETE ${EST}/holds/h-1`]: () => {
+          deletes += 1;
+          return deletes === 1
+            ? problem(500, 'internal_error')
+            : new Response(null, { status: 204 });
+        },
+      },
+    });
+    await pressEnabled(screen, 'Blocca per 15 minuti');
+    await fireEvent.press(await screen.findByRole('button', { name: 'Rilascia il blocco' }));
+    expect(await screen.findByText('Prenotazione non riuscita')).toBeOnTheScreen();
+    expect(screen.getByText('A1 bloccata fino alle 09:15')).toBeOnTheScreen();
+    await act(async () => router.back());
+    await waitFor(() =>
+      expect(requestsTo(network.calls, 'DELETE', `${EST}/holds/h-1`)).toHaveLength(2),
+    );
+  });
+
+  it('keeps the form while another first day loads, and retries a day that failed', async () => {
+    let failing = true;
+    const { screen } = await openNewBooking({
+      extra: {
+        [`GET ${EST}/operations/day`]: (r) => {
+          const date = new URL(r.url).searchParams.get('date');
+          if (date === '2026-10-25') return json(200, PHASE2_DAY);
+          return failing
+            ? problem(500, 'internal_error')
+            : json(200, operationsDay({ date: date ?? '', spots: PHASE2_DAY.spots }));
+        },
+      },
+    });
+    await screen.findByLabelText(totalOf('25,00 €'));
+    await fireEvent.press(screen.getByRole('button', { name: /^Dal, / }));
+    await fireEvent(
+      await screen.findByTestId('new-booking-from-calendar'),
+      'valueChange',
+      { type: 'set' },
+      new Date(2026, 9, 27, 12),
+    );
+    expect(
+      await screen.findByText('Impossibile leggere le postazioni di quel giorno.'),
+    ).toBeOnTheScreen();
+    // The rest of the form stays: no "no free spots" in place of the error.
+    expect(screen.queryByText('Nessuna postazione libera con questa ricerca.')).toBeNull();
+    expect(screen.getByLabelText('Cognome')).toBeOnTheScreen();
+
+    failing = false;
+    await fireEvent.press(screen.getByRole('button', { name: 'Riprova' }));
+    expect(await screen.findByRole('radio', { name: 'Postazione A1' })).toBeOnTheScreen();
+    expect(await screen.findByText('Prenota A1')).toBeOnTheScreen();
+  });
+
+  it('books a half-day release for its free half from the released spots list', async () => {
+    const quotes: BookingCreate[] = [];
+    const instance = phase2Instance({
+      day: operationsDay({
+        spots: [
+          ...PHASE2_DAY.spots,
+          spot({
+            spot_id: 's-5',
+            label: 'C1',
+            status: 'booked',
+            am_status: 'released',
+            pm_status: 'booked',
+            release_id: 'r-5',
+          }),
+        ],
+      }),
+      extra: bookingRoutes({
+        [`POST ${EST}/bookings/quote`]: async (r) => {
+          const body = (await r.json()) as BookingCreate;
+          quotes.push(body);
+          return json(200, quoteOf(body));
+        },
+      }),
+    });
+    const { screen } = await renderApp({ session: SESSION, routes: instance.routes });
+    await screen.findByText(/Anna · /);
+    await act(async () => router.push({ pathname: '/spots', params: { status: 'released' } }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Prenota C1' }));
+    expect(await screen.findByText('Prenota C1')).toBeOnTheScreen();
+    await waitFor(() => expect(quotes.length).toBeGreaterThan(0));
+    expect(quotes[quotes.length - 1]).toMatchObject({ slots: 'AM', formula: 'half_day' });
   });
 
   it.each<Role>(['beach_staff', 'viewer'])(

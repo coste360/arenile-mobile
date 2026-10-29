@@ -1164,6 +1164,8 @@
     "freeOn": "Free on {{day}} · {{slot}}; the server checks the other days.",
     "noSpots": "No free spot matches this search.",
     "more": "There are more spots: refine the search.",
+    "loadingSpots": "Loading the spots of the day…",
+    "dayError": "Could not load the spots of that day.",
     "spotOption": "Spot {{label}}",
     "from": "From",
     "to": "To",
@@ -1185,7 +1187,8 @@
       "lastNameRequired": "Enter the surname.",
       "phoneInvalid": "Invalid number: use the international prefix, e.g. +39 333 1234567.",
       "emailInvalid": "Invalid email.",
-      "tooLong": "Text too long."
+      "tooLong": "Text too long.",
+      "phonePlaceholder": "+39 333 1234567"
     },
     "summary": "Summary",
     "stay": "Stay",

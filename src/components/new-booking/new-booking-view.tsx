@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import {
   CalendarPlusIcon,
@@ -8,6 +9,7 @@ import {
   ClipboardListIcon,
   LockIcon,
   LockOpenIcon,
+  RefreshCwIcon,
   SearchIcon,
   TimerIcon,
 } from 'lucide-react-native';
@@ -16,7 +18,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
-import type { BookingDetail, Hold, Slots } from '@/api/types';
+import type { BookingCreate, BookingDetail, Hold, Slots } from '@/api/types';
 import { ExtraStepper } from '@/components/daily-sale/extra-stepper';
 import { DateField } from '@/components/date-field';
 import { DetailRow } from '@/components/detail-row';
@@ -68,7 +70,7 @@ import {
   useReleaseHold,
 } from '@/features/new-booking/queries';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
-import { useOperationalDays, useOperationsDay } from '@/features/operations/queries';
+import { operationsDayQuery, useOperationalDays } from '@/features/operations/queries';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { useApiClient, usePairedSession } from '@/features/session/session-provider';
@@ -76,10 +78,14 @@ import { formatDayLabel, type CalendarDate } from '@/lib/calendar';
 import { formatTime } from '@/lib/datetime';
 import { localizedText } from '@/lib/i18n-text';
 import { formatCents } from '@/lib/money';
+import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { cn } from '@/lib/utils';
 import { useDependencies } from '@/providers/dependencies';
 
 const SLOTS: readonly Slots[] = ['FULL', 'AM', 'PM'];
+
+/** Quiet time before a changed form asks for a new quote (taps on a stepper settle into one). */
+const QUOTE_DEBOUNCE_MS = 300;
 
 /**
  * "Nuova prenotazione" on the fly: a spot, the stay from one day to another,
@@ -155,7 +161,11 @@ function NewBookingForm({
   const [confirming, setConfirming] = useState(false);
   const [failure, setFailure] = useState<unknown>(null);
 
-  const day = useOperationsDay(stay.startsOn);
+  // A new first day keeps the previous day's spots on screen while it loads.
+  const day = useQuery({
+    ...operationsDayQuery(client, establishmentId, stay.startsOn),
+    placeholderData: keepPreviousData,
+  });
   const packs = usePacks(online);
   const extras = useExtras(online);
   const createHold = useCreateHold();
@@ -188,13 +198,25 @@ function NewBookingForm({
     },
     offered,
   );
-  const priced = useBookingQuote(online ? selection : null);
-  const total = priced.data?.breakdown.total;
-  const fresh = !!priced.data && !priced.isPlaceholderData && !priced.isFetching;
-  const allowed = !!priced.data && quoteAllows(priced.data);
   const held = !!hold && !holdExpired;
   // The spot, the dates and the slots of a hold cannot change: release it first.
   const holdMatches = held && holdKey(hold) === selectionKey(selection);
+  // The quote of a held stay names the hold: the operator's own hold is not a conflict.
+  const quoteBody: BookingCreate | null =
+    online && selection ? (holdMatches ? { ...selection, hold_id: hold.id } : selection) : null;
+  const quoteKey = quoteBody ? JSON.stringify(quoteBody) : '';
+  const debouncedKey = useDebouncedValue(quoteKey, QUOTE_DEBOUNCE_MS);
+  // The first complete form is quoted at once (state adjusted while rendering);
+  // later changes wait for the debounce.
+  const [firstKey, setFirstKey] = useState('');
+  if (!firstKey && quoteKey) setFirstKey(quoteKey);
+  const settledKey = debouncedKey || firstKey || quoteKey;
+  const priced = useBookingQuote(settledKey ? (JSON.parse(settledKey) as BookingCreate) : null);
+  const total = priced.data?.breakdown.total;
+  // Fresh only for the form as it is now, not for a quote of a few taps ago.
+  const fresh =
+    settledKey === quoteKey && !!priced.data && !priced.isPlaceholderData && !priced.isFetching;
+  const allowed = !!priced.data && quoteAllows(priced.data);
   const ready =
     online && fresh && allowed && total !== undefined && !create.isPending && !createHold.isPending;
 
@@ -211,11 +233,15 @@ function NewBookingForm({
   useEffect(() => {
     if (!hold) return;
     const left = holdSecondsLeft(hold.expires_at, clock.now());
-    const timer = setTimeout(() => setHoldExpired(true), left * 1000);
+    const timer = setTimeout(() => {
+      // Expired on the server: nothing left to release.
+      owned.current = null;
+      setHoldExpired(true);
+    }, left * 1000);
     return () => clearTimeout(timer);
   }, [hold, clock]);
 
-  if (day.isPending || (online && (packs.isPending || extras.isPending))) {
+  if ((!day.data && day.isPending) || (online && (packs.isPending || extras.isPending))) {
     return <StateView busy title={t('common.loading')} />;
   }
 
@@ -253,11 +279,11 @@ function NewBookingForm({
   const doRelease = async () => {
     clearFailure();
     if (!hold) return;
-    const id = hold.id;
-    forgetHold();
     try {
-      await release.mutateAsync(id);
+      await release.mutateAsync(hold.id);
+      forgetHold();
     } catch (e) {
+      // Still held on the server: the screen keeps it, and releases it when left.
       setFailure(e);
     }
   };
@@ -308,7 +334,23 @@ function NewBookingForm({
                 slot: t(`dayMap.slot.${slots}`),
               })}
             </Text>
-            {choices.spots.length === 0 ? (
+            {day.isError && !day.data ? (
+              <Alert icon={CircleAlertIcon} variant="destructive" accessibilityLiveRegion="polite">
+                <AlertDescription>{t('newBooking.dayError')}</AlertDescription>
+                <Button
+                  variant="outline"
+                  className="mt-2 self-start"
+                  onPress={() => void day.refetch()}
+                >
+                  <Icon as={RefreshCwIcon} size={16} />
+                  <Text>{t('common.retry')}</Text>
+                </Button>
+              </Alert>
+            ) : day.isPlaceholderData ? (
+              <Text variant="muted" accessibilityLiveRegion="polite">
+                {t('newBooking.loadingSpots')}
+              </Text>
+            ) : choices.spots.length === 0 ? (
               <Text variant="muted" accessibilityLiveRegion="polite">
                 {t('newBooking.noSpots')}
               </Text>
@@ -479,7 +521,7 @@ function NewBookingForm({
           label={t('newBooking.form.phone')}
           keyboardType="phone-pad"
           autoComplete="off"
-          placeholder="+39 333 1234567"
+          placeholder={t('newBooking.form.phonePlaceholder')}
         />
         <FormField
           control={control}

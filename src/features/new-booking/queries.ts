@@ -12,17 +12,23 @@ import { useDependencies } from '@/providers/dependencies';
 
 const EST = '/api/admin/v1/establishments/{establishmentId}' as const;
 
-/** Price, rules and availability of the stay being composed (no write); null body = nothing yet. */
+/**
+ * Price, rules and availability of the stay being composed (no write); null
+ * body = nothing yet. With the hold_id of the operator's own hold the core
+ * skips the availability check (the hold already guarantees the spot).
+ */
 export function useBookingQuote(body: BookingCreate | null) {
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
   return useQuery<BookingQuote>({
     queryKey: estKeys.bookingQuote(establishmentId, body),
-    queryFn: () =>
+    // A quote overtaken by a newer selection is cancelled (TanStack aborts the signal).
+    queryFn: ({ signal }) =>
       request(() =>
         client.POST(`${EST}/bookings/quote`, {
           params: { path: { establishmentId } },
           body: body as BookingCreate,
+          signal,
         }),
       ),
     enabled: !!body,

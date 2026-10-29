@@ -1164,6 +1164,8 @@
     "freeOn": "Libres le {{day}} · {{slot}} ; le serveur vérifie les autres jours.",
     "noSpots": "Aucun emplacement libre ne correspond à cette recherche.",
     "more": "Il y a d'autres emplacements : affinez la recherche.",
+    "loadingSpots": "Chargement des emplacements du jour…",
+    "dayError": "Impossible de charger les emplacements de ce jour.",
     "spotOption": "Emplacement {{label}}",
     "from": "Du",
     "to": "Au",
@@ -1185,7 +1187,8 @@
       "lastNameRequired": "Saisissez le nom.",
       "phoneInvalid": "Numéro non valide : utilisez l'indicatif international, ex. +39 333 1234567.",
       "emailInvalid": "E-mail non valide.",
-      "tooLong": "Texte trop long."
+      "tooLong": "Texte trop long.",
+      "phonePlaceholder": "+39 333 1234567"
     },
     "summary": "Récapitulatif",
     "stay": "Séjour",
