@@ -17,6 +17,9 @@ writing its own fetching, caching or permission logic.
     at its midnight, works offline from the cached establishment);
   - `features/bookings/queries.ts`: `useBookingsOfDay(date)` (every page), `useBooking(id)`;
   - `features/maps/queries.ts`: `useMaps()` (display order), `useMapDocument(mapId)`;
+  - `features/lifeguard/queries.ts`: `useLifeguardList(date)`, `lifeguardListQuery` (core spec
+    30.10) under `['est', id, 'operations', 'lifeguard', { date, slot }]`: persisted and prefetched
+    for today and tomorrow like the operations day, other days online only (ADR 0014);
   - `features/auth/queries.ts`: `useMe()` (memberships and permissions of the pairing user).
 - **Types** — only from `src/api/types.ts` (aliases of the generated contract).
 - **Dates** — `src/lib/calendar.ts`: `todayIn(zone, now)`, `addDays`, `daysBetween`,
@@ -38,7 +41,8 @@ cannot do; when the server refuses anyway, `isForbidden(error)` (`src/api/errors
 ## Offline cache
 
 Nothing to do in a feature: queries under the allowlisted keys (see `features/offline/persist.ts`)
-are saved and restored automatically, and the runtime warms up today's and tomorrow's data while
+are saved and restored automatically (the operations day, the lifeguard list, the bookings of the day
+and their details for today and tomorrow, the maps), and the runtime warms up today's and tomorrow's data while
 online (`features/offline/prefetch.ts`). A new resource that must be readable offline needs its key
 added to `isPersistable` (with a test in `persist.test.ts`) and, if it must be warm, to the prefetch.
 Screens show cached data when a query has `data`, even if it also has an error (offline or

@@ -40,6 +40,22 @@ anche offline.
   com'era alla chiusura; su Android il tasto Indietro la chiude.
 - Giorno: "Oggi · Domani · calendario"; oggi e domani anche offline, gli altri giorni solo online
   ([ADR 0014](../adr/0014-giorni-oltre-la-finestra-offline.md)).
+- **Mappa più ricca** (core 1.1, sezione 30.4 del core, come il pannello): arrivi e partenze segnati
+  sulle postazioni e contati nella legenda; filtri rapidi "Evidenzia" (arrivi, partenze, da incassare,
+  presenti, una convenzione o partner, un gruppo; uno alla volta, con la ricerca dentro il filtro);
+  etichette combinabili sotto le postazioni occupate (cliente, fine soggiorno, allestimento); nella
+  scheda allestimento, persone, gruppo, convenzione e partner.
+- **Calendario della postazione** (sezione 30.5 del core) dalla scheda, solo online: la stagione mese
+  per mese, mattina e pomeriggio con i colori della mappa (mesi affiancati su tablet). Un giorno
+  occupato apre la prenotazione (con `bookings.read`), un giorno libero da oggi in poi avvia una nuova
+  prenotazione (con `bookings.write`); un giorno occupato a metà offre le due scelte.
+
+## Lista bagnini
+
+Lista del giorno per i bagnini (sezione 30.10 del core): postazioni occupate per fila con il cognome,
+arrivi e partenze, allestimento e gruppo; filtri per arrivi, partenze e da saldare. Oggi e domani
+anche offline (cache e prefetch come il giorno operativo), gli altri giorni solo online. Visibile solo
+con `bookings.read`, dalla home e dal pannello di navigazione su tablet; mai email o telefono.
 
 ## Prenotazioni del giorno
 
