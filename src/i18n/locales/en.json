@@ -719,7 +719,58 @@
       "errorTitle": "Booking not available",
       "errorDescription": "It could not be read from the instance. Check the connection and try again.",
       "notFound": "The booking no longer exists.",
-      "actionsTitle": "Actions"
+      "actionsTitle": "Actions",
+      "actionsOnlineOnly": "These actions need the instance to be reachable."
+    },
+    "share": {
+      "action": "Send summary to the customer",
+      "hint": "Opens sharing with the text in the customer's language and the link to manage the booking.",
+      "newLink": "Each send creates a new manage link: the one sent before stops working.",
+      "errors": {
+        "offline": "Instance unreachable: the summary was not created.",
+        "forbidden": "Your role cannot send the summary.",
+        "not_found": "The booking no longer exists.",
+        "unavailable": "This instance does not prepare the customer summary yet.",
+        "default": "The summary could not be prepared. Try again."
+      }
+    },
+    "agreement": {
+      "title": "Agreement",
+      "name": "Agreement",
+      "partner": "Partner",
+      "share": "Partner's share",
+      "shareFull": "Paid entirely by the partner",
+      "sharePercent": "{{percent}}% paid by the partner",
+      "shareAmount": "{{amount}} paid by the partner",
+      "partnerAmount": "Amount paid by the partner",
+      "guestStay": "Guest's stay",
+      "toVerify": "Requirement to verify",
+      "verify": "Verified",
+      "verifyHint": "Records the date and the operator of the check, never a copy of the document.",
+      "onlineOnly": "Recording the check needs the instance to be reachable.",
+      "verifiedAt": "Verified on {{when}}",
+      "verifiedBy": "Verified on {{when}} by {{name}}",
+      "errors": {
+        "offline": "Instance unreachable: the check was not recorded.",
+        "forbidden": "Your role cannot record the check.",
+        "changed": "The booking changed in the meantime: look at the updated sheet and try again.",
+        "not_modifiable": "The booking is over or cancelled: the check can no longer be recorded.",
+        "invalid": "The booking has no agreement to verify.",
+        "not_found": "The booking no longer exists.",
+        "unavailable": "This instance does not record checks yet.",
+        "default": "The check could not be recorded. Try again."
+      }
+    },
+    "guests": {
+      "title": "Group and guests",
+      "group": "Group",
+      "origin": "From",
+      "party": "People",
+      "adults_one": "{{count}} adult",
+      "adults_other": "{{count}} adults",
+      "children_one": "{{count}} child",
+      "children_other": "{{count}} children",
+      "names": "Guests"
     }
   },
   "operations": {

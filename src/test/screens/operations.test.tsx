@@ -370,6 +370,27 @@ describe('booking operations', () => {
     },
   );
 
+  it('shows the agreement requirement still to check before the check-in (core 1.1)', async () => {
+    const posts: Request[] = [];
+    const agreement = { id: 'ag-1', name: 'Residenti', requirement: 'Residenza nel comune' };
+    const { screen } = await openBooking({
+      routes: {
+        [`GET ${EST}/bookings/b-1`]: () => json(200, bookingDetail({ agreement })),
+        [`POST ${EST}/bookings/b-1/requirement-verification`]: (r) => {
+          posts.push(r);
+          return json(200, bookingDetail({ agreement }));
+        },
+      },
+    });
+    expect(await screen.findByText('Requisito da verificare')).toBeOnTheScreen();
+    expect(screen.getByText('Residenza nel comune')).toBeOnTheScreen();
+    // Not a condition of the check-in, as in the core.
+    expect(screen.getByRole('button', { name: 'Fai il check-in' })).toBeEnabled();
+    await fireEvent.press(screen.getByRole('button', { name: 'Verificato' }));
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]!.headers.get('If-Match')).toBe('"3"');
+  });
+
   it('hides cash and notes from the beach staff', async () => {
     const { screen } = await openBooking({ role: 'beach_staff' });
     expect(screen.getByRole('button', { name: 'Fai il check-in' })).toBeOnTheScreen();

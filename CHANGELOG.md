@@ -29,6 +29,11 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 - **Calendario della postazione** (spec 30.5) dalla scheda, solo online: la stagione mese per mese,
   ogni giorno diviso in mattina e pomeriggio con i colori e i glifi della mappa; un giorno occupato apre
   la prenotazione; sotto, le prenotazioni della stagione con il saldo.
+- **Scheda prenotazione (core 1.1)**: gruppo e ospiti (provenienza, adulti e bambini, nomi);
+  convenzione e partner con la quota a carico del partner; requisito della convenzione (es.
+  residenti) con "Verificato", che registra data e operatore, anche al check-in senza bloccarlo;
+  "Invia riepilogo al cliente" apre la condivisione del telefono con il testo nella lingua del
+  cliente e un nuovo link di gestione. Verifica e riepilogo solo online, per cassa e direzione.
 - **Prova la demo** nella schermata "Collega" (ADR 0015): abbina l'app allo stabilimento di esempio
   sul server dimostrativo di Coste360 (`demo.arenile.app`) con un codice chiesto alla demo, senza
   server proprio; serve un'istanza demo del core v1.0.6 o successiva (`arenile seed demo` crea l'utente `cassa@lido-demo.example`).

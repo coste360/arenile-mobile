@@ -5,7 +5,7 @@ import { randomUUID } from 'expo-crypto';
 import * as Device from 'expo-device';
 import { getLocales } from 'expo-localization';
 import { createContext, useContext, type ReactNode } from 'react';
-import { Linking, Platform } from 'react-native';
+import { Linking, Platform, Share } from 'react-native';
 
 import type { PinnedFetch } from '@/api/transport';
 import { APP_VERSION } from '@/config/app';
@@ -47,6 +47,11 @@ export interface Dependencies {
   /** Device languages, most preferred first (BCP 47 tags). */
   deviceLocales: () => string[];
   openSystemSettings: () => void;
+  /**
+   * Native share sheet with a text (the booking summary for the customer):
+   * the operator picks the app (WhatsApp, Messages...) and sends it.
+   */
+  shareText: (message: string) => Promise<void>;
   /** Home screen widget (app group / shared preferences); absent means no widget. */
   widget?: WidgetBridge;
 }
@@ -73,6 +78,9 @@ export function createDefaultDependencies(): Dependencies {
     deviceLocales: () => getLocales().map((l) => l.languageTag),
     openSystemSettings: () => {
       void Linking.openSettings();
+    },
+    shareText: async (message) => {
+      await Share.share({ message });
     },
     widget: createExpoWidgetBridge(),
   };

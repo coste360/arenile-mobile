@@ -89,3 +89,8 @@ export type SpotCalendar = Schemas['SpotCalendar'];
 export type SpotCalendarDay = Schemas['SpotCalendarDay'];
 export type SpotCalendarCell = Schemas['SpotCalendarCell'];
 export type SpotCalendarBooking = Schemas['SpotCalendarBooking'];
+// Core 1.1 (M8): agreements, partners and the summary for the customer on the booking sheet.
+export type AgreementRef = Schemas['AgreementRef'];
+export type BookingPartnerShare = Schemas['BookingPartnerShare'];
+export type BookingShareSummary = Schemas['BookingShareSummary'];
+export type RequirementVerification = Schemas['RequirementVerification'];

@@ -128,6 +128,7 @@ export async function renderApp({
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],
     openSystemSettings: jest.fn(),
+    shareText: jest.fn(async () => {}),
     widget,
   };
 

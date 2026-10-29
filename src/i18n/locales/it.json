@@ -719,7 +719,58 @@
       "errorTitle": "Prenotazione non disponibile",
       "errorDescription": "Non è stato possibile leggerla dall'istanza. Controlla la connessione e riprova.",
       "notFound": "La prenotazione non esiste più.",
-      "actionsTitle": "Azioni"
+      "actionsTitle": "Azioni",
+      "actionsOnlineOnly": "Queste azioni richiedono l'istanza raggiungibile."
+    },
+    "share": {
+      "action": "Invia riepilogo al cliente",
+      "hint": "Apre la condivisione con il testo nella lingua del cliente e il link per gestire la prenotazione.",
+      "newLink": "Ogni invio crea un nuovo link di gestione: quello inviato prima smette di funzionare.",
+      "errors": {
+        "offline": "Istanza non raggiungibile: il riepilogo non è stato creato.",
+        "forbidden": "Il tuo ruolo non può inviare il riepilogo.",
+        "not_found": "La prenotazione non esiste più.",
+        "unavailable": "Questa istanza non prepara ancora il riepilogo per il cliente.",
+        "default": "Non è stato possibile preparare il riepilogo. Riprova."
+      }
+    },
+    "agreement": {
+      "title": "Convenzione",
+      "name": "Convenzione",
+      "partner": "Partner",
+      "share": "Quota del partner",
+      "shareFull": "Tutto a carico del partner",
+      "sharePercent": "{{percent}}% a carico del partner",
+      "shareAmount": "{{amount}} a carico del partner",
+      "partnerAmount": "Importo a carico del partner",
+      "guestStay": "Soggiorno dell'ospite",
+      "toVerify": "Requisito da verificare",
+      "verify": "Verificato",
+      "verifyHint": "Registra data e operatore della verifica, mai una copia del documento.",
+      "onlineOnly": "Registrare la verifica richiede l'istanza raggiungibile.",
+      "verifiedAt": "Verificato il {{when}}",
+      "verifiedBy": "Verificato il {{when}} da {{name}}",
+      "errors": {
+        "offline": "Istanza non raggiungibile: la verifica non è stata registrata.",
+        "forbidden": "Il tuo ruolo non può registrare la verifica.",
+        "changed": "La prenotazione è cambiata nel frattempo: controlla la scheda aggiornata e riprova.",
+        "not_modifiable": "La prenotazione è conclusa o cancellata: la verifica non si registra più.",
+        "invalid": "La prenotazione non ha una convenzione da verificare.",
+        "not_found": "La prenotazione non esiste più.",
+        "unavailable": "Questa istanza non registra ancora le verifiche.",
+        "default": "Non è stato possibile registrare la verifica. Riprova."
+      }
+    },
+    "guests": {
+      "title": "Gruppo e ospiti",
+      "group": "Gruppo",
+      "origin": "Provenienza",
+      "party": "Persone",
+      "adults_one": "{{count}} adulto",
+      "adults_other": "{{count}} adulti",
+      "children_one": "{{count}} bambino",
+      "children_other": "{{count}} bambini",
+      "names": "Ospiti"
     }
   },
   "operations": {

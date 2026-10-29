@@ -6,7 +6,7 @@ import type { OfflineOperation } from '@/features/offline/types';
 import { formatDayLabel } from '@/lib/calendar';
 import { datesRequested, pickDay } from '@/test/day-picker';
 import { dayRoutes, EST } from '@/test/day-routes';
-import { networkDown, problem } from '@/test/fake-fetch';
+import { json, networkDown, problem } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { bookingDetail, customer } from '@/test/operations-fixtures';
 import { renderApp, setWindow, type RenderAppOptions, type WindowSize } from '@/test/render-app';
@@ -273,6 +273,165 @@ describe('booking sheet of a stay split across spots (core 1.1)', () => {
     const { screen } = await open('/bookings/b-1');
     expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
     expect(screen.queryByText(/: dal /)).toBeNull();
+  });
+});
+
+describe('booking sheet: agreement, guests and summary for the customer (core 1.1)', () => {
+  const agreement = { id: 'ag-1', name: 'Residenti', requirement: 'Residenza nel comune' };
+  const verification = {
+    id: 'v-1',
+    subject: 'booking' as const,
+    agreement_id: 'ag-1',
+    requirement: 'Residenza nel comune',
+    verified_at: '2026-10-25T07:30:00Z',
+    verified_by_name: 'Anna',
+  };
+  const withAgreement = bookingDetail({
+    agreement,
+    partner: { id: 'pt-1', name: 'Hotel Mare', kind: 'struttura_ricettiva' },
+    partner_share: { type: 'percent', percent: '50' },
+    partner_amount: 1500,
+    group_name: 'Famiglia Bianchi',
+    group_origin: 'Milano',
+    party_adults: 2,
+    party_children: 1,
+    guest_names: ['Luca Bianchi', 'Sara Bianchi'],
+  });
+
+  /** The booking before and after "Verificato"; the POST is recorded. */
+  function verifyRoutes(role?: 'cashier' | 'beach_staff') {
+    let verified = false;
+    const posts: Request[] = [];
+    const routes = {
+      ...dayRoutes({ role }),
+      [`GET ${EST}/bookings/b-1`]: () =>
+        json(
+          200,
+          verified ? { ...withAgreement, requirement_verification: verification } : withAgreement,
+        ),
+      [`POST ${EST}/bookings/b-1/requirement-verification`]: (r: Request) => {
+        posts.push(r);
+        verified = true;
+        // The core answers with the booking detail (contract: the verification).
+        return json(200, { ...withAgreement, requirement_verification: verification });
+      },
+    };
+    return { routes, posts };
+  }
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'shows guests and agreement and records the requirement check (%s)',
+    async (size) => {
+      const { routes, posts } = verifyRoutes();
+      const { screen } = await open('/bookings/b-1', { size, routes });
+      expect(await screen.findByText('Gruppo e ospiti')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Gruppo: Famiglia Bianchi')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Provenienza: Milano')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Persone: 2 adulti, 1 bambino')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Ospiti: Luca Bianchi, Sara Bianchi')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Convenzione: Residenti')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Partner: Hotel Mare')).toBeOnTheScreen();
+      expect(
+        screen.getByLabelText('Quota del partner: 50% a carico del partner'),
+      ).toBeOnTheScreen();
+      expect(screen.getByLabelText(/^Importo a carico del partner: 15,00\s€$/)).toBeOnTheScreen();
+      expect(screen.getByText('Requisito da verificare')).toBeOnTheScreen();
+
+      await fireEvent.press(screen.getByRole('button', { name: 'Verificato' }));
+      expect(
+        await screen.findByLabelText(/^Residenza nel comune, Verificato il .+ da Anna$/),
+      ).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: 'Verificato' })).toBeNull();
+      expect(posts).toHaveLength(1);
+      expect(posts[0]!.headers.get('If-Match')).toBe('"3"');
+      expect(await posts[0]!.json()).toEqual({});
+    },
+  );
+
+  it('shows the requirement to the beach staff without "Verificato" nor the summary', async () => {
+    const { routes } = verifyRoutes('beach_staff');
+    const { screen } = await open('/bookings/b-1', { routes });
+    expect(await screen.findByText('Requisito da verificare')).toBeOnTheScreen();
+    expect(screen.getByText('Residenza nel comune')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Verificato' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Invia riepilogo al cliente' })).toBeNull();
+  });
+
+  it('shows no agreement nor guests card for a plain booking', async () => {
+    const { screen } = await open('/bookings/b-1');
+    expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
+    expect(screen.queryByText('Convenzione')).toBeNull();
+    expect(screen.queryByText('Gruppo e ospiti')).toBeNull();
+  });
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'hands the summary to the share sheet (%s)',
+    async (size) => {
+      const share = jest.fn(() =>
+        json(200, { text: 'Ciao Mario, la tua prenotazione AR-7K3Q9…', locale: 'it' }),
+      );
+      const { screen, dependencies } = await open('/bookings/b-1', {
+        size,
+        routes: { ...dayRoutes(), [`POST ${EST}/bookings/b-1/share-summary`]: share },
+      });
+      expect(
+        await screen.findByText(
+          'Ogni invio crea un nuovo link di gestione: quello inviato prima smette di funzionare.',
+        ),
+      ).toBeOnTheScreen();
+      await fireEvent.press(screen.getByRole('button', { name: 'Invia riepilogo al cliente' }));
+      await waitFor(() =>
+        expect(dependencies.shareText).toHaveBeenCalledWith(
+          'Ciao Mario, la tua prenotazione AR-7K3Q9…',
+        ),
+      );
+      expect(share).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('says when the instance cannot prepare the summary', async () => {
+    const { screen, dependencies } = await open('/bookings/b-1', {
+      routes: {
+        ...dayRoutes(),
+        [`POST ${EST}/bookings/b-1/share-summary`]: () => problem(501, 'not_implemented'),
+      },
+    });
+    await fireEvent.press(
+      await screen.findByRole('button', { name: 'Invia riepilogo al cliente' }),
+    );
+    expect(
+      await screen.findByText('Questa istanza non prepara ancora il riepilogo per il cliente.'),
+    ).toBeOnTheScreen();
+    expect(dependencies.shareText).not.toHaveBeenCalled();
+  });
+
+  it('disables the summary and the check offline', async () => {
+    const { routes } = verifyRoutes();
+    const { screen, connectivity } = await open('/bookings/b-1', { routes });
+    expect(await screen.findByRole('button', { name: 'Verificato' })).toBeOnTheScreen();
+    await act(async () => connectivity.set(false));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Verificato' })).toBeDisabled());
+    expect(screen.getByRole('button', { name: 'Invia riepilogo al cliente' })).toBeDisabled();
+    expect(
+      screen.getByText("Registrare la verifica richiede l'istanza raggiungibile."),
+    ).toBeOnTheScreen();
+    expect(screen.getByText("Queste azioni richiedono l'istanza raggiungibile.")).toBeOnTheScreen();
+  });
+
+  it('says when the booking changed before the check', async () => {
+    const { screen } = await open('/bookings/b-1', {
+      routes: {
+        ...dayRoutes({ details: { 'b-1': withAgreement } }),
+        [`POST ${EST}/bookings/b-1/requirement-verification`]: () =>
+          problem(412, 'version_conflict'),
+      },
+    });
+    await fireEvent.press(await screen.findByRole('button', { name: 'Verificato' }));
+    expect(
+      await screen.findByText(
+        'La prenotazione è cambiata nel frattempo: controlla la scheda aggiornata e riprova.',
+      ),
+    ).toBeOnTheScreen();
   });
 });
 

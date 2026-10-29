@@ -719,7 +719,58 @@
       "errorTitle": "Réservation indisponible",
       "errorDescription": "Impossible de la lire depuis l'instance. Vérifiez la connexion et réessayez.",
       "notFound": "La réservation n'existe plus.",
-      "actionsTitle": "Actions"
+      "actionsTitle": "Actions",
+      "actionsOnlineOnly": "Ces actions nécessitent que l'instance soit joignable."
+    },
+    "share": {
+      "action": "Envoyer le récapitulatif au client",
+      "hint": "Ouvre le partage avec le texte dans la langue du client et le lien pour gérer la réservation.",
+      "newLink": "Chaque envoi crée un nouveau lien de gestion : celui envoyé avant ne fonctionne plus.",
+      "errors": {
+        "offline": "Instance injoignable : le récapitulatif n'a pas été créé.",
+        "forbidden": "Votre rôle ne peut pas envoyer le récapitulatif.",
+        "not_found": "La réservation n'existe plus.",
+        "unavailable": "Cette instance ne prépare pas encore le récapitulatif client.",
+        "default": "Le récapitulatif n'a pas pu être préparé. Réessayez."
+      }
+    },
+    "agreement": {
+      "title": "Convention",
+      "name": "Convention",
+      "partner": "Partenaire",
+      "share": "Part du partenaire",
+      "shareFull": "Entièrement à la charge du partenaire",
+      "sharePercent": "{{percent}} % à la charge du partenaire",
+      "shareAmount": "{{amount}} à la charge du partenaire",
+      "partnerAmount": "Montant à la charge du partenaire",
+      "guestStay": "Séjour de l'hôte",
+      "toVerify": "Condition à vérifier",
+      "verify": "Vérifié",
+      "verifyHint": "Enregistre la date et l'opérateur de la vérification, jamais une copie du document.",
+      "onlineOnly": "Enregistrer la vérification nécessite que l'instance soit joignable.",
+      "verifiedAt": "Vérifié le {{when}}",
+      "verifiedBy": "Vérifié le {{when}} par {{name}}",
+      "errors": {
+        "offline": "Instance injoignable : la vérification n'a pas été enregistrée.",
+        "forbidden": "Votre rôle ne peut pas enregistrer la vérification.",
+        "changed": "La réservation a changé entre-temps : consultez la fiche à jour et réessayez.",
+        "not_modifiable": "La réservation est terminée ou annulée : la vérification ne peut plus être enregistrée.",
+        "invalid": "La réservation n'a pas de convention à vérifier.",
+        "not_found": "La réservation n'existe plus.",
+        "unavailable": "Cette instance n'enregistre pas encore les vérifications.",
+        "default": "La vérification n'a pas pu être enregistrée. Réessayez."
+      }
+    },
+    "guests": {
+      "title": "Groupe et hôtes",
+      "group": "Groupe",
+      "origin": "Provenance",
+      "party": "Personnes",
+      "adults_one": "{{count}} adulte",
+      "adults_other": "{{count}} adultes",
+      "children_one": "{{count}} enfant",
+      "children_other": "{{count}} enfants",
+      "names": "Hôtes"
     }
   },
   "operations": {

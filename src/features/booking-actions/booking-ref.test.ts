@@ -31,6 +31,27 @@ describe('refFromDetail', () => {
       notesInternal: 'Cliente abituale',
       version: 3,
     });
+    expect(ref.requirement).toBeUndefined();
+  });
+
+  it('carries the agreement requirement and its check (core 1.1)', () => {
+    const agreement = { id: 'ag-1', name: 'Residenti', requirement: 'Residenza nel comune' };
+    expect(refFromDetail(bookingDetail({ agreement })).requirement).toEqual({
+      text: 'Residenza nel comune',
+    });
+    const verified = refFromDetail(
+      bookingDetail({
+        agreement,
+        requirement_verification: {
+          id: 'v-1',
+          subject: 'booking',
+          agreement_id: 'ag-1',
+          requirement: 'Residenza nel comune',
+          verified_at: '2026-10-24T09:30:00Z',
+        },
+      }),
+    );
+    expect(verified.requirement?.verified).toEqual({ at: '2026-10-24T09:30:00Z' });
   });
 });
 

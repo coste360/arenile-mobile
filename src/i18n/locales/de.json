@@ -719,7 +719,58 @@
       "errorTitle": "Buchung nicht verfügbar",
       "errorDescription": "Sie konnte nicht von der Instanz gelesen werden. Prüfe die Verbindung und versuche es erneut.",
       "notFound": "Die Buchung existiert nicht mehr.",
-      "actionsTitle": "Aktionen"
+      "actionsTitle": "Aktionen",
+      "actionsOnlineOnly": "Diese Aktionen erfordern eine erreichbare Instanz."
+    },
+    "share": {
+      "action": "Zusammenfassung an den Kunden senden",
+      "hint": "Öffnet das Teilen mit dem Text in der Sprache des Kunden und dem Link zur Verwaltung der Buchung.",
+      "newLink": "Jeder Versand erzeugt einen neuen Verwaltungslink: Der zuvor gesendete funktioniert nicht mehr.",
+      "errors": {
+        "offline": "Instanz nicht erreichbar: Die Zusammenfassung wurde nicht erstellt.",
+        "forbidden": "Deine Rolle darf die Zusammenfassung nicht senden.",
+        "not_found": "Die Buchung existiert nicht mehr.",
+        "unavailable": "Diese Instanz erstellt die Kundenzusammenfassung noch nicht.",
+        "default": "Die Zusammenfassung konnte nicht erstellt werden. Versuche es erneut."
+      }
+    },
+    "agreement": {
+      "title": "Vereinbarung",
+      "name": "Vereinbarung",
+      "partner": "Partner",
+      "share": "Anteil des Partners",
+      "shareFull": "Vollständig vom Partner bezahlt",
+      "sharePercent": "{{percent}} % vom Partner bezahlt",
+      "shareAmount": "{{amount}} vom Partner bezahlt",
+      "partnerAmount": "Vom Partner bezahlter Betrag",
+      "guestStay": "Aufenthalt des Gastes",
+      "toVerify": "Voraussetzung zu prüfen",
+      "verify": "Geprüft",
+      "verifyHint": "Speichert Datum und Mitarbeiter der Prüfung, nie eine Kopie des Dokuments.",
+      "onlineOnly": "Das Speichern der Prüfung erfordert eine erreichbare Instanz.",
+      "verifiedAt": "Geprüft am {{when}}",
+      "verifiedBy": "Geprüft am {{when}} von {{name}}",
+      "errors": {
+        "offline": "Instanz nicht erreichbar: Die Prüfung wurde nicht gespeichert.",
+        "forbidden": "Deine Rolle darf die Prüfung nicht speichern.",
+        "changed": "Die Buchung wurde inzwischen geändert: Sieh dir die aktualisierte Karte an und versuche es erneut.",
+        "not_modifiable": "Die Buchung ist abgeschlossen oder storniert: Die Prüfung kann nicht mehr gespeichert werden.",
+        "invalid": "Die Buchung hat keine Vereinbarung zu prüfen.",
+        "not_found": "Die Buchung existiert nicht mehr.",
+        "unavailable": "Diese Instanz speichert noch keine Prüfungen.",
+        "default": "Die Prüfung konnte nicht gespeichert werden. Versuche es erneut."
+      }
+    },
+    "guests": {
+      "title": "Gruppe und Gäste",
+      "group": "Gruppe",
+      "origin": "Herkunft",
+      "party": "Personen",
+      "adults_one": "{{count}} Erwachsener",
+      "adults_other": "{{count}} Erwachsene",
+      "children_one": "{{count}} Kind",
+      "children_other": "{{count}} Kinder",
+      "names": "Gäste"
     }
   },
   "operations": {

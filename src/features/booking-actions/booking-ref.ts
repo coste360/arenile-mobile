@@ -13,6 +13,7 @@ import type {
   OperationsDay,
   Slots,
 } from '@/api/types';
+import { agreementView, type RequirementView } from '@/features/bookings/detail';
 import type { CalendarDate } from '@/lib/calendar';
 import type { Cents } from '@/lib/money';
 
@@ -34,6 +35,8 @@ export interface BookingRef {
   spotLabels: string[];
   /** Internal notes, only known from the detail. */
   notesInternal?: string;
+  /** Requirement of the agreement and its check (core 1.1), only known from the detail. */
+  requirement?: RequirementView;
 }
 
 export function refFromDetail(d: BookingDetail): BookingRef {
@@ -64,6 +67,7 @@ export function refFromDetail(d: BookingDetail): BookingRef {
     customerName: d.customer.display_name,
     spotLabels: [...new Set(labels)],
     notesInternal: d.notes_internal,
+    requirement: agreementView(d)?.requirement,
   };
 }
 

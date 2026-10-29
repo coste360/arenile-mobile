@@ -171,3 +171,95 @@ export function queuedFor(
 ): OfflineOperation[] {
   return operations.filter((op) => op.bookingId === bookingId);
 }
+
+/** Share of the booking the partner pays (spec 30.2.4); `none` is not shown. */
+export type PartnerShareView =
+  { kind: 'full' } | { kind: 'percent'; percent: number } | { kind: 'amount'; amount: Cents };
+
+export interface RequirementView {
+  /** What the customer has to prove (e.g. "residenza nel comune"). */
+  text: string;
+  /** The last check of this agreement's requirement; undefined while still to verify. */
+  verified?: { at: string; by?: string; note?: string };
+}
+
+export interface AgreementView {
+  /** Agreement name; undefined for a partner booking without an agreement. */
+  name?: string;
+  partner?: string;
+  share?: PartnerShareView;
+  /** What the partner pays, computed by the server on the current total. */
+  partnerAmount?: Cents;
+  /** Stay of the partner's guest (e.g. the hotel nights). */
+  guestStay?: { from: CalendarDate; to: CalendarDate };
+  requirement?: RequirementView;
+}
+
+/**
+ * Agreement and partner of the booking (core 1.1, spec 30.2): undefined
+ * when it has neither. A check recorded for another agreement (the booking
+ * changed agreement afterwards) does not count.
+ */
+export function agreementView(b: BookingDetail): AgreementView | undefined {
+  const a = b.agreement;
+  const partner = b.partner?.name || a?.partner_name || undefined;
+  if (!a && !partner) return undefined;
+  const view: AgreementView = { name: a?.name || undefined, partner };
+  const share = b.partner_share;
+  if (share?.type === 'full') {
+    view.share = { kind: 'full' };
+  } else if (share?.type === 'percent') {
+    const percent = Number(share.percent);
+    if (Number.isFinite(percent) && percent > 0) view.share = { kind: 'percent', percent };
+  } else if (share?.type === 'amount' && share.amount) {
+    view.share = { kind: 'amount', amount: share.amount };
+  }
+  if (view.share && b.partner_amount !== undefined) view.partnerAmount = b.partner_amount;
+  if (b.partner_guest_stay) {
+    view.guestStay = { from: b.partner_guest_stay.from, to: b.partner_guest_stay.to };
+  }
+  const text = a?.requirement?.trim();
+  if (a && text) {
+    const v = b.requirement_verification;
+    const counts = !!v && (!v.agreement_id || v.agreement_id === a.id);
+    view.requirement = {
+      text,
+      verified:
+        v && counts
+          ? {
+              at: v.verified_at,
+              by: v.verified_by_name || undefined,
+              note: v.note?.trim() || undefined,
+            }
+          : undefined,
+    };
+  }
+  return view;
+}
+
+export interface GuestsView {
+  group?: string;
+  origin?: string;
+  adults?: number;
+  children?: number;
+  names: string[];
+}
+
+/**
+ * Group and guests of the booking (core 1.1, spec 30.8): undefined when the
+ * booking says nothing of them. Shown like the customer's name, to every
+ * role reading bookings; an anonymised customer hides them too.
+ */
+export function guestsView(b: BookingDetail): GuestsView | undefined {
+  if (b.customer.anonymized_at) return undefined;
+  const view: GuestsView = {
+    group: b.group_name?.trim() || undefined,
+    origin: b.group_origin?.trim() || undefined,
+    adults: b.party_adults || undefined,
+    children: b.party_children || undefined,
+    names: (b.guest_names ?? []).map((n) => n.trim()).filter(Boolean),
+  };
+  const empty =
+    !view.group && !view.origin && !view.adults && !view.children && view.names.length === 0;
+  return empty ? undefined : view;
+}

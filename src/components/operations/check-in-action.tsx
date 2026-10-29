@@ -2,6 +2,7 @@ import { CircleCheckIcon, LogInIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
+import { RequirementCheck } from '@/components/bookings/requirement-check';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -17,7 +18,9 @@ import { QueuedNotice, useQueuedFeedback } from './queued-feedback';
 /**
  * Check-in of a booking (operations.run, checked by the caller): queued,
  * so it works offline; the cached day shows it at once. When it is not
- * possible, the reason is said instead of a disabled button.
+ * possible, the reason is said instead of a disabled button. An agreement
+ * requirement still to check (core 1.1, e.g. residents) is shown before the
+ * button, with "Verificato": the core does not make it a condition.
  */
 export function CheckInAction({ booking }: { booking: BookingRef }) {
   const { t } = useTranslation();
@@ -34,6 +37,13 @@ export function CheckInAction({ booking }: { booking: BookingRef }) {
 
   return (
     <View className="gap-2">
+      {booking.requirement && !booking.requirement.verified && state === 'available' ? (
+        <RequirementCheck
+          bookingId={booking.id}
+          version={booking.version}
+          requirement={booking.requirement}
+        />
+      ) : null}
       {state === 'available' ? (
         <Button size="lg" onPress={() => void onPress()}>
           <Icon as={LogInIcon} size={18} />
