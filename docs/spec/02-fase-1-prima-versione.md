@@ -59,6 +59,24 @@ italiano, pagamenti, note, cronologia essenziale.
   non ciò che il ruolo può ottenere; un filtro lato server sarebbe una modifica del core.
 - Su tablet elenco e scheda sono affiancati; un collegamento a una prenotazione apre la vista affiancata
   con la prenotazione selezionata.
+- **Gruppo e ospiti** (core 1.1, spec 30.8 del core): nome del gruppo, provenienza, adulti e bambini,
+  nomi degli ospiti. Visibili come il nome del cliente, a ogni ruolo con `bookings.read`; nascosti per
+  un cliente anonimizzato (il core li cancella con l'anonimizzazione).
+- **Convenzione e partner** (core 1.1, spec 30.2): nome della convenzione, partner, quota a carico del
+  partner (tutto, percentuale o importo fisso) con l'importo calcolato dal server, soggiorno
+  dell'ospite del partner.
+- **Requisito della convenzione** (es. residenti, spec 30.2.2-30.2.3): verificato (data, operatore,
+  nota) oppure "da verificare" con il pulsante "Verificato", che registra solo data e operatore, mai
+  una copia del documento (`POST requirement-verification` con `If-Match`). Lo stesso avviso compare
+  al check-in, senza bloccarlo: il core non ne fa una condizione. Solo online, per chi ha
+  `bookings.write`; gli altri ruoli vedono il requisito senza pulsante.
+- **Riepilogo per il cliente** (spec 30.9): "Invia riepilogo al cliente" chiede al core il testo nella
+  lingua del cliente e lo passa alla condivisione del telefono (WhatsApp, Messaggi...): Arenile non
+  invia nulla a terzi. Ogni richiesta crea un nuovo link di gestione e revoca il precedente (per
+  questo è un `POST`, mai ripetuto da solo): se la condivisione non si apre, il testo resta e una
+  nuova pressione la riapre senza creare un altro link; chiudere la condivisione non è un errore.
+  Solo online, per chi ha `bookings.write`; non per prenotazioni cancellate, scadute o rifiutate né
+  per clienti anonimizzati.
 
 ## Operazioni
 
