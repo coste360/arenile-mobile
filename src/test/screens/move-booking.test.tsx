@@ -195,6 +195,45 @@ describe('move a booking', () => {
     expect(requestsTo(network.calls, 'POST', `${EST}/bookings/b-3/move`)).toHaveLength(0);
   });
 
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'moves the spot of today for a split stay under way (%s)',
+    async (size) => {
+      // On A1 until yesterday, on A2 from today (core 1.1 segments); spot_id is the first one.
+      const split: BookingDetail = {
+        ...B2,
+        status: 'checked_in',
+        starts_on: '2026-10-22',
+        ends_on: '2026-10-28',
+        lines: [
+          {
+            ...B2.lines[0]!,
+            spot_id: 's-1',
+            spot_label: 'A1',
+            segments: [
+              { spot_id: 's-1', spot_label: 'A1', starts_on: '2026-10-22', ends_on: '2026-10-24' },
+              { spot_id: 's-2', spot_label: 'A2', starts_on: '2026-10-25', ends_on: '2026-10-28' },
+            ],
+          },
+        ],
+      };
+      const { screen, network } = await openMove(
+        'A2',
+        { extra: { [`GET ${EST}/bookings/b-2`]: () => json(200, split) } },
+        size,
+      );
+      expect(await screen.findByText('Sposta AR-7K3Q9')).toBeOnTheScreen();
+      expect(await screen.findByLabelText('Da: A2')).toBeOnTheScreen();
+      // A2 is the spot of today: not a target; A1 (held only on past days) is free today.
+      expect(screen.queryByRole('radio', { name: 'Postazione A2' })).toBeNull();
+      await fireEvent.press(screen.getByRole('radio', { name: 'Postazione A1' }));
+      await screen.findByText(nbsp('Il totale resta 30,00 €.'));
+      await fireEvent.press(screen.getByRole('button', { name: 'Sposta su A1' }));
+      expect(await screen.findByText('Spostare AR-7K3Q9 su A1?')).toBeOnTheScreen();
+      expect(screen.getByText('La postazione A2 si libera e A1 viene occupata.')).toBeOnTheScreen();
+      expect(requestsTo(network.calls, 'POST', `${EST}/bookings/b-2/move`)).toHaveLength(1);
+    },
+  );
+
   it('is offered in the booking sheet too', async () => {
     const instance = phase2Instance({ extra: moveRoutes() });
     const { screen } = await renderApp({ session: SESSION, routes: instance.routes });

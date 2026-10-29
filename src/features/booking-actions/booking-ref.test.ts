@@ -34,6 +34,47 @@ describe('refFromDetail', () => {
   });
 });
 
+describe('refFromDetail of a stay split across spots (core 1.1)', () => {
+  const line = bookingDetail().lines[0]!;
+  const seg = (spot_id: string, spot_label: string | undefined, starts_on: string) => ({
+    spot_id,
+    spot_label,
+    starts_on,
+    ends_on: starts_on,
+  });
+  it.each<[string, (typeof line)[], string[]]>([
+    ['no segments: the line label', [line], ['A1']],
+    [
+      'a single segment: the line label wins',
+      [{ ...line, segments: [seg('s-1', 'A1', '2026-10-25')] }],
+      ['A1'],
+    ],
+    [
+      'the spots of a split line in order, as one entry',
+      [{ ...line, segments: [seg('s-1', 'A1', '2026-10-25'), seg('s-2', 'B4', '2026-10-26')] }],
+      ['A1 → B4'],
+    ],
+    [
+      'a split line beside another line, unlabelled segments skipped',
+      [
+        {
+          ...line,
+          segments: [
+            seg('s-1', 'A1', '2026-10-25'),
+            seg('s-2', 'B4', '2026-10-26'),
+            seg('s-3', undefined, '2026-10-27'),
+            seg('s-1', 'A1', '2026-10-28'),
+          ],
+        },
+        { ...line, id: 'l-2', spot_label: 'C2' },
+      ],
+      ['A1 → B4 → A1', 'C2'],
+    ],
+  ])('%s', (_name, lines, expected) => {
+    expect(refFromDetail(bookingDetail({ lines })).spotLabels).toEqual(expected);
+  });
+});
+
 describe('findCachedBooking', () => {
   it('finds a booking of a cached day list by code, ignoring case', () => {
     const qc = new QueryClient();

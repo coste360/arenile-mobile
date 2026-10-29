@@ -610,6 +610,7 @@
     "detail": {
       "stay": "Spot and period",
       "spots": "Spots",
+      "segment": "{{spot}}: {{from}} to {{to}}",
       "period": "Period",
       "days_one": "{{count}} day",
       "days_other": "{{count}} days",

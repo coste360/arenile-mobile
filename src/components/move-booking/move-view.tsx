@@ -32,6 +32,8 @@ import { useBooking } from '@/features/bookings/queries';
 import {
   canMove,
   movable,
+  lineSpotOn,
+  lineSpotsFrom,
   movableLines,
   moveErrorKey,
   moveFrom,
@@ -99,7 +101,15 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
   );
   const line = lines.find((l) => l.id === lineId);
   const from = moveFrom(booking, today);
-  const day = useOperationsDay(targetDay(booking, from));
+  const firstDay = targetDay(booking, from);
+  const day = useOperationsDay(firstDay);
+  // A split stay holds another spot on later days: the one of the first day moved.
+  const current = line ? lineSpotOn(line, firstDay) : {};
+  const freed = line
+    ? lineSpotsFrom(line, firstDay)
+        .map((l) => l ?? t('bookings.unassigned'))
+        .join(' → ')
+    : t('bookings.unassigned');
   const ticket = useBookingTicket(booking, online);
   const [search, setSearch] = useState('');
   const [spotId, setSpotId] = useState<string>();
@@ -110,7 +120,7 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
   const apply = useApplyMove();
   const viaTicket: Ticket | null = ticket.data ?? null;
 
-  const candidates = targetSpots(day.data, booking.slots, line?.spot_id, search);
+  const candidates = targetSpots(day.data, booking.slots, current.spotId, search);
   const target = day.data?.spots.find((s) => s.spot_id === spotId);
 
   // Preview each choice with a dry run (not for a ticket: its price never changes).
@@ -203,7 +213,10 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
             setLineId(v);
             setSpotId(undefined);
           }}
-          options={lines.map((l) => ({ value: l.id, label: l.spot_label ?? l.id }))}
+          options={lines.map((l) => ({
+            value: l.id,
+            label: lineSpotOn(l, firstDay).label ?? l.id,
+          }))}
         />
       ) : null}
       <View className="gap-2">
@@ -288,7 +301,7 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
         <CardTitle role="heading">{t('move.summary')}</CardTitle>
       </CardHeader>
       <CardContent className="gap-4">
-        <DetailRow label={t('move.from')} value={line?.spot_label ?? t('bookings.unassigned')} />
+        <DetailRow label={t('move.from')} value={freed} />
         <DetailRow label={t('move.to')} value={target?.label ?? '—'} />
         {from ? (
           <Text variant="muted">{t('move.fromToday', { day: formatDayLabel(from, locale) })}</Text>
@@ -360,7 +373,7 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
         open={confirming}
         title={t('move.confirm.title', { code: booking.code, label: target?.label ?? '' })}
         description={t('move.confirm.description', {
-          from: line?.spot_label ?? '',
+          from: freed,
           to: target?.label ?? '',
         })}
         confirmLabel={t('move.confirm.submit')}

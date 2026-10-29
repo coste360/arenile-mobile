@@ -3,6 +3,7 @@ import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
 import { QUEUE_KEY } from '@/features/offline/queue';
 import type { OfflineOperation } from '@/features/offline/types';
+import { formatDayLabel } from '@/lib/calendar';
 import { datesRequested, pickDay } from '@/test/day-picker';
 import { dayRoutes, EST } from '@/test/day-routes';
 import { networkDown, problem } from '@/test/fake-fetch';
@@ -224,6 +225,54 @@ describe('booking sheet', () => {
     expect(await screen.findAllByText('Modificata')).toHaveLength(5);
     await fireEvent.press(screen.getByRole('button', { name: 'Mostra tutta la cronologia (7)' }));
     expect(screen.getAllByText('Modificata')).toHaveLength(7);
+  });
+});
+
+describe('booking sheet of a stay split across spots (core 1.1)', () => {
+  const line = bookingDetail().lines[0]!;
+  const split = bookingDetail({
+    starts_on: '2026-10-25',
+    ends_on: '2026-10-30',
+    lines: [
+      {
+        ...line,
+        spot_id: 's-2',
+        spot_label: 'A2',
+        segments: [
+          { spot_id: 's-2', spot_label: 'A2', starts_on: '2026-10-25', ends_on: '2026-10-27' },
+          { spot_id: 's-9', spot_label: 'B4', starts_on: '2026-10-28', ends_on: '2026-10-30' },
+        ],
+      },
+    ],
+  });
+  const day = (d: string) => formatDayLabel(d, 'it');
+
+  it.each<WindowSize>(['phone', 'tablet'])('names every spot and its days (%s)', async (size) => {
+    const { screen } = await open('/bookings/b-1', {
+      size,
+      routes: dayRoutes({ details: { 'b-1': split } }),
+    });
+    expect(await screen.findByText('A2 → B4')).toBeOnTheScreen();
+    expect(
+      screen.getByText(`A2: dal ${day('2026-10-25')} al ${day('2026-10-27')}`),
+    ).toBeOnTheScreen();
+    expect(
+      screen.getByText(`B4: dal ${day('2026-10-28')} al ${day('2026-10-30')}`),
+    ).toBeOnTheScreen();
+    // Read once, segment by segment, without the arrows.
+    expect(
+      screen.getByLabelText(
+        new RegExp(
+          `^A2: dal ${day('2026-10-25')} al ${day('2026-10-27')}, B4: dal ${day('2026-10-28')} al ${day('2026-10-30')}, `,
+        ),
+      ),
+    ).toBeOnTheScreen();
+  });
+
+  it('shows no segment rows for a stay on one spot', async () => {
+    const { screen } = await open('/bookings/b-1');
+    expect(await screen.findByText('Postazione e periodo')).toBeOnTheScreen();
+    expect(screen.queryByText(/: dal /)).toBeNull();
   });
 });
 

@@ -84,6 +84,53 @@ describe('spotLines', () => {
   });
 });
 
+describe('spotLines of a stay split across spots (core 1.1)', () => {
+  const line = bookingDetail().lines[0]!;
+  const seg = (
+    spot_id: string,
+    spot_label: string | undefined,
+    starts_on: string,
+    ends_on: string,
+  ) => ({
+    spot_id,
+    spot_label,
+    starts_on,
+    ends_on,
+  });
+  it.each<[string, (typeof line)['segments'], string | undefined, unknown]>([
+    ['no segments', undefined, 'A1', undefined],
+    ['an empty segment list', [], 'A1', undefined],
+    ['a single segment', [seg('s-1', 'A1', '2026-10-25', '2026-10-30')], 'A1', undefined],
+    [
+      'two segments',
+      [seg('s-2', 'A2', '2026-10-25', '2026-10-27'), seg('s-9', 'B4', '2026-10-28', '2026-10-30')],
+      'A1',
+      [
+        { spot: 'A2', from: '2026-10-25', to: '2026-10-27' },
+        { spot: 'B4', from: '2026-10-28', to: '2026-10-30' },
+      ],
+    ],
+    [
+      'three segments, one without a label',
+      [
+        seg('s-2', 'A2', '2026-10-25', '2026-10-26'),
+        seg('s-9', undefined, '2026-10-27', '2026-10-28'),
+        seg('s-2', 'A2', '2026-10-29', '2026-10-30'),
+      ],
+      'A1',
+      [
+        { spot: 'A2', from: '2026-10-25', to: '2026-10-26' },
+        { spot: undefined, from: '2026-10-27', to: '2026-10-28' },
+        { spot: 'A2', from: '2026-10-29', to: '2026-10-30' },
+      ],
+    ],
+  ])('%s', (_name, segments, spot, expected) => {
+    const [view] = spotLines(bookingDetail({ lines: [{ ...line, segments }] }));
+    expect(view!.spot).toBe(spot);
+    expect(view!.segments).toEqual(expected);
+  });
+});
+
 describe('stayDays', () => {
   it.each([
     ['2026-10-25', '2026-10-25', 1],

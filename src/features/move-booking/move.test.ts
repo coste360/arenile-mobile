@@ -5,6 +5,8 @@ import { bookingDetail, operationsDay, spot } from '@/test/operations-fixtures';
 
 import {
   canMove,
+  lineSpotOn,
+  lineSpotsFrom,
   movable,
   movableLines,
   moveErrorKey,
@@ -52,6 +54,76 @@ describe('movableLines', () => {
       { ...b.lines[0]!, id: 'l-2', spot_id: undefined, spot_label: undefined },
     ];
     expect(movableLines({ lines }).map((l) => l.id)).toEqual(['l-1']);
+  });
+});
+
+describe('lineSpotOn', () => {
+  const line = bookingDetail().lines[0]!;
+  const split = {
+    ...line,
+    segments: [
+      { spot_id: 's-1', spot_label: 'A1', starts_on: '2026-10-20', ends_on: '2026-10-24' },
+      { spot_id: 's-2', spot_label: 'A2', starts_on: '2026-10-25', ends_on: '2026-10-30' },
+    ],
+  };
+  it.each<[string, typeof split | typeof line, string, { spotId?: string; label?: string }]>([
+    ['no segments: the line spot', line, '2026-10-25', { spotId: 's-1', label: 'A1' }],
+    ['a day inside the first segment', split, '2026-10-22', { spotId: 's-1', label: 'A1' }],
+    ['a day inside the second segment', split, '2026-10-27', { spotId: 's-2', label: 'A2' }],
+    ['the first day of a segment', split, '2026-10-25', { spotId: 's-2', label: 'A2' }],
+    ['the last day of a segment', split, '2026-10-24', { spotId: 's-1', label: 'A1' }],
+    ['the last day of the stay', split, '2026-10-30', { spotId: 's-2', label: 'A2' }],
+    [
+      'a day outside every segment: the line spot',
+      { ...split, spot_id: 's-9', spot_label: 'Z9' },
+      '2026-10-31',
+      { spotId: 's-9', label: 'Z9' },
+    ],
+  ])('%s', (_name, l, day, expected) => {
+    expect(lineSpotOn(l, day)).toEqual(expected);
+  });
+});
+
+describe('lineSpotsFrom', () => {
+  const line = bookingDetail().lines[0]!;
+  const seg = (
+    spot_id: string,
+    spot_label: string | undefined,
+    starts_on: string,
+    ends_on: string,
+  ) => ({
+    spot_id,
+    spot_label,
+    starts_on,
+    ends_on,
+  });
+  const split = {
+    ...line,
+    segments: [
+      seg('s-1', 'A1', '2026-10-20', '2026-10-24'),
+      seg('s-2', 'A2', '2026-10-25', '2026-10-27'),
+      seg('s-3', 'B4', '2026-10-28', '2026-10-30'),
+    ],
+  };
+  it.each<[string, typeof split | typeof line, string, (string | undefined)[]]>([
+    ['no segments: the line spot', line, '2026-10-25', ['A1']],
+    ['from the first day: every segment', split, '2026-10-20', ['A1', 'A2', 'B4']],
+    ['from the middle: the segments still to come', split, '2026-10-26', ['A2', 'B4']],
+    ['from the last segment: its spot only', split, '2026-10-29', ['B4']],
+    [
+      'an unlabelled segment stays in place',
+      {
+        ...split,
+        segments: [
+          seg('s-2', 'A2', '2026-10-25', '2026-10-27'),
+          seg('s-9', undefined, '2026-10-28', '2026-10-30'),
+        ],
+      },
+      '2026-10-25',
+      ['A2', undefined],
+    ],
+  ])('%s', (_name, l, day, expected) => {
+    expect(lineSpotsFrom(l, day)).toEqual(expected);
   });
 });
 

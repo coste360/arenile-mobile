@@ -55,6 +55,34 @@ export function movableLines(b: Pick<BookingDetail, 'lines'>): BookingDetail['li
 }
 
 /**
+ * Spot a line holds on a day: the segment covering it when the stay is split
+ * across spots (core 1.1, spec 30.6; `spot_id` is the first segment's),
+ * otherwise the line's spot.
+ */
+export function lineSpotOn(
+  line: Pick<BookingDetail['lines'][number], 'spot_id' | 'spot_label' | 'segments'>,
+  day: CalendarDate,
+): { spotId?: string; label?: string } {
+  const s = line.segments?.find((seg) => seg.starts_on <= day && day <= seg.ends_on);
+  return s
+    ? { spotId: s.spot_id, label: s.spot_label }
+    : { spotId: line.spot_id, label: line.spot_label };
+}
+
+/**
+ * Spots a move from `day` frees, in order: every segment still to come of a
+ * split stay (a move with `from` takes all the following days), otherwise
+ * the line's spot. Labels may be missing (unassigned).
+ */
+export function lineSpotsFrom(
+  line: Pick<BookingDetail['lines'][number], 'spot_label' | 'segments'>,
+  day: CalendarDate,
+): (string | undefined)[] {
+  const later = (line.segments ?? []).filter((seg) => seg.ends_on >= day);
+  return later.length > 1 ? later.map((seg) => seg.spot_label) : [lineSpotOn(line, day).label];
+}
+
+/**
  * First day of the move: today when the stay is already under way (past
  * days keep their spot, as the panel does from the map), otherwise the
  * whole stay (undefined).

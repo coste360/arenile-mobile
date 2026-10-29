@@ -37,7 +37,18 @@ export interface BookingRef {
 }
 
 export function refFromDetail(d: BookingDetail): BookingRef {
-  const labels = d.lines.map((l) => l.spot_label).filter((l): l is string => !!l);
+  // A stay split across spots (core 1.1) names its spots in order (A2 → B4),
+  // as one line: the comma stays for lines held at the same time.
+  const labels = d.lines
+    .map((l) =>
+      l.segments && l.segments.length > 1
+        ? l.segments
+            .map((s) => s.spot_label)
+            .filter((s): s is string => !!s)
+            .join(' → ')
+        : l.spot_label,
+    )
+    .filter((l): l is string => !!l);
   return {
     id: d.id,
     code: d.code,

@@ -143,23 +143,50 @@ function BookingSheet({ booking: b }: { booking: Booking }) {
         <CardContent className="gap-4">
           <View className="gap-2" accessibilityLabel={t('bookings.detail.spots')}>
             <Text variant="muted">{t('bookings.detail.spots')}</Text>
-            {lines.map((l) => (
-              <View key={l.id} className="flex-row items-center justify-between gap-3" accessible>
-                <View className="flex-1 gap-0.5">
-                  <Text className="font-semibold">{l.spot ?? t('bookings.unassigned')}</Text>
-                  <Text variant="muted">
-                    {[
-                      l.pack ? t('bookings.detail.pack', { pack: l.pack }) : null,
-                      l.quantity > 1 ? t('bookings.detail.quantity', { count: l.quantity }) : null,
-                      l.extras > 0 ? t('bookings.detail.extras', { count: l.extras }) : null,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </Text>
+            {lines.map((l) => {
+              const unassigned = t('bookings.unassigned');
+              const details = [
+                l.pack ? t('bookings.detail.pack', { pack: l.pack }) : null,
+                l.quantity > 1 ? t('bookings.detail.quantity', { count: l.quantity }) : null,
+                l.extras > 0 ? t('bookings.detail.extras', { count: l.extras }) : null,
+              ]
+                .filter(Boolean)
+                .join(' · ');
+              const segments = l.segments?.map((s) =>
+                t('bookings.detail.segment', {
+                  spot: s.spot ?? unassigned,
+                  from: formatDayLabel(s.from, locale),
+                  to: formatDayLabel(s.to, locale),
+                }),
+              );
+              const total = formatCents(l.total);
+              return (
+                <View
+                  key={l.id}
+                  className="flex-row items-center justify-between gap-3"
+                  accessible
+                  // A split stay is read once, segment by segment, without the arrows.
+                  accessibilityLabel={
+                    segments ? [...segments, details, total].filter(Boolean).join(', ') : undefined
+                  }
+                >
+                  <View className="flex-1 gap-0.5">
+                    <Text className="font-semibold">
+                      {l.segments
+                        ? l.segments.map((s) => s.spot ?? unassigned).join(' → ')
+                        : (l.spot ?? unassigned)}
+                    </Text>
+                    <Text variant="muted">{details}</Text>
+                    {segments?.map((s) => (
+                      <Text key={s} variant="muted">
+                        {s}
+                      </Text>
+                    ))}
+                  </View>
+                  <Text>{total}</Text>
                 </View>
-                <Text>{formatCents(l.total)}</Text>
-              </View>
-            ))}
+              );
+            })}
           </View>
           <DetailRow
             label={t('bookings.detail.period')}

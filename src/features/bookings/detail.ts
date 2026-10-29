@@ -3,7 +3,7 @@
 import type { BookingDetail } from '@/api/types';
 import type { OfflineOperation } from '@/features/offline/types';
 import type { Abilities } from '@/features/permissions/permissions';
-import { daysBetween } from '@/lib/calendar';
+import { daysBetween, type CalendarDate } from '@/lib/calendar';
 import type { Cents } from '@/lib/money';
 
 type Customer = BookingDetail['customer'];
@@ -60,18 +60,28 @@ export interface SpotLineView {
   quantity: number;
   total: Cents;
   extras: number;
+  /** Spots and days of a stay split across spots (core 1.1, spec 30.6); undefined otherwise. */
+  segments?: { spot?: string; from: CalendarDate; to: CalendarDate }[];
 }
 
 /** The lines of the booking: which spot, which pack, how much. */
 export function spotLines(b: BookingDetail): SpotLineView[] {
-  return b.lines.map((l) => ({
-    id: l.id,
-    spot: l.spot_label || undefined,
-    pack: l.pack_code || undefined,
-    quantity: l.quantity,
-    total: l.line_total,
-    extras: l.extras.length,
-  }));
+  return b.lines.map((l) => {
+    const split = l.segments && l.segments.length > 1 ? l.segments : undefined;
+    return {
+      id: l.id,
+      spot: l.spot_label || undefined,
+      pack: l.pack_code || undefined,
+      quantity: l.quantity,
+      total: l.line_total,
+      extras: l.extras.length,
+      segments: split?.map((s) => ({
+        spot: s.spot_label || undefined,
+        from: s.starts_on,
+        to: s.ends_on,
+      })),
+    };
+  });
 }
 
 /** Calendar days of the stay, both ends included. */

@@ -131,6 +131,10 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   è libera.
 - Per un soggiorno diviso su più postazioni (core 1.1), la scheda della postazione sulla mappa mostra i
   giorni su quella postazione, non tutto il soggiorno.
+  La scheda della prenotazione elenca le postazioni in ordine (A2 → B4) con i giorni di ciascuna; lo
+  spostamento parte dalla postazione occupata il primo giorno spostato, non la propone come
+  destinazione e indica tutte le postazioni che libera. Uno spostamento di un soggiorno diviso non
+  ancora iniziato lo porta tutto sulla nuova postazione.
 - Su tablet ogni schermata usa tutta la larghezza con lo stesso margine delle liste; le card si
   affiancano quando c'è spazio (Impostazioni).
 - Avviso "Stabilimento chiuso" uguale su Oggi e sulla mappa, con il giorno mostrato.
