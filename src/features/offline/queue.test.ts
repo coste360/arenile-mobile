@@ -129,10 +129,14 @@ describe('operation queue', () => {
     const { queue } = setup(async () => {
       throw error();
     });
-    await queue.enqueue(note('b1'));
+    const op = await queue.enqueue(note('b1'));
     const result = await queue.flush(SCOPE);
     expect(result).toMatchObject({ blocked: true, unauthorized: false });
-    expect(queue.getSnapshot()[0]).toMatchObject({ status: 'pending' });
+    // The next attempt carries the same key: the first one may have been applied.
+    expect(queue.getSnapshot()[0]).toMatchObject({
+      status: 'pending',
+      idempotencyKey: op.idempotencyKey,
+    });
     expect(queue.isPaused()).toBe(false);
   });
 

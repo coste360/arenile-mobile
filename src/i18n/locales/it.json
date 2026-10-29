@@ -1294,7 +1294,7 @@
       "version_conflict": "La prenotazione è stata modificata nel frattempo: riapri lo spostamento.",
       "not_modifiable": "Questa prenotazione non si può spostare nel suo stato.",
       "policy": "Lo spostamento non rispetta le regole di prenotazione dello stabilimento.",
-      "approval": "Serve l'approvazione del gestore: chiedi a lui di spostare la prenotazione.",
+      "approval": "Serve l'approvazione del gestore: chiedi al gestore di spostare la prenotazione.",
       "concurrent": "La prenotazione era in modifica in quel momento: riprova tra qualche secondo.",
       "invalid": "Il pacchetto non è valido su questa postazione: scegline un'altra.",
       "not_found": "La prenotazione o la postazione non esiste più.",
