@@ -6,7 +6,8 @@
 //   ['auth','me',deviceId]: who is paired, the role and permissions, the
 //   establishment name and time zone (needed to compute "today" offline);
 // - ['est',<paired>,'maps',…]: the maps and map documents;
-// - ['est',<paired>,'operations','day',{date}] and
+// - ['est',<paired>,'operations','day',{date}],
+//   ['est',<paired>,'operations','lifeguard',{date}] and
 //   ['est',<paired>,'bookings','day',{date}] for today and tomorrow in the
 //   establishment zone;
 // - ['est',<paired>,'bookings','detail',id] when the stay overlaps today or
@@ -76,7 +77,10 @@ export function isPersistable(
   if (root !== 'est' || est !== session.establishmentId) return false;
   if (area === 'maps') return kind === 'list' || kind === 'detail';
   const { today, tomorrow } = operationalDays(timeZone(), now());
-  if ((area === 'operations' || area === 'bookings') && kind === 'day') {
+  const dayList =
+    (area === 'operations' && (kind === 'day' || kind === 'lifeguard')) ||
+    (area === 'bookings' && kind === 'day');
+  if (dayList) {
     const date = (param as { date?: unknown } | undefined)?.date;
     return date === today || date === tomorrow;
   }

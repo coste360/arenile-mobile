@@ -33,6 +33,9 @@ export const estKeys = {
   /** GET operations/day: status of every spot for a day and slot (map, Oggi). */
   operationsDay: (establishmentId: string, date: CalendarDate, slot: Slots = 'FULL') =>
     ['est', establishmentId, 'operations', 'day', { date, slot }] as const,
+  /** GET operations/lifeguard-list: occupied spots by row for a day (lifeguards). */
+  lifeguardList: (establishmentId: string, date: CalendarDate, slot: Slots = 'FULL') =>
+    ['est', establishmentId, 'operations', 'lifeguard', { date, slot }] as const,
 
   /** GET bookings?from=date&to=date: every booking whose stay includes the day. */
   bookingsOfDay: (establishmentId: string, date: CalendarDate) =>

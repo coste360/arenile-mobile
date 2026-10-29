@@ -168,6 +168,7 @@
     "bookings": "Buchungen",
     "booking": "Buchung",
     "spots": "Plätze",
+    "lifeguard": "Rettungsschwimmer-Liste",
     "operations": "Vorgänge",
     "reports": "Berichte",
     "sale": "Tagesverkauf",
@@ -526,6 +527,29 @@
     "emptyFree": "Keine freien Plätze an diesem Tag.",
     "emptyReleased": "Kein Abonnent hat seinen Platz für diesen Tag freigegeben.",
     "openOnMap": "Öffnet den Platz auf der Karte"
+  },
+  "lifeguard": {
+    "filtersLabel": "Plätze filtern",
+    "filters": {
+      "all": "Alle",
+      "arriving": "Ankünfte",
+      "departing": "Abreisen",
+      "balance_due": "Offener Betrag"
+    },
+    "chipLabel": "{{label}}: {{count}}",
+    "results_one": "{{count}} belegter Platz",
+    "results_other": "{{count}} belegte Plätze",
+    "row": "Reihe {{row}}",
+    "noRow": "Ohne Reihe",
+    "anonymous": "Anonymer Kunde",
+    "flags": {
+      "arriving": "Ankunft",
+      "departing": "Abreise",
+      "balance_due": "Offener Betrag"
+    },
+    "emptyTitle": "An diesem Tag ist kein Platz belegt.",
+    "noMatchTitle": "Kein Platz entspricht diesem Filter.",
+    "showAll": "Alle anzeigen"
   },
   "bookings": {
     "status": {

@@ -1,5 +1,5 @@
-// Warm-up of what the staff need offline (spec 21.2): the maps and the day
-// of today and tomorrow, fetched while the instance answers, under the same
+// Warm-up of what the staff need offline (spec 21.2): the maps, the day and
+// the lifeguard list of today and tomorrow, fetched while the instance answers, under the same
 // query keys as the screens, so the screens and the persisted cache share
 // them. Failures are ignored: what is not fetched is simply not cached.
 import type { QueryClient } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import { request, type ApiClient } from '@/api/client';
 import type { Establishment } from '@/api/types';
 import { meQuery } from '@/features/auth/queries';
 import { bookingsOfDayQuery } from '@/features/bookings/queries';
+import { lifeguardListQuery } from '@/features/lifeguard/queries';
 import { mapDocumentQuery, mapsQuery } from '@/features/maps/queries';
 import { operationsDayQuery } from '@/features/operations/queries';
 import { queryKeys } from '@/features/session/queries';
@@ -50,6 +51,7 @@ export async function prefetchOfflineWindow(
     ...[today, tomorrow].flatMap((date) => [
       qc.prefetchQuery(operationsDayQuery(client, establishmentId, date)),
       qc.prefetchQuery(bookingsOfDayQuery(client, establishmentId, date)),
+      qc.prefetchQuery(lifeguardListQuery(client, establishmentId, date)),
     ]),
   ]);
 }

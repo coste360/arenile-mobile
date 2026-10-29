@@ -49,6 +49,10 @@ export type ComparisonMetricKey = Schemas['ComparisonMetricKey'];
 export type ComparisonPoint = Schemas['ComparisonPoint'];
 export type ComparisonAlign = Schemas['ComparisonAlign'];
 
+// Core 1.1 (spec 30.10): the lifeguard list.
+export type LifeguardList = Schemas['LifeguardList'];
+export type LifeguardRow = Schemas['LifeguardRow'];
+
 // Phase 2: daily quick sale, move, waitlist, ticket printing (spec 03).
 export type DailySaleQuoteRequest = Schemas['DailySaleQuoteRequest'];
 export type DailySaleQuote = Schemas['DailySaleQuote'];

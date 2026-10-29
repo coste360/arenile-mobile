@@ -40,7 +40,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
   its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
   operations, day map, `today` ("Oggi"), `bookings/` (day list; tablet list + sheet), `bookings/[bookingId]`
-  (sheet on phones), `spots` (free / released spots), `operations/` hub, QR scanner, booking and spot
+  (sheet on phones), `spots` (free / released spots), `lifeguard` (lifeguard list), `operations/` hub, QR scanner, booking and spot
   operations, phase 2 `sale` (daily quick sale), `move/[bookingId]`, `waitlist/` (list; tablet list +
   entry), `waitlist/[entryId]`; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
@@ -50,7 +50,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
   phase 1; `bookings/day-list` filters, search and sort, `bookings/detail` sheet rules and customer
-  visibility by role, `operations/day-spots` free and released spots), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
+  visibility by role, `operations/day-spots` free and released spots), `lifeguard` (lifeguard list: filters, rows, query), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
   operation queue, runtime and hooks), `day-map` (operational map of the day: status, search,
   camera, SVG renderer, spot sheet, `kit/` illustrations of the map kits; ADR 0008, 0013), `check-in` (booking/ticket QR formats, code resolution, gate
   admission), `booking-actions` (booking facts, operation rules, form schemas, queued actions, cash
@@ -67,7 +67,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   `ConnectionIndicator`, `OnlineOnlyNotice`, `FilterChip`, `CachedNotice`); `bookings/` (list, row,
   badges, sheet), `today/` (figure card and grid, slot occupancy, home shortcuts) and `operations/` (the
   embeddable operation panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms),
-  `reports/` (metric cards, week chart) and `charts/` (`useChartColors`: theme colours for
+  `lifeguard/` (lifeguard list), `reports/` (metric cards, week chart) and `charts/` (`useChartColors`: theme colours for
   react-native-svg props, from `src/lib/theme.ts`)
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)

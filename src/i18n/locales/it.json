@@ -168,6 +168,7 @@
     "bookings": "Prenotazioni",
     "booking": "Prenotazione",
     "spots": "Postazioni",
+    "lifeguard": "Lista bagnini",
     "operations": "Operazioni",
     "reports": "Report",
     "sale": "Vendita giornaliera",
@@ -526,6 +527,29 @@
     "emptyFree": "Nessuna postazione libera per questo giorno.",
     "emptyReleased": "Nessun abbonato ha rilasciato la postazione per questo giorno.",
     "openOnMap": "Apre la postazione sulla mappa"
+  },
+  "lifeguard": {
+    "filtersLabel": "Filtra le postazioni",
+    "filters": {
+      "all": "Tutte",
+      "arriving": "Arrivi",
+      "departing": "Partenze",
+      "balance_due": "Da saldare"
+    },
+    "chipLabel": "{{label}}: {{count}}",
+    "results_one": "{{count}} postazione occupata",
+    "results_other": "{{count}} postazioni occupate",
+    "row": "Fila {{row}}",
+    "noRow": "Senza fila",
+    "anonymous": "Cliente anonimo",
+    "flags": {
+      "arriving": "Arrivo",
+      "departing": "Partenza",
+      "balance_due": "Da saldare"
+    },
+    "emptyTitle": "Nessuna postazione occupata in questo giorno.",
+    "noMatchTitle": "Nessuna postazione con questo filtro.",
+    "showAll": "Mostra tutte"
   },
   "bookings": {
     "status": {

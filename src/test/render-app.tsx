@@ -18,6 +18,7 @@ import ReportsScreen from '@/app/(connected)/reports';
 import SaleScreen from '@/app/(connected)/sale';
 import SettingsScreen from '@/app/(connected)/settings';
 import SpotsScreen from '@/app/(connected)/spots';
+import LifeguardScreen from '@/app/(connected)/lifeguard';
 import TodayScreen from '@/app/(connected)/today';
 import WaitlistEntryScreen from '@/app/(connected)/waitlist/[entryId]';
 import WaitlistScreen from '@/app/(connected)/waitlist/index';
@@ -154,6 +155,7 @@ export async function renderApp({
       '(connected)/bookings/index': BookingsScreen,
       '(connected)/bookings/[bookingId]': BookingScreen,
       '(connected)/spots': SpotsScreen,
+      '(connected)/lifeguard': LifeguardScreen,
       '(connected)/operations/index': OperationsScreen,
       '(connected)/operations/scan': OperationsScanScreen,
       '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,

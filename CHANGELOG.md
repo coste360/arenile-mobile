@@ -11,6 +11,11 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- **Lista bagnini** (core 1.1, spec 30.10): le postazioni occupate del giorno fila per fila, a
+  caratteri grandi per la spiaggia, con cognome, allestimento, gruppo, arrivo, partenza e da saldare,
+  mai contatti; filtri per arrivi, partenze e da saldare, calendario come mappa e prenotazioni. Oggi e
+  domani anche offline (scaricate e salvate con il giorno operativo), gli altri giorni solo online. Dal
+  menu, dall'inizio e dal pannello di navigazione su tablet, per i ruoli che leggono le prenotazioni.
 - **Prova la demo** nella schermata "Collega" (ADR 0015): abbina l'app allo stabilimento di esempio
   sul server dimostrativo di Coste360 (`demo.arenile.app`) con un codice chiesto alla demo, senza
   server proprio; serve un'istanza demo del core v1.0.6 o successiva (`arenile seed demo` crea l'utente `cassa@lido-demo.example`).

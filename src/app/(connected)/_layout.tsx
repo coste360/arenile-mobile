@@ -5,6 +5,7 @@ import {
   ClipboardCheckIcon,
   ClipboardListIcon,
   HouseIcon,
+  LifeBuoyIcon,
   ListOrderedIcon,
   MapIcon,
   MenuIcon,
@@ -39,7 +40,8 @@ interface NavItem {
     | '/reports'
     | '/settings'
     | '/today'
-    | '/bookings';
+    | '/bookings'
+    | '/lifeguard';
   label:
     | 'nav.home'
     | 'nav.map'
@@ -48,7 +50,8 @@ interface NavItem {
     | 'nav.reports'
     | 'nav.settings'
     | 'nav.today'
-    | 'nav.bookings';
+    | 'nav.bookings'
+    | 'nav.lifeguard';
   icon: LucideIcon;
   /** Shown only when the role may open it (hidden, the server stays the judge). */
   visible?: (abilities: Abilities) => boolean;
@@ -59,6 +62,12 @@ const NAV: NavItem[] = [
   { href: '/today', label: 'nav.today', icon: CalendarDaysIcon },
   { href: '/bookings', label: 'nav.bookings', icon: ClipboardListIcon },
   { href: '/map', label: 'nav.map', icon: MapIcon },
+  {
+    href: '/lifeguard',
+    label: 'nav.lifeguard',
+    icon: LifeBuoyIcon,
+    visible: (a) => a.canViewBookings,
+  },
   { href: '/operations', label: 'nav.operations', icon: ClipboardCheckIcon },
   {
     href: '/waitlist',
@@ -75,9 +84,9 @@ const NAV: NavItem[] = [
   { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
 ];
 
-/** Day screens (Oggi, bookings, spots) declared once for both layouts. */
+/** Day screens (Oggi, bookings, spots, lifeguard list) declared once for both layouts. */
 function dayScreens(
-  t: (key: 'nav.today' | 'nav.bookings' | 'nav.booking' | 'nav.spots') => string,
+  t: (key: 'nav.today' | 'nav.bookings' | 'nav.booking' | 'nav.spots' | 'nav.lifeguard') => string,
 ) {
   return [
     <Stack.Screen key="today" name="today" options={{ title: t('nav.today') }} />,
@@ -88,6 +97,7 @@ function dayScreens(
       options={{ title: t('nav.booking') }}
     />,
     <Stack.Screen key="spots" name="spots" options={{ title: t('nav.spots') }} />,
+    <Stack.Screen key="lifeguard" name="lifeguard" options={{ title: t('nav.lifeguard') }} />,
   ];
 }
 
