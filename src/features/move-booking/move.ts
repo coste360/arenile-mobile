@@ -223,6 +223,7 @@ export type MoveErrorKey =
   | 'move.errors.invalid'
   | 'move.errors.not_found'
   | 'move.swap.errors.conflict'
+  | 'move.swap.errors.version_conflict'
   | 'move.errors.default';
 
 /** Message of a refused move, from the core's stable problem slugs. */
@@ -266,11 +267,22 @@ export function moveErrorKey(e: unknown): MoveErrorKey {
   return 'move.errors.default';
 }
 
+/**
+ * Message of a refused swap: as a move, except that a 412 may come from
+ * either booking; the refresh after the refusal reruns the preview with the
+ * new versions.
+ */
+export function swapErrorKey(e: unknown): MoveErrorKey {
+  const key = moveErrorKey(e);
+  return key === 'move.errors.version_conflict' ? 'move.swap.errors.version_conflict' : key;
+}
+
 export type UndoErrorKey =
   | 'move.undo.errors.offline'
   | 'move.undo.errors.forbidden'
   | 'move.undo.errors.expired'
   | 'move.undo.errors.conflict'
+  | 'move.undo.errors.concurrent'
   | 'move.undo.errors.default';
 
 /** Message of a refused undo (core spec 30.7). */
@@ -282,6 +294,9 @@ export function undoErrorKey(e: unknown): UndoErrorKey {
     if (e.type === 'move_undo_expired' || e.status === 410 || e.status === 404) {
       return 'move.undo.errors.expired';
     }
+    // Core 1.1.1: another change of the same bookings is running; nothing
+    // was undone and the undo can be tried again in a few seconds.
+    if (e.type === 'concurrent_update') return 'move.undo.errors.concurrent';
     // The original spots were taken, or the bookings changed after the move.
     if (e.status === 409) return 'move.undo.errors.conflict';
   }
@@ -291,6 +306,24 @@ export function undoErrorKey(e: unknown): UndoErrorKey {
 /** The undo is still offered: before its expiry (the server checks it again). */
 export function undoOpen(info: MoveUndoInfo | undefined, now: Date): info is MoveUndoInfo {
   return !!info && Date.parse(info.expires_at) > now.getTime();
+}
+
+/**
+ * What an undo puts back besides this booking: nothing, the other booking of
+ * a swap, or the other bookings of a group move (made in the panel too:
+ * moves/last is per user, not per device).
+ */
+export type UndoScope =
+  { kind: 'self' } | { kind: 'swap'; otherId: string } | { kind: 'group'; others: number };
+
+export function undoScope(
+  info: Pick<MoveUndoInfo, 'kind' | 'booking_ids'>,
+  bookingId: string,
+): UndoScope {
+  const others = info.booking_ids.filter((id) => id !== bookingId);
+  if (others.length === 0) return { kind: 'self' };
+  if (info.kind === 'swap' && others.length === 1) return { kind: 'swap', otherId: others[0]! };
+  return { kind: 'group', others: others.length };
 }
 
 /** The user's last undoable move, when it concerns this booking. */

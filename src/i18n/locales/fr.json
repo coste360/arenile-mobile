@@ -1323,7 +1323,8 @@
         "title": "{{code}} et {{other}} échangées"
       },
       "errors": {
-        "conflict": "Ces deux réservations ne peuvent pas être échangées : elles n'ont aucun jour en commun à partir de cette date ou sont déjà sur le même emplacement."
+        "conflict": "Ces deux réservations ne peuvent pas être échangées : elles n'ont aucun jour en commun à partir de cette date ou sont déjà sur le même emplacement.",
+        "version_conflict": "L'une des deux réservations a changé entre-temps : vérifiez l'aperçu mis à jour."
       }
     },
     "undo": {
@@ -1331,6 +1332,17 @@
       "until": "Vous pouvez l'annuler jusqu'à {{time}}.",
       "lastTitle": "Déplacement récent",
       "lastDescription": "Vous venez de déplacer cette réservation.",
+      "lastSwap": "Vous venez d'échanger cette réservation avec {{other}}.",
+      "lastGroup_one": "Vous venez de déplacer cette réservation avec une autre.",
+      "lastGroup_other": "Vous venez de déplacer cette réservation et {{count}} autres réservations.",
+      "anotherBooking": "une autre réservation",
+      "confirm": {
+        "title": "Annuler le déplacement ?",
+        "swap": "Cette réservation et {{other}} reviennent toutes deux à leur place.",
+        "group_one": "Une autre réservation revient aussi à sa place.",
+        "group_other": "{{count}} autres réservations reviennent aussi à leur place.",
+        "submit": "Rétablir les emplacements"
+      },
       "done": "Déplacement annulé : les emplacements sont revenus comme avant.",
       "failedTitle": "L'annulation a échoué",
       "errors": {
@@ -1338,6 +1350,7 @@
         "forbidden": "Votre rôle n'est pas autorisé à annuler un déplacement.",
         "expired": "Plus de 5 minutes se sont écoulées : le déplacement ne peut plus être annulé.",
         "conflict": "Impossible d'annuler : les emplacements de départ ont été occupés ou la réservation a changé entre-temps.",
+        "concurrent": "Une autre modification de ces réservations est en cours : réessayez dans quelques secondes.",
         "default": "L'annulation a échoué. Réessayez."
       }
     }

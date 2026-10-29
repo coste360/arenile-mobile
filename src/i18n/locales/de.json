@@ -1323,7 +1323,8 @@
         "title": "{{code}} und {{other}} getauscht"
       },
       "errors": {
-        "conflict": "Diese zwei Buchungen können nicht getauscht werden: Sie haben ab diesem Datum keinen gemeinsamen Tag oder sind bereits auf demselben Platz."
+        "conflict": "Diese zwei Buchungen können nicht getauscht werden: Sie haben ab diesem Datum keinen gemeinsamen Tag oder sind bereits auf demselben Platz.",
+        "version_conflict": "Eine der zwei Buchungen hat sich inzwischen geändert: Prüfe die aktualisierte Vorschau."
       }
     },
     "undo": {
@@ -1331,6 +1332,17 @@
       "until": "Du kannst sie bis {{time}} rückgängig machen.",
       "lastTitle": "Kürzliche Umbuchung",
       "lastDescription": "Du hast diese Buchung gerade umgebucht.",
+      "lastSwap": "Du hast diese Buchung gerade mit {{other}} getauscht.",
+      "lastGroup_one": "Du hast diese Buchung gerade zusammen mit einer weiteren umgebucht.",
+      "lastGroup_other": "Du hast diese Buchung und {{count}} weitere Buchungen gerade umgebucht.",
+      "anotherBooking": "eine andere Buchung",
+      "confirm": {
+        "title": "Umbuchung rückgängig machen?",
+        "swap": "Sowohl diese Buchung als auch {{other}} kommen zurück, wo sie waren.",
+        "group_one": "Auch eine weitere Buchung kommt zurück, wo sie war.",
+        "group_other": "Auch {{count}} weitere Buchungen kommen zurück, wo sie waren.",
+        "submit": "Plätze wiederherstellen"
+      },
       "done": "Umbuchung rückgängig gemacht: Die Plätze sind wieder wie vorher.",
       "failedTitle": "Rückgängig machen fehlgeschlagen",
       "errors": {
@@ -1338,6 +1350,7 @@
         "forbidden": "Deine Rolle darf Umbuchungen nicht rückgängig machen.",
         "expired": "Mehr als 5 Minuten sind vergangen: Die Umbuchung kann nicht mehr rückgängig gemacht werden.",
         "conflict": "Nicht möglich: Die ursprünglichen Plätze wurden belegt oder die Buchung hat sich inzwischen geändert.",
+        "concurrent": "Eine andere Änderung dieser Buchungen läuft gerade: Versuche es in ein paar Sekunden erneut.",
         "default": "Rückgängig machen fehlgeschlagen. Versuche es erneut."
       }
     }

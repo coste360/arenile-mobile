@@ -10,7 +10,7 @@ import {
   SearchXIcon,
   Undo2Icon,
 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -49,12 +49,14 @@ import {
   moveStarts,
   priceChange,
   swapCandidates,
+  swapErrorKey,
   targetDay,
   targetSpots,
   toMoveRequest,
   toSwapRequest,
   undoErrorKey,
   undoOpen,
+  undoScope,
   useApplyMove,
   useLastMove,
   useMovePreview,
@@ -63,6 +65,7 @@ import {
   type MoveErrorKey,
   type MoveStart,
   type UndoErrorKey,
+  type UndoScope,
 } from '@/features/move-booking/move';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useOperationalDays, useOperationsDay } from '@/features/operations/queries';
@@ -116,6 +119,8 @@ type Mode = 'move' | 'swap';
 interface Done {
   title: string;
   undo?: MoveUndoInfo;
+  /** Code of the other booking of a swap, named by the undo. */
+  otherCode?: string;
 }
 
 function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialLineId?: string }) {
@@ -215,7 +220,7 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
   ]);
 
   if (done) {
-    return <MoveDone done={done} />;
+    return <MoveDone bookingId={booking.id} done={done} />;
   }
   if (!movable(booking, today)) {
     return <StateView icon={LockIcon} title={t('move.notMovable', { code: booking.code })} />;
@@ -258,6 +263,7 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
         setDone({
           title: t('move.swap.done.title', { code: booking.code, other: other.code }),
           undo: outcome.undo,
+          otherCode: other.code,
         });
         return;
       }
@@ -281,7 +287,9 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
         undo: outcome.undo,
       });
     } catch (e) {
-      setError(moveErrorKey(e));
+      // A refused swap refreshes both bookings (useApplyMove): with the new
+      // versions the preview runs again and the message points to it.
+      setError(swapping ? swapErrorKey(e) : moveErrorKey(e));
     }
   };
 
@@ -457,7 +465,9 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
         ) : null}
         {previewError ? (
           <Alert icon={CircleAlertIcon} variant="destructive">
-            <AlertDescription>{t(moveErrorKey(previewError))}</AlertDescription>
+            <AlertDescription>
+              {t(swapping ? swapErrorKey(previewError) : moveErrorKey(previewError))}
+            </AlertDescription>
           </Alert>
         ) : null}
         {error ? (
@@ -507,7 +517,8 @@ function MoveForm({ booking, initialLineId }: { booking: BookingDetail; initialL
             ? t('move.swap.confirm.description', {
                 code: booking.code,
                 other: otherCode,
-                from: current.label ?? t('bookings.unassigned'),
+                // The other booking takes every spot this one leaves (split stays too).
+                from: freed,
                 to: target?.label ?? '',
               })
             : t('move.confirm.description', { from: freed, to: target?.label ?? '' })
@@ -597,7 +608,12 @@ function SpotChoices({
   );
 }
 
-/** Undo still offered for `info`: re-renders when the 5 minutes run out. */
+/**
+ * Undo still offered for `info`: re-renders when the 5 minutes run out.
+ * The deadline is read on the device clock, which may drift from the
+ * server's: the button can show a little early or late, and the server's
+ * 410 move_undo_expired stays the authority.
+ */
 function useUndoOpen(info: MoveUndoInfo | undefined): info is MoveUndoInfo {
   const { clock } = useDependencies();
   const [, setTick] = useState(0);
@@ -612,16 +628,67 @@ function useUndoOpen(info: MoveUndoInfo | undefined): info is MoveUndoInfo {
   return undoOpen(info, clock.now());
 }
 
-/** "Annulla spostamento" with its deadline, its outcome and its errors. */
-function UndoAction({ info, onUndone }: { info: MoveUndoInfo; onUndone: () => void }) {
+/**
+ * What an undo also puts back besides this booking: in the notice of the
+ * last move (`last`) or in the confirmation (`confirm`, never for a move of
+ * this booking alone).
+ */
+function useScopeText(): (
+  scope: UndoScope,
+  otherCode: string | undefined,
+  where: 'last' | 'confirm',
+) => string {
+  const { t } = useTranslation();
+  return (scope, otherCode, where) => {
+    const other = otherCode ?? t('move.undo.anotherBooking');
+    if (scope.kind === 'swap') {
+      return where === 'last'
+        ? t('move.undo.lastSwap', { other })
+        : t('move.undo.confirm.swap', { other });
+    }
+    if (scope.kind === 'group') {
+      return where === 'last'
+        ? t('move.undo.lastGroup', { count: scope.others })
+        : t('move.undo.confirm.group', { count: scope.others });
+    }
+    return where === 'last' ? t('move.undo.lastDescription') : '';
+  };
+}
+
+/** Code of a booking (the other side of a swap), once loaded. */
+function BookingCode({ id, children }: { id: string; children: (code?: string) => ReactNode }) {
+  const query = useBooking(id);
+  return children(query.data?.code);
+}
+
+/**
+ * "Annulla spostamento" with its deadline, its outcome and its errors. When
+ * the undo also puts back other bookings (a swap, a group move made in the
+ * panel), it asks first and names them.
+ */
+function UndoAction({
+  info,
+  bookingId,
+  otherCode,
+  onUndone,
+}: {
+  info: MoveUndoInfo;
+  bookingId: string;
+  otherCode?: string;
+  onUndone: () => void;
+}) {
   const { t } = useTranslation();
   const { locale } = usePreferences();
   const { timeZone } = useOperationalDays();
   const { available: online } = useOnlineOnly();
   const undo = useUndoMove();
+  const scopeText = useScopeText();
   const [error, setError] = useState<UndoErrorKey | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const scope = undoScope(info, bookingId);
 
   const run = async () => {
+    setConfirming(false);
     setError(null);
     try {
       await undo.mutateAsync(info.move_id);
@@ -640,7 +707,7 @@ function UndoAction({ info, onUndone }: { info: MoveUndoInfo; onUndone: () => vo
         size="lg"
         variant="outline"
         disabled={!online || undo.isPending}
-        onPress={() => void run()}
+        onPress={() => (scope.kind === 'self' ? void run() : setConfirming(true))}
       >
         <Icon as={Undo2Icon} size={18} />
         <Text>{t('move.undo.action')}</Text>
@@ -651,6 +718,14 @@ function UndoAction({ info, onUndone }: { info: MoveUndoInfo; onUndone: () => vo
           <AlertDescription>{t(error)}</AlertDescription>
         </Alert>
       ) : null}
+      <ConfirmDialog
+        open={confirming}
+        title={t('move.undo.confirm.title')}
+        description={scopeText(scope, otherCode, 'confirm')}
+        confirmLabel={t('move.undo.confirm.submit')}
+        onConfirm={() => void run()}
+        onCancel={() => setConfirming(false)}
+      />
     </View>
   );
 }
@@ -665,7 +740,7 @@ function UndoneNotice() {
 }
 
 /** Outcome of a move or swap, with its undo while the 5 minutes last. */
-function MoveDone({ done }: { done: Done }) {
+function MoveDone({ bookingId, done }: { bookingId: string; done: Done }) {
   const { t } = useTranslation();
   const open = useUndoOpen(done.undo);
   const [undone, setUndone] = useState(false);
@@ -679,7 +754,12 @@ function MoveDone({ done }: { done: Done }) {
       {undone ? (
         <UndoneNotice />
       ) : open && done.undo ? (
-        <UndoAction info={done.undo} onUndone={() => setUndone(true)} />
+        <UndoAction
+          info={done.undo}
+          bookingId={bookingId}
+          otherCode={done.otherCode}
+          onUndone={() => setUndone(true)}
+        />
       ) : null}
       <Button size="lg" onPress={() => router.back()}>
         <Text>{t('move.done.back')}</Text>
@@ -689,12 +769,11 @@ function MoveDone({ done }: { done: Done }) {
 }
 
 /**
- * The user's last move or swap of this booking, still undoable (GET
- * moves/last): offered when the move screen is opened again after leaving
- * the outcome.
+ * The user's last move, swap or group move of this booking, still undoable
+ * (GET moves/last, per user: it may come from the panel): offered when the
+ * move screen is opened again, saying what else it puts back.
  */
 function LastMoveNotice({ booking }: { booking: BookingDetail }) {
-  const { t } = useTranslation();
   const { clock } = useDependencies();
   const { available: online } = useOnlineOnly();
   const last = useLastMove(online);
@@ -703,12 +782,40 @@ function LastMoveNotice({ booking }: { booking: BookingDetail }) {
   const [undone, setUndone] = useState(false);
   if (undone) return <UndoneNotice />;
   if (!open || !info) return null;
+  const scope = undoScope(info, booking.id);
+  const body = (otherCode?: string) => (
+    <LastMoveBody
+      info={info}
+      bookingId={booking.id}
+      scope={scope}
+      otherCode={otherCode}
+      onUndone={() => setUndone(true)}
+    />
+  );
+  return scope.kind === 'swap' ? <BookingCode id={scope.otherId}>{body}</BookingCode> : body();
+}
+
+function LastMoveBody({
+  info,
+  bookingId,
+  scope,
+  otherCode,
+  onUndone,
+}: {
+  info: MoveUndoInfo;
+  bookingId: string;
+  scope: UndoScope;
+  otherCode?: string;
+  onUndone: () => void;
+}) {
+  const { t } = useTranslation();
+  const scopeText = useScopeText();
   return (
     <Alert icon={Undo2Icon}>
       <AlertTitle>{t('move.undo.lastTitle')}</AlertTitle>
-      <AlertDescription>{t('move.undo.lastDescription')}</AlertDescription>
+      <AlertDescription>{scopeText(scope, otherCode, 'last')}</AlertDescription>
       <View className="pt-2">
-        <UndoAction info={info} onUndone={() => setUndone(true)} />
+        <UndoAction info={info} bookingId={bookingId} otherCode={otherCode} onUndone={onUndone} />
       </View>
     </Alert>
   );

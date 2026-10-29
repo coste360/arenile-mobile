@@ -1323,7 +1323,8 @@
         "title": "{{code}} and {{other}} swapped"
       },
       "errors": {
-        "conflict": "These two bookings cannot be swapped: they share no day from this date or are already on the same spot."
+        "conflict": "These two bookings cannot be swapped: they share no day from this date or are already on the same spot.",
+        "version_conflict": "One of the two bookings changed meanwhile: check the updated preview."
       }
     },
     "undo": {
@@ -1331,6 +1332,17 @@
       "until": "You can undo it until {{time}}.",
       "lastTitle": "Recent move",
       "lastDescription": "You moved this booking a moment ago.",
+      "lastSwap": "You recently swapped this booking with {{other}}.",
+      "lastGroup_one": "You recently moved this booking together with another one.",
+      "lastGroup_other": "You recently moved this booking and {{count}} other bookings.",
+      "anotherBooking": "another booking",
+      "confirm": {
+        "title": "Undo the move?",
+        "swap": "Both this booking and {{other}} go back where they were.",
+        "group_one": "Another booking goes back where it was too.",
+        "group_other": "{{count}} other bookings go back where they were too.",
+        "submit": "Restore the spots"
+      },
       "done": "Move undone: the spots are back as before.",
       "failedTitle": "Undo failed",
       "errors": {
@@ -1338,6 +1350,7 @@
         "forbidden": "Your role is not allowed to undo moves.",
         "expired": "More than 5 minutes have passed: the move can no longer be undone.",
         "conflict": "It cannot be undone: the original spots were taken or the booking changed meanwhile.",
+        "concurrent": "Another change of these bookings is running: try again in a few seconds.",
         "default": "Undo failed. Try again."
       }
     }

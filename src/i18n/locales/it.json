@@ -1323,7 +1323,8 @@
         "title": "{{code}} e {{other}} scambiate"
       },
       "errors": {
-        "conflict": "Queste due prenotazioni non si possono scambiare: non hanno giorni in comune da questa data o sono già sulla stessa postazione."
+        "conflict": "Queste due prenotazioni non si possono scambiare: non hanno giorni in comune da questa data o sono già sulla stessa postazione.",
+        "version_conflict": "Una delle due prenotazioni è cambiata nel frattempo: controlla l'anteprima aggiornata."
       }
     },
     "undo": {
@@ -1331,6 +1332,17 @@
       "until": "Puoi annullarlo entro le {{time}}.",
       "lastTitle": "Spostamento recente",
       "lastDescription": "Hai spostato questa prenotazione da poco.",
+      "lastSwap": "Hai scambiato da poco questa prenotazione con {{other}}.",
+      "lastGroup_one": "Hai spostato da poco questa prenotazione insieme a un'altra.",
+      "lastGroup_other": "Hai spostato da poco questa prenotazione e altre {{count}} prenotazioni.",
+      "anotherBooking": "un'altra prenotazione",
+      "confirm": {
+        "title": "Annullare lo spostamento?",
+        "swap": "Tornano dov'erano sia questa prenotazione sia {{other}}.",
+        "group_one": "Torna dov'era anche un'altra prenotazione.",
+        "group_other": "Tornano dov'erano anche altre {{count}} prenotazioni.",
+        "submit": "Ripristina le postazioni"
+      },
       "done": "Spostamento annullato: le postazioni sono tornate come prima.",
       "failedTitle": "Annullamento non riuscito",
       "errors": {
@@ -1338,6 +1350,7 @@
         "forbidden": "Annullare uno spostamento non è consentito al tuo ruolo.",
         "expired": "Sono passati più di 5 minuti: lo spostamento non si può più annullare.",
         "conflict": "Non si può annullare: le postazioni di partenza sono state occupate o la prenotazione è cambiata nel frattempo.",
+        "concurrent": "Un'altra modifica di queste prenotazioni è in corso: riprova tra qualche secondo.",
         "default": "Annullamento non riuscito. Riprova."
       }
     }

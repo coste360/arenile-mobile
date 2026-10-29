@@ -525,3 +525,172 @@ describe('swap two bookings', () => {
     expect(screen.queryByText("Scambiare con un'altra prenotazione")).toBeNull();
   });
 });
+
+describe('undo what else the last move put elsewhere', () => {
+  const other: BookingDetail = bookingDetail({ id: 'b-4', code: 'AR-SWAP4' });
+
+  it('names the other booking of a swap and asks before putting both back', async () => {
+    const { screen, network } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/moves/last`]: () =>
+          json(200, { move: { ...UNDO, kind: 'swap', booking_ids: ['b-2', 'b-4'] } }),
+        [`GET ${EST}/bookings/b-4`]: () => json(200, other),
+        [`POST ${EST}/moves/m-1/undo`]: () => json(200, { undone: true, bookings: [B2, other] }),
+      },
+    });
+    expect(
+      await screen.findByText('Hai scambiato da poco questa prenotazione con AR-SWAP4.'),
+    ).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Annulla spostamento' }));
+    expect(await screen.findByText('Annullare lo spostamento?')).toBeOnTheScreen();
+    expect(
+      screen.getByText("Tornano dov'erano sia questa prenotazione sia AR-SWAP4."),
+    ).toBeOnTheScreen();
+    expect(requestsTo(network.calls, 'POST', `${EST}/moves/m-1/undo`)).toHaveLength(0);
+    await fireEvent.press(screen.getByRole('button', { name: 'Ripristina le postazioni' }));
+    expect(
+      await screen.findByText('Spostamento annullato: le postazioni sono tornate come prima.'),
+    ).toBeOnTheScreen();
+    expect(requestsTo(network.calls, 'POST', `${EST}/moves/m-1/undo`)).toHaveLength(1);
+  });
+
+  it('counts the other bookings of a group move and does nothing when cancelled', async () => {
+    const { screen, network } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/moves/last`]: () =>
+          json(200, {
+            move: { ...UNDO, kind: 'group', booking_ids: ['b-5', 'b-2', 'b-6', 'b-7'] },
+          }),
+        [`POST ${EST}/moves/m-1/undo`]: () => json(200, { undone: true, bookings: [] }),
+      },
+    });
+    expect(
+      await screen.findByText('Hai spostato da poco questa prenotazione e altre 3 prenotazioni.'),
+    ).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Annulla spostamento' }));
+    expect(
+      await screen.findByText("Tornano dov'erano anche altre 3 prenotazioni."),
+    ).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Annulla' }));
+    await waitFor(() => expect(screen.queryByText('Annullare lo spostamento?')).toBeNull());
+    expect(requestsTo(network.calls, 'POST', `${EST}/moves/m-1/undo`)).toHaveLength(0);
+  });
+
+  it('asks to try again when another change of the bookings is running', async () => {
+    const { screen } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/moves/last`]: () => json(200, { move: UNDO }),
+        [`POST ${EST}/moves/m-1/undo`]: () => problem(409, 'concurrent_update'),
+      },
+    });
+    await fireEvent.press(await screen.findByRole('button', { name: 'Annulla spostamento' }));
+    expect(
+      await screen.findByText(
+        "Un'altra modifica di queste prenotazioni è in corso: riprova tra qualche secondo.",
+      ),
+    ).toBeOnTheScreen();
+  });
+});
+
+describe('swap refusals and split stays', () => {
+  it('reruns the preview with the new versions after a 412', async () => {
+    let refreshed = false;
+    const dayWith = (version: number): OperationsDay => ({
+      ...SWAP_DAY,
+      spots: SWAP_DAY.spots.map((s) =>
+        s.spot_id === 's-5' && s.booking ? { ...s, booking: { ...s.booking, version } } : s,
+      ),
+    });
+    const { screen, network } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/bookings/b-2`]: () => json(200, refreshed ? { ...B2, version: 4 } : B2),
+        [`GET ${EST}/operations/day`]: () => json(200, dayWith(refreshed ? 8 : 7)),
+        [`POST ${EST}/bookings/swap`]: async (r) => {
+          const body = (await r.clone().json()) as { dry_run?: boolean };
+          if (body.dry_run) return json(200, swapResult());
+          refreshed = true;
+          return problem(412, 'version_conflict');
+        },
+      },
+    });
+    await fireEvent.press(await screen.findByText("Scambiare con un'altra prenotazione"));
+    await fireEvent.press(await screen.findByRole('radio', { name: 'Postazione A4, Verdi' }));
+    await screen.findByText(nbsp('AR-SWAP4: Il totale resta 30,00 €.'));
+    await fireEvent.press(screen.getByRole('button', { name: 'Scambia con A4' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Scambia' }));
+    expect(
+      await screen.findByText(
+        "Una delle due prenotazioni è cambiata nel frattempo: controlla l'anteprima aggiornata.",
+      ),
+    ).toBeOnTheScreen();
+    // The day and the booking refresh one after the other: the last preview has both versions.
+    await waitFor(async () => {
+      const swaps = requestsTo(network.calls, 'POST', `${EST}/bookings/swap`);
+      expect(await swaps[swaps.length - 1]!.clone().json()).toEqual({
+        a: { booking_id: 'b-2', line_id: 'l-2', expected_version: 4 },
+        b: { booking_id: 'b-4', line_id: 'l-4', expected_version: 8 },
+        from: '2026-10-25',
+        dry_run: true,
+      });
+    });
+    // Only one swap was applied: the refusal.
+    const applied = await Promise.all(
+      requestsTo(network.calls, 'POST', `${EST}/bookings/swap`).map(
+        async (r) => !((await r.clone().json()) as { dry_run?: boolean }).dry_run,
+      ),
+    );
+    expect(applied.filter(Boolean)).toHaveLength(1);
+  });
+
+  it('lists the days the swap is not possible and keeps it disabled', async () => {
+    const { screen } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/operations/day`]: () => json(200, SWAP_DAY),
+        [`POST ${EST}/bookings/swap`]: () =>
+          json(
+            200,
+            swapResult({
+              conflicts: [{ date: '2026-10-25', slot: 'PM', reason: 'spot_unavailable' }],
+            }),
+          ),
+      },
+    });
+    await fireEvent.press(await screen.findByText("Scambiare con un'altra prenotazione"));
+    await fireEvent.press(await screen.findByRole('radio', { name: 'Postazione A4, Verdi' }));
+    expect(
+      await screen.findByText('Lo scambio non è possibile in questi giorni:'),
+    ).toBeOnTheScreen();
+    expect(screen.getByText(/, pomeriggio$/)).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Scambia con A4' })).toBeDisabled();
+  });
+
+  it('names every spot a split stay hands over in the swap confirmation', async () => {
+    // On A2 until the 26th, then on B1: the other booking takes both.
+    const split: BookingDetail = {
+      ...UNDER_WAY,
+      lines: [
+        {
+          ...B2.lines[0]!,
+          segments: [
+            { spot_id: 's-2', spot_label: 'A2', starts_on: '2026-10-24', ends_on: '2026-10-26' },
+            { spot_id: 's-4', spot_label: 'B1', starts_on: '2026-10-27', ends_on: '2026-10-28' },
+          ],
+        },
+      ],
+    };
+    const { screen } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/bookings/b-2`]: () => json(200, split),
+        [`GET ${EST}/operations/day`]: () => json(200, SWAP_DAY),
+        [`POST ${EST}/bookings/swap`]: () => json(200, swapResult()),
+      },
+    });
+    await fireEvent.press(await screen.findByText("Scambiare con un'altra prenotazione"));
+    await fireEvent.press(await screen.findByRole('radio', { name: 'Postazione A4, Verdi' }));
+    await screen.findByText(nbsp('AR-SWAP4: Il totale resta 30,00 €.'));
+    await fireEvent.press(screen.getByRole('button', { name: 'Scambia con A4' }));
+    expect(
+      await screen.findByText('AR-7K3Q9 passa su A4 e AR-SWAP4 su A2 → B1.'),
+    ).toBeOnTheScreen();
+  });
+});

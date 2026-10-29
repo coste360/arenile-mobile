@@ -15,12 +15,14 @@ import {
   moveStarts,
   priceChange,
   swapCandidates,
+  swapErrorKey,
   targetDay,
   targetSpots,
   toMoveRequest,
   toSwapRequest,
   undoErrorKey,
   undoOpen,
+  undoScope,
 } from './move';
 
 const problem = (status: number, type: string) =>
@@ -392,9 +394,38 @@ describe('undoErrorKey', () => {
     ['after 5 minutes', problem(410, 'move_undo_expired'), 'move.undo.errors.expired'],
     ['already undone', problem(404, 'not_found'), 'move.undo.errors.expired'],
     ['spots taken', problem(409, 'move_undo_conflict'), 'move.undo.errors.conflict'],
+    ['another change running', problem(409, 'concurrent_update'), 'move.undo.errors.concurrent'],
     ['booking changed', problem(409, 'conflict'), 'move.undo.errors.conflict'],
     ['other', problem(500, 'internal_error'), 'move.undo.errors.default'],
   ])('%s', (_name, e, key) => {
     expect(undoErrorKey(e)).toBe(key);
+  });
+});
+
+describe('swapErrorKey', () => {
+  it.each<[string, unknown, string]>([
+    [
+      'either booking changed',
+      problem(412, 'version_conflict'),
+      'move.swap.errors.version_conflict',
+    ],
+    ['no common day', problem(409, 'swap_conflict'), 'move.swap.errors.conflict'],
+    ['taken meanwhile', problem(409, 'spot_unavailable'), 'move.errors.spot_unavailable'],
+    ['offline', new NetworkError('unreachable'), 'move.errors.offline'],
+  ])('%s', (_name, e, key) => {
+    expect(swapErrorKey(e)).toBe(key);
+  });
+});
+
+describe('undoScope', () => {
+  it.each<[string, 'move' | 'swap' | 'group', string[], ReturnType<typeof undoScope>]>([
+    ['a move of this booking', 'move', ['b-1'], { kind: 'self' }],
+    ['a swap of two lines of this booking', 'swap', ['b-1'], { kind: 'self' }],
+    ['a swap with another booking', 'swap', ['b-1', 'b-2'], { kind: 'swap', otherId: 'b-2' }],
+    ['a swap seen from the other side', 'swap', ['b-2', 'b-1'], { kind: 'swap', otherId: 'b-2' }],
+    ['a group move with two others', 'group', ['b-3', 'b-1', 'b-2'], { kind: 'group', others: 2 }],
+    ['a group move of this booking alone', 'group', ['b-1'], { kind: 'self' }],
+  ])('%s', (_name, kind, booking_ids, scope) => {
+    expect(undoScope({ kind, booking_ids }, 'b-1')).toEqual(scope);
   });
 });
