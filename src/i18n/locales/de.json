@@ -1506,7 +1506,7 @@
     "loading": "Kalender wird geladen",
     "errorTitle": "Kalender nicht verfügbar",
     "error": "Der Kalender konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.",
-    "notFound": "Keine Saison für diesen Platz.",
+    "notFound": "Platz oder Saison nicht gefunden.",
     "notImplemented": "Diese Instanz hat keinen Platzkalender: aktualisiere sie auf die neueste Version.",
     "halves": "Jeder Tag: Vormittag links, Nachmittag rechts.",
     "legend": "Legende des Kalenders",
@@ -1518,6 +1518,14 @@
     "bookings": "Buchungen der Saison",
     "noBookings": "Keine Buchungen in dieser Saison.",
     "period": "{{from}} – {{to}}",
-    "balance": "Offen {{amount}}"
+    "balance": "Offen {{amount}}",
+    "choose": {
+      "hint": "Öffnet die Buchung oder legt in der freien Hälfte eine neue an",
+      "description": "Eine Hälfte des Tages ist belegt, die andere frei.",
+      "open": "Buchung öffnen",
+      "bookFULL": "Neue Buchung (ganzer Tag)",
+      "bookAM": "Neue Buchung (Vormittag)",
+      "bookPM": "Neue Buchung (Nachmittag)"
+    }
   }
 }

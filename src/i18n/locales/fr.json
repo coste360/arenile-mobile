@@ -1506,7 +1506,7 @@
     "loading": "Chargement du calendrier",
     "errorTitle": "Calendrier indisponible",
     "error": "Le calendrier n'a pas pu être chargé. Vérifiez la connexion et réessayez.",
-    "notFound": "Aucune saison pour cet emplacement.",
+    "notFound": "Emplacement ou saison introuvable.",
     "notImplemented": "Cette instance n'a pas le calendrier des emplacements : mettez-la à jour.",
     "halves": "Chaque jour : matin à gauche, après-midi à droite.",
     "legend": "Légende du calendrier",
@@ -1518,6 +1518,14 @@
     "bookings": "Réservations de la saison",
     "noBookings": "Aucune réservation cette saison.",
     "period": "{{from}} – {{to}}",
-    "balance": "Reste à payer {{amount}}"
+    "balance": "Reste à payer {{amount}}",
+    "choose": {
+      "hint": "Ouvre la réservation ou en crée une nouvelle sur la moitié libre",
+      "description": "Une moitié de la journée est occupée et l'autre est libre.",
+      "open": "Ouvrir la réservation",
+      "bookFULL": "Nouvelle réservation (journée)",
+      "bookAM": "Nouvelle réservation (matin)",
+      "bookPM": "Nouvelle réservation (après-midi)"
+    }
   }
 }

@@ -1506,7 +1506,7 @@
     "loading": "Caricamento del calendario",
     "errorTitle": "Calendario non disponibile",
     "error": "Non è stato possibile caricare il calendario. Controlla la connessione e riprova.",
-    "notFound": "Nessuna stagione per questa postazione.",
+    "notFound": "Postazione o stagione non trovata.",
     "notImplemented": "Questa istanza non ha il calendario delle postazioni: aggiornala all'ultima versione.",
     "halves": "Ogni giorno: mattina a sinistra, pomeriggio a destra.",
     "legend": "Legenda del calendario",
@@ -1518,6 +1518,14 @@
     "bookings": "Prenotazioni della stagione",
     "noBookings": "Nessuna prenotazione in questa stagione.",
     "period": "{{from}} – {{to}}",
-    "balance": "Da saldare {{amount}}"
+    "balance": "Da saldare {{amount}}",
+    "choose": {
+      "hint": "Apre la prenotazione o ne crea una nuova nella metà libera",
+      "description": "Una metà del giorno è occupata e l'altra è libera.",
+      "open": "Apri la prenotazione",
+      "bookFULL": "Nuova prenotazione (giornata)",
+      "bookAM": "Nuova prenotazione (mattina)",
+      "bookPM": "Nuova prenotazione (pomeriggio)"
+    }
   }
 }

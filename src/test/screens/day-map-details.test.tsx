@@ -4,7 +4,7 @@
 import { router } from 'expo-router';
 import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
-import type { OperationsDay, Role, SpotCalendar } from '@/api/types';
+import type { OperationsDay, Permission, Role, SpotCalendar } from '@/api/types';
 import { ROLE_PERMISSIONS } from '@/features/permissions/permissions';
 import { DEVICE, json, meta, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
@@ -117,6 +117,7 @@ function routes(
   role: Role = 'cashier',
   day: OperationsDay = DAY,
   extra: Record<string, Handler> = {},
+  permissions: readonly Permission[] = ROLE_PERMISSIONS[role],
 ) {
   return {
     'GET /api/device/v1/self': () => json(200, { ...DEVICE, role }),
@@ -130,7 +131,7 @@ function routes(
             organization_id: 'org-1',
             establishment_id: SESSION.establishmentId,
             role,
-            permissions: ROLE_PERMISSIONS[role],
+            permissions,
           },
         ],
       }),
@@ -372,5 +373,137 @@ describe('spot calendar (spec 30.5)', () => {
       within(sheet).getByRole('button', { name: 'Calendario della postazione' }),
     );
     expect(await screen.findByText(/non ha il calendario delle postazioni/)).toBeOnTheScreen();
+  });
+
+  /** Opens the calendar of A2 straight from its route, after the home has loaded. */
+  async function openCalendar(
+    calendar: SpotCalendar,
+    {
+      size = 'phone',
+      role = 'cashier',
+      permissions,
+    }: { size?: WindowSize; role?: Role; permissions?: readonly Permission[] } = {},
+  ) {
+    const app = await renderApp({
+      session: SESSION,
+      routes: routes(
+        role,
+        DAY,
+        { [`GET ${EST}/spots/s-2/calendar`]: () => json(200, calendar) },
+        permissions,
+      ),
+      size,
+    });
+    await app.screen.findByText(/^Anna · /);
+    await act(async () => router.push('/spot-calendar/s-2?label=A2'));
+    await app.screen.findByTestId('spot-calendar');
+    return app;
+  }
+
+  /** From Tuesday 2026-10-27 to Monday 2026-12-07: October, November and December. */
+  const SEASON: SpotCalendar = {
+    ...CALENDAR,
+    from: '2026-10-27',
+    to: '2026-12-07',
+    days: ['2026-10-27', '2026-11-02', '2026-12-07'].map((date) => ({
+      date,
+      am: { status: 'free' as const },
+      pm: { status: 'free' as const },
+    })),
+    bookings: [],
+  };
+
+  it.each<[WindowSize, string[][]]>([
+    ['phone', [['2026-10'], ['2026-11'], ['2026-12']]],
+    ['tabletPortrait', [['2026-10', '2026-11'], ['2026-12']]],
+    ['tabletLandscape', [['2026-10', '2026-11'], ['2026-12']]],
+  ])('puts the months side by side when they fit (%s)', async (size, want) => {
+    const { screen } = await openCalendar(SEASON, { size });
+    const rows = want.map((_, i) => screen.getByTestId(`months-row-${i}`));
+    rows.forEach((row, i) => {
+      for (const key of want[i]!) expect(within(row).getByTestId(`month-${key}`)).toBeOnTheScreen();
+    });
+    expect(screen.queryByTestId(`months-row-${want.length}`)).toBeNull();
+  });
+
+  /** Monday 2026-10-26: AR-ARR01 in the morning, the afternoon free. */
+  const HALF: SpotCalendar = {
+    ...CALENDAR,
+    from: '2026-10-26',
+    to: '2026-10-27',
+    days: [
+      {
+        date: '2026-10-26',
+        am: { status: 'booked', booking_id: 'b-2' },
+        pm: { status: 'free' },
+      },
+      { date: '2026-10-27', am: { status: 'free' }, pm: { status: 'free' } },
+    ],
+  };
+
+  it.each<[string, string, object]>([
+    [
+      'books the free afternoon',
+      'Nuova prenotazione (pomeriggio)',
+      { pathname: '/new-booking', params: { spotId: 's-2', from: '2026-10-26', slot: 'PM' } },
+    ],
+    [
+      'opens the morning booking',
+      'Apri la prenotazione',
+      { pathname: '/bookings/[bookingId]', params: { bookingId: 'b-2' } },
+    ],
+  ])(
+    'a day with a booked morning and a free afternoon offers both: %s',
+    async (_n, choice, want) => {
+      const { screen } = await openCalendar(HALF);
+      const day = screen.getByTestId('day-2026-10-26');
+      expect(day).toHaveProp(
+        'accessibilityHint',
+        'Apre la prenotazione o ne crea una nuova nella metà libera',
+      );
+      const push = jest.spyOn(router, 'push');
+      await fireEvent.press(day);
+      expect(await screen.findByText('lun 26 ott')).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Apri la prenotazione' })).toBeOnTheScreen();
+      await fireEvent.press(screen.getByRole('button', { name: choice }));
+      expect(push).toHaveBeenLastCalledWith(want);
+      push.mockRestore();
+    },
+  );
+
+  it.each<Role>(['beach_staff', 'viewer'])(
+    'a role without bookings.write (%s) opens bookings but starts none',
+    async (role) => {
+      const { screen } = await openCalendar(HALF, { role });
+      expect(screen.getByTestId('day-2026-10-27')).not.toHaveProp('accessibilityHint');
+      const half = screen.getByTestId('day-2026-10-26');
+      expect(half).toHaveProp('accessibilityHint', 'Apre la prenotazione');
+      const push = jest.spyOn(router, 'push');
+      await fireEvent.press(screen.getByTestId('day-2026-10-27'));
+      await fireEvent.press(half);
+      expect(push).toHaveBeenCalledTimes(1);
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/bookings/[bookingId]',
+        params: { bookingId: 'b-2' },
+      });
+      push.mockRestore();
+    },
+  );
+
+  it('without bookings.read: no customer names and booked days do not open', async () => {
+    const { screen } = await openCalendar(HALF, {
+      role: 'beach_staff',
+      permissions: ['operations.run'],
+    });
+    const calendar = screen.getByTestId('spot-calendar');
+    await waitFor(() =>
+      expect(screen.getByTestId('day-2026-10-26')).toHaveProp(
+        'accessibilityLabel',
+        'lun 26 ott: Mattina Da incassare (AR-ARR01), Pomeriggio Libero',
+      ),
+    );
+    expect(screen.getByTestId('day-2026-10-26')).not.toHaveProp('accessibilityHint');
+    expect(within(calendar).queryByText(/Bianchi/)).toBeNull();
+    expect(within(calendar).queryByRole('button')).toBeNull();
   });
 });

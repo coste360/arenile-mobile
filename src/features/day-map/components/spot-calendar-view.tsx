@@ -1,16 +1,28 @@
 import { router } from 'expo-router';
 import { ChevronRightIcon, CircleAlertIcon } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
+import { useContentWidth } from '@/components/layout/nav-pane';
+import { columnsFor } from '@/components/layout/panes';
 import { OnlineOnlyNotice } from '@/components/online-only-notice';
 import { StateView } from '@/components/state-view';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { isForbidden, ProblemError } from '@/api/errors';
-import type { SpotCalendarBooking, SpotCalendarDay } from '@/api/types';
+import type { Slots, SpotCalendarBooking, SpotCalendarDay } from '@/api/types';
+import { canCreateBooking } from '@/features/new-booking/new-booking';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useOperationalDays } from '@/features/operations/queries';
 import { useAbilities } from '@/features/permissions/use-abilities';
@@ -53,9 +65,13 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
     [cal],
   );
   const months = useMemo(() => calendarMonths(cal?.days ?? []), [cal]);
+  // Months side by side when each keeps a card's width (tablets), as `Columns`.
+  const perRow = columnsFor(useContentWidth(), Math.max(1, months.length));
   const canOpen = abilities.canViewBookings;
   // A free day starts a new booking there, as in the panel (online only).
-  const canBook = abilities.canWriteBookings && online;
+  const canBook = canCreateBooking(abilities) && online;
+  // A day with a booking and a free half: open the booking or book the free half.
+  const [choice, setChoice] = useState<DayChoice | null>(null);
 
   if (!cal) {
     if (!online && !query.isFetching) return <OnlineOnlyNotice />;
@@ -106,17 +122,24 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
     });
   const open = (bookingId: string) =>
     router.push({ pathname: '/bookings/[bookingId]', params: { bookingId } });
-  const book = (from: string, slot: string) =>
+  const book = (from: string, slot: Slots) =>
     router.push({ pathname: '/new-booking', params: { spotId, from, slot } });
   const onDay = (d: SpotCalendarDay): { onOpen: () => void; hint: string } | undefined => {
-    const id = bookingOfDay(d);
-    if (id)
-      return canOpen ? { onOpen: () => open(id), hint: t('spotCalendar.openBooking') } : undefined;
+    const id = canOpen ? bookingOfDay(d) : undefined;
     const slot = canBook ? bookableSlot(d, today) : undefined;
-    return slot
-      ? { onOpen: () => book(d.date, slot), hint: t('spotCalendar.newBooking') }
-      : undefined;
+    if (id && slot) {
+      return {
+        onOpen: () => setChoice({ date: d.date, bookingId: id, slot }),
+        hint: t('spotCalendar.choose.hint'),
+      };
+    }
+    if (id) return { onOpen: () => open(id), hint: t('spotCalendar.openBooking') };
+    if (slot) return { onOpen: () => book(d.date, slot), hint: t('spotCalendar.newBooking') };
+    return undefined;
   };
+  const rows = Array.from({ length: Math.ceil(months.length / perRow) }, (_, i) =>
+    months.slice(i * perRow, i * perRow + perRow),
+  );
   const weekdays = WEEK.map((d) =>
     new Intl.DateTimeFormat(locale, { weekday: 'narrow', timeZone: 'UTC' }).format(
       new Date(`${d}T00:00:00Z`),
@@ -143,40 +166,48 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
       <OnlineOnlyNotice />
       <Legend />
 
-      <View className="flex-row flex-wrap gap-6">
-        {months.map((m) => (
-          <View key={m.key} className="w-full max-w-md gap-1.5" testID={`month-${m.key}`}>
-            <Text className="font-semibold capitalize" role="heading">
-              {monthName(m.key)}
-            </Text>
-            <View
-              className="flex-row gap-1"
-              accessibilityElementsHidden
-              importantForAccessibility="no-hide-descendants"
-            >
-              {weekdays.map((w, i) => (
-                <Text key={i} variant="muted" className="flex-1 text-center text-xs">
-                  {w}
+      <View className="gap-6">
+        {rows.map((row, ri) => (
+          <View key={ri} className="flex-row gap-4" testID={`months-row-${ri}`}>
+            {row.map((m) => (
+              <View key={m.key} className="flex-1 gap-1.5" testID={`month-${m.key}`}>
+                <Text className="font-semibold capitalize" role="heading">
+                  {monthName(m.key)}
                 </Text>
-              ))}
-            </View>
-            {m.weeks.map((week, wi) => (
-              <View key={wi} className="flex-row gap-1">
-                {week.map((d, i) =>
-                  d ? (
-                    <DayCell
-                      key={d.date}
-                      day={d}
-                      am={cellStatus(d.am, bookings)}
-                      pm={cellStatus(d.pm, bookings)}
-                      label={describe(d)}
-                      action={onDay(d)}
-                    />
-                  ) : (
-                    <View key={`empty-${i}`} className="flex-1" />
-                  ),
-                )}
+                <View
+                  className="flex-row gap-1"
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  {weekdays.map((w, i) => (
+                    <Text key={i} variant="muted" className="flex-1 text-center text-xs">
+                      {w}
+                    </Text>
+                  ))}
+                </View>
+                {m.weeks.map((week, wi) => (
+                  <View key={wi} className="flex-row gap-1">
+                    {week.map((d, i) =>
+                      d ? (
+                        <DayCell
+                          key={d.date}
+                          day={d}
+                          am={cellStatus(d.am, bookings)}
+                          pm={cellStatus(d.pm, bookings)}
+                          label={describe(d)}
+                          action={onDay(d)}
+                        />
+                      ) : (
+                        <View key={`empty-${i}`} className="flex-1" />
+                      ),
+                    )}
+                  </View>
+                ))}
               </View>
+            ))}
+            {/* The last row keeps the width of a column per month. */}
+            {Array.from({ length: perRow - row.length }, (_, k) => (
+              <View key={`pad-${k}`} className="flex-1" />
             ))}
           </View>
         ))}
@@ -211,8 +242,46 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
           </View>
         )}
       </View>
+      <AlertDialog open={!!choice} onOpenChange={(next) => !next && setChoice(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{choice ? formatDayLabel(choice.date, locale) : ''}</AlertDialogTitle>
+            <AlertDialogDescription>{t('spotCalendar.choose.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              <Text>{t('common.cancel')}</Text>
+            </AlertDialogCancel>
+            <Button
+              variant="outline"
+              onPress={() => {
+                if (!choice) return;
+                setChoice(null);
+                open(choice.bookingId);
+              }}
+            >
+              <Text>{t('spotCalendar.choose.open')}</Text>
+            </Button>
+            <Button
+              onPress={() => {
+                if (!choice) return;
+                setChoice(null);
+                book(choice.date, choice.slot);
+              }}
+            >
+              <Text>{choice ? t(`spotCalendar.choose.book${choice.slot}`) : ''}</Text>
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </View>
   );
+}
+
+interface DayChoice {
+  date: string;
+  bookingId: string;
+  slot: Slots;
 }
 
 function Legend() {

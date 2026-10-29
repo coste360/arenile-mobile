@@ -30,7 +30,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   ogni giorno diviso in mattina e pomeriggio con i colori e i glifi della mappa; un giorno occupato apre
   la prenotazione; sotto, le prenotazioni della stagione con il saldo. Un giorno libero (da oggi in poi)
   avvia una nuova prenotazione da quel giorno, con la mezza giornata libera, per chi scrive le
-  prenotazioni.
+  prenotazioni; un giorno occupato a metà chiede se aprire la prenotazione o prenotare l'altra metà. Su
+  tablet i mesi stanno affiancati.
 - **Scheda prenotazione (core 1.1)**: gruppo e ospiti (provenienza, adulti e bambini, nomi);
   convenzione e partner con la quota a carico del partner; requisito della convenzione (es.
   residenti) con "Verificato", che registra data e operatore, anche al check-in senza bloccarlo;

@@ -84,9 +84,17 @@ const NAV: NavItem[] = [
   { href: '/settings', label: 'nav.settings', icon: SettingsIcon },
 ];
 
-/** Day screens (Oggi, bookings, spots, lifeguard list) declared once for both layouts. */
+/** Day screens (Oggi, bookings, spots, lifeguard list, spot calendar) declared once for both layouts. */
 function dayScreens(
-  t: (key: 'nav.today' | 'nav.bookings' | 'nav.booking' | 'nav.spots' | 'nav.lifeguard') => string,
+  t: (
+    key:
+      | 'nav.today'
+      | 'nav.bookings'
+      | 'nav.booking'
+      | 'nav.spots'
+      | 'nav.lifeguard'
+      | 'spotCalendar.title',
+  ) => string,
 ) {
   return [
     <Stack.Screen key="today" name="today" options={{ title: t('nav.today') }} />,
@@ -98,6 +106,11 @@ function dayScreens(
     />,
     <Stack.Screen key="spots" name="spots" options={{ title: t('nav.spots') }} />,
     <Stack.Screen key="lifeguard" name="lifeguard" options={{ title: t('nav.lifeguard') }} />,
+    <Stack.Screen
+      key="spot-calendar"
+      name="spot-calendar/[spotId]"
+      options={{ title: t('spotCalendar.title') }}
+    />,
   ];
 }
 

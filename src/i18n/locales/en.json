@@ -1506,7 +1506,7 @@
     "loading": "Loading the calendar",
     "errorTitle": "Calendar not available",
     "error": "The calendar could not be loaded. Check the connection and try again.",
-    "notFound": "No season for this spot.",
+    "notFound": "Spot or season not found.",
     "notImplemented": "This instance has no spot calendar: update it to the latest version.",
     "halves": "Each day: morning on the left, afternoon on the right.",
     "legend": "Calendar legend",
@@ -1518,6 +1518,14 @@
     "bookings": "Bookings of the season",
     "noBookings": "No bookings this season.",
     "period": "{{from}} – {{to}}",
-    "balance": "Balance due {{amount}}"
+    "balance": "Balance due {{amount}}",
+    "choose": {
+      "hint": "Opens the booking or creates a new one in the free half",
+      "description": "One half of the day is taken and the other is free.",
+      "open": "Open the booking",
+      "bookFULL": "New booking (full day)",
+      "bookAM": "New booking (morning)",
+      "bookPM": "New booking (afternoon)"
+    }
   }
 }
