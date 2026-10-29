@@ -58,7 +58,7 @@ export type BeachToken =
 const INK = 'hsl(220.9 39.3% 11%)';
 
 // Kit tokens: the values of the panel's web/shared/src/styles/globals.css in
-// the pinned core (unchanged up to v1.1.0), which override the kits' own beach-tokens.css.
+// the pinned core (unchanged up to v1.1.2), which override the kits' own beach-tokens.css.
 const BEACH_LIGHT = {
   ink: '#263746',
   muted: '#94a3b8',

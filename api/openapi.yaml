@@ -4235,7 +4235,9 @@ paths:
       summary: "Prezzo e disponibilità di una vendita giornaliera (nessuna scrittura)"
       description: >-
         Vendita giornaliera (biglietto): prezzo dal motore dei prezzi per il giorno, la fascia, il pack e gli extra,
-        e disponibilità della postazione (spot-first) o della zona (zone-first, posti liberi residui). Permesso bookings.write.
+        e disponibilità della postazione (spot-first) o della zona (zone-first, posti liberi residui). Valuta le stesse
+        regole di prenotazione della vendita: se la vendita sarebbe rifiutata risponde 422 `policy_violation` con
+        `violations` (es. `same_day_closed`). Permesso bookings.write.
       security:
         - cookieAuth: []
         - bearerAuth: []
@@ -14235,7 +14237,16 @@ components:
           schema:
             $ref: "#/components/schemas/Problem"
     Conflict:
-      description: Conflitto con lo stato corrente
+      description: |
+        Conflitto con lo stato corrente. Con `concurrent_update` la richiesta ha perso una gara con
+        un'altra modifica degli stessi dati ed è da riprovare uguale (stessa `Idempotency-Key`) dopo
+        `retry_after` secondi; gli altri tipi (`conflict`, `spot_unavailable`, …) non cambiano
+        riprovando.
+      headers:
+        Retry-After:
+          description: Secondi da attendere (solo con `concurrent_update`)
+          schema:
+            type: integer
       content:
         application/problem+json:
           schema:
@@ -14375,6 +14386,8 @@ components:
         - move_undo_conflict
         - partner_in_use
         - customer_category_in_use
+        - concurrent_update
+        - approval_required
     Problem:
       type: object
       description: Errore RFC 9457 (`application/problem+json`).
@@ -14394,7 +14407,10 @@ components:
           type: string
         retry_after:
           type: integer
-          description: Secondi da attendere (solo per `rate_limited`).
+          description: |
+            Secondi da attendere prima di riprovare (`rate_limited`, `payment_provider_unavailable`,
+            `concurrent_update`). Le risposte con `retry_after` non vengono memorizzate per
+            `Idempotency-Key`: la stessa richiesta con la stessa chiave viene eseguita di nuovo.
         errors:
           type: array
           items:

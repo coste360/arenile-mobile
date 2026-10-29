@@ -130,7 +130,7 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   dov'era. Su Android il tasto Indietro la chiude.
 - Le postazioni libere e i giorni rilasciati di _Oggi_ si toccano: aprono la postazione sulla mappa,
   con vendita, prenotazione e le altre azioni del ruolo.
-- Contratto API e kit della mappa dalla release **v1.1.0** del core (prima v1.0.1). La versione minima
+- Contratto API e kit della mappa dalla release **v1.1.2** del core (prima v1.0.1). La versione minima
   di Arenile supportata resta la 1.0.0. Spostamento, vendita giornaliera e offerta della lista d'attesa
   rifiutati perché il contingente di una convenzione è esaurito (core 1.1) dicono che la postazione non
   è libera.
