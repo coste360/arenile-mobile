@@ -35,6 +35,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
     facoltativo, totale dal server, contanti con il resto o carta, biglietto numerato.
   - _Sposta su un'altra postazione_ dalla mappa e dalla scheda prenotazione, con l'anteprima del server
     (conflitti e nuovo totale); le vendite giornaliere si spostano tramite il biglietto.
+  - _Spostamenti avanzati_ (core 1.1): un soggiorno in corso si sposta da oggi o da domani;
+    _Scambiare con un'altra prenotazione_ scambia le postazioni di due prenotazioni con l'anteprima dei
+    due totali; _Annulla spostamento_ entro 5 minuti, dall'esito o riaprendo lo spostamento.
   - _Lista d'attesa_: coda, offerte in corso e offerta di un posto come nel pannello; dalla mappa le
     richieste compatibili con la postazione liberata.
   - _Stampa il biglietto_ sulla stampante ESC/POS instradata nel pannello: stampa il server, l'app la

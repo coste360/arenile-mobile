@@ -2,11 +2,11 @@ import { router } from 'expo-router';
 import { act, fireEvent, waitFor } from 'expo-router/testing-library';
 import { ScrollView } from 'react-native';
 
-import type { BookingDetail, Role } from '@/api/types';
+import type { BookingDetail, OperationsDay, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
-import { bookingDetail } from '@/test/operations-fixtures';
-import { EST, phase2Instance, requestsTo, TICKET_LABEL } from '@/test/phase-2-routes';
+import { bookingDetail, operationalBooking, operationsDay, spot } from '@/test/operations-fixtures';
+import { EST, PHASE2_DAY, phase2Instance, requestsTo, TICKET_LABEL } from '@/test/phase-2-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const nbsp = (s: string) => s.replace(/ /g, ' ');
@@ -251,5 +251,277 @@ describe('move a booking', () => {
     await waitFor(() =>
       expect(screen.queryByRole('button', { name: "Sposta su un'altra postazione" })).toBeNull(),
     );
+  });
+});
+
+/** Undo of a move or swap, open until 08:04 UTC (the test clock is 08:00 UTC). */
+const UNDO = {
+  move_id: 'm-1',
+  kind: 'move',
+  expires_at: '2026-10-25T08:04:00Z',
+  booking_ids: ['b-2'],
+};
+
+/** A2 (b-2) under way from yesterday to the 28th, so it can move from today or tomorrow. */
+const UNDER_WAY: BookingDetail = { ...B2, starts_on: '2026-10-24', ends_on: '2026-10-28' };
+
+/** The phase 2 day plus A4, taken by another booking (AR-SWAP4, Verdi) to swap with. */
+const SWAP_DAY: OperationsDay = operationsDay({
+  spots: [
+    ...PHASE2_DAY.spots,
+    spot({
+      spot_id: 's-5',
+      label: 'A4',
+      status: 'booked',
+      booking: operationalBooking({
+        booking_id: 'b-4',
+        line_id: 'l-4',
+        code: 'AR-SWAP4',
+        occupant_label: 'Verdi',
+        version: 7,
+      }),
+    }),
+  ],
+});
+
+function swapResult(overrides: Record<string, unknown> = {}) {
+  const side = (total: number) => ({
+    booking: B2,
+    from_spot_id: 's-2',
+    to_spot_id: 's-5',
+    previous_total: 3000,
+    new_total: total,
+    price_difference: total - 3000,
+  });
+  return {
+    applied: false,
+    from: '2026-10-25',
+    to: '2026-10-25',
+    a: side(3500),
+    b: side(3000),
+    conflicts: [],
+    ...overrides,
+  };
+}
+
+async function moveToA1(screen: Awaited<ReturnType<typeof openMove>>['screen']) {
+  await fireEvent.press(await screen.findByRole('radio', { name: 'Postazione A1' }));
+  await screen.findByText(nbsp('Il totale resta 30,00 €.'));
+  await fireEvent.press(screen.getByRole('button', { name: 'Sposta su A1' }));
+  await fireEvent.press(screen.getByRole('button', { name: 'Sposta' }));
+  await screen.findByTestId('move-done');
+}
+
+describe('move from today or tomorrow', () => {
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'moves from tomorrow, leaving today where it is (%s)',
+    async (size) => {
+      const { screen, network } = await openMove(
+        'A2',
+        {
+          extra: {
+            [`GET ${EST}/bookings/b-2`]: () => json(200, UNDER_WAY),
+            [`GET ${EST}/operations/day`]: () => json(200, PHASE2_DAY),
+          },
+        },
+        size,
+      );
+      expect(await screen.findByText('Da quando')).toBeOnTheScreen();
+      await fireEvent.press(screen.getByText(/^Da domani/));
+      expect(
+        await screen.findByText(/^Lo spostamento vale da .*: oggi resta dov'è\.$/),
+      ).toBeOnTheScreen();
+      await moveToA1(screen);
+
+      const [preview, apply] = requestsTo(network.calls, 'POST', `${EST}/bookings/b-2/move`);
+      expect(await preview!.json()).toEqual({
+        line_id: 'l-2',
+        spot_id: 's-1',
+        from: '2026-10-26',
+        dry_run: true,
+      });
+      expect(await apply!.json()).toEqual({ line_id: 'l-2', spot_id: 's-1', from: '2026-10-26' });
+      // The free spots offered are those of the first day moved.
+      const days = network.calls
+        .filter((r) => new URL(r.url).pathname === `${EST}/operations/day`)
+        .map((r) => new URL(r.url).searchParams.get('date'));
+      expect(days).toContain('2026-10-26');
+    },
+  );
+
+  it('moves from today by default', async () => {
+    const { screen, network } = await openMove('A2', {
+      extra: { [`GET ${EST}/bookings/b-2`]: () => json(200, UNDER_WAY) },
+    });
+    expect(await screen.findByText('Da quando')).toBeOnTheScreen();
+    await moveToA1(screen);
+    const [, apply] = requestsTo(network.calls, 'POST', `${EST}/bookings/b-2/move`);
+    expect(await apply!.json()).toEqual({ line_id: 'l-2', spot_id: 's-1', from: '2026-10-25' });
+  });
+
+  it('offers no start for a one-day stay', async () => {
+    const { screen } = await openMove('A2');
+    await screen.findByRole('radio', { name: 'Postazione A1' });
+    expect(screen.queryByText('Da quando')).toBeNull();
+  });
+});
+
+describe('undo a move', () => {
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'undoes the move just made within 5 minutes (%s)',
+    async (size) => {
+      const { screen, network } = await openMove(
+        'A2',
+        {
+          extra: {
+            [`POST ${EST}/bookings/b-2/move`]: async (r) => {
+              const body = (await r.clone().json()) as { dry_run?: boolean };
+              return json(200, changeResult(body.dry_run ? {} : { applied: true, undo: UNDO }));
+            },
+            [`POST ${EST}/moves/m-1/undo`]: () => json(200, { undone: true, bookings: [B2] }),
+          },
+        },
+        size,
+      );
+      await moveToA1(screen);
+      expect(screen.getByText(/^Puoi annullarlo entro le /)).toBeOnTheScreen();
+      await fireEvent.press(screen.getByRole('button', { name: 'Annulla spostamento' }));
+      expect(
+        await screen.findByText('Spostamento annullato: le postazioni sono tornate come prima.'),
+      ).toBeOnTheScreen();
+      expect(screen.queryByRole('button', { name: 'Annulla spostamento' })).toBeNull();
+      expect(requestsTo(network.calls, 'POST', `${EST}/moves/m-1/undo`)).toHaveLength(1);
+    },
+  );
+
+  it('says when the 5 minutes are over', async () => {
+    const { screen } = await openMove('A2', {
+      extra: {
+        [`POST ${EST}/bookings/b-2/move`]: async (r) => {
+          const body = (await r.clone().json()) as { dry_run?: boolean };
+          return json(200, changeResult(body.dry_run ? {} : { applied: true, undo: UNDO }));
+        },
+        [`POST ${EST}/moves/m-1/undo`]: () => problem(410, 'move_undo_expired'),
+      },
+    });
+    await moveToA1(screen);
+    await fireEvent.press(screen.getByRole('button', { name: 'Annulla spostamento' }));
+    expect(
+      await screen.findByText(
+        'Sono passati più di 5 minuti: lo spostamento non si può più annullare.',
+      ),
+    ).toBeOnTheScreen();
+  });
+
+  it('offers no undo when the server gives none', async () => {
+    const { screen } = await openMove('A2');
+    await moveToA1(screen);
+    expect(screen.queryByRole('button', { name: 'Annulla spostamento' })).toBeNull();
+  });
+
+  it('offers the last move of the booking when the move screen is opened again', async () => {
+    const { screen, network } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/moves/last`]: () => json(200, { move: UNDO }),
+        [`POST ${EST}/moves/m-1/undo`]: () => json(200, { undone: true, bookings: [B2] }),
+      },
+    });
+    expect(await screen.findByText('Spostamento recente')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: 'Annulla spostamento' }));
+    expect(
+      await screen.findByText('Spostamento annullato: le postazioni sono tornate come prima.'),
+    ).toBeOnTheScreen();
+    expect(requestsTo(network.calls, 'POST', `${EST}/moves/m-1/undo`)).toHaveLength(1);
+  });
+
+  it('does not offer the last move of another booking', async () => {
+    const { screen } = await openMove('A2', {
+      extra: {
+        [`GET ${EST}/moves/last`]: () => json(200, { move: { ...UNDO, booking_ids: ['b-9'] } }),
+      },
+    });
+    await screen.findByRole('radio', { name: 'Postazione A1' });
+    expect(screen.queryByText('Spostamento recente')).toBeNull();
+  });
+});
+
+describe('swap two bookings', () => {
+  const swapRoutes = (handler: Handler = () => json(200, swapResult())) => ({
+    [`GET ${EST}/operations/day`]: () => json(200, SWAP_DAY),
+    [`POST ${EST}/bookings/swap`]: handler,
+  });
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'previews the swap, then swaps at the versions seen (%s)',
+    async (size) => {
+      const { screen, network } = await openMove(
+        'A2',
+        {
+          extra: swapRoutes(async (r) => {
+            const body = (await r.clone().json()) as { dry_run?: boolean };
+            return json(
+              200,
+              swapResult(body.dry_run ? {} : { applied: true, undo: { ...UNDO, kind: 'swap' } }),
+            );
+          }),
+        },
+        size,
+      );
+      await fireEvent.press(await screen.findByText("Scambiare con un'altra prenotazione"));
+      // Only other bookings: not A2 itself, not the daily ticket on A3, not free A1.
+      expect(await screen.findByRole('radio', { name: 'Postazione A4, Verdi' })).toBeOnTheScreen();
+      expect(screen.queryByRole('radio', { name: /^Postazione A3/ })).toBeNull();
+      expect(screen.queryByRole('radio', { name: /^Postazione A1/ })).toBeNull();
+
+      await fireEvent.press(screen.getByRole('radio', { name: 'Postazione A4, Verdi' }));
+      expect(
+        await screen.findByText(nbsp('AR-7K3Q9: Nuovo totale 35,00 € (+5,00 €).')),
+      ).toBeOnTheScreen();
+      expect(screen.getByText(nbsp('AR-SWAP4: Il totale resta 30,00 €.'))).toBeOnTheScreen();
+      await fireEvent.press(screen.getByRole('button', { name: 'Scambia con A4' }));
+      expect(await screen.findByText('Scambiare AR-7K3Q9 con AR-SWAP4?')).toBeOnTheScreen();
+      expect(screen.getByText('AR-7K3Q9 passa su A4 e AR-SWAP4 su A2.')).toBeOnTheScreen();
+      await fireEvent.press(screen.getByRole('button', { name: 'Scambia' }));
+      expect(await screen.findByText('AR-7K3Q9 e AR-SWAP4 scambiate')).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: 'Annulla spostamento' })).toBeOnTheScreen();
+
+      const [preview, apply] = requestsTo(network.calls, 'POST', `${EST}/bookings/swap`);
+      expect(await preview!.json()).toEqual({
+        a: { booking_id: 'b-2', line_id: 'l-2', expected_version: 3 },
+        b: { booking_id: 'b-4', line_id: 'l-4', expected_version: 7 },
+        from: '2026-10-25',
+        dry_run: true,
+      });
+      expect(await apply!.json()).toEqual({
+        a: { booking_id: 'b-2', line_id: 'l-2', expected_version: 3 },
+        b: { booking_id: 'b-4', line_id: 'l-4', expected_version: 7 },
+        from: '2026-10-25',
+      });
+      expect(requestsTo(network.calls, 'POST', `${EST}/bookings/b-2/move`)).toHaveLength(0);
+    },
+  );
+
+  it('says when the two bookings cannot be swapped', async () => {
+    const { screen } = await openMove('A2', {
+      extra: swapRoutes(() => problem(409, 'swap_conflict')),
+    });
+    await fireEvent.press(await screen.findByText("Scambiare con un'altra prenotazione"));
+    await fireEvent.press(await screen.findByRole('radio', { name: 'Postazione A4, Verdi' }));
+    expect(
+      await screen.findByText(
+        'Queste due prenotazioni non si possono scambiare: non hanno giorni in comune da questa data o sono già sulla stessa postazione.',
+      ),
+    ).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Scambia con A4' })).toBeDisabled();
+  });
+
+  it('is not offered for a daily ticket', async () => {
+    const { screen } = await openMove('A3', {
+      extra: { [`POST ${EST}/tickets/t-37/move`]: () => json(200, {}) },
+    });
+    await screen.findByText(
+      `Vendita giornaliera ${TICKET_LABEL}: il totale del biglietto non cambia.`,
+    );
+    expect(screen.queryByText("Scambiare con un'altra prenotazione")).toBeNull();
   });
 });

@@ -1103,6 +1103,16 @@
     "notMovable": "{{code}} non si può più spostare.",
     "noLines": "{{code}} non ha postazioni assegnate da spostare.",
     "line": "Postazione da spostare",
+    "mode": {
+      "label": "Cosa vuoi fare",
+      "move": "Spostare su una postazione libera",
+      "swap": "Scambiare con un'altra prenotazione"
+    },
+    "start": {
+      "label": "Da quando",
+      "today": "Da oggi",
+      "tomorrow": "Da domani"
+    },
     "target": "Nuova postazione",
     "search": "Cerca la postazione",
     "searchPlaceholder": "Es. B12",
@@ -1114,6 +1124,7 @@
     "from": "Da",
     "to": "A",
     "fromToday": "Lo spostamento vale da {{day}}: i giorni già passati restano dove sono.",
+    "fromTomorrow": "Lo spostamento vale da {{day}}: oggi resta dov'è.",
     "ticketPrice": "Vendita giornaliera {{number}}: il totale del biglietto non cambia.",
     "previewing": "Verifica della disponibilità…",
     "conflicts": "{{label}} non è libera per tutto il soggiorno:",
@@ -1148,6 +1159,46 @@
       "invalid": "Il pacchetto non è valido su questa postazione: scegline un'altra.",
       "not_found": "La prenotazione o la postazione non esiste più.",
       "default": "Spostamento non riuscito. Riprova."
+    },
+    "swap": {
+      "target": "Prenotazione con cui scambiare",
+      "search": "Cerca la postazione occupata",
+      "takenOn": "Occupate {{day}} · {{slot}}. I giorni in comune li controlla il server.",
+      "none": "Nessuna prenotazione da scambiare corrisponde.",
+      "more": "Ci sono altre prenotazioni: restringi la ricerca.",
+      "option": "Postazione {{label}}, {{name}}",
+      "with": "Scambia con",
+      "days": "Scambio dal {{from}} al {{to}}: gli altri giorni restano dove sono.",
+      "side": "{{code}}: {{change}}",
+      "conflicts": "Lo scambio non è possibile in questi giorni:",
+      "submit": "Scambia",
+      "submitWith": "Scambia con {{label}}",
+      "confirm": {
+        "title": "Scambiare {{code}} con {{other}}?",
+        "description": "{{code}} passa su {{to}} e {{other}} su {{from}}.",
+        "submit": "Scambia"
+      },
+      "done": {
+        "title": "{{code}} e {{other}} scambiate"
+      },
+      "errors": {
+        "conflict": "Queste due prenotazioni non si possono scambiare: non hanno giorni in comune da questa data o sono già sulla stessa postazione."
+      }
+    },
+    "undo": {
+      "action": "Annulla spostamento",
+      "until": "Puoi annullarlo entro le {{time}}.",
+      "lastTitle": "Spostamento recente",
+      "lastDescription": "Hai spostato questa prenotazione da poco.",
+      "done": "Spostamento annullato: le postazioni sono tornate come prima.",
+      "failedTitle": "Annullamento non riuscito",
+      "errors": {
+        "offline": "Istanza non raggiungibile: lo spostamento non è stato annullato.",
+        "forbidden": "Annullare uno spostamento non è consentito al tuo ruolo.",
+        "expired": "Sono passati più di 5 minuti: lo spostamento non si può più annullare.",
+        "conflict": "Non si può annullare: le postazioni di partenza sono state occupate o la prenotazione è cambiata nel frattempo.",
+        "default": "Annullamento non riuscito. Riprova."
+      }
     }
   },
   "waitlist": {

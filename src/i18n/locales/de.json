@@ -1103,6 +1103,16 @@
     "notMovable": "{{code}} kann nicht mehr verschoben werden.",
     "noLines": "{{code}} hat keinen zugewiesenen Platz zum Verschieben.",
     "line": "Zu verschiebender Platz",
+    "mode": {
+      "label": "Was möchtest du tun",
+      "move": "Auf einen freien Platz umbuchen",
+      "swap": "Mit einer anderen Buchung tauschen"
+    },
+    "start": {
+      "label": "Ab wann",
+      "today": "Ab heute",
+      "tomorrow": "Ab morgen"
+    },
     "target": "Neuer Platz",
     "search": "Platz suchen",
     "searchPlaceholder": "z. B. B12",
@@ -1114,6 +1124,7 @@
     "from": "Von",
     "to": "Nach",
     "fromToday": "Die Verschiebung gilt ab {{day}}: Vergangene Tage bleiben, wo sie sind.",
+    "fromTomorrow": "Die Umbuchung gilt ab {{day}}: heute bleibt, wo es ist.",
     "ticketPrice": "Tagesverkauf {{number}}: Der Ticketbetrag ändert sich nicht.",
     "previewing": "Verfügbarkeit wird geprüft…",
     "conflicts": "{{label}} ist nicht für den ganzen Aufenthalt frei:",
@@ -1148,6 +1159,46 @@
       "invalid": "Das Paket ist auf diesem Platz nicht gültig: Wähle einen anderen.",
       "not_found": "Die Buchung oder der Platz existiert nicht mehr.",
       "default": "Verschieben fehlgeschlagen. Versuche es erneut."
+    },
+    "swap": {
+      "target": "Buchung zum Tauschen",
+      "search": "Belegten Platz suchen",
+      "takenOn": "Belegt am {{day}} · {{slot}}. Die gemeinsamen Tage prüft der Server.",
+      "none": "Keine Buchung zum Tauschen passt.",
+      "more": "Es gibt weitere Buchungen: grenze die Suche ein.",
+      "option": "Platz {{label}}, {{name}}",
+      "with": "Tauschen mit",
+      "days": "Tausch vom {{from}} bis {{to}}: die übrigen Tage bleiben, wo sie sind.",
+      "side": "{{code}}: {{change}}",
+      "conflicts": "Der Tausch ist an diesen Tagen nicht möglich:",
+      "submit": "Tauschen",
+      "submitWith": "Mit {{label}} tauschen",
+      "confirm": {
+        "title": "{{code}} mit {{other}} tauschen?",
+        "description": "{{code}} kommt auf {{to}} und {{other}} auf {{from}}.",
+        "submit": "Tauschen"
+      },
+      "done": {
+        "title": "{{code}} und {{other}} getauscht"
+      },
+      "errors": {
+        "conflict": "Diese zwei Buchungen können nicht getauscht werden: Sie haben ab diesem Datum keinen gemeinsamen Tag oder sind bereits auf demselben Platz."
+      }
+    },
+    "undo": {
+      "action": "Umbuchung rückgängig machen",
+      "until": "Du kannst sie bis {{time}} rückgängig machen.",
+      "lastTitle": "Kürzliche Umbuchung",
+      "lastDescription": "Du hast diese Buchung gerade umgebucht.",
+      "done": "Umbuchung rückgängig gemacht: Die Plätze sind wieder wie vorher.",
+      "failedTitle": "Rückgängig machen fehlgeschlagen",
+      "errors": {
+        "offline": "Instanz nicht erreichbar: Die Umbuchung wurde nicht rückgängig gemacht.",
+        "forbidden": "Deine Rolle darf Umbuchungen nicht rückgängig machen.",
+        "expired": "Mehr als 5 Minuten sind vergangen: Die Umbuchung kann nicht mehr rückgängig gemacht werden.",
+        "conflict": "Nicht möglich: Die ursprünglichen Plätze wurden belegt oder die Buchung hat sich inzwischen geändert.",
+        "default": "Rückgängig machen fehlgeschlagen. Versuche es erneut."
+      }
     }
   },
   "waitlist": {

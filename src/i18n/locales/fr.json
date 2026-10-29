@@ -1103,6 +1103,16 @@
     "notMovable": "{{code}} ne peut plus être déplacée.",
     "noLines": "{{code}} n'a aucun emplacement attribué à déplacer.",
     "line": "Emplacement à déplacer",
+    "mode": {
+      "label": "Que voulez-vous faire",
+      "move": "Déplacer sur un emplacement libre",
+      "swap": "Échanger avec une autre réservation"
+    },
+    "start": {
+      "label": "À partir de quand",
+      "today": "À partir d'aujourd'hui",
+      "tomorrow": "À partir de demain"
+    },
     "target": "Nouvel emplacement",
     "search": "Rechercher l'emplacement",
     "searchPlaceholder": "Ex. B12",
@@ -1114,6 +1124,7 @@
     "from": "De",
     "to": "Vers",
     "fromToday": "Le déplacement s'applique à partir du {{day}} : les jours passés restent où ils sont.",
+    "fromTomorrow": "Le déplacement s'applique à partir du {{day}} : aujourd'hui reste où il est.",
     "ticketPrice": "Vente du jour {{number}} : le total du ticket ne change pas.",
     "previewing": "Vérification de la disponibilité…",
     "conflicts": "{{label}} n'est pas libre pour tout le séjour :",
@@ -1148,6 +1159,46 @@
       "invalid": "La formule n'est pas valable sur cet emplacement : choisissez-en un autre.",
       "not_found": "La réservation ou l'emplacement n'existe plus.",
       "default": "Déplacement non abouti. Réessayez."
+    },
+    "swap": {
+      "target": "Réservation avec laquelle échanger",
+      "search": "Rechercher l'emplacement occupé",
+      "takenOn": "Occupés le {{day}} · {{slot}}. Le serveur vérifie les jours en commun.",
+      "none": "Aucune réservation à échanger ne correspond.",
+      "more": "Il y a d'autres réservations : affinez la recherche.",
+      "option": "Emplacement {{label}}, {{name}}",
+      "with": "Échanger avec",
+      "days": "Échange du {{from}} au {{to}} : les autres jours restent où ils sont.",
+      "side": "{{code}} : {{change}}",
+      "conflicts": "L'échange n'est pas possible ces jours-ci :",
+      "submit": "Échanger",
+      "submitWith": "Échanger avec {{label}}",
+      "confirm": {
+        "title": "Échanger {{code}} avec {{other}} ?",
+        "description": "{{code}} passe sur {{to}} et {{other}} sur {{from}}.",
+        "submit": "Échanger"
+      },
+      "done": {
+        "title": "{{code}} et {{other}} échangées"
+      },
+      "errors": {
+        "conflict": "Ces deux réservations ne peuvent pas être échangées : elles n'ont aucun jour en commun à partir de cette date ou sont déjà sur le même emplacement."
+      }
+    },
+    "undo": {
+      "action": "Annuler le déplacement",
+      "until": "Vous pouvez l'annuler jusqu'à {{time}}.",
+      "lastTitle": "Déplacement récent",
+      "lastDescription": "Vous venez de déplacer cette réservation.",
+      "done": "Déplacement annulé : les emplacements sont revenus comme avant.",
+      "failedTitle": "L'annulation a échoué",
+      "errors": {
+        "offline": "Instance injoignable : le déplacement n'a pas été annulé.",
+        "forbidden": "Votre rôle n'est pas autorisé à annuler un déplacement.",
+        "expired": "Plus de 5 minutes se sont écoulées : le déplacement ne peut plus être annulé.",
+        "conflict": "Impossible d'annuler : les emplacements de départ ont été occupés ou la réservation a changé entre-temps.",
+        "default": "L'annulation a échoué. Réessayez."
+      }
     }
   },
   "waitlist": {

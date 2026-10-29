@@ -79,6 +79,8 @@ export const estKeys = {
     ['est', establishmentId, 'waitlist', 'detail', entryId] as const,
   waitlistSettings: (establishmentId: string) =>
     ['est', establishmentId, 'waitlist', 'settings'] as const,
+  /** GET moves/last: the user's last move still undoable (5 minutes). */
+  lastMove: (establishmentId: string) => ['est', establishmentId, 'bookings', 'last-move'] as const,
   /** GET print-routes/resolve: the ESC/POS printer of a document, if ready. */
   printRoute: (establishmentId: string, kind: string, registerId?: string) =>
     [

@@ -1103,6 +1103,16 @@
     "notMovable": "{{code}} can no longer be moved.",
     "noLines": "{{code}} has no assigned spot to move.",
     "line": "Spot to move",
+    "mode": {
+      "label": "What do you want to do",
+      "move": "Move to a free spot",
+      "swap": "Swap with another booking"
+    },
+    "start": {
+      "label": "Starting",
+      "today": "From today",
+      "tomorrow": "From tomorrow"
+    },
     "target": "New spot",
     "search": "Search the spot",
     "searchPlaceholder": "E.g. B12",
@@ -1114,6 +1124,7 @@
     "from": "From",
     "to": "To",
     "fromToday": "The move applies from {{day}}: past days stay where they are.",
+    "fromTomorrow": "The move applies from {{day}}: today stays where it is.",
     "ticketPrice": "Daily sale {{number}}: the ticket total does not change.",
     "previewing": "Checking availability…",
     "conflicts": "{{label}} is not free for the whole stay:",
@@ -1148,6 +1159,46 @@
       "invalid": "The package is not valid on this spot: pick another one.",
       "not_found": "The booking or the spot no longer exists.",
       "default": "Move failed. Try again."
+    },
+    "swap": {
+      "target": "Booking to swap with",
+      "search": "Search the taken spot",
+      "takenOn": "Taken on {{day}} · {{slot}}. The server checks the shared days.",
+      "none": "No booking to swap with matches.",
+      "more": "There are more bookings: narrow the search.",
+      "option": "Spot {{label}}, {{name}}",
+      "with": "Swap with",
+      "days": "Swap from {{from}} to {{to}}: the other days stay where they are.",
+      "side": "{{code}}: {{change}}",
+      "conflicts": "The swap is not possible on these days:",
+      "submit": "Swap",
+      "submitWith": "Swap with {{label}}",
+      "confirm": {
+        "title": "Swap {{code}} with {{other}}?",
+        "description": "{{code}} goes to {{to}} and {{other}} to {{from}}.",
+        "submit": "Swap"
+      },
+      "done": {
+        "title": "{{code}} and {{other}} swapped"
+      },
+      "errors": {
+        "conflict": "These two bookings cannot be swapped: they share no day from this date or are already on the same spot."
+      }
+    },
+    "undo": {
+      "action": "Undo move",
+      "until": "You can undo it until {{time}}.",
+      "lastTitle": "Recent move",
+      "lastDescription": "You moved this booking a moment ago.",
+      "done": "Move undone: the spots are back as before.",
+      "failedTitle": "Undo failed",
+      "errors": {
+        "offline": "Instance unreachable: the move was not undone.",
+        "forbidden": "Your role is not allowed to undo moves.",
+        "expired": "More than 5 minutes have passed: the move can no longer be undone.",
+        "conflict": "It cannot be undone: the original spots were taken or the booking changed meanwhile.",
+        "default": "Undo failed. Try again."
+      }
     }
   },
   "waitlist": {

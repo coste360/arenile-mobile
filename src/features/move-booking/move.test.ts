@@ -1,20 +1,26 @@
 import { NetworkError, ProblemError } from '@/api/errors';
 import type { BookingStatus } from '@/api/types';
 import { abilitiesFrom, ROLE_PERMISSIONS } from '@/features/permissions/permissions';
-import { bookingDetail, operationsDay, spot } from '@/test/operations-fixtures';
+import { bookingDetail, operationalBooking, operationsDay, spot } from '@/test/operations-fixtures';
 
 import {
   canMove,
+  lastMoveOf,
   lineSpotOn,
   lineSpotsFrom,
   movable,
   movableLines,
   moveErrorKey,
   moveFrom,
+  moveStarts,
   priceChange,
+  swapCandidates,
   targetDay,
   targetSpots,
   toMoveRequest,
+  toSwapRequest,
+  undoErrorKey,
+  undoOpen,
 } from './move';
 
 const problem = (status: number, type: string) =>
@@ -140,6 +146,168 @@ describe('moveFrom and targetDay', () => {
   });
 });
 
+describe('moveStarts and moveFrom with a start', () => {
+  it.each<[string, string, string, string[], string | undefined, string | undefined]>([
+    // name, starts_on, ends_on, choices, from today, from tomorrow
+    ['a future stay: the whole stay', '2026-10-27', '2026-10-30', [], undefined, undefined],
+    ['a one-day stay today', '2026-10-25', '2026-10-25', [], undefined, undefined],
+    ['a stay ending today', '2026-10-20', '2026-10-25', [], '2026-10-25', '2026-10-25'],
+    [
+      'a stay starting today',
+      '2026-10-25',
+      '2026-10-28',
+      ['today', 'tomorrow'],
+      undefined,
+      '2026-10-26',
+    ],
+    [
+      'a stay under way',
+      '2026-10-20',
+      '2026-10-28',
+      ['today', 'tomorrow'],
+      '2026-10-25',
+      '2026-10-26',
+    ],
+  ])('%s', (_name, starts_on, ends_on, choices, fromToday, fromTomorrow) => {
+    const b = { starts_on, ends_on };
+    expect(moveStarts(b, '2026-10-25')).toEqual(choices);
+    expect(moveFrom(b, '2026-10-25', 'today')).toBe(fromToday);
+    expect(moveFrom(b, '2026-10-25', 'tomorrow')).toBe(fromTomorrow);
+  });
+});
+
+describe('swapCandidates', () => {
+  const day = operationsDay({
+    spots: [
+      spot({ spot_id: 's-1', label: 'A1', status: 'free' }),
+      spot({
+        spot_id: 's-2',
+        label: 'A2',
+        status: 'booked',
+        booking: operationalBooking({ booking_id: 'b-1', line_id: 'l-1' }),
+      }),
+      spot({
+        spot_id: 's-3',
+        label: 'A3',
+        status: 'booked',
+        booking: operationalBooking({ booking_id: 'b-3', line_id: 'l-3' }),
+      }),
+      spot({
+        spot_id: 's-4',
+        label: 'B1',
+        status: 'booked',
+        booking: operationalBooking({ booking_id: 'b-4', line_id: 'l-4', status: 'completed' }),
+      }),
+      spot({
+        spot_id: 's-5',
+        label: 'B2',
+        status: 'booked',
+        booking: operationalBooking({
+          booking_id: 'b-5',
+          line_id: 'l-5',
+          ticket: { id: 't-1', number: 1, label: 'n1', needs_assignment: false, version: 1 },
+        }),
+      }),
+      spot({
+        spot_id: 's-6',
+        label: 'B3',
+        status: 'booked',
+        booking: operationalBooking({ booking_id: 'b-6', line_id: undefined }),
+      }),
+      spot({
+        spot_id: 's-7',
+        label: 'B4',
+        status: 'booked',
+        booking: operationalBooking({ booking_id: 'b-7', line_id: 'l-7' }),
+      }),
+    ],
+  });
+
+  it('offers the other modifiable bookings on a line, not tickets nor the booking itself', () => {
+    expect(swapCandidates(day, 'b-1', '').spots.map((s) => s.label)).toEqual(['A3', 'B4']);
+  });
+
+  it('filters by label', () => {
+    expect(swapCandidates(day, 'b-1', 'b').spots.map((s) => s.label)).toEqual(['B4']);
+  });
+
+  it('is empty without the day', () => {
+    expect(swapCandidates(undefined, 'b-1', '').spots).toEqual([]);
+  });
+});
+
+describe('toSwapRequest', () => {
+  const other = { booking_id: 'b-9', line_id: 'l-9', version: 4 };
+
+  it('sends both sides at the version seen, from the first day moved', () => {
+    expect(
+      toSwapRequest({
+        bookingId: 'b-1',
+        lineId: 'l-1',
+        version: 2,
+        other,
+        from: '2026-10-26',
+        dryRun: false,
+      }),
+    ).toEqual({
+      a: { booking_id: 'b-1', line_id: 'l-1', expected_version: 2 },
+      b: { booking_id: 'b-9', line_id: 'l-9', expected_version: 4 },
+      from: '2026-10-26',
+    });
+  });
+
+  it('marks the preview as a dry run', () => {
+    expect(
+      toSwapRequest({
+        bookingId: 'b-1',
+        lineId: 'l-1',
+        version: 2,
+        other,
+        from: '2026-10-25',
+        dryRun: true,
+      }).dry_run,
+    ).toBe(true);
+  });
+});
+
+describe('undoOpen and lastMoveOf', () => {
+  const now = new Date('2026-10-25T08:00:00Z');
+  const info = (expires_at: string, booking_ids = ['b-1']) => ({
+    move_id: 'm-1',
+    kind: 'move' as const,
+    expires_at,
+    booking_ids,
+  });
+
+  it.each<[string, ReturnType<typeof info> | undefined, boolean]>([
+    ['before the expiry', info('2026-10-25T08:04:59Z'), true],
+    ['at the expiry', info('2026-10-25T08:00:00Z'), false],
+    ['after the expiry', info('2026-10-25T07:59:00Z'), false],
+    ['no undo', undefined, false],
+  ])('%s', (_name, i, open) => {
+    expect(undoOpen(i, now)).toBe(open);
+  });
+
+  it.each<[string, Parameters<typeof lastMoveOf>[0], string | undefined]>([
+    ['the last move of this booking', { move: info('2026-10-25T08:03:00Z') }, 'm-1'],
+    [
+      'a swap with this booking on the other side',
+      { move: info('2026-10-25T08:03:00Z', ['b-2', 'b-1']) },
+      'm-1',
+    ],
+    [
+      'the last move of another booking',
+      { move: info('2026-10-25T08:03:00Z', ['b-2']) },
+      undefined,
+    ],
+    ['an expired move', { move: info('2026-10-25T07:58:00Z') }, undefined],
+    ['no move', {}, undefined],
+    ['not loaded', undefined, undefined],
+  ])('%s', (_name, last, moveId) => {
+    expect(lastMoveOf(last, 'b-1', now)?.move_id).toBe(moveId);
+  });
+});
+
 describe('targetSpots', () => {
   const day = operationsDay({
     spots: [
@@ -204,6 +372,7 @@ describe('moveErrorKey', () => {
       'move.errors.spot_unavailable',
     ],
     ['changed meanwhile', problem(412, 'version_conflict'), 'move.errors.version_conflict'],
+    ['swap not possible', problem(409, 'swap_conflict'), 'move.swap.errors.conflict'],
     ['not modifiable', problem(409, 'conflict'), 'move.errors.not_modifiable'],
     ['approval needed', problem(422, 'policy_violation'), 'move.errors.policy'],
     ['invalid spot', problem(422, 'validation_failed'), 'move.errors.invalid'],
@@ -211,5 +380,19 @@ describe('moveErrorKey', () => {
     ['other', problem(500, 'internal_error'), 'move.errors.default'],
   ])('%s', (_name, e, key) => {
     expect(moveErrorKey(e)).toBe(key);
+  });
+});
+
+describe('undoErrorKey', () => {
+  it.each<[string, unknown, string]>([
+    ['offline', new NetworkError('timeout'), 'move.undo.errors.offline'],
+    ['403', problem(403, 'forbidden'), 'move.undo.errors.forbidden'],
+    ['after 5 minutes', problem(410, 'move_undo_expired'), 'move.undo.errors.expired'],
+    ['already undone', problem(404, 'not_found'), 'move.undo.errors.expired'],
+    ['spots taken', problem(409, 'move_undo_conflict'), 'move.undo.errors.conflict'],
+    ['booking changed', problem(409, 'conflict'), 'move.undo.errors.conflict'],
+    ['other', problem(500, 'internal_error'), 'move.undo.errors.default'],
+  ])('%s', (_name, e, key) => {
+    expect(undoErrorKey(e)).toBe(key);
   });
 });
