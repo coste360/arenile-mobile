@@ -50,6 +50,8 @@ export interface Dependencies {
   /**
    * Native share sheet with a text (the booking summary for the customer):
    * the operator picks the app (WhatsApp, Messages...) and sends it.
+   * Resolves also when the operator dismisses it; rejects only when the
+   * share sheet cannot open.
    */
   shareText: (message: string) => Promise<void>;
   /** Home screen widget (app group / shared preferences); absent means no widget. */
@@ -80,6 +82,7 @@ export function createDefaultDependencies(): Dependencies {
       void Linking.openSettings();
     },
     shareText: async (message) => {
+      // The result (shared or dismissed) does not matter: dismissing is not an error.
       await Share.share({ message });
     },
     widget: createExpoWidgetBridge(),

@@ -37,7 +37,7 @@ export function BookingSheetActions({ booking }: { booking: BookingDetail }) {
   const abilities = useAbilities();
   const { available: online } = useOnlineOnly();
   const { today } = useOperationalDays();
-  const share = useShareSummary();
+  const share = useShareSummary(booking.id);
   const move = canMove(abilities) && movable(booking, today) && movableLines(booking).length > 0;
   const sharing = canShareSummary(abilities) && shareable(booking);
   // Only desk bookings can come from a daily sale.
@@ -71,7 +71,7 @@ export function BookingSheetActions({ booking }: { booking: BookingDetail }) {
             variant="outline"
             disabled={!online || share.isPending}
             accessibilityHint={t('bookings.share.hint')}
-            onPress={() => share.mutate(booking.id)}
+            onPress={() => share.mutate()}
           >
             <Icon as={MessageCircleIcon} size={18} />
             <Text>{t('bookings.share.action')}</Text>

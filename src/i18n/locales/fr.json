@@ -732,7 +732,8 @@
         "forbidden": "Votre rôle ne peut pas envoyer le récapitulatif.",
         "not_found": "La réservation n'existe plus.",
         "unavailable": "Cette instance ne prépare pas encore le récapitulatif client.",
-        "default": "Le récapitulatif n'a pas pu être préparé. Réessayez."
+        "default": "Le récapitulatif n'a pas pu être préparé. Réessayez.",
+        "sheet": "Le récapitulatif est prêt mais le partage ne s'est pas ouvert. Appuyez de nouveau pour le rouvrir : le lien reste le même."
       }
     },
     "agreement": {

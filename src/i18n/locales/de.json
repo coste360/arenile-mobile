@@ -732,7 +732,8 @@
         "forbidden": "Deine Rolle darf die Zusammenfassung nicht senden.",
         "not_found": "Die Buchung existiert nicht mehr.",
         "unavailable": "Diese Instanz erstellt die Kundenzusammenfassung noch nicht.",
-        "default": "Die Zusammenfassung konnte nicht erstellt werden. Versuche es erneut."
+        "default": "Die Zusammenfassung konnte nicht erstellt werden. Versuche es erneut.",
+        "sheet": "Die Zusammenfassung ist bereit, aber das Teilen hat sich nicht geöffnet. Tippe erneut, um es wieder zu öffnen: Der Link bleibt gleich."
       }
     },
     "agreement": {

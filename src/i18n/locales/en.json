@@ -732,7 +732,8 @@
         "forbidden": "Your role cannot send the summary.",
         "not_found": "The booking no longer exists.",
         "unavailable": "This instance does not prepare the customer summary yet.",
-        "default": "The summary could not be prepared. Try again."
+        "default": "The summary could not be prepared. Try again.",
+        "sheet": "The summary is ready but sharing did not open. Press again to reopen it: the link stays the same."
       }
     },
     "agreement": {

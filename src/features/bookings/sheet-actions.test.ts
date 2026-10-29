@@ -4,6 +4,7 @@ import { abilitiesFrom, ROLE_PERMISSIONS } from '@/features/permissions/permissi
 import { bookingDetail, customer } from '@/test/operations-fixtures';
 
 import {
+  ShareSheetError,
   canShareSummary,
   canVerifyRequirement,
   shareable,
@@ -51,6 +52,7 @@ describe('shareErrorKey', () => {
   it.each<[unknown, string]>([
     [new NetworkError('unreachable'), 'bookings.share.errors.offline'],
     [problem(403, 'forbidden'), 'bookings.share.errors.forbidden'],
+    [new ShareSheetError(new Error('no activity')), 'bookings.share.errors.sheet'],
     [problem(404, 'not_found'), 'bookings.share.errors.not_found'],
     [problem(501, 'not_implemented'), 'bookings.share.errors.unavailable'],
     [problem(500, 'internal_error'), 'bookings.share.errors.default'],

@@ -389,6 +389,29 @@ describe('booking sheet: agreement, guests and summary for the customer (core 1.
     },
   );
 
+  it('reopens a share sheet that failed with the same text, without a new link', async () => {
+    const share = jest.fn(() => json(200, { text: 'Riepilogo con il link', locale: 'it' }));
+    const { screen, dependencies } = await open('/bookings/b-1', {
+      routes: { ...dayRoutes(), [`POST ${EST}/bookings/b-1/share-summary`]: share },
+    });
+    const shareText = dependencies.shareText as jest.Mock;
+    shareText.mockRejectedValueOnce(new Error('no share sheet'));
+    const button = await screen.findByRole('button', { name: 'Invia riepilogo al cliente' });
+    await fireEvent.press(button);
+    expect(
+      await screen.findByText(
+        'Il riepilogo è pronto ma la condivisione non si è aperta. Premi di nuovo per riaprirla: il link resta lo stesso.',
+      ),
+    ).toBeOnTheScreen();
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Invia riepilogo al cliente' }));
+    await waitFor(() => expect(shareText).toHaveBeenCalledTimes(2));
+    expect(shareText).toHaveBeenLastCalledWith('Riepilogo con il link');
+    // One POST only: a second one would revoke the link just created.
+    expect(share).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(screen.queryByText(/la condivisione non si è aperta/)).toBeNull());
+  });
+
   it('says when the instance cannot prepare the summary', async () => {
     const { screen, dependencies } = await open('/bookings/b-1', {
       routes: {

@@ -732,7 +732,8 @@
         "forbidden": "Il tuo ruolo non può inviare il riepilogo.",
         "not_found": "La prenotazione non esiste più.",
         "unavailable": "Questa istanza non prepara ancora il riepilogo per il cliente.",
-        "default": "Non è stato possibile preparare il riepilogo. Riprova."
+        "default": "Non è stato possibile preparare il riepilogo. Riprova.",
+        "sheet": "Il riepilogo è pronto ma la condivisione non si è aperta. Premi di nuovo per riaprirla: il link resta lo stesso."
       }
     },
     "agreement": {

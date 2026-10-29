@@ -3,6 +3,7 @@
 // and the check of the agreement's requirement (spec 30.2.2-30.2.3). Both
 // need bookings.write (owner, manager, cashier) and are never queued.
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRef } from 'react';
 
 import { request, type ApiClient } from '@/api/client';
 import { isForbidden, NetworkError, ProblemError } from '@/api/errors';
@@ -40,15 +41,36 @@ export function createShareSummary(
   );
 }
 
-/** Asks the summary, then opens the share sheet with its text (WhatsApp, Messages...). */
-export function useShareSummary() {
+/** The share sheet itself failed: the summary (and its new link) was created. */
+export class ShareSheetError extends Error {
+  constructor(cause: unknown) {
+    super('share sheet failed', { cause });
+    this.name = 'ShareSheetError';
+  }
+}
+
+/**
+ * Asks the summary, then opens the share sheet with its text (WhatsApp,
+ * Messages...). When the share sheet fails, the text is kept: the next
+ * press opens it again without a new POST, which would revoke the link
+ * just created. Dismissing the share sheet is not a failure.
+ */
+export function useShareSummary(bookingId: string) {
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
   const { shareText } = useDependencies();
+  const pending = useRef<{ bookingId: string; text: string } | null>(null);
   return useMutation({
-    mutationFn: async (bookingId: string) => {
-      const summary = await createShareSummary(client, establishmentId, bookingId);
-      await shareText(summary.text);
+    mutationFn: async () => {
+      const kept = pending.current?.bookingId === bookingId ? pending.current.text : undefined;
+      const text = kept ?? (await createShareSummary(client, establishmentId, bookingId)).text;
+      pending.current = { bookingId, text };
+      try {
+        await shareText(text);
+      } catch (e) {
+        throw new ShareSheetError(e);
+      }
+      pending.current = null;
     },
   });
 }
@@ -95,9 +117,11 @@ export type ShareErrorKey =
   | 'bookings.share.errors.forbidden'
   | 'bookings.share.errors.not_found'
   | 'bookings.share.errors.unavailable'
+  | 'bookings.share.errors.sheet'
   | 'bookings.share.errors.default';
 
 export function shareErrorKey(e: unknown): ShareErrorKey {
+  if (e instanceof ShareSheetError) return 'bookings.share.errors.sheet';
   if (e instanceof NetworkError) return 'bookings.share.errors.offline';
   if (isForbidden(e)) return 'bookings.share.errors.forbidden';
   if (e instanceof ProblemError) {
