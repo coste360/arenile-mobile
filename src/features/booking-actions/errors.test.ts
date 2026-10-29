@@ -1,7 +1,7 @@
 import { NetworkError, ProblemError, UnexpectedResponseError } from '@/api/errors';
 import type { Problem } from '@/api/types';
 
-import { onlineErrorKey, POLICY_VIOLATIONS, policyViolationKeys } from './errors';
+import { onlineErrorKey, POLICY_VIOLATIONS, policyViolationKeys, violationKeys } from './errors';
 
 const problem = (status: number, type: string) =>
   new ProblemError(status, { type, title: type, status } as Problem);
@@ -80,5 +80,24 @@ describe('policyViolationKeys', () => {
 
   it.each(POLICY_VIOLATIONS)('maps the known rule %s to its own key', (code) => {
     expect(policyViolationKeys(violation(code))).toEqual([`policy.violations.${code}`]);
+  });
+});
+
+describe('violationKeys', () => {
+  it.each<[string, { code: string }[] | undefined, string[]]>([
+    ['none', undefined, []],
+    ['empty', [], []],
+    [
+      'a quote over the same-day limit',
+      [{ code: 'same_day_closed' }],
+      ['policy.violations.same_day_closed'],
+    ],
+    [
+      'known, repeated and unknown',
+      [{ code: 'too_many_spots' }, { code: 'too_many_spots' }, { code: 'brand_new_rule' }],
+      ['policy.violations.too_many_spots', 'policy.violations.other'],
+    ],
+  ])('%s', (_name, violations, want) => {
+    expect(violationKeys(violations)).toEqual(want);
   });
 });

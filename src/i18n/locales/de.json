@@ -176,7 +176,8 @@
     "waitlist": "Warteliste",
     "waitlistEntry": "Eintrag",
     "toggleMenu": "Menü ein- oder ausblenden",
-    "closeMenu": "Menü schließen"
+    "closeMenu": "Menü schließen",
+    "newBooking": "Neue Buchung"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -1148,6 +1149,90 @@
       "default": "Verkauf fehlgeschlagen. Versuche es erneut."
     },
     "onlineOnly": "Der Verkauf braucht die erreichbare Instanz: Verfügbarkeit und Ticketnummer garantiert der Server."
+  },
+  "newBooking": {
+    "title": "Neue Buchung",
+    "titleSpot": "{{label}} buchen",
+    "subtitle": "Preis und Regeln kommen beim Ausfüllen vom Server; die Zahlung wird später in der Buchung erfasst.",
+    "action": "Neue Buchung",
+    "actionSpot": "{{label}} buchen",
+    "onlineOnly": "Zum Buchen ist eine Verbindung zur Instanz nötig.",
+    "spot": "Platz",
+    "search": "Platz suchen",
+    "searchPlaceholder": "z. B. A12",
+    "freeOn": "Frei am {{day}} · {{slot}}; der Server prüft die anderen Tage.",
+    "noSpots": "Kein freier Platz passt zu dieser Suche.",
+    "more": "Es gibt weitere Plätze: Suche verfeinern.",
+    "spotOption": "Platz {{label}}",
+    "from": "Von",
+    "to": "Bis",
+    "length": "Dauer",
+    "days_one": "{{count}} Tag",
+    "days_other": "{{count}} Tage",
+    "slot": "Zeitfenster",
+    "pack": "Paket",
+    "noPacks": "In dieser Zone kann kein Paket an der Kasse gebucht werden.",
+    "noPacksForStay": "Kein Paket dieser Zone erlaubt diese Dauer.",
+    "extras": "Extras",
+    "customer": "Kunde",
+    "customerHint": "Der Nachname genügt. Telefon und E-Mail sind optional und helfen, den Kunden wiederzufinden.",
+    "form": {
+      "lastName": "Nachname",
+      "firstName": "Vorname",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "lastNameRequired": "Nachnamen eingeben.",
+      "phoneInvalid": "Ungültige Nummer: internationale Vorwahl verwenden, z. B. +39 333 1234567.",
+      "emailInvalid": "Ungültige E-Mail.",
+      "tooLong": "Text zu lang."
+    },
+    "summary": "Übersicht",
+    "stay": "Aufenthalt",
+    "period": "vom {{from}} bis {{to}}",
+    "total": "Geschätzter Gesamtbetrag",
+    "totalA11y": "Geschätzter Gesamtbetrag {{total}}",
+    "computing": "Preis wird berechnet…",
+    "incomplete": "Platz, Daten und Paket wählen, um den Preis zu sehen.",
+    "payAtDesk": "Die Buchung ist sofort bestätigt; der Restbetrag wird in der Buchung kassiert.",
+    "unavailable": "{{label}} ist nicht für den ganzen Aufenthalt frei",
+    "conflictDay": "{{day}}, {{slot}}",
+    "balance": "Offener Betrag",
+    "failedTitle": "Buchung fehlgeschlagen",
+    "submit": "Buchen",
+    "submitTotal": "Buchen · {{total}}",
+    "hold": {
+      "submit": "{{minutes}} Minuten reservieren",
+      "active": "{{label}} reserviert bis {{time}}",
+      "hint": "Niemand sonst kann ihn nehmen, während du die Buchung abschließt.",
+      "expired": "Die Reservierung ist abgelaufen: der Platz ist wieder frei.",
+      "release": "Reservierung aufheben",
+      "locked": "Platz, Daten und Zeitfenster sind reserviert: Reservierung aufheben, um sie zu ändern."
+    },
+    "confirm": {
+      "title": "{{label}} buchen?",
+      "description": "{{label}}, {{period}}, Gesamtbetrag {{total}}. Der Restbetrag wird später in der Buchung kassiert.",
+      "submit": "Buchen"
+    },
+    "done": {
+      "title": "Buchung {{code}} erstellt",
+      "description": "Der Platz ist auf dem Plan jetzt belegt.",
+      "awaitingApproval": "Wartet auf die Freigabe der Leitung: der Platz bleibt reserviert.",
+      "open": "Buchung öffnen",
+      "back": "Fertig"
+    },
+    "errors": {
+      "offline": "Instanz nicht erreichbar: die Buchung wurde nicht erstellt. Erneut versuchen, sobald die Verbindung zurück ist.",
+      "forbidden": "Deine Rolle darf keine Buchungen erstellen.",
+      "spot_unavailable": "Der Platz ist für diese Daten nicht mehr frei: einen anderen wählen.",
+      "agreement": "Die Vereinbarung gilt nicht für diese Buchung.",
+      "no_price": "Kein Preis für dieses Paket an diesen Daten: Preisliste im Panel prüfen.",
+      "policy": "Die Buchung verstößt gegen die Buchungsregeln des Betriebs.",
+      "hold_expired": "Die Reservierung ist vor der Bestätigung abgelaufen: prüfen, ob der Platz noch frei ist.",
+      "invalid": "Ungültige Daten: Daten, Paket und Kunde prüfen.",
+      "in_progress": "Die Buchung läuft bereits: einige Sekunden warten.",
+      "not_found": "Platz oder Paket nicht mehr verfügbar.",
+      "default": "Buchung fehlgeschlagen. Erneut versuchen."
+    }
   },
   "move": {
     "action": "Auf einen anderen Platz verschieben",

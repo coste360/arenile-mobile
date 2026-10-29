@@ -34,6 +34,14 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   residenti) con "Verificato", che registra data e operatore, anche al check-in senza bloccarlo;
   "Invia riepilogo al cliente" apre la condivisione del telefono con il testo nella lingua del
   cliente e un nuovo link di gestione. Verifica e riepilogo solo online, per cassa e direzione.
+- **Nuova prenotazione al volo** (solo online, ADR 0009) dalla scheda di una postazione libera, dalla
+  lista delle postazioni libere e dalle prenotazioni del giorno, per i ruoli che scrivono le
+  prenotazioni: postazione, date dal–al (calendario o 1/7/14 giorni), fascia, pacchetto ammesso per la
+  durata, extra, cognome del cliente (telefono ed email facoltativi). Il prezzo stimato e le regole
+  di prenotazione arrivano dall'anteprima del server mentre si compila (`bookings/quote`), con i giorni
+  in cui la postazione è occupata; _Blocca per 15 minuti_ tiene la postazione (`holds`) finché si
+  conferma, la prenotazione converte il blocco e lasciare la schermata lo rilascia. La prenotazione
+  nasce confermata, il saldo si incassa dalla scheda.
 - **Prova la demo** nella schermata "Collega" (ADR 0015): abbina l'app allo stabilimento di esempio
   sul server dimostrativo di Coste360 (`demo.arenile.app`) con un codice chiesto alla demo, senza
   server proprio; serve un'istanza demo del core v1.0.6 o successiva (`arenile seed demo` crea l'utente `cassa@lido-demo.example`).

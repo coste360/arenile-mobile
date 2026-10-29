@@ -115,12 +115,15 @@ function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') =>
   ];
 }
 
-/** Phase 2 screens (spec 03), online only, declared once for both layouts. */
+/** Phase 2 screens (spec 03) and the new booking, online only, declared once for both layouts. */
 function phase2Screens(
-  t: (key: 'nav.sale' | 'nav.move' | 'nav.waitlist' | 'nav.waitlistEntry') => string,
+  t: (
+    key: 'nav.sale' | 'nav.move' | 'nav.waitlist' | 'nav.waitlistEntry' | 'nav.newBooking',
+  ) => string,
 ) {
   return [
     <Stack.Screen key="sale" name="sale" options={{ title: t('nav.sale') }} />,
+    <Stack.Screen key="new-booking" name="new-booking" options={{ title: t('nav.newBooking') }} />,
     <Stack.Screen key="move" name="move/[bookingId]" options={{ title: t('nav.move') }} />,
     <Stack.Screen key="waitlist" name="waitlist/index" options={{ title: t('nav.waitlist') }} />,
     <Stack.Screen

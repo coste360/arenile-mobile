@@ -48,6 +48,10 @@ export const estKeys = {
   booking: (establishmentId: string, bookingId: string) =>
     ['est', establishmentId, 'bookings', 'detail', bookingId] as const,
 
+  /** POST bookings/quote: price, rules and availability of a new booking (no write, never persisted). */
+  bookingQuote: (establishmentId: string, body: unknown) =>
+    ['est', establishmentId, 'bookings', 'quote', body] as const,
+
   /** GET maps: the maps of the establishment, in display order. */
   maps: (establishmentId: string) => ['est', establishmentId, 'maps', 'list'] as const,
   /** GET maps/{id}: the full map document (spots and decorations). */

@@ -176,7 +176,8 @@
     "waitlist": "Liste d'attente",
     "waitlistEntry": "Inscription",
     "toggleMenu": "Afficher ou masquer le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "newBooking": "Nouvelle réservation"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -1148,6 +1149,90 @@
       "default": "Vente non aboutie. Réessayez."
     },
     "onlineOnly": "La vente nécessite l'instance joignable : le serveur garantit la disponibilité et le numéro du ticket."
+  },
+  "newBooking": {
+    "title": "Nouvelle réservation",
+    "titleSpot": "Réserver {{label}}",
+    "subtitle": "Le prix et les règles viennent du serveur pendant la saisie ; le paiement est enregistré ensuite depuis la réservation.",
+    "action": "Nouvelle réservation",
+    "actionSpot": "Réserver {{label}}",
+    "onlineOnly": "Pour réserver, une connexion à l'instance est nécessaire.",
+    "spot": "Emplacement",
+    "search": "Rechercher un emplacement",
+    "searchPlaceholder": "Ex. A12",
+    "freeOn": "Libres le {{day}} · {{slot}} ; le serveur vérifie les autres jours.",
+    "noSpots": "Aucun emplacement libre ne correspond à cette recherche.",
+    "more": "Il y a d'autres emplacements : affinez la recherche.",
+    "spotOption": "Emplacement {{label}}",
+    "from": "Du",
+    "to": "Au",
+    "length": "Durée",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours",
+    "slot": "Créneau",
+    "pack": "Forfait",
+    "noPacks": "Aucun forfait ne peut être réservé en caisse dans cette zone.",
+    "noPacksForStay": "Aucun forfait de cette zone ne permet cette durée.",
+    "extras": "Suppléments",
+    "customer": "Client",
+    "customerHint": "Le nom suffit. Le téléphone et l'e-mail sont facultatifs et servent à retrouver le client.",
+    "form": {
+      "lastName": "Nom",
+      "firstName": "Prénom",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "lastNameRequired": "Saisissez le nom.",
+      "phoneInvalid": "Numéro non valide : utilisez l'indicatif international, ex. +39 333 1234567.",
+      "emailInvalid": "E-mail non valide.",
+      "tooLong": "Texte trop long."
+    },
+    "summary": "Récapitulatif",
+    "stay": "Séjour",
+    "period": "du {{from}} au {{to}}",
+    "total": "Total estimé",
+    "totalA11y": "Total estimé {{total}}",
+    "computing": "Calcul du prix…",
+    "incomplete": "Choisissez un emplacement, les dates et un forfait pour voir le prix.",
+    "payAtDesk": "La réservation est confirmée tout de suite ; le solde s'encaisse depuis la réservation.",
+    "unavailable": "{{label}} n'est pas libre pendant tout le séjour",
+    "conflictDay": "{{day}}, {{slot}}",
+    "balance": "Solde dû",
+    "failedTitle": "Réservation échouée",
+    "submit": "Réserver",
+    "submitTotal": "Réserver · {{total}}",
+    "hold": {
+      "submit": "Bloquer {{minutes}} minutes",
+      "active": "{{label}} bloqué jusqu'à {{time}}",
+      "hint": "Personne d'autre ne peut le prendre pendant que vous terminez la réservation.",
+      "expired": "Le blocage a expiré : l'emplacement est de nouveau libre.",
+      "release": "Lever le blocage",
+      "locked": "Emplacement, dates et créneau sont bloqués : levez le blocage pour les modifier."
+    },
+    "confirm": {
+      "title": "Réserver {{label}} ?",
+      "description": "{{label}}, {{period}}, total {{total}}. Le solde s'encaisse ensuite depuis la réservation.",
+      "submit": "Réserver"
+    },
+    "done": {
+      "title": "Réservation {{code}} créée",
+      "description": "L'emplacement apparaît maintenant occupé sur le plan.",
+      "awaitingApproval": "En attente de l'accord du gérant : l'emplacement reste réservé.",
+      "open": "Ouvrir la réservation",
+      "back": "Terminé"
+    },
+    "errors": {
+      "offline": "Instance injoignable : la réservation n'a pas été créée. Réessayez quand la connexion revient.",
+      "forbidden": "Votre rôle ne peut pas créer de réservations.",
+      "spot_unavailable": "L'emplacement n'est plus libre pour ces dates : choisissez-en un autre.",
+      "agreement": "La convention ne s'applique pas à cette réservation.",
+      "no_price": "Aucun prix pour ce forfait à ces dates : vérifiez la grille tarifaire dans le panneau.",
+      "policy": "La réservation ne respecte pas les règles de réservation de l'établissement.",
+      "hold_expired": "Le blocage a expiré avant la confirmation : vérifiez que l'emplacement est encore libre.",
+      "invalid": "Données non valides : vérifiez les dates, le forfait et le client.",
+      "in_progress": "La réservation est déjà en cours : patientez quelques secondes.",
+      "not_found": "Emplacement ou forfait plus disponible.",
+      "default": "Réservation échouée. Réessayez."
+    }
   },
   "move": {
     "action": "Déplacer vers un autre emplacement",

@@ -176,7 +176,8 @@
     "waitlist": "Lista d'attesa",
     "waitlistEntry": "Iscrizione",
     "toggleMenu": "Mostra o nascondi il menu",
-    "closeMenu": "Chiudi il menu"
+    "closeMenu": "Chiudi il menu",
+    "newBooking": "Nuova prenotazione"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -1148,6 +1149,90 @@
       "default": "Vendita non riuscita. Riprova."
     },
     "onlineOnly": "La vendita richiede l'istanza raggiungibile: la disponibilità e il numero del biglietto li garantisce il server."
+  },
+  "newBooking": {
+    "title": "Nuova prenotazione",
+    "titleSpot": "Prenota {{label}}",
+    "subtitle": "Prezzo e regole arrivano dal server mentre compili; il pagamento si registra poi dalla scheda.",
+    "action": "Nuova prenotazione",
+    "actionSpot": "Prenota {{label}}",
+    "onlineOnly": "Per prenotare serve la connessione con l'istanza.",
+    "spot": "Postazione",
+    "search": "Cerca una postazione",
+    "searchPlaceholder": "Es. A12",
+    "freeOn": "Libere {{day}} · {{slot}}; il server controlla gli altri giorni.",
+    "noSpots": "Nessuna postazione libera con questa ricerca.",
+    "more": "Ci sono altre postazioni: affina la ricerca.",
+    "spotOption": "Postazione {{label}}",
+    "from": "Dal",
+    "to": "Al",
+    "length": "Durata",
+    "days_one": "{{count}} giorno",
+    "days_other": "{{count}} giorni",
+    "slot": "Fascia",
+    "pack": "Pacchetto",
+    "noPacks": "Nessun pacchetto prenotabile in cassa in questa zona.",
+    "noPacksForStay": "Nessun pacchetto di questa zona ammette questa durata.",
+    "extras": "Extra",
+    "customer": "Cliente",
+    "customerHint": "Basta il cognome. Telefono ed email sono facoltativi e servono a ritrovare il cliente.",
+    "form": {
+      "lastName": "Cognome",
+      "firstName": "Nome",
+      "phone": "Telefono",
+      "email": "Email",
+      "lastNameRequired": "Scrivi il cognome.",
+      "phoneInvalid": "Numero non valido: usa il prefisso internazionale, es. +39 333 1234567.",
+      "emailInvalid": "Email non valida.",
+      "tooLong": "Testo troppo lungo."
+    },
+    "summary": "Riepilogo",
+    "stay": "Soggiorno",
+    "period": "dal {{from}} al {{to}}",
+    "total": "Totale stimato",
+    "totalA11y": "Totale stimato {{total}}",
+    "computing": "Calcolo del prezzo…",
+    "incomplete": "Scegli postazione, date e pacchetto per vedere il prezzo.",
+    "payAtDesk": "La prenotazione nasce confermata; il saldo si incassa dalla scheda.",
+    "unavailable": "{{label}} non è libera per tutto il soggiorno",
+    "conflictDay": "{{day}}, {{slot}}",
+    "balance": "Da saldare",
+    "failedTitle": "Prenotazione non riuscita",
+    "submit": "Prenota",
+    "submitTotal": "Prenota · {{total}}",
+    "hold": {
+      "submit": "Blocca per {{minutes}} minuti",
+      "active": "{{label}} bloccata fino alle {{time}}",
+      "hint": "Nessun altro può prenderla mentre completi la prenotazione.",
+      "expired": "Il blocco è scaduto: la postazione è di nuovo libera.",
+      "release": "Rilascia il blocco",
+      "locked": "Postazione, date e fascia sono bloccate: rilascia il blocco per cambiarle."
+    },
+    "confirm": {
+      "title": "Prenotare {{label}}?",
+      "description": "{{label}}, {{period}}, totale {{total}}. Il saldo si incassa poi dalla scheda.",
+      "submit": "Prenota"
+    },
+    "done": {
+      "title": "Prenotazione {{code}} creata",
+      "description": "La postazione risulta occupata sulla mappa.",
+      "awaitingApproval": "In attesa dell'approvazione del gestore: la postazione resta riservata.",
+      "open": "Apri la prenotazione",
+      "back": "Fatto"
+    },
+    "errors": {
+      "offline": "Istanza non raggiungibile: la prenotazione non è stata creata. Riprova quando torna la connessione.",
+      "forbidden": "Il tuo ruolo non può creare prenotazioni.",
+      "spot_unavailable": "La postazione non è più libera per queste date: scegline un'altra.",
+      "agreement": "La convenzione non vale per questa prenotazione.",
+      "no_price": "Nessun prezzo per questo pacchetto in queste date: controlla il listino nel pannello.",
+      "policy": "La prenotazione non rispetta le regole di prenotazione dello stabilimento.",
+      "hold_expired": "Il blocco è scaduto prima della conferma: controlla che la postazione sia ancora libera.",
+      "invalid": "Dati non validi: controlla date, pacchetto e cliente.",
+      "in_progress": "La prenotazione è già in corso: attendi qualche secondo.",
+      "not_found": "Postazione o pacchetto non più disponibili.",
+      "default": "Prenotazione non riuscita. Riprova."
+    }
   },
   "move": {
     "action": "Sposta su un'altra postazione",

@@ -1,4 +1,6 @@
+import { router } from 'expo-router';
 import {
+  CalendarPlusIcon,
   CalendarXIcon,
   CircleAlertIcon,
   CloudOffIcon,
@@ -34,8 +36,10 @@ import {
   type DaySort,
 } from '@/features/bookings/day-list';
 import { useBookingsOfDay } from '@/features/bookings/queries';
+import { canCreateBooking } from '@/features/new-booking/new-booking';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useOperationalDays } from '@/features/operations/queries';
+import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { inOfflineWindow, isCalendarDate, resolveDay, type DaySelection } from '@/lib/calendar';
 
@@ -88,6 +92,9 @@ export function BookingsList({
 
   const date = resolveDay(day, days);
   const { available: online } = useOnlineOnly();
+  const book = canCreateBooking(useAbilities());
+  // A new booking starts on the day shown (today for a past day).
+  const newFrom = date < days.today ? days.today : date;
   const { locale } = usePreferences();
   const query = useBookingsOfDay(date);
   const all = query.data;
@@ -208,10 +215,27 @@ export function BookingsList({
             </View>
           </View>
         ) : null}
-        {all ? (
-          <Text variant="muted" accessibilityLiveRegion="polite">
-            {t('bookings.list.results', { count: shown.length })}
-          </Text>
+        {all || book ? (
+          <View className="flex-row items-center justify-between gap-2">
+            {all ? (
+              <Text variant="muted" className="flex-1" accessibilityLiveRegion="polite">
+                {t('bookings.list.results', { count: shown.length })}
+              </Text>
+            ) : (
+              <View className="flex-1" />
+            )}
+            {book ? (
+              <Button
+                variant="outline"
+                className="min-h-11"
+                disabled={!online}
+                onPress={() => router.push({ pathname: '/new-booking', params: { from: newFrom } })}
+              >
+                <Icon as={CalendarPlusIcon} size={16} />
+                <Text>{t('newBooking.action')}</Text>
+              </Button>
+            ) : null}
+          </View>
         ) : null}
       </View>
 

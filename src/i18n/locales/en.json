@@ -176,7 +176,8 @@
     "waitlist": "Waitlist",
     "waitlistEntry": "Entry",
     "toggleMenu": "Show or hide the menu",
-    "closeMenu": "Close the menu"
+    "closeMenu": "Close the menu",
+    "newBooking": "New booking"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -1148,6 +1149,90 @@
       "default": "Sale failed. Try again."
     },
     "onlineOnly": "Selling needs the instance to be reachable: the server guarantees availability and the ticket number."
+  },
+  "newBooking": {
+    "title": "New booking",
+    "titleSpot": "Book {{label}}",
+    "subtitle": "Price and rules come from the server as you fill in the form; the payment is recorded later from the booking.",
+    "action": "New booking",
+    "actionSpot": "Book {{label}}",
+    "onlineOnly": "Booking needs a connection to the instance.",
+    "spot": "Spot",
+    "search": "Search a spot",
+    "searchPlaceholder": "E.g. A12",
+    "freeOn": "Free on {{day}} · {{slot}}; the server checks the other days.",
+    "noSpots": "No free spot matches this search.",
+    "more": "There are more spots: refine the search.",
+    "spotOption": "Spot {{label}}",
+    "from": "From",
+    "to": "To",
+    "length": "Length",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "slot": "Time slot",
+    "pack": "Package",
+    "noPacks": "No package can be booked at the desk in this zone.",
+    "noPacksForStay": "No package of this zone allows this length.",
+    "extras": "Extras",
+    "customer": "Customer",
+    "customerHint": "The surname is enough. Phone and email are optional and help find the customer again.",
+    "form": {
+      "lastName": "Surname",
+      "firstName": "First name",
+      "phone": "Phone",
+      "email": "Email",
+      "lastNameRequired": "Enter the surname.",
+      "phoneInvalid": "Invalid number: use the international prefix, e.g. +39 333 1234567.",
+      "emailInvalid": "Invalid email.",
+      "tooLong": "Text too long."
+    },
+    "summary": "Summary",
+    "stay": "Stay",
+    "period": "from {{from}} to {{to}}",
+    "total": "Estimated total",
+    "totalA11y": "Estimated total {{total}}",
+    "computing": "Calculating the price…",
+    "incomplete": "Choose a spot, the dates and a package to see the price.",
+    "payAtDesk": "The booking is confirmed straight away; the balance is collected from the booking.",
+    "unavailable": "{{label}} is not free for the whole stay",
+    "conflictDay": "{{day}}, {{slot}}",
+    "balance": "Balance due",
+    "failedTitle": "Booking failed",
+    "submit": "Book",
+    "submitTotal": "Book · {{total}}",
+    "hold": {
+      "submit": "Hold for {{minutes}} minutes",
+      "active": "{{label}} held until {{time}}",
+      "hint": "Nobody else can take it while you complete the booking.",
+      "expired": "The hold has expired: the spot is free again.",
+      "release": "Release the hold",
+      "locked": "Spot, dates and time slot are held: release the hold to change them."
+    },
+    "confirm": {
+      "title": "Book {{label}}?",
+      "description": "{{label}}, {{period}}, total {{total}}. The balance is collected later from the booking.",
+      "submit": "Book"
+    },
+    "done": {
+      "title": "Booking {{code}} created",
+      "description": "The spot now shows as taken on the map.",
+      "awaitingApproval": "Waiting for the manager's approval: the spot stays reserved.",
+      "open": "Open the booking",
+      "back": "Done"
+    },
+    "errors": {
+      "offline": "Instance unreachable: the booking was not created. Try again when the connection is back.",
+      "forbidden": "Your role cannot create bookings.",
+      "spot_unavailable": "The spot is no longer free for these dates: choose another one.",
+      "agreement": "The agreement does not apply to this booking.",
+      "no_price": "No price for this package on these dates: check the price list in the panel.",
+      "policy": "The booking breaks the establishment's booking rules.",
+      "hold_expired": "The hold expired before the confirmation: check that the spot is still free.",
+      "invalid": "Invalid data: check the dates, the package and the customer.",
+      "in_progress": "The booking is already in progress: wait a few seconds.",
+      "not_found": "Spot or package no longer available.",
+      "default": "Booking failed. Try again."
+    }
   },
   "move": {
     "action": "Move to another spot",

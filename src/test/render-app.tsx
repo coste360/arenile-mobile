@@ -9,6 +9,7 @@ import BookingsScreen from '@/app/(connected)/bookings/index';
 import HomeScreen from '@/app/(connected)/home';
 import MapScreen from '@/app/(connected)/map';
 import MoveScreen from '@/app/(connected)/move/[bookingId]';
+import NewBookingScreen from '@/app/(connected)/new-booking';
 import BookingOperationsScreen from '@/app/(connected)/operations/booking/[bookingId]';
 import OperationsScreen from '@/app/(connected)/operations/index';
 import OperationsScanScreen from '@/app/(connected)/operations/scan';
@@ -165,6 +166,7 @@ export async function renderApp({
       '(connected)/operations/spot/[spotId]': SpotOperationsScreen,
       '(connected)/reports': ReportsScreen,
       '(connected)/sale': SaleScreen,
+      '(connected)/new-booking': NewBookingScreen,
       '(connected)/move/[bookingId]': MoveScreen,
       '(connected)/waitlist/index': WaitlistScreen,
       '(connected)/waitlist/[entryId]': WaitlistEntryScreen,

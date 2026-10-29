@@ -36,14 +36,21 @@ export type PolicyViolationKey =
   `policy.violations.${(typeof POLICY_VIOLATIONS)[number]}` | 'policy.violations.other';
 
 /**
- * Why a 422 policy_violation refused the request (`violations` of the
- * problem), each rule once; an unknown code reads as "another rule".
+ * The booking rules broken, each once: from a 422 policy_violation or from
+ * the `policy.violations` of a quote. An unknown code reads as "another rule".
  */
-export function policyViolationKeys(e: unknown): PolicyViolationKey[] {
-  if (!(e instanceof ProblemError) || e.type !== 'policy_violation') return [];
-  const keys = (e.problem?.violations ?? []).map((v): PolicyViolationKey => {
+export function violationKeys(
+  violations: readonly { code: string }[] | undefined,
+): PolicyViolationKey[] {
+  const keys = (violations ?? []).map((v): PolicyViolationKey => {
     const code = POLICY_VIOLATIONS.find((c) => c === v.code);
     return code ? `policy.violations.${code}` : 'policy.violations.other';
   });
   return [...new Set(keys)];
+}
+
+/** Why a 422 policy_violation refused the request (`violations` of the problem). */
+export function policyViolationKeys(e: unknown): PolicyViolationKey[] {
+  if (!(e instanceof ProblemError) || e.type !== 'policy_violation') return [];
+  return violationKeys(e.problem?.violations);
 }

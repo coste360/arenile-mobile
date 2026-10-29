@@ -40,8 +40,9 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
   its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
   operations, day map, `today` ("Oggi"), `bookings/` (day list; tablet list + sheet), `bookings/[bookingId]`
-  (sheet on phones), `spots` (free / released spots), `lifeguard` (lifeguard list), `operations/` hub, QR scanner, booking and spot
-  operations, phase 2 `sale` (daily quick sale), `move/[bookingId]`, `waitlist/` (list; tablet list +
+  (sheet on phones), `spots` (free / released spots), `lifeguard` (lifeguard list), `spot-calendar/[spotId]`
+  (season calendar of a spot), `operations/` hub, QR scanner, booking and spot operations, phase 2 `sale`
+  (daily quick sale), `new-booking` (new booking on the fly), `move/[bookingId]`, `waitlist/` (list; tablet list +
   entry), `waitlist/[entryId]`; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
@@ -56,7 +57,8 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   admission), `booking-actions` (booking facts, operation rules, form schemas, queued actions, cash
   desk state), `spot-blocks` (online-only blocks, spot search), `reports` (year comparison, periods,
   formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`), phase 2 (ADR 0011):
-  `daily-sale` (sale rules, catalogue, quote, sale), `move-booking` (move rules, dry run, booking or
+  `daily-sale` (sale rules, catalogue, quote, sale), `new-booking` (stay, quote, hold and booking
+  on the fly), `move-booking` (move rules, dry run, booking or
   ticket move), `waitlist` (list, compatibility, offer), `printing` (print route, jobs), `tickets`
   (ticket of a booking). No push notifications in this edition (ADR 0012): data refreshes when the app
   is opened or foregrounded. **Read `docs/data-and-offline.md` before adding a feature.**

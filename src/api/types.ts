@@ -94,3 +94,9 @@ export type AgreementRef = Schemas['AgreementRef'];
 export type BookingPartnerShare = Schemas['BookingPartnerShare'];
 export type BookingShareSummary = Schemas['BookingShareSummary'];
 export type RequirementVerification = Schemas['RequirementVerification'];
+// New booking on the fly: quote, hold and creation from the desk (core spec 7, 10).
+export type BookingCreate = Schemas['BookingCreate'];
+export type BookingQuote = Schemas['BookingQuote'];
+export type Formula = Schemas['Formula'];
+export type Hold = Schemas['Hold'];
+export type HoldCreate = Schemas['HoldCreate'];
