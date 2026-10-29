@@ -16,6 +16,19 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   mai contatti; filtri per arrivi, partenze e da saldare, calendario come mappa e prenotazioni. Oggi e
   domani anche offline (scaricate e salvate con il giorno operativo), gli altri giorni solo online. Dal
   menu, dall'inizio e dal pannello di navigazione su tablet, per i ruoli che leggono le prenotazioni.
+- **Mappa del giorno più ricca** (core 1.1, spec 30.4, come nel pannello):
+  - arrivi e partenze segnati sulle postazioni con un indicatore (freccia in entrata o in uscita) e
+    contati nella legenda; anche nell'elenco e nel nome letto dagli screen reader;
+  - filtri rapidi "Evidenzia": arrivi, partenze, da incassare, presenti, ogni convenzione o partner e
+    ogni gruppo del giorno, uno alla volta, con il conteggio; le altre postazioni si attenuano, l'elenco
+    mostra solo quelle filtrate e la ricerca cerca al loro interno;
+  - etichette sotto le postazioni occupate combinabili: cliente, fine soggiorno ("16/8"), allestimento
+    ("2L 1S");
+  - nella scheda della postazione allestimento, persone, gruppo, convenzione con il partner (o il
+    partner da solo).
+- **Calendario della postazione** (spec 30.5) dalla scheda, solo online: la stagione mese per mese,
+  ogni giorno diviso in mattina e pomeriggio con i colori e i glifi della mappa; un giorno occupato apre
+  la prenotazione; sotto, le prenotazioni della stagione con il saldo.
 - **Prova la demo** nella schermata "Collega" (ADR 0015): abbina l'app allo stabilimento di esempio
   sul server dimostrativo di Coste360 (`demo.arenile.app`) con un codice chiesto alla demo, senza
   server proprio; serve un'istanza demo del core v1.0.6 o successiva (`arenile seed demo` crea l'utente `cassa@lido-demo.example`).

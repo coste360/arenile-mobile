@@ -367,7 +367,9 @@
       "extra": "Extra",
       "note": "Nota",
       "vip": "VIP",
-      "to_assign": "Da assegnare"
+      "to_assign": "Da assegnare",
+      "arrival": "Arrivo",
+      "departure": "Partenza"
     },
     "occupant": {
       "anonymous": "Cliente anonimo",
@@ -1317,5 +1319,51 @@
       "too_many_spots": "Troppe postazioni in una prenotazione.",
       "other": "Non rispetta una regola di prenotazione dello stabilimento."
     }
+  },
+  "mapFilters": {
+    "label": "Evidenzia",
+    "arrivals": "Arrivi",
+    "departures": "Partenze",
+    "to_collect": "Da incassare",
+    "present": "Presenti",
+    "agreement": "Convenzione: {{name}}",
+    "group": "Gruppo: {{name}}",
+    "chip": "{{label}}, {{count}}",
+    "results_one": "{{count}} postazione evidenziata",
+    "results_other": "{{count}} postazioni evidenziate",
+    "none": "Nessuna postazione per questo filtro.",
+    "labels": "Etichette",
+    "customer": "Cliente",
+    "end": "Fine soggiorno",
+    "setup": "Allestimento",
+    "labelChip": "Etichetta sotto le postazioni: {{label}}"
+  },
+  "mapSheet": {
+    "setup": "Allestimento",
+    "agreement": "Convenzione",
+    "partner": "Partner",
+    "group": "Gruppo",
+    "partySize": "Persone",
+    "calendar": "Calendario della postazione"
+  },
+  "spotCalendar": {
+    "title": "Calendario",
+    "heading": "Calendario della postazione {{label}}",
+    "season": "Stagione dal {{from}} al {{to}}",
+    "loading": "Caricamento del calendario",
+    "errorTitle": "Calendario non disponibile",
+    "error": "Non è stato possibile caricare il calendario. Controlla la connessione e riprova.",
+    "notFound": "Nessuna stagione per questa postazione.",
+    "notImplemented": "Questa istanza non ha il calendario delle postazioni: aggiornala all'ultima versione.",
+    "halves": "Ogni giorno: mattina a sinistra, pomeriggio a destra.",
+    "legend": "Legenda del calendario",
+    "half": "{{slot}} {{status}}",
+    "halfBooking": "{{slot}} {{status}} ({{booking}})",
+    "day": "{{date}}: {{am}}, {{pm}}",
+    "openBooking": "Apre la prenotazione",
+    "bookings": "Prenotazioni della stagione",
+    "noBookings": "Nessuna prenotazione in questa stagione.",
+    "period": "{{from}} – {{to}}",
+    "balance": "Da saldare {{amount}}"
   }
 }

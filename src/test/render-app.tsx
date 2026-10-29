@@ -17,6 +17,7 @@ import PendingScreen from '@/app/(connected)/pending';
 import ReportsScreen from '@/app/(connected)/reports';
 import SaleScreen from '@/app/(connected)/sale';
 import SettingsScreen from '@/app/(connected)/settings';
+import SpotCalendarScreen from '@/app/(connected)/spot-calendar/[spotId]';
 import SpotsScreen from '@/app/(connected)/spots';
 import LifeguardScreen from '@/app/(connected)/lifeguard';
 import TodayScreen from '@/app/(connected)/today';
@@ -156,6 +157,7 @@ export async function renderApp({
       '(connected)/bookings/[bookingId]': BookingScreen,
       '(connected)/spots': SpotsScreen,
       '(connected)/lifeguard': LifeguardScreen,
+      '(connected)/spot-calendar/[spotId]': SpotCalendarScreen,
       '(connected)/operations/index': OperationsScreen,
       '(connected)/operations/scan': OperationsScanScreen,
       '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,

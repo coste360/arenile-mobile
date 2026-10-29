@@ -114,6 +114,9 @@ Other screens reuse them instead of rewriting the actions:
   entry ticket for the gate, or the reason; `<CodeResult />` renders the next step.
 - **Online-only** — gate admission (`useAdmitEntry`) and spot blocks (`useCreateSpotBlock`,
   `useDeleteSpotBlock`) never enter the queue; show their errors with `onlineErrorKey()`.
+- **Spot calendar** — `features/day-map/spot-calendar`: `useSpotCalendar(spotId)` (core 1.1, spec
+  30.5) under `['est', id, 'operations', 'spot-calendar', spotId]`, a kind the allowlist does not
+  persist: online only, like the days beyond tomorrow (ADR 0014).
 
 ## Phase 2: sale, move, waitlist, printing (online only)
 

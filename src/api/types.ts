@@ -83,3 +83,9 @@ export type PrintRouteResolution = Schemas['PrintRouteResolution'];
 export type PrintRouteUnreadyReason = Schemas['PrintRouteUnreadyReason'];
 export type PrintJob = Schemas['PrintJob'];
 export type PrintJobStatus = Schemas['PrintJobStatus'];
+
+// Core 1.1 (spec 30.5): season calendar of a spot.
+export type SpotCalendar = Schemas['SpotCalendar'];
+export type SpotCalendarDay = Schemas['SpotCalendarDay'];
+export type SpotCalendarCell = Schemas['SpotCalendarCell'];
+export type SpotCalendarBooking = Schemas['SpotCalendarBooking'];

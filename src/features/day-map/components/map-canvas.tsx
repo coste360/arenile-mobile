@@ -18,7 +18,7 @@ import {
   type Camera,
   type Size,
 } from '../geometry';
-import { GLYPH_PATHS, glyphStrokeWidth, STATUS_GLYPHS } from '../glyphs';
+import { GLYPH_PATHS, glyphStrokeWidth, MARKER_PATHS, STATUS_GLYPHS } from '../glyphs';
 import { KitDefs, kitSymbolId, type KitSymbolRequest } from '../kit/kit-art';
 import {
   badgeOffset,
@@ -439,6 +439,32 @@ const SpotNode = memo(function SpotNode({
           />
         </G>
       ) : null}
+      {spot.markers.map((m, i) => {
+        // Arrival and departure (spec 30.4) in the top-left corner, opposite the status badge.
+        const cx = -corner + i * badgeR * 2.2;
+        const c = palette.marker[m];
+        return (
+          <G key={m}>
+            <Circle
+              cx={cx}
+              cy={-corner}
+              r={badgeR}
+              fill={c.fill}
+              stroke={palette.labelBackground}
+              strokeWidth={badgeR * 0.28}
+            />
+            <Path
+              d={MARKER_PATHS[m]}
+              transform={`translate(${cx - badgeR * 0.72} ${-corner - badgeR * 0.72}) scale(${(badgeR * 1.44) / 24})`}
+              stroke={c.foreground}
+              strokeWidth={2.6}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </G>
+        );
+      })}
       {font > 0 ? (
         <LabelPill
           x={0}

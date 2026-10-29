@@ -5,7 +5,7 @@
 // src/global.css (from the core panel), HSL triplets verbatim;
 // palette.test.ts fails when they drift. One of the two files allowed raw
 // colours (scripts/style-guard.js).
-import type { SpotStatus } from './status';
+import type { MapMarker, SpotStatus } from './status';
 
 export interface StatusColours {
   /** Fill of the spot and of the badge. */
@@ -16,6 +16,8 @@ export interface StatusColours {
 
 export interface MapPalette {
   status: Readonly<Record<SpotStatus, StatusColours>>;
+  /** Arrival (--success) and departure (--warning) markers, with their glyph colour. */
+  marker: Readonly<Record<MapMarker, StatusColours>>;
   /** "Mare" label of the sea band; sand and sea are the --beach-* tokens (backdrop.ts, as the panel). */
   seaLabel: string;
   decoration: string;
@@ -112,6 +114,10 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
       renewal_hold: { fill: 'hsl(333.3 71.4% 50.6%)', foreground: WHITE },
       unavailable: { fill: 'hsl(216 12.2% 83.9%)', foreground: INK },
     },
+    marker: {
+      arrival: { fill: 'hsl(142.4 71.8% 29.2%)', foreground: 'hsl(210 40% 98%)' },
+      departure: { fill: 'hsl(37.7 92.1% 50.2%)', foreground: 'hsl(222.2 47.4% 11.2%)' },
+    },
     seaLabel: 'hsl(202 80.3% 23.9%)',
     decoration: 'hsl(42.2 43.5% 83.3%)',
     decorationStroke: 'hsl(40.4 25.9% 62.9%)',
@@ -137,6 +143,10 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
       blocked: { fill: 'hsl(240 3.7% 57.3%)', foreground: INK },
       renewal_hold: { fill: 'hsl(328.6 85.5% 70.2%)', foreground: INK },
       unavailable: { fill: 'hsl(240 5.2% 33.9%)', foreground: WHITE },
+    },
+    marker: {
+      arrival: { fill: 'hsl(141.9 69.2% 58%)', foreground: 'hsl(211.6 73.1% 10.2%)' },
+      departure: { fill: 'hsl(43.3 96.4% 56.3%)', foreground: 'hsl(211.6 73.1% 10.2%)' },
     },
     seaLabel: 'hsl(200 72.4% 88.6%)',
     decoration: 'hsl(40 19.4% 24.3%)',

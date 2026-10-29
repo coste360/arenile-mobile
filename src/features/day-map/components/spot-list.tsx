@@ -45,9 +45,10 @@ export function useSpotSummary() {
   const { t } = useTranslation();
   return (spot: DaySpot) => {
     const status = spot.status ? t(`dayMap.status.${spot.status}`) : t('dayMap.status.unknown');
-    return spot.occupant
+    const base = spot.occupant
       ? t('dayMap.list.itemOccupied', { label: spot.label, status, occupant: spot.occupant })
       : t('dayMap.list.item', { label: spot.label, status });
+    return [base, ...spot.markers.map((m) => t(`dayMap.indicator.${m}`))].join(', ');
   };
 }
 
@@ -79,6 +80,7 @@ function SpotRow({
         <Text variant="muted" numberOfLines={1}>
           {spot.status ? t(`dayMap.status.${spot.status}`) : t('dayMap.status.unknown')}
           {spot.occupant ? ` · ${spot.occupant}` : ''}
+          {spot.markers.map((m) => ` · ${t(`dayMap.indicator.${m}`)}`).join('')}
         </Text>
       </View>
       <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />

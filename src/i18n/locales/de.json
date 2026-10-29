@@ -367,7 +367,9 @@
       "extra": "Extras",
       "note": "Notiz",
       "vip": "VIP",
-      "to_assign": "Zuzuweisen"
+      "to_assign": "Zuzuweisen",
+      "arrival": "Anreise",
+      "departure": "Abreise"
     },
     "occupant": {
       "anonymous": "Anonymer Gast",
@@ -1317,5 +1319,51 @@
       "too_many_spots": "Zu viele Plätze in einer Buchung.",
       "other": "Verstößt gegen eine Buchungsregel des Betriebs."
     }
+  },
+  "mapFilters": {
+    "label": "Hervorheben",
+    "arrivals": "Anreisen",
+    "departures": "Abreisen",
+    "to_collect": "Zu kassieren",
+    "present": "Anwesend",
+    "agreement": "Vereinbarung: {{name}}",
+    "group": "Gruppe: {{name}}",
+    "chip": "{{label}}, {{count}}",
+    "results_one": "{{count}} Platz hervorgehoben",
+    "results_other": "{{count}} Plätze hervorgehoben",
+    "none": "Kein Platz passt zu diesem Filter.",
+    "labels": "Beschriftung",
+    "customer": "Kunde",
+    "end": "Ende des Aufenthalts",
+    "setup": "Ausstattung",
+    "labelChip": "Beschriftung unter den Plätzen: {{label}}"
+  },
+  "mapSheet": {
+    "setup": "Ausstattung",
+    "agreement": "Vereinbarung",
+    "partner": "Partner",
+    "group": "Gruppe",
+    "partySize": "Personen",
+    "calendar": "Kalender des Platzes"
+  },
+  "spotCalendar": {
+    "title": "Kalender",
+    "heading": "Kalender des Platzes {{label}}",
+    "season": "Saison vom {{from}} bis {{to}}",
+    "loading": "Kalender wird geladen",
+    "errorTitle": "Kalender nicht verfügbar",
+    "error": "Der Kalender konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.",
+    "notFound": "Keine Saison für diesen Platz.",
+    "notImplemented": "Diese Instanz hat keinen Platzkalender: aktualisiere sie auf die neueste Version.",
+    "halves": "Jeder Tag: Vormittag links, Nachmittag rechts.",
+    "legend": "Legende des Kalenders",
+    "half": "{{slot}} {{status}}",
+    "halfBooking": "{{slot}} {{status}} ({{booking}})",
+    "day": "{{date}}: {{am}}, {{pm}}",
+    "openBooking": "Öffnet die Buchung",
+    "bookings": "Buchungen der Saison",
+    "noBookings": "Keine Buchungen in dieser Saison.",
+    "period": "{{from}} – {{to}}",
+    "balance": "Offen {{amount}}"
   }
 }

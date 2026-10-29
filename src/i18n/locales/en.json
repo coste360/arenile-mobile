@@ -367,7 +367,9 @@
       "extra": "Extras",
       "note": "Note",
       "vip": "VIP",
-      "to_assign": "To assign"
+      "to_assign": "To assign",
+      "arrival": "Arrival",
+      "departure": "Departure"
     },
     "occupant": {
       "anonymous": "Anonymous customer",
@@ -1317,5 +1319,51 @@
       "too_many_spots": "Too many spots in one booking.",
       "other": "Breaks one of the establishment's booking rules."
     }
+  },
+  "mapFilters": {
+    "label": "Highlight",
+    "arrivals": "Arrivals",
+    "departures": "Departures",
+    "to_collect": "To collect",
+    "present": "Present",
+    "agreement": "Agreement: {{name}}",
+    "group": "Group: {{name}}",
+    "chip": "{{label}}, {{count}}",
+    "results_one": "{{count}} spot highlighted",
+    "results_other": "{{count}} spots highlighted",
+    "none": "No spot matches this filter.",
+    "labels": "Labels",
+    "customer": "Customer",
+    "end": "End of stay",
+    "setup": "Setup",
+    "labelChip": "Label under the spots: {{label}}"
+  },
+  "mapSheet": {
+    "setup": "Setup",
+    "agreement": "Agreement",
+    "partner": "Partner",
+    "group": "Group",
+    "partySize": "People",
+    "calendar": "Spot calendar"
+  },
+  "spotCalendar": {
+    "title": "Calendar",
+    "heading": "Calendar of spot {{label}}",
+    "season": "Season from {{from}} to {{to}}",
+    "loading": "Loading the calendar",
+    "errorTitle": "Calendar not available",
+    "error": "The calendar could not be loaded. Check the connection and try again.",
+    "notFound": "No season for this spot.",
+    "notImplemented": "This instance has no spot calendar: update it to the latest version.",
+    "halves": "Each day: morning on the left, afternoon on the right.",
+    "legend": "Calendar legend",
+    "half": "{{slot}} {{status}}",
+    "halfBooking": "{{slot}} {{status}} ({{booking}})",
+    "day": "{{date}}: {{am}}, {{pm}}",
+    "openBooking": "Opens the booking",
+    "bookings": "Bookings of the season",
+    "noBookings": "No bookings this season.",
+    "period": "{{from}} – {{to}}",
+    "balance": "Balance due {{amount}}"
   }
 }

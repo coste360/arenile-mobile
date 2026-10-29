@@ -31,11 +31,16 @@ import {
   buildDaySpots,
   compareLabels,
   countByStatus,
+  countMarkers,
+  DEFAULT_CAPTION_PARTS,
   mapName,
   searchSpots,
+  type CaptionPart,
   type DaySpot,
 } from '../model';
+import { filterOptions, filterSpots, sameFilter, type QuickFilter } from '../quick-filters';
 import { DayToolbar } from './day-toolbar';
+import { MapFilterBar } from './map-filter-bar';
 import { MapCanvas } from './map-canvas';
 import { MapViewport, OVERSCAN, type FocusRequest } from './map-viewport';
 import { SpotList } from './spot-list';
@@ -67,6 +72,8 @@ export function DayMapView({
     day: 'today',
     slot: 'FULL',
     view: 'map',
+    filter: null,
+    captionParts: DEFAULT_CAPTION_PARTS,
   });
 
   if (!maps.data) {
@@ -124,6 +131,10 @@ interface PaneSettings {
   day: DaySelection;
   slot: Slots;
   view: 'map' | 'list';
+  /** Quick filter of the map (spec 30.4), one at a time. */
+  filter: QuickFilter | null;
+  /** What the captions under the taken spots show. */
+  captionParts: readonly CaptionPart[];
 }
 
 function MapPane({
@@ -153,7 +164,7 @@ function MapPane({
   const kit = mapKitOf(establishment.data?.theme);
   const abilities = useAbilities();
   const { today, tomorrow, timeZone } = useOperationalDays();
-  const { day: dayChoice, slot, view } = settings;
+  const { day: dayChoice, slot, view, filter, captionParts } = settings;
   const setDayChoice = (day: DaySelection) => onSettings({ day });
   const setSlot = (value: Slots) => onSettings({ slot: value });
   const setView = (value: 'map' | 'list') => onSettings({ view: value });
@@ -182,17 +193,37 @@ function MapPane({
               anonymous: t('dayMap.occupant.anonymous'),
               anonymousShort: t('dayMap.occupant.anonymousShort'),
             },
+            captionParts,
+            locale,
           })
         : [],
-    [doc.data, day.data, slot, abilities.canViewBookings, t],
+    [doc.data, day.data, slot, abilities.canViewBookings, t, captionParts, locale],
   );
   const counts = useMemo(() => countByStatus(spots), [spots]);
-  const results = useMemo(() => searchSpots(spots, query), [spots, query]);
-  const matches = useMemo(
-    () => (query.trim() ? new Set(results.map((s) => s.id)) : undefined),
-    [results, query],
+  const markerCounts = useMemo(() => countMarkers(spots), [spots]);
+  const options = useMemo(() => filterOptions(spots), [spots]);
+  // An agreement or a group not on the day shown (another day, another map) filters nothing.
+  const activeFilter = filter && options.some((o) => sameFilter(o.filter, filter)) ? filter : null;
+  const filtered = useMemo(
+    () => (activeFilter ? filterSpots(spots, activeFilter) : undefined),
+    [spots, activeFilter],
   );
-  const sorted = useMemo(() => [...spots].sort((a, b) => compareLabels(a.label, b.label)), [spots]);
+  // With a quick filter on, the search looks among its spots only.
+  const results = useMemo(() => searchSpots(filtered ?? spots, query), [spots, filtered, query]);
+  const matches = useMemo(
+    () =>
+      // Results are already within the filter: they alone, else the filter's spots.
+      query.trim()
+        ? new Set(results.map((s) => s.id))
+        : filtered
+          ? new Set(filtered.map((s) => s.id))
+          : undefined,
+    [results, query, filtered],
+  );
+  const sorted = useMemo(
+    () => [...(filtered ?? spots)].sort((a, b) => compareLabels(a.label, b.label)),
+    [spots, filtered],
+  );
   const selected = spots.find((s) => s.id === selectedId);
   // Until the user picks a spot, the map zooms on the spot from the route.
   const initial = initialSpot ? spots.find((s) => s.id === initialSpot) : undefined;
@@ -282,6 +313,20 @@ function MapPane({
         onSlot={setSlot}
         locale={locale}
       />
+      <MapFilterBar
+        options={options}
+        filter={activeFilter}
+        onFilter={(value) => onSettings({ filter: value })}
+        parts={captionParts}
+        onParts={(parts) => onSettings({ captionParts: parts })}
+      />
+      {filtered && !query.trim() ? (
+        <Text variant="muted" accessibilityLiveRegion="polite" testID="day-map-filter-count">
+          {filtered.length > 0
+            ? t('mapFilters.results', { count: filtered.length })
+            : t('mapFilters.none')}
+        </Text>
+      ) : null}
       {maps.length > 1 ? (
         <View>
           <ChoiceGroup
@@ -407,7 +452,7 @@ function MapPane({
       accessibilityElementsHidden={covering}
     >
       {toolbar}
-      <StatusLegend counts={counts} />
+      <StatusLegend counts={counts} markers={markerCounts} />
       {banners}
       {searchResults}
       <View className="flex-1">{surface}</View>

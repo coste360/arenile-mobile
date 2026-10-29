@@ -37,6 +37,10 @@ export const estKeys = {
   lifeguardList: (establishmentId: string, date: CalendarDate, slot: Slots = 'FULL') =>
     ['est', establishmentId, 'operations', 'lifeguard', { date, slot }] as const,
 
+  /** GET spots/{id}/calendar: the season of a spot, half day by half day (online only). */
+  spotCalendar: (establishmentId: string, spotId: string) =>
+    ['est', establishmentId, 'operations', 'spot-calendar', spotId] as const,
+
   /** GET bookings?from=date&to=date: every booking whose stay includes the day. */
   bookingsOfDay: (establishmentId: string, date: CalendarDate) =>
     ['est', establishmentId, 'bookings', 'day', { date }] as const,

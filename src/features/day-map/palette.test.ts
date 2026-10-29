@@ -16,7 +16,7 @@ const light = variables(css.slice(css.indexOf(':root {'), css.indexOf('.dark:roo
 const dark = variables(css.slice(css.indexOf('.dark:root')));
 
 /** Every palette colour with the CSS variable it mirrors. */
-function pairs(p: MapPalette): [string, string][] {
+function pairs(p: MapPalette, mode: 'light' | 'dark'): [string, string][] {
   const out: [string, string][] = [];
   for (const s of SPOT_STATUSES) {
     const v = `status-${s.replace(/_/g, '-')}`;
@@ -32,6 +32,11 @@ function pairs(p: MapPalette): [string, string][] {
     ['status-unavailable', p.unknown],
     ['background', p.labelBackground],
     ['foreground', p.labelForeground],
+    ['success', p.marker.arrival.fill],
+    ['background', p.marker.arrival.foreground],
+    ['warning', p.marker.departure.fill],
+    // The darker of the two theme colours on amber, in both modes.
+    [mode === 'light' ? 'foreground' : 'background', p.marker.departure.foreground],
   );
   return out;
 }
@@ -40,8 +45,8 @@ describe('day map palette', () => {
   it.each([
     ['light', MAP_PALETTE.light, light],
     ['dark', MAP_PALETTE.dark, dark],
-  ] as const)('%s colours equal the CSS variables of src/global.css', (_name, palette, vars) => {
-    for (const [token, value] of pairs(palette)) {
+  ] as const)('%s colours equal the CSS variables of src/global.css', (name, palette, vars) => {
+    for (const [token, value] of pairs(palette, name)) {
       expect({ token, value }).toEqual({ token, value: `hsl(${vars[token]})` });
     }
   });
