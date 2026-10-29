@@ -12,6 +12,7 @@ import type {
   SpotCalendarBooking,
   SpotCalendarCell,
   SpotCalendarDay,
+  Slots,
 } from '@/api/types';
 import type { Abilities } from '@/features/permissions/permissions';
 import { useApiClient, usePairedSession } from '@/features/session/session-provider';
@@ -126,4 +127,21 @@ export function calendarMonths(days: readonly SpotCalendarDay[]): CalendarMonth[
 /** Booking a day opens: the morning's, else the afternoon's. */
 export function bookingOfDay(d: SpotCalendarDay): string | undefined {
   return d.am.booking_id ?? d.pm.booking_id;
+}
+
+const bookableCell = (c: SpotCalendarCell) => c.status === 'free' || c.status === 'released';
+
+/**
+ * Slot a new booking can start with on a day of the calendar (as the
+ * panel, a free day starts one): the whole day when both halves are free
+ * or released, otherwise the free half; none before today or when taken.
+ */
+export function bookableSlot(d: SpotCalendarDay, today: CalendarDate): Slots | undefined {
+  if (d.date < today) return undefined;
+  const am = bookableCell(d.am);
+  const pm = bookableCell(d.pm);
+  if (am && pm) return 'FULL';
+  if (am) return 'AM';
+  if (pm) return 'PM';
+  return undefined;
 }

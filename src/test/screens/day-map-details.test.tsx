@@ -322,6 +322,36 @@ describe('spot calendar (spec 30.5)', () => {
     },
   );
 
+  it('starts a new booking from a free day, with the free half', async () => {
+    // The fixed clock is 2026-10-25: days before it start nothing.
+    const { screen } = await openMap('phone', 'cashier', {
+      [`GET ${EST}/spots/s-2/calendar`]: () =>
+        json(200, {
+          ...CALENDAR,
+          from: '2026-10-24',
+          to: '2026-10-26',
+          days: [
+            { date: '2026-10-24', am: { status: 'free' }, pm: { status: 'free' } },
+            { date: '2026-10-26', am: { status: 'blocked' }, pm: { status: 'free' } },
+          ],
+          bookings: [],
+        }),
+    });
+    const sheet = await openSheet(screen, /^A2,/);
+    await fireEvent.press(
+      within(sheet).getByRole('button', { name: 'Calendario della postazione' }),
+    );
+    expect(await screen.findByTestId('day-2026-10-24')).not.toHaveProp('accessibilityHint');
+    const day = screen.getByTestId('day-2026-10-26');
+    expect(day).toHaveProp('accessibilityHint', 'Crea una nuova prenotazione da questo giorno');
+    const push = jest.spyOn(router, 'push');
+    await fireEvent.press(day);
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/new-booking',
+      params: { spotId: 's-2', from: '2026-10-26', slot: 'PM' },
+    });
+  });
+
   it('is not offered offline', async () => {
     const { screen, connectivity } = await openMap();
     const sheet = await openSheet(screen, /^A2,/);

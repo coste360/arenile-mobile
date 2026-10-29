@@ -12,6 +12,7 @@ import { Text } from '@/components/ui/text';
 import { isForbidden, ProblemError } from '@/api/errors';
 import type { SpotCalendarBooking, SpotCalendarDay } from '@/api/types';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
+import { useOperationalDays } from '@/features/operations/queries';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { formatDayLabel } from '@/lib/calendar';
@@ -19,6 +20,7 @@ import { formatCents } from '@/lib/money';
 import { cn } from '@/lib/utils';
 
 import {
+  bookableSlot,
   bookingOfDay,
   CALENDAR_LEGEND,
   calendarMonths,
@@ -43,6 +45,7 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
   const { locale } = usePreferences();
   const abilities = useAbilities();
   const { available: online } = useOnlineOnly();
+  const { today } = useOperationalDays();
   const query = useSpotCalendar(spotId);
   const cal = query.data;
   const bookings = useMemo(
@@ -51,6 +54,8 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
   );
   const months = useMemo(() => calendarMonths(cal?.days ?? []), [cal]);
   const canOpen = abilities.canViewBookings;
+  // A free day starts a new booking there, as in the panel (online only).
+  const canBook = abilities.canWriteBookings && online;
 
   if (!cal) {
     if (!online && !query.isFetching) return <OnlineOnlyNotice />;
@@ -101,6 +106,17 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
     });
   const open = (bookingId: string) =>
     router.push({ pathname: '/bookings/[bookingId]', params: { bookingId } });
+  const book = (from: string, slot: string) =>
+    router.push({ pathname: '/new-booking', params: { spotId, from, slot } });
+  const onDay = (d: SpotCalendarDay): { onOpen: () => void; hint: string } | undefined => {
+    const id = bookingOfDay(d);
+    if (id)
+      return canOpen ? { onOpen: () => open(id), hint: t('spotCalendar.openBooking') } : undefined;
+    const slot = canBook ? bookableSlot(d, today) : undefined;
+    return slot
+      ? { onOpen: () => book(d.date, slot), hint: t('spotCalendar.newBooking') }
+      : undefined;
+  };
   const weekdays = WEEK.map((d) =>
     new Intl.DateTimeFormat(locale, { weekday: 'narrow', timeZone: 'UTC' }).format(
       new Date(`${d}T00:00:00Z`),
@@ -154,11 +170,7 @@ export function SpotCalendarView({ spotId, label }: { spotId: string; label?: st
                       am={cellStatus(d.am, bookings)}
                       pm={cellStatus(d.pm, bookings)}
                       label={describe(d)}
-                      onOpen={
-                        canOpen && bookingOfDay(d)
-                          ? () => open(bookingOfDay(d) as string)
-                          : undefined
-                      }
+                      action={onDay(d)}
                     />
                   ) : (
                     <View key={`empty-${i}`} className="flex-1" />
@@ -227,15 +239,14 @@ function DayCell({
   am,
   pm,
   label,
-  onOpen,
+  action,
 }: {
   day: SpotCalendarDay;
   am: SpotStatus;
   pm: SpotStatus;
   label: string;
-  onOpen?: () => void;
+  action?: { onOpen: () => void; hint: string };
 }) {
-  const { t } = useTranslation();
   const body = (
     <>
       <Text className="text-center text-xs tabular-nums">{Number(day.date.slice(8, 10))}</Text>
@@ -246,7 +257,7 @@ function DayCell({
     </>
   );
   const box = 'min-h-11 flex-1 overflow-hidden rounded-md border border-border bg-card';
-  if (!onOpen) {
+  if (!action) {
     return (
       <View className={box} accessible accessibilityLabel={label} testID={`day-${day.date}`}>
         {body}
@@ -257,8 +268,8 @@ function DayCell({
     <Pressable
       role="button"
       accessibilityLabel={label}
-      accessibilityHint={t('spotCalendar.openBooking')}
-      onPress={onOpen}
+      accessibilityHint={action.hint}
+      onPress={action.onOpen}
       className={cn(box, 'active:opacity-70')}
       testID={`day-${day.date}`}
     >

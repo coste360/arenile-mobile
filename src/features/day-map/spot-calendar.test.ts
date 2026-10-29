@@ -1,7 +1,13 @@
 import type { SpotCalendarBooking, SpotCalendarCell, SpotCalendarDay } from '@/api/types';
 import { ROLE_PERMISSIONS, resolveAbilities } from '@/features/permissions/permissions';
 
-import { bookingOfDay, calendarMonths, canViewSpotCalendar, cellStatus } from './spot-calendar';
+import {
+  bookableSlot,
+  bookingOfDay,
+  calendarMonths,
+  canViewSpotCalendar,
+  cellStatus,
+} from './spot-calendar';
 
 const booking = (id: string, balance: number): SpotCalendarBooking => ({
   booking_id: id,
@@ -106,5 +112,23 @@ describe('canViewSpotCalendar', () => {
 
   it('not without bookings.read and operations.run', () => {
     expect(canViewSpotCalendar({ canViewBookings: false, canCheckIn: false })).toBe(false);
+  });
+});
+
+describe('bookableSlot', () => {
+  const taken: SpotCalendarCell = { status: 'booked', booking_id: 'paid' };
+  const released: SpotCalendarCell = { status: 'released' };
+  it.each<[string, SpotCalendarDay, string | undefined]>([
+    ['free day', day('2026-07-02'), 'FULL'],
+    ['released pass day', day('2026-07-02', released, released), 'FULL'],
+    ['morning taken', day('2026-07-02', taken, free), 'PM'],
+    ['afternoon taken', day('2026-07-02', free, taken), 'AM'],
+    ['taken day', day('2026-07-02', taken, taken), undefined],
+    ['blocked', day('2026-07-02', { status: 'blocked' }, { status: 'blocked' }), undefined],
+    ['held', day('2026-07-02', { status: 'held' }, free), 'PM'],
+    ['today', day('2026-07-01'), 'FULL'],
+    ['past day', day('2026-06-30'), undefined],
+  ])('%s', (_name, d, want) => {
+    expect(bookableSlot(d, '2026-07-01')).toBe(want);
   });
 });

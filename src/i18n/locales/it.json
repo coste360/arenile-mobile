@@ -1497,6 +1497,7 @@
     "halfBooking": "{{slot}} {{status}} ({{booking}})",
     "day": "{{date}}: {{am}}, {{pm}}",
     "openBooking": "Apre la prenotazione",
+    "newBooking": "Crea una nuova prenotazione da questo giorno",
     "bookings": "Prenotazioni della stagione",
     "noBookings": "Nessuna prenotazione in questa stagione.",
     "period": "{{from}} – {{to}}",

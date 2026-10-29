@@ -28,7 +28,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
     partner da solo).
 - **Calendario della postazione** (spec 30.5) dalla scheda, solo online: la stagione mese per mese,
   ogni giorno diviso in mattina e pomeriggio con i colori e i glifi della mappa; un giorno occupato apre
-  la prenotazione; sotto, le prenotazioni della stagione con il saldo.
+  la prenotazione; sotto, le prenotazioni della stagione con il saldo. Un giorno libero (da oggi in poi)
+  avvia una nuova prenotazione da quel giorno, con la mezza giornata libera, per chi scrive le
+  prenotazioni.
 - **Scheda prenotazione (core 1.1)**: gruppo e ospiti (provenienza, adulti e bambini, nomi);
   convenzione e partner con la quota a carico del partner; requisito della convenzione (es.
   residenti) con "Verificato", che registra data e operatore, anche al check-in senza bloccarlo;
@@ -165,7 +167,12 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   è libera.
 - Una vendita giornaliera rifiutata per le regole di prenotazione dello stabilimento (422
   `policy_violation`, per esempio vendite per oggi chiuse dopo l'orario limite) dice quale regola
-  invece di "Vendita non riuscita. Riprova.".
+  invece di "Vendita non riuscita. Riprova.". Dal core 1.1.2 lo dice già l'anteprima, con "Vendi"
+  disattivato.
+- Core 1.1.2: un conflitto "riprova" (409 `concurrent_update`, un'altra modifica degli stessi dati in
+  corso) resta in coda e si rimanda da solo con la stessa chiave, come una richiesta online; uno
+  spostamento che chiede l'approvazione del gestore (409 `approval_required`) lo dice, invece di "non si
+  può spostare nel suo stato".
 - Per un soggiorno diviso su più postazioni (core 1.1), la scheda della postazione sulla mappa mostra i
   giorni su quella postazione, non tutto il soggiorno.
   La scheda della prenotazione elenca le postazioni in ordine (A2 → B4) con i giorni di ciascuna; lo
