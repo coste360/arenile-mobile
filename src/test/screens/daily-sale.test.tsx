@@ -268,6 +268,18 @@ describe('daily quick sale', () => {
     },
   );
 
+  // Core 1.1.2 (coste360/arenile#21): the quote refuses with the sale's rules.
+  it('explains a quote refused by the booking rules and keeps the sale disabled', async () => {
+    const { screen } = await openSale({
+      extra: { [`POST ${EST}/daily-sales/quote`]: () => policyViolation(SAME_DAY_CLOSED) },
+    });
+    expect(await screen.findByText('Prenotazioni per oggi chiuse.')).toBeOnTheScreen();
+    expect(
+      screen.getByText('La vendita non rispetta le regole di prenotazione dello stabilimento.'),
+    ).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Vendi' })).toBeDisabled();
+  });
+
   it('reuses the Idempotency-Key when the same sale is retried after a failure', async () => {
     let attempts = 0;
     const { screen, network } = await openSale({
