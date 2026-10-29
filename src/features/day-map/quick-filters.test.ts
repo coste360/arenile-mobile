@@ -91,24 +91,34 @@ describe('quick filters (spec 30.4)', () => {
     ]);
   });
 
-  it('counts an agreement once per taken spot, the agreement before its partner', () => {
+  it('counts each chip as what it highlights when a booking has an agreement and a partner', () => {
     const withBoth: Partial<OperationalBooking> = { agreement: SEASIDE, partner: PARTNER };
-    const two = buildDaySpots({
+    const three = buildDaySpots({
       document: mapDocument({
-        spots: [mapSpot({ id: 's-1', label: 'A1' }), mapSpot({ id: 's-2', label: 'A2', x: 200 })],
+        spots: [
+          mapSpot({ id: 's-1', label: 'A1' }),
+          mapSpot({ id: 's-2', label: 'A2', x: 200 }),
+          mapSpot({ id: 's-3', label: 'A3', x: 300 }),
+        ],
       }),
       day: operationsDay({
         spots: [
           spot({ spot_id: 's-1', label: 'A1', booking: operationalBooking(withBoth) }),
           spot({ spot_id: 's-2', label: 'A2', booking: operationalBooking(withBoth) }),
+          spot({ spot_id: 's-3', label: 'A3', booking: operationalBooking({ partner: PARTNER }) }),
         ],
       }),
       slot: 'FULL',
       canSeeCustomers: true,
       texts: { anonymous: 'Cliente anonimo', anonymousShort: 'Anonimo' },
     });
-    const agreements = filterOptions(two).filter((o) => o.filter.kind === 'agreement');
-    expect(agreements.map((o) => [o.filter.value, o.count])).toEqual([['ag-1', 2]]);
+    const agreements = filterOptions(three).filter((o) => o.filter.kind === 'agreement');
+    // The partner chip highlights its own booking and the two of the agreement with it.
+    expect(agreements.map((o) => [o.filter.value, o.count])).toEqual([
+      ['p-1', 3],
+      ['ag-1', 2],
+    ]);
+    for (const o of agreements) expect(filterSpots(three, o.filter)).toHaveLength(o.count);
   });
 
   it.each<[QuickFilter | null, QuickFilter | null, boolean]>([

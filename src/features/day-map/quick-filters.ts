@@ -61,38 +61,33 @@ export interface FilterOption {
  * by name.
  */
 export function filterOptions(spots: readonly DaySpot[]): FilterOption[] {
-  const simple = SIMPLE_FILTERS.map((kind) => ({
-    filter: { kind },
-    count: filterSpots(spots, { kind }).length,
-  }));
-  const agreements = new Map<string, FilterOption>();
-  const groups = new Map<string, FilterOption>();
+  const agreements = new Map<string, string>();
+  const groups = new Map<string, string>();
   for (const s of spots) {
     const b = s.op?.booking;
     if (!b || !s.serverStatus || !TAKEN.has(s.serverStatus)) continue;
-    // The agreement names the booking's partner too; a partner alone counts by itself.
+    // The agreement names the booking's partner too; a partner alone is offered by itself.
     const ref = b.agreement ?? b.partner;
-    if (ref) bump(agreements, ref.id, ref.name, 'agreement');
-    if (b.group_name) bump(groups, b.group_name, b.group_name, 'group');
+    if (ref && !agreements.has(ref.id)) agreements.set(ref.id, ref.name);
+    if (b.group_name) groups.set(b.group_name, b.group_name);
   }
-  return [...simple, ...sortByName(agreements), ...sortByName(groups)];
-}
-
-function bump(
-  into: Map<string, FilterOption>,
-  value: string,
-  name: string,
-  kind: QuickFilterKind,
-): void {
-  const prev = into.get(value);
-  if (prev) prev.count += 1;
-  else into.set(value, { filter: { kind, value }, name, count: 1 });
+  // Every count is what the chip highlights (a partner also matches its agreements' bookings).
+  const option = (filter: QuickFilter, name?: string): FilterOption => ({
+    filter,
+    name,
+    count: filterSpots(spots, filter).length,
+  });
+  return [
+    ...SIMPLE_FILTERS.map((kind) => option({ kind })),
+    ...sortByName(agreements).map(([value, name]) => option({ kind: 'agreement', value }, name)),
+    ...sortByName(groups).map(([value, name]) => option({ kind: 'group', value }, name)),
+  ];
 }
 
 const collator = new Intl.Collator('it', { sensitivity: 'base' });
 
-function sortByName(options: Map<string, FilterOption>): FilterOption[] {
-  return [...options.values()].sort((a, b) => collator.compare(a.name ?? '', b.name ?? ''));
+function sortByName(names: Map<string, string>): [string, string][] {
+  return [...names].sort((a, b) => collator.compare(a[1], b[1]));
 }
 
 export function sameFilter(a: QuickFilter | null, b: QuickFilter | null): boolean {
