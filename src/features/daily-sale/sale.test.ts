@@ -172,6 +172,17 @@ describe('saleErrorKey', () => {
     ['cash desk closed', problem(409, 'cash_session_closed'), 'sale.errors.cash_session_closed'],
     ['price changed', problem(409, 'price_changed'), 'sale.errors.price_changed'],
     ['no price', problem(422, 'no_price'), 'sale.errors.no_price'],
+    [
+      'booking rules (same day closed after the cut-off)',
+      new ProblemError(422, {
+        type: 'policy_violation',
+        title: 'policy_violation',
+        status: 422,
+        violations: [{ code: 'same_day_closed', params: { reason: 'time' } }],
+      }),
+      'sale.errors.policy',
+    ],
+    ['booking rules without violations', problem(422, 'policy_violation'), 'sale.errors.policy'],
     ['in progress', problem(409, 'idempotency_in_progress'), 'sale.errors.in_progress'],
     ['missing', problem(404, 'not_found'), 'sale.errors.not_found'],
     ['other', problem(500, 'internal_error'), 'sale.errors.default'],

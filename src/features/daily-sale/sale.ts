@@ -145,6 +145,7 @@ export type SaleErrorKey =
   | 'sale.errors.no_price'
   | 'sale.errors.in_progress'
   | 'sale.errors.not_found'
+  | 'sale.errors.policy'
   | 'sale.errors.default';
 
 /** Message of a refused sale or quote, from the core's stable problem slugs. */
@@ -163,6 +164,9 @@ export function saleErrorKey(e: unknown): SaleErrorKey {
         return 'sale.errors.price_changed';
       case 'no_price':
         return 'sale.errors.no_price';
+      // The reasons come from policyViolationKeys (the rules of the establishment).
+      case 'policy_violation':
+        return 'sale.errors.policy';
       case 'idempotency_in_progress':
         return 'sale.errors.in_progress';
       default:

@@ -1067,6 +1067,7 @@
       "no_price": "Nessun prezzo per questo pacchetto in questa data: controlla il listino nel pannello.",
       "in_progress": "La vendita è già in corso: attendi qualche secondo.",
       "not_found": "Postazione o pacchetto non più disponibili.",
+      "policy": "La vendita non rispetta le regole di prenotazione dello stabilimento.",
       "default": "Vendita non riuscita. Riprova."
     },
     "onlineOnly": "La vendita richiede l'istanza raggiungibile: la disponibilità e il numero del biglietto li garantisce il server."
@@ -1225,5 +1226,19 @@
     "other": "{{date}}: giorno di chiusura o fuori stagione.",
     "offlineTitle": "Giorno disponibile solo online",
     "offlineDescription": "Sul dispositivo restano solo oggi e domani. Per vedere gli altri giorni serve la connessione all'istanza."
+  },
+  "policy": {
+    "violations": {
+      "cutoff_passed": "Orario limite superato per oggi.",
+      "duration_too_long": "Durata superiore al massimo consentito.",
+      "duration_too_short": "Durata inferiore al minimo consentito.",
+      "formula_not_allowed": "Formula non consentita.",
+      "lead_time_too_long": "Prenotazione troppo in anticipo.",
+      "lead_time_too_short": "Anticipo minimo non rispettato.",
+      "same_day_closed": "Prenotazioni per oggi chiuse.",
+      "start_weekday_not_allowed": "Giorno di inizio non consentito.",
+      "too_many_spots": "Troppe postazioni in una prenotazione.",
+      "other": "Non rispetta una regola di prenotazione dello stabilimento."
+    }
   }
 }

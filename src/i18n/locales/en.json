@@ -1067,6 +1067,7 @@
       "no_price": "No price for this package on this date: check the price list in the panel.",
       "in_progress": "The sale is already in progress: wait a few seconds.",
       "not_found": "Spot or package no longer available.",
+      "policy": "The sale breaks the establishment's booking rules.",
       "default": "Sale failed. Try again."
     },
     "onlineOnly": "Selling needs the instance to be reachable: the server guarantees availability and the ticket number."
@@ -1225,5 +1226,19 @@
     "other": "{{date}}: closure day or out of season.",
     "offlineTitle": "Day available online only",
     "offlineDescription": "Only today and tomorrow are kept on this device. Other days need a connection to the instance."
+  },
+  "policy": {
+    "violations": {
+      "cutoff_passed": "Today's cut-off time has passed.",
+      "duration_too_long": "Longer than the maximum allowed.",
+      "duration_too_short": "Shorter than the minimum allowed.",
+      "formula_not_allowed": "Formula not allowed.",
+      "lead_time_too_long": "Booked too far in advance.",
+      "lead_time_too_short": "Minimum advance notice not met.",
+      "same_day_closed": "Same-day bookings are closed.",
+      "start_weekday_not_allowed": "Start day not allowed.",
+      "too_many_spots": "Too many spots in one booking.",
+      "other": "Breaks one of the establishment's booking rules."
+    }
   }
 }

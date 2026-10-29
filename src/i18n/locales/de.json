@@ -1067,6 +1067,7 @@
       "no_price": "Kein Preis für dieses Paket an diesem Datum: Prüfe die Preisliste im Panel.",
       "in_progress": "Der Verkauf läuft bereits: Warte einige Sekunden.",
       "not_found": "Platz oder Paket nicht mehr verfügbar.",
+      "policy": "Der Verkauf verstößt gegen die Buchungsregeln des Betriebs.",
       "default": "Verkauf fehlgeschlagen. Versuche es erneut."
     },
     "onlineOnly": "Der Verkauf braucht die erreichbare Instanz: Verfügbarkeit und Ticketnummer garantiert der Server."
@@ -1225,5 +1226,19 @@
     "other": "{{date}}: Schließtag oder außerhalb der Saison.",
     "offlineTitle": "Tag nur online verfügbar",
     "offlineDescription": "Auf dem Gerät bleiben nur heute und morgen gespeichert. Andere Tage brauchen eine Verbindung zur Instanz."
+  },
+  "policy": {
+    "violations": {
+      "cutoff_passed": "Annahmeschluss für heute überschritten.",
+      "duration_too_long": "Länger als die maximal erlaubte Dauer.",
+      "duration_too_short": "Kürzer als die minimal erlaubte Dauer.",
+      "formula_not_allowed": "Tarifform nicht erlaubt.",
+      "lead_time_too_long": "Zu weit im Voraus gebucht.",
+      "lead_time_too_short": "Mindestvorlauf nicht eingehalten.",
+      "same_day_closed": "Buchungen für heute geschlossen.",
+      "start_weekday_not_allowed": "Anreisetag nicht erlaubt.",
+      "too_many_spots": "Zu viele Plätze in einer Buchung.",
+      "other": "Verstößt gegen eine Buchungsregel des Betriebs."
+    }
   }
 }

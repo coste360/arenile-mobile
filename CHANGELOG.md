@@ -129,6 +129,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   di Arenile supportata resta la 1.0.0. Spostamento, vendita giornaliera e offerta della lista d'attesa
   rifiutati perché il contingente di una convenzione è esaurito (core 1.1) dicono che la postazione non
   è libera.
+- Una vendita giornaliera rifiutata per le regole di prenotazione dello stabilimento (422
+  `policy_violation`, per esempio vendite per oggi chiuse dopo l'orario limite) dice quale regola
+  invece di "Vendita non riuscita. Riprova.".
 - Per un soggiorno diviso su più postazioni (core 1.1), la scheda della postazione sulla mappa mostra i
   giorni su quella postazione, non tutto il soggiorno.
   La scheda della prenotazione elenca le postazioni in ordine (A2 → B4) con i giorni di ciascuna; lo

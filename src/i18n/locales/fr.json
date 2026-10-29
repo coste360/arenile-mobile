@@ -1067,6 +1067,7 @@
       "no_price": "Aucun prix pour cette formule à cette date : vérifiez la grille tarifaire dans le panneau.",
       "in_progress": "La vente est déjà en cours : patientez quelques secondes.",
       "not_found": "Emplacement ou formule plus disponible.",
+      "policy": "La vente ne respecte pas les règles de réservation de l'établissement.",
       "default": "Vente non aboutie. Réessayez."
     },
     "onlineOnly": "La vente nécessite l'instance joignable : le serveur garantit la disponibilité et le numéro du ticket."
@@ -1225,5 +1226,19 @@
     "other": "{{date}} : jour de fermeture ou hors saison.",
     "offlineTitle": "Jour disponible en ligne uniquement",
     "offlineDescription": "Seuls aujourd'hui et demain restent sur l'appareil. Les autres jours demandent une connexion à l'instance."
+  },
+  "policy": {
+    "violations": {
+      "cutoff_passed": "Heure limite dépassée pour aujourd'hui.",
+      "duration_too_long": "Durée supérieure au maximum autorisé.",
+      "duration_too_short": "Durée inférieure au minimum autorisé.",
+      "formula_not_allowed": "Formule non autorisée.",
+      "lead_time_too_long": "Réservation trop à l'avance.",
+      "lead_time_too_short": "Délai minimum non respecté.",
+      "same_day_closed": "Réservations du jour fermées.",
+      "start_weekday_not_allowed": "Jour d'arrivée non autorisé.",
+      "too_many_spots": "Trop d'emplacements dans une réservation.",
+      "other": "Ne respecte pas une règle de réservation de l'établissement."
+    }
   }
 }
