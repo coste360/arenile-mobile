@@ -3,6 +3,7 @@ import { operationalBooking, spot } from '@/test/operations-fixtures';
 
 import { GLYPH_PATHS, STATUS_GLYPHS } from './glyphs';
 import {
+  daysOnSpot,
   indicatorsOf,
   isBookable,
   LEGEND_ORDER,
@@ -97,5 +98,22 @@ describe('isBookable', () => {
     expect(isBookable('released')).toBe(true);
     expect(isBookable('booked')).toBe(false);
     expect(isBookable('held')).toBe(false);
+  });
+});
+
+describe('daysOnSpot', () => {
+  it.each([
+    ['whole stay', {}, { from: '2026-07-01', to: '2026-07-14' }],
+    [
+      'segment of a split stay',
+      { segment_starts_on: '2026-07-08', segment_ends_on: '2026-07-14' },
+      { from: '2026-07-08', to: '2026-07-14' },
+    ],
+  ])('%s', (_name, segment, want) => {
+    expect(
+      daysOnSpot(
+        operationalBooking({ starts_on: '2026-07-01', ends_on: '2026-07-14', ...segment }),
+      ),
+    ).toEqual(want);
   });
 });

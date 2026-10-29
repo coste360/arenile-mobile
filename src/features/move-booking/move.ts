@@ -130,6 +130,8 @@ export function moveErrorKey(e: unknown): MoveErrorKey {
       case 'spot_unavailable':
       case 'pool_exhausted':
       case 'assignment_conflict':
+      // Core 1.1: the spots reserved to the booking's agreement are used up.
+      case 'agreement_quota_exceeded':
         return 'move.errors.spot_unavailable';
       case 'version_conflict':
         return 'move.errors.version_conflict';

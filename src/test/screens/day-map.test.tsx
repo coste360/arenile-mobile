@@ -314,6 +314,34 @@ describe('day map', () => {
     });
   });
 
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'shows only the days on this spot of a stay split across spots (%s)',
+    async (size) => {
+      const split = operationsDay({
+        spots: [
+          spot({
+            spot_id: 's-2',
+            label: 'A2',
+            status: 'booked',
+            booking: operationalBooking({
+              booking_id: 'b-2',
+              customer_display_name: 'Niccolò Bianchi',
+              starts_on: '2026-10-20',
+              ends_on: '2026-10-30',
+              segment_starts_on: '2026-10-24',
+              segment_ends_on: '2026-10-27',
+            }),
+          }),
+        ],
+      });
+      const { screen } = await openMap({ day: split }, size);
+      await fireEvent.press(await screen.findByRole('radio', { name: 'Elenco' }));
+      await fireEvent.press(await screen.findByRole('button', { name: /^A2, / }));
+      expect(await screen.findByText(/24 ott.* – .*27 ott/)).toBeOnTheScreen();
+      expect(screen.queryByText(/20 ott/)).toBeNull();
+    },
+  );
+
   it('shows "non consentito" when the server refuses a block', async () => {
     const { screen } = await openMap({
       role: 'manager',

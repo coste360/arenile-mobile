@@ -125,6 +125,7 @@ export function waitlistErrorKey(e: unknown): OfferErrorKey {
       case 'spot_unavailable':
       case 'pool_exhausted':
       case 'quota_exceeded':
+      case 'agreement_quota_exceeded':
         return 'waitlist.errors.unavailable';
       case 'conflict':
       case 'invalid_transition':

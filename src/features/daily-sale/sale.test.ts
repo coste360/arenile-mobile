@@ -168,6 +168,7 @@ describe('saleErrorKey', () => {
     ['offline', new NetworkError('unreachable'), 'sale.errors.offline'],
     ['403', problem(403, 'forbidden'), 'sale.errors.forbidden'],
     ['taken', problem(409, 'spot_unavailable'), 'sale.errors.spot_unavailable'],
+    ['agreement quota', problem(409, 'agreement_quota_exceeded'), 'sale.errors.spot_unavailable'],
     ['cash desk closed', problem(409, 'cash_session_closed'), 'sale.errors.cash_session_closed'],
     ['price changed', problem(409, 'price_changed'), 'sale.errors.price_changed'],
     ['no price', problem(422, 'no_price'), 'sale.errors.no_price'],

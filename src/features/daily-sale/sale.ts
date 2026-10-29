@@ -155,6 +155,7 @@ export function saleErrorKey(e: unknown): SaleErrorKey {
     switch (e.type) {
       case 'spot_unavailable':
       case 'pool_exhausted':
+      case 'agreement_quota_exceeded':
         return 'sale.errors.spot_unavailable';
       case 'cash_session_closed':
         return 'sale.errors.cash_session_closed';

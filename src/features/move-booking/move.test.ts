@@ -126,6 +126,11 @@ describe('moveErrorKey', () => {
     ['403', problem(403, 'forbidden'), 'move.errors.forbidden'],
     ['taken', problem(409, 'spot_unavailable'), 'move.errors.spot_unavailable'],
     ['zone full', problem(409, 'pool_exhausted'), 'move.errors.spot_unavailable'],
+    [
+      'agreement quota used up',
+      problem(409, 'agreement_quota_exceeded'),
+      'move.errors.spot_unavailable',
+    ],
     ['changed meanwhile', problem(412, 'version_conflict'), 'move.errors.version_conflict'],
     ['not modifiable', problem(409, 'conflict'), 'move.errors.not_modifiable'],
     ['approval needed', problem(422, 'policy_violation'), 'move.errors.policy'],

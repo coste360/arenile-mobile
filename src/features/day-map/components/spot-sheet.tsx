@@ -41,7 +41,7 @@ import { hasAnyAction, spotActions } from '../actions';
 import { blockSchema, type BlockValues } from '../block-form';
 import { blockErrorKey, useBlockSpot, useUnblockSpot } from '../blocks';
 import type { DaySpot } from '../model';
-import { indicatorsOf } from '../status';
+import { daysOnSpot, indicatorsOf } from '../status';
 import { SpotSheetExtras } from './spot-sheet-extras';
 import { StatusGlyph } from './status-glyph';
 
@@ -202,11 +202,7 @@ export function SpotSheet({
             <View className="gap-1.5">
               {b.ticket ? <Row label={t('dayMap.sheet.ticket')}>{b.ticket.label}</Row> : null}
               <Row label={t('dayMap.sheet.code')}>{b.code}</Row>
-              <Row label={t('dayMap.sheet.period')}>
-                {b.starts_on === b.ends_on
-                  ? formatDayLabel(b.starts_on, locale)
-                  : `${formatDayLabel(b.starts_on, locale)} – ${formatDayLabel(b.ends_on, locale)}`}
-              </Row>
+              <Row label={t('dayMap.sheet.period')}>{periodLabel(daysOnSpot(b), locale)}</Row>
               <Row label={t('dayMap.sheet.slots')}>{t(`dayMap.slot.${b.slots}`)}</Row>
               <Row label={t('dayMap.sheet.bookingStatus')}>
                 {t(`dayMap.bookingStatus.${b.status}`)}
@@ -495,4 +491,10 @@ function BlockDialog({
       </AlertDialogContent>
     </AlertDialog>
   );
+}
+
+function periodLabel({ from, to }: { from: string; to: string }, locale: string): string {
+  return from === to
+    ? formatDayLabel(from, locale)
+    : `${formatDayLabel(from, locale)} – ${formatDayLabel(to, locale)}`;
 }

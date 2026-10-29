@@ -8,6 +8,7 @@ import type {
   OperationalSpotStatus,
   Slots,
 } from '@/api/types';
+import type { CalendarDate } from '@/lib/calendar';
 
 /** Colour status of the panel's map palette (spec 11.3 table). */
 export type SpotStatus =
@@ -123,6 +124,22 @@ export function indicatorsOf(booking: OperationalBooking | undefined): SpotIndic
   if (booking.has_notes) out.push('note');
   if (booking.customer_tags.some((tag) => tag.toLowerCase() === VIP_TAG)) out.push('vip');
   return out;
+}
+
+/**
+ * Days the booking keeps this spot: the segment of a stay split across spots
+ * (core 1.1, spec 30.6), otherwise the whole stay.
+ */
+export function daysOnSpot(
+  booking: Pick<
+    OperationalBooking,
+    'starts_on' | 'ends_on' | 'segment_starts_on' | 'segment_ends_on'
+  >,
+): { from: CalendarDate; to: CalendarDate } {
+  return {
+    from: booking.segment_starts_on ?? booking.starts_on,
+    to: booking.segment_ends_on ?? booking.ends_on,
+  };
 }
 
 /** NativeWind classes of a status (legend swatch, sheet badge). Literal for Tailwind's scanner. */
