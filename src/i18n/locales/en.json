@@ -1155,7 +1155,9 @@
       "spot_unavailable": "The spot was just taken: pick another one.",
       "version_conflict": "The booking changed meanwhile: open the move again.",
       "not_modifiable": "This booking cannot be moved in its status.",
-      "policy": "This spot needs approval: move the booking from the panel.",
+      "policy": "The move does not meet the establishment's booking rules.",
+      "approval": "A manager's approval is needed: ask a manager to move the booking.",
+      "concurrent": "The booking was being changed at that moment: try again in a few seconds.",
       "invalid": "The package is not valid on this spot: pick another one.",
       "not_found": "The booking or the spot no longer exists.",
       "default": "Move failed. Try again."

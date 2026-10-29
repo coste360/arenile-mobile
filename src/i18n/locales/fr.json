@@ -1155,7 +1155,9 @@
       "spot_unavailable": "L'emplacement vient d'être occupé : choisissez-en un autre.",
       "version_conflict": "La réservation a été modifiée entre-temps : rouvrez le déplacement.",
       "not_modifiable": "Cette réservation ne peut pas être déplacée dans son statut.",
-      "policy": "Cet emplacement nécessite une approbation : déplacez la réservation depuis le panneau.",
+      "policy": "Le déplacement ne respecte pas les règles de réservation de l'établissement.",
+      "approval": "L'approbation d'un responsable est nécessaire : demandez-lui de déplacer la réservation.",
+      "concurrent": "La réservation était en cours de modification : réessayez dans quelques secondes.",
       "invalid": "La formule n'est pas valable sur cet emplacement : choisissez-en un autre.",
       "not_found": "La réservation ou l'emplacement n'existe plus.",
       "default": "Déplacement non abouti. Réessayez."

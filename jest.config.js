@@ -35,5 +35,7 @@ module.exports = {
     '^@/assets/(.*)$': '<rootDir>/assets/$1',
     ...expoPreset.moduleNameMapper,
   },
+  // Agent worktrees (Claude Code) are full copies of the repository.
+  modulePathIgnorePatterns: ['<rootDir>/.claude/worktrees/'],
   clearMocks: true,
 };

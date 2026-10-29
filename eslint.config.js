@@ -10,6 +10,8 @@ module.exports = defineConfig([
     'src/api/generated/*',
     'src/features/day-map/kit/generated/*',
     'coverage/*',
+    // Agent worktrees (Claude Code), full copies of the repository.
+    '.claude/worktrees/*',
   ]),
   expoConfig,
   {

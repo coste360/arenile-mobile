@@ -1155,7 +1155,9 @@
       "spot_unavailable": "Der Platz wurde gerade belegt: Wähle einen anderen.",
       "version_conflict": "Die Buchung wurde inzwischen geändert: Öffne die Verschiebung erneut.",
       "not_modifiable": "Diese Buchung kann in ihrem Status nicht verschoben werden.",
-      "policy": "Dieser Platz erfordert eine Freigabe: Verschiebe die Buchung im Panel.",
+      "policy": "Die Verschiebung entspricht nicht den Buchungsregeln des Betriebs.",
+      "approval": "Die Freigabe eines Managers ist nötig: Bitte einen Manager, die Buchung zu verschieben.",
+      "concurrent": "Die Buchung wurde gerade geändert: Versuche es in ein paar Sekunden erneut.",
       "invalid": "Das Paket ist auf diesem Platz nicht gültig: Wähle einen anderen.",
       "not_found": "Die Buchung oder der Platz existiert nicht mehr.",
       "default": "Verschieben fehlgeschlagen. Versuche es erneut."

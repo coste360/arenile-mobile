@@ -218,6 +218,8 @@ export type MoveErrorKey =
   | 'move.errors.version_conflict'
   | 'move.errors.not_modifiable'
   | 'move.errors.policy'
+  | 'move.errors.approval'
+  | 'move.errors.concurrent'
   | 'move.errors.invalid'
   | 'move.errors.not_found'
   | 'move.swap.errors.conflict'
@@ -245,6 +247,14 @@ export function moveErrorKey(e: unknown): MoveErrorKey {
         return 'move.errors.not_modifiable';
       case 'policy_violation':
         return 'move.errors.policy';
+      // Core 1.1.2: the change needs the approval of a manager, which the
+      // user's role cannot give.
+      case 'approval_required':
+        return 'move.errors.approval';
+      // Core 1.1.1: another change of the same booking won the race; trying
+      // again is safe (moves carry If-Match, nothing was applied).
+      case 'concurrent_update':
+        return 'move.errors.concurrent';
       case 'validation_failed':
       case 'bad_request':
         return 'move.errors.invalid';

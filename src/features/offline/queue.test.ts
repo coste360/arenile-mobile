@@ -123,6 +123,8 @@ describe('operation queue', () => {
     // The same key is still being processed (app killed mid-send, replayed at
     // start): a new key from "riprova" could apply the operation twice.
     ['a 409 idempotency_in_progress', () => problem(409, 'idempotency_in_progress')],
+    // Core 1.1.1: a lost race with another change, retried with the same key.
+    ['a 409 concurrent_update', () => problem(409, 'concurrent_update')],
   ])('treats %s as transient', async (_name, error) => {
     const { queue } = setup(async () => {
       throw error();
