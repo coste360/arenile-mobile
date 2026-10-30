@@ -1,21 +1,16 @@
-import {
-  ChevronRightIcon,
-  CircleAlertIcon,
-  ListXIcon,
-  RefreshCwIcon,
-  SearchIcon,
-} from 'lucide-react-native';
-import { memo, useState } from 'react';
+import { ChevronRightIcon, CircleAlertIcon, ListXIcon, RefreshCwIcon } from 'lucide-react-native';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
 import type { WaitlistEntry } from '@/api/types';
 import { ChipRow, FilterChip } from '@/components/filter-chip';
+import type { ListState } from '@/components/layout/master-detail';
+import { SearchField } from '@/components/search-field';
 import { StateView } from '@/components/state-view';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { usePacks } from '@/features/daily-sale/queries';
 import { usePreferences } from '@/features/preferences/preferences-provider';
@@ -44,10 +39,13 @@ export function WaitlistList({
   spot,
   selectedId,
   onSelect,
+  onListState,
 }: {
   spot?: FreedSpot;
   selectedId?: string;
   onSelect: (entry: WaitlistEntry) => void;
+  /** What the list shows, for the detail beside it (MasterDetail). */
+  onListState?: (state: ListState) => void;
 }) {
   const { t } = useTranslation();
   const { locale } = usePreferences();
@@ -64,8 +62,20 @@ export function WaitlistList({
   const entries = query.data ?? [];
   const shown = spot && onlyCompatible ? compatibleWith(entries, spot, spot.date) : entries;
 
+  const narrowed = !!search.trim() || view !== 'waiting' || (!!spot && onlyCompatible);
+  const listState: ListState = query.data
+    ? shown.length > 0
+      ? 'items'
+      : narrowed
+        ? 'noMatch'
+        : 'empty'
+    : query.isError
+      ? 'empty'
+      : 'loading';
+  useEffect(() => onListState?.(listState), [listState, onListState]);
+
   const header = (
-    <View className="gap-3 px-4 pb-2 pt-4">
+    <View className="gap-3 border-b border-border px-4 pb-3 pt-4">
       {settings.data && !settings.data.enabled ? (
         <Alert icon={CircleAlertIcon}>
           <AlertTitle>{t('waitlist.disabled.title')}</AlertTitle>
@@ -73,26 +83,32 @@ export function WaitlistList({
         </Alert>
       ) : null}
       {spot ? (
-        <View className="gap-2">
-          <Text className="font-semibold">
-            {t('waitlist.freed', { label: spot.label, day: formatDayLabel(spot.date, locale) })}
-          </Text>
-          <ChipRow label={t('waitlist.scope')}>
-            <FilterChip
-              label={t('waitlist.compatible')}
-              selected={onlyCompatible}
-              onPress={() => setOnlyCompatible(true)}
-            />
-            <FilterChip
-              label={t('waitlist.everyone')}
-              selected={!onlyCompatible}
-              onPress={() => setOnlyCompatible(false)}
-            />
-          </ChipRow>
-        </View>
+        <Text className="font-semibold">
+          {t('waitlist.freed', { label: spot.label, day: formatDayLabel(spot.date, locale) })}
+        </Text>
+      ) : null}
+      <SearchField
+        value={search}
+        onChangeText={setSearch}
+        label={t('waitlist.search')}
+        placeholder={t('waitlist.searchPlaceholder')}
+      />
+      {spot ? (
+        <ChipRow bleed label={t('waitlist.scope')}>
+          <FilterChip
+            label={t('waitlist.compatible')}
+            selected={onlyCompatible}
+            onPress={() => setOnlyCompatible(true)}
+          />
+          <FilterChip
+            label={t('waitlist.everyone')}
+            selected={!onlyCompatible}
+            onPress={() => setOnlyCompatible(false)}
+          />
+        </ChipRow>
       ) : null}
       {!spot || !onlyCompatible ? (
-        <ChipRow label={t('waitlist.filter')}>
+        <ChipRow bleed label={t('waitlist.filter')}>
           {WAITLIST_VIEWS.map((v) => (
             <FilterChip
               key={v}
@@ -103,25 +119,20 @@ export function WaitlistList({
           ))}
         </ChipRow>
       ) : null}
-      <View className="flex-row items-center gap-2">
-        <Icon as={SearchIcon} size={18} className="text-muted-foreground" />
-        <Input
-          className="flex-1"
-          value={search}
-          onChangeText={setSearch}
-          placeholder={t('waitlist.searchPlaceholder')}
-          accessibilityLabel={t('waitlist.search')}
-          autoCorrect={false}
-        />
-      </View>
+      {query.data ? (
+        <Text variant="muted" accessibilityLiveRegion="polite">
+          {t('waitlist.results', { count: shown.length })}
+        </Text>
+      ) : null}
     </View>
   );
 
-  if (query.isError && !query.data) {
-    return (
-      <View className="flex-1 bg-background">
-        {header}
+  return (
+    <View className="flex-1 bg-background">
+      {header}
+      {query.isError && !query.data ? (
         <StateView
+          align="top"
           icon={CircleAlertIcon}
           tone="destructive"
           title={t(waitlistErrorKey(query.error))}
@@ -131,40 +142,42 @@ export function WaitlistList({
             <Text>{t('common.retry')}</Text>
           </Button>
         </StateView>
-      </View>
-    );
-  }
-
-  return (
-    <FlatList
-      className="flex-1 bg-background"
-      data={shown}
-      keyExtractor={(e) => e.id}
-      ListHeaderComponent={header}
-      contentContainerClassName="pb-safe"
-      keyboardShouldPersistTaps="handled"
-      refreshControl={
-        <RefreshControl refreshing={query.isRefetching} onRefresh={() => void query.refetch()} />
-      }
-      ListEmptyComponent={
-        query.isPending ? (
-          <StateView busy title={t('common.loading')} />
-        ) : (
-          <StateView
-            icon={ListXIcon}
-            title={t(spot && onlyCompatible ? 'waitlist.emptyCompatible' : 'waitlist.empty')}
-          />
-        )
-      }
-      renderItem={({ item }) => (
-        <WaitlistRow
-          entry={item}
-          pack={packName(item.pack_id)}
-          selected={item.id === selectedId}
-          onPress={onSelect}
+      ) : (
+        <FlatList
+          className="flex-1"
+          data={shown}
+          keyExtractor={(e) => e.id}
+          contentContainerClassName="grow pb-safe"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          refreshControl={
+            <RefreshControl
+              refreshing={query.isRefetching}
+              onRefresh={() => void query.refetch()}
+            />
+          }
+          ListEmptyComponent={
+            query.isPending ? (
+              <StateView align="top" busy title={t('common.loading')} />
+            ) : (
+              <StateView
+                align="top"
+                icon={ListXIcon}
+                title={t(spot && onlyCompatible ? 'waitlist.emptyCompatible' : 'waitlist.empty')}
+              />
+            )
+          }
+          renderItem={({ item }) => (
+            <WaitlistRow
+              entry={item}
+              pack={packName(item.pack_id)}
+              selected={item.id === selectedId}
+              onPress={onSelect}
+            />
+          )}
         />
       )}
-    />
+    </View>
   );
 }
 
@@ -216,13 +229,19 @@ const WaitlistRow = memo(function WaitlistRow({
       )}
     >
       {position ? (
-        <Text className="w-10 text-center font-semibold tabular-nums">{position}</Text>
+        <Text className="w-10 text-center font-semibold tabular-nums" numberOfLines={1}>
+          {position}
+        </Text>
       ) : (
         <View className="w-10" />
       )}
       <View className="flex-1 gap-1">
-        <Text className="font-semibold">{e.customer_display_name}</Text>
-        <Text variant="muted">{request}</Text>
+        <Text className="font-semibold" numberOfLines={1}>
+          {e.customer_display_name}
+        </Text>
+        <Text variant="muted" numberOfLines={2}>
+          {request}
+        </Text>
         <View className="flex-row flex-wrap gap-1">
           <WaitlistStatusBadge status={e.status} />
         </View>

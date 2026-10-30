@@ -3,9 +3,11 @@ import { operationalBooking, spot } from '@/test/operations-fixtures';
 
 import { GLYPH_PATHS, STATUS_GLYPHS } from './glyphs';
 import {
+  daysOnSpot,
   indicatorsOf,
   isBookable,
   LEGEND_ORDER,
+  markersOf,
   slotStatus,
   SPOT_STATUSES,
   STATUS_CLASSES,
@@ -89,6 +91,28 @@ describe('indicatorsOf', () => {
     expect(indicatorsOf(operationalBooking())).toEqual([]);
     expect(indicatorsOf(undefined)).toEqual([]);
   });
+
+  it('adds the arrival and departure day (core 1.1, spec 30.4)', () => {
+    expect(
+      indicatorsOf(operationalBooking({ is_first_day: true, is_last_day: true, has_notes: true })),
+    ).toEqual(['note', 'arrival', 'departure']);
+  });
+});
+
+describe('markersOf', () => {
+  it.each([
+    ['arrival day', { is_first_day: true }, ['arrival']],
+    ['departure day', { is_last_day: true }, ['departure']],
+    ['one-day stay', { is_first_day: true, is_last_day: true }, ['arrival', 'departure']],
+    ['a day in the middle', { is_first_day: false, is_last_day: false }, []],
+    ['an older instance without the fields', {}, []],
+  ])('%s', (_name, fields, want) => {
+    expect(markersOf(operationalBooking(fields))).toEqual(want);
+  });
+
+  it('no booking, no marker', () => {
+    expect(markersOf(undefined)).toEqual([]);
+  });
 });
 
 describe('isBookable', () => {
@@ -97,5 +121,22 @@ describe('isBookable', () => {
     expect(isBookable('released')).toBe(true);
     expect(isBookable('booked')).toBe(false);
     expect(isBookable('held')).toBe(false);
+  });
+});
+
+describe('daysOnSpot', () => {
+  it.each([
+    ['whole stay', {}, { from: '2026-07-01', to: '2026-07-14' }],
+    [
+      'segment of a split stay',
+      { segment_starts_on: '2026-07-08', segment_ends_on: '2026-07-14' },
+      { from: '2026-07-08', to: '2026-07-14' },
+    ],
+  ])('%s', (_name, segment, want) => {
+    expect(
+      daysOnSpot(
+        operationalBooking({ starts_on: '2026-07-01', ends_on: '2026-07-14', ...segment }),
+      ),
+    ).toEqual(want);
   });
 });

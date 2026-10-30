@@ -19,12 +19,15 @@ const FullWindowOverlay = Platform.OS === 'ios' ? RNFullWindowOverlay : React.Fr
 function AlertDialogOverlay({
   className,
   children,
+  windowOverlay = true,
   ...props
 }: Omit<React.ComponentProps<typeof AlertDialogPrimitive.Overlay>, 'asChild'> & {
   children?: React.ReactNode;
+  windowOverlay?: boolean;
 }) {
+  const Overlay = windowOverlay ? FullWindowOverlay : React.Fragment;
   return (
-    <FullWindowOverlay>
+    <Overlay>
       <AlertDialogPrimitive.Overlay
         className={cn(
           'absolute bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center bg-black/50 p-2',
@@ -44,20 +47,23 @@ function AlertDialogOverlay({
           <>{children}</>
         </NativeOnlyAnimatedView>
       </AlertDialogPrimitive.Overlay>
-    </FullWindowOverlay>
+    </Overlay>
   );
 }
 
 function AlertDialogContent({
   className,
   portalHost,
+  windowOverlay,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Content> & {
   portalHost?: string;
+  /** iOS: false keeps the dialog out of FullWindowOverlay, where SwiftUI views (@expo/ui) do not draw. */
+  windowOverlay?: boolean;
 }) {
   return (
     <AlertDialogPortal hostName={portalHost}>
-      <AlertDialogOverlay>
+      <AlertDialogOverlay windowOverlay={windowOverlay}>
         <AlertDialogPrimitive.Content
           className={cn(
             'z-50 flex w-full max-w-[calc(100%-2rem)] flex-col gap-4 rounded-lg border border-border bg-background p-6 shadow-lg shadow-black/5 sm:max-w-lg',

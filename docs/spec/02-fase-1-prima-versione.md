@@ -7,13 +7,26 @@ I permessi seguono il ruolo come nel pannello (sezione 16 del core): ogni azione
 ## Oggi
 
 Riepilogo del giorno nel fuso dello stabilimento: arrivi, presenti, postazioni libere, prenotazioni da
-saldare, abbonati che hanno rilasciato il giorno. Ogni numero porta all'elenco filtrato.
+saldare, abbonati che hanno rilasciato il giorno. Ogni numero porta all'elenco filtrato; nell'elenco
+delle postazioni libere o rilasciate ogni postazione apre la sua scheda sulla mappa del giorno.
 
 Regole dei numeri (le stesse dei totali operativi del core, `DayMovementsOn` e `ActiveStatuses`):
 **arrivi** = prenotazioni attive non abbonamento che iniziano oggi; **presenti** = check-in fatto;
 **da saldare** = prenotazioni attive con saldo; **postazioni libere** = libere o rilasciate (come
 `totals.free`); **giorni rilasciati** = postazioni rilasciate anche solo per mezza giornata. Ogni numero
 è calcolato con lo stesso filtro dell'elenco che apre, quindi coincide con la sua lunghezza.
+
+I cinque numeri stanno sempre in righe piene: tutti in una riga se c'è spazio, altrimenti il primo
+(arrivi) a tutta larghezza e gli altri in righe uguali (1 + 4 o 1 + 2 + 2 sul telefono), mai una riga
+corta che sembri un riquadro mancante.
+
+**Occupazione per fascia**: per la mattina e il pomeriggio, quante postazioni sono occupate, libere e
+non disponibili, in una barra con i numeri scritti accanto e una frase per i lettori di schermo. Lo
+stato di ogni postazione nella fascia è quello della mappa del giorno (`am_status`/`pm_status`, se
+assenti lo stato del giorno, con le regole di colore della mappa): libere = libere o rilasciate
+dall'abbonato; non disponibili = chiuse, inattive o bloccate; occupate = tutto il resto (prenotate,
+presenti, abbonati, trattenute, offerte di rinnovo). Calcolata dal giorno operativo in cache, quindi
+anche offline.
 
 ## Mappa del giorno
 
@@ -22,7 +35,27 @@ Regole dei numeri (le stesse dei totali operativi del core, `DayMovementsOn` e `
 - Zoom e spostamento con i gesti, ricerca per postazione, cliente o codice prenotazione.
 - **Scheda postazione:** stato, prenotazione o abbonamento, cliente (solo i dati che il ruolo può
   vedere), saldo, azioni consentite.
-- Su tablet la mappa occupa il dettaglio e la scheda si apre accanto, senza coprire la mappa.
+- La scheda si apre accanto alla mappa quando la mappa conserva almeno 420 pt (tablet largo);
+  altrimenti (telefono, tablet in verticale o in Split View) copre la mappa a tutta altezza, che resta
+  com'era alla chiusura; su Android il tasto Indietro la chiude.
+- Giorno: "Oggi · Domani · calendario"; oggi e domani anche offline, gli altri giorni solo online
+  ([ADR 0014](../adr/0014-giorni-oltre-la-finestra-offline.md)).
+- **Mappa più ricca** (core 1.1, sezione 30.4 del core, come il pannello): arrivi e partenze segnati
+  sulle postazioni e contati nella legenda; filtri rapidi "Evidenzia" (arrivi, partenze, da incassare,
+  presenti, una convenzione o partner, un gruppo; uno alla volta, con la ricerca dentro il filtro);
+  etichette combinabili sotto le postazioni occupate (cliente, fine soggiorno, allestimento); nella
+  scheda allestimento, persone, gruppo, convenzione e partner.
+- **Calendario della postazione** (sezione 30.5 del core) dalla scheda, solo online: la stagione mese
+  per mese, mattina e pomeriggio con i colori della mappa (mesi affiancati su tablet). Un giorno
+  occupato apre la prenotazione (con `bookings.read`), un giorno libero da oggi in poi avvia una nuova
+  prenotazione (con `bookings.write`); un giorno occupato a metà offre le due scelte.
+
+## Lista bagnini
+
+Lista del giorno per i bagnini (sezione 30.10 del core): postazioni occupate per fila con il cognome,
+arrivi e partenze, allestimento e gruppo; filtri per arrivi, partenze e da saldare. Oggi e domani
+anche offline (cache e prefetch come il giorno operativo), gli altri giorni solo online. Visibile solo
+con `bookings.read`, dalla home e dal pannello di navigazione su tablet; mai email o telefono.
 
 ## Prenotazioni del giorno
 
@@ -30,7 +63,8 @@ Elenco con filtri (arrivi, presenti, da saldare, abbonati, online/cassa), ricerc
 **Scheda prenotazione:** postazione, periodo e fasce, cliente, importi in centesimi formattati in
 italiano, pagamenti, note, cronologia essenziale.
 
-- L'elenco copre oggi e domani (la finestra offline); cancellate, scadute, rifiutate e bozze sono
+- L'elenco copre qualsiasi giorno scelto con lo stesso selettore della mappa: oggi e domani anche
+  offline (la finestra della cache), gli altri solo online (ADR 0014); cancellate, scadute, rifiutate e bozze sono
   nascoste salvo richiesta. "Online" comprende la pagina pubblica e le integrazioni API (il badge le
   distingue). La ricerca trova codice, cliente (anche senza accenti) e postazione.
 - **Cliente secondo il ruolo:** nome ed etichette per tutti i ruoli con `bookings.read`; email,
@@ -41,6 +75,24 @@ italiano, pagamenti, note, cronologia essenziale.
   non ciò che il ruolo può ottenere; un filtro lato server sarebbe una modifica del core.
 - Su tablet elenco e scheda sono affiancati; un collegamento a una prenotazione apre la vista affiancata
   con la prenotazione selezionata.
+- **Gruppo e ospiti** (core 1.1, spec 30.8 del core): nome del gruppo, provenienza, adulti e bambini,
+  nomi degli ospiti. Visibili come il nome del cliente, a ogni ruolo con `bookings.read`; nascosti per
+  un cliente anonimizzato (il core li cancella con l'anonimizzazione).
+- **Convenzione e partner** (core 1.1, spec 30.2): nome della convenzione, partner, quota a carico del
+  partner (tutto, percentuale o importo fisso) con l'importo calcolato dal server, soggiorno
+  dell'ospite del partner.
+- **Requisito della convenzione** (es. residenti, spec 30.2.2-30.2.3): verificato (data, operatore,
+  nota) oppure "da verificare" con il pulsante "Verificato", che registra solo data e operatore, mai
+  una copia del documento (`POST requirement-verification` con `If-Match`). Lo stesso avviso compare
+  al check-in, senza bloccarlo: il core non ne fa una condizione. Solo online, per chi ha
+  `bookings.write`; gli altri ruoli vedono il requisito senza pulsante.
+- **Riepilogo per il cliente** (spec 30.9): "Invia riepilogo al cliente" chiede al core il testo nella
+  lingua del cliente e lo passa alla condivisione del telefono (WhatsApp, Messaggi...): Arenile non
+  invia nulla a terzi. Ogni richiesta crea un nuovo link di gestione e revoca il precedente (per
+  questo è un `POST`, mai ripetuto da solo): se la condivisione non si apre, il testo resta e una
+  nuova pressione la riapre senza creare un altro link; chiudere la condivisione non è un errore.
+  Solo online, per chi ha `bookings.write`; non per prenotazioni cancellate, scadute o rifiutate né
+  per clienti anonimizzati.
 
 ## Operazioni
 
@@ -82,6 +134,7 @@ Implementata, non ancora pubblicata.
 ## Pubblicazione
 
 - Build e invio con EAS Build/Submit, account Apple Developer e Google Play di Coste360.
-- Revisione degli store sulla demo pubblica azzerata ogni notte (sezione 26 del core).
+- Revisione degli store sulla demo pubblica azzerata ogni notte (sezione 26 del core), raggiunta con
+  "Prova la demo" dalla schermata "Collega" (ADR 0015).
 - Licenza dell'app decisa da Coste360 prima della pubblicazione.
 - Icone e schermata di avvio con il marchio ufficiale; schede degli store in quattro lingue.

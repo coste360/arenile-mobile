@@ -3,6 +3,7 @@ import {
   CalendarDaysIcon,
   ChevronRightIcon,
   ClipboardListIcon,
+  LifeBuoyIcon,
   ListOrderedIcon,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +16,8 @@ import { Text } from '@/components/ui/text';
 import { useAbilities } from '@/features/permissions/use-abilities';
 
 /**
- * Entry to the day screens from the home: "Oggi" and the bookings of the
- * day (on tablets they are also in the navigation pane). Hidden for a role
+ * Entry to the day screens from the home: "Oggi", the bookings of the day,
+ * the lifeguard list and the waitlist (on tablets they are also in the navigation pane). Hidden for a role
  * that cannot read bookings.
  */
 export function DayShortcuts() {
@@ -40,6 +41,13 @@ export function DayShortcuts() {
           <Icon as={ClipboardListIcon} size={18} />
           <View className="flex-1">
             <Text className="text-left">{t('today.shortcuts.bookings')}</Text>
+          </View>
+          <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
+        </Button>
+        <Button size="lg" variant="outline" onPress={() => router.push('/lifeguard')}>
+          <Icon as={LifeBuoyIcon} size={18} />
+          <View className="flex-1">
+            <Text className="text-left">{t('nav.lifeguard')}</Text>
           </View>
           <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
         </Button>

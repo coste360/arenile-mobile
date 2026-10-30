@@ -1,6 +1,5 @@
 import { router } from 'expo-router';
 import {
-  CalendarOffIcon,
   CircleAlertIcon,
   LockIcon,
   LogInIcon,
@@ -11,14 +10,15 @@ import {
   WalletIcon,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
 
 import { isForbidden } from '@/api/errors';
 import { CachedNotice, servedFromCache } from '@/components/cached-notice';
 import { Screen } from '@/components/layout/screen';
 import { StateView } from '@/components/state-view';
 import { FigureCard } from '@/components/today/figure-card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { FigureGrid } from '@/components/today/figure-grid';
+import { SlotOccupancy } from '@/components/today/slot-occupancy';
+import { ClosedDayNotice } from '@/components/closed-day-notice';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -42,7 +42,8 @@ const UNKNOWN = '–';
 export default function TodayScreen() {
   const { t } = useTranslation();
   const { locale } = usePreferences();
-  const { today } = useOperationalDays();
+  const days = useOperationalDays();
+  const { today } = days;
   const abilities = useAbilities();
   const day = useOperationsDay(today);
   const bookings = useBookingsOfDay(today);
@@ -111,13 +112,8 @@ export default function TodayScreen() {
         {t('today.heading', { date: formatLongDay(today, locale) })}
       </Text>
       <CachedNotice stale={stale} updatedAt={Number.isFinite(updatedAt) ? updatedAt : 0} />
-      {day.data?.closed ? (
-        <Alert icon={CalendarOffIcon}>
-          <AlertTitle>{t('today.closedTitle')}</AlertTitle>
-          <AlertDescription>{t('today.closedDescription')}</AlertDescription>
-        </Alert>
-      ) : null}
-      <View className="flex-row flex-wrap gap-3">
+      {day.data?.closed ? <ClosedDayNotice date={today} days={days} locale={locale} /> : null}
+      <FigureGrid>
         <FigureCard
           icon={LogInIcon}
           label={t('today.figures.arrivals')}
@@ -155,7 +151,8 @@ export default function TodayScreen() {
           onPress={() => openSpots('released')}
           testID="figure-released"
         />
-      </View>
+      </FigureGrid>
+      {day.data && day.data.spots.length > 0 ? <SlotOccupancy spots={day.data.spots} /> : null}
     </Screen>
   );
 }

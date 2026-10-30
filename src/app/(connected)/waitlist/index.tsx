@@ -1,11 +1,15 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { CloudOffIcon, LockIcon, MousePointerClickIcon } from 'lucide-react-native';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
 
 import type { WaitlistEntry } from '@/api/types';
-import { useDeviceLayout } from '@/components/layout/use-device-layout';
+import {
+  DetailScroll,
+  MasterDetail,
+  useSplitView,
+  type ListState,
+} from '@/components/layout/master-detail';
 import { StateView } from '@/components/state-view';
 import { WaitlistEntryView } from '@/components/waitlist/waitlist-entry';
 import { WaitlistList } from '@/components/waitlist/waitlist-list';
@@ -15,13 +19,14 @@ import { canViewWaitlist, freedSpotOf } from '@/features/waitlist/waitlist';
 
 /**
  * "Lista d'attesa" (spec 03). Phone: the list, a row opens the entry.
- * Tablet: list and entry side by side, the selection in `selected`. Opened
+ * Tablet with room for both: list and entry side by side, the selection in `selected`. Opened
  * from the map with `spotId`, `zoneId`, `label` and `date`, it offers that
  * freed spot to the compatible requests. Online only.
  */
 export default function WaitlistScreen() {
   const { t } = useTranslation();
-  const layout = useDeviceLayout();
+  const split = useSplitView();
+  const navigation = useNavigation<{ setParams(params: { selected?: string }): void }>();
   const abilities = useAbilities();
   const { available: online } = useOnlineOnly();
   const params = useLocalSearchParams<{
@@ -37,11 +42,11 @@ export default function WaitlistScreen() {
     [spotId, zoneId, label, date],
   );
   const selected = typeof params.selected === 'string' ? params.selected : undefined;
-  const tablet = layout === 'tablet';
+  const [listState, setListState] = useState<ListState>('loading');
 
   const onSelect = useCallback(
     (e: WaitlistEntry) => {
-      if (tablet) router.setParams({ selected: e.id });
+      if (split) router.setParams({ selected: e.id });
       else
         router.push({
           pathname: '/waitlist/[entryId]',
@@ -53,8 +58,25 @@ export default function WaitlistScreen() {
           },
         });
     },
-    [tablet, spot],
+    [split, spot],
   );
+
+  // The window got too narrow for the split (rotation, Split View): the open
+  // entry goes on as on phones, with the freed spot it was opened for.
+  useEffect(() => {
+    if (split || !selected) return;
+    // On this list's own route: router.setParams would target the screen pushed right after.
+    navigation.setParams({ selected: undefined });
+    router.push({
+      pathname: '/waitlist/[entryId]',
+      params: {
+        entryId: selected,
+        ...(spot
+          ? { spotId: spot.spotId, zoneId: spot.zoneId, label: spot.label, date: spot.date }
+          : {}),
+      },
+    });
+  }, [split, selected, spot, navigation]);
 
   if (abilities.known && !canViewWaitlist(abilities)) {
     return <StateView icon={LockIcon} title={t('offline.errors.forbidden')} />;
@@ -68,28 +90,33 @@ export default function WaitlistScreen() {
       />
     );
   }
-  if (!tablet) return <WaitlistList spot={spot} onSelect={onSelect} />;
+  const list = (
+    <WaitlistList
+      spot={spot}
+      selectedId={split ? selected : undefined}
+      onSelect={onSelect}
+      onListState={setListState}
+    />
+  );
+  if (!split) return list;
 
   return (
-    <View className="flex-1 flex-row bg-background">
-      <View className="w-80 border-r border-border xl:w-96">
-        <WaitlistList spot={spot} selectedId={selected} onSelect={onSelect} />
-      </View>
-      <View className="flex-1" role="region" accessibilityLabel={t('nav.waitlistEntry')}>
-        {selected ? (
-          <ScrollView className="flex-1" contentContainerClassName="gap-4 px-8 py-8 pb-safe">
-            <View className="w-full max-w-2xl gap-4 self-center">
-              <WaitlistEntryView key={selected} entryId={selected} spot={spot} />
-            </View>
-          </ScrollView>
-        ) : (
-          <StateView
-            icon={MousePointerClickIcon}
-            title={t('waitlist.selectTitle')}
-            description={t('waitlist.selectDescription')}
-          />
-        )}
-      </View>
-    </View>
+    <MasterDetail
+      list={list}
+      listState={listState}
+      detailLabel={t('nav.waitlistEntry')}
+      detail={
+        selected ? (
+          <DetailScroll>
+            <WaitlistEntryView key={selected} entryId={selected} spot={spot} />
+          </DetailScroll>
+        ) : null
+      }
+      placeholder={{
+        icon: MousePointerClickIcon,
+        title: t('waitlist.selectTitle'),
+        description: t('waitlist.selectDescription'),
+      }}
+    />
   );
 }

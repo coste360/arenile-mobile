@@ -3,14 +3,17 @@ import { operationalBooking, operationsDay, spot } from '@/test/operations-fixtu
 
 import {
   buildDaySpots,
+  captionOf,
   compareLabels,
   countByStatus,
+  countMarkers,
   localized,
   mapName,
   normalize,
   occupantFullName,
   occupantShortLabel,
   searchSpots,
+  type CaptionPart,
   type DaySpotsInput,
 } from './model';
 
@@ -172,5 +175,88 @@ describe('texts', () => {
     const none = operationalBooking({ occupant_label: ' ', customer_display_name: '' });
     expect(occupantShortLabel(none, texts)).toBeUndefined();
     expect(occupantFullName(none, texts)).toBeUndefined();
+  });
+});
+
+describe('captionOf (spec 30.4 label parts)', () => {
+  const b = operationalBooking({
+    occupant_label: 'Rossi',
+    starts_on: '2026-08-01',
+    ends_on: '2026-08-16',
+    setup_label: '2L 1S',
+  });
+  const opts = (
+    parts: CaptionPart[],
+    extra: { canSeeCustomers?: boolean; locale?: string } = {},
+  ) => ({
+    parts,
+    canSeeCustomers: extra.canSeeCustomers ?? true,
+    texts,
+    locale: extra.locale ?? 'it',
+  });
+
+  it.each<[string, CaptionPart[], string | undefined]>([
+    ['customer (default)', ['customer'], 'Rossi'],
+    ['end of stay', ['end'], '16/8'],
+    ['setup', ['setup'], '2L 1S'],
+    ['every part, in canonical order', ['setup', 'end', 'customer'], 'Rossi · 16/8 · 2L 1S'],
+    ['none: only the code stays', [], undefined],
+  ])('%s', (_name, parts, want) => {
+    expect(captionOf(b, opts(parts))).toBe(want);
+  });
+
+  it('ends on the last day on this spot for a split stay', () => {
+    expect(captionOf({ ...b, segment_ends_on: '2026-08-08' }, opts(['end']))).toBe('8/8');
+  });
+
+  it('writes the date in the user language', () => {
+    expect(captionOf(b, opts(['end'], { locale: 'en' }))).toBe('8/16');
+  });
+
+  it('never names the customer to a role without bookings.read, but keeps the other parts', () => {
+    expect(captionOf(b, opts(['customer', 'setup'], { canSeeCustomers: false }))).toBe('2L 1S');
+    expect(captionOf(b, opts(['customer'], { canSeeCustomers: false }))).toBeUndefined();
+  });
+
+  it('skips a missing or blank setup', () => {
+    expect(captionOf({ ...b, setup_label: ' ' }, opts(['setup']))).toBeUndefined();
+    expect(captionOf({ ...b, setup_label: undefined }, opts(['customer', 'setup']))).toBe('Rossi');
+  });
+
+  it('applies the parts to the spots taken for the slot only', () => {
+    const spots = buildDaySpots(input({ captionParts: ['customer', 'end'] }));
+    expect(spots.map((s) => s.caption)).toEqual([undefined, 'Bianchi · 25/10', undefined]);
+  });
+});
+
+describe('markers on the map', () => {
+  const marked = operationsDay({
+    spots: [
+      spot({
+        spot_id: 's-1',
+        label: 'A1',
+        status: 'booked',
+        booking: operationalBooking({ is_first_day: true }),
+      }),
+      spot({
+        spot_id: 's-2',
+        label: 'A2',
+        status: 'booked',
+        booking: operationalBooking({ is_first_day: true, is_last_day: true }),
+      }),
+      // A released pass day keeps its booking but the spot is not taken: no marker.
+      spot({
+        spot_id: 's-3',
+        label: 'B1',
+        status: 'released',
+        booking: operationalBooking({ is_last_day: true }),
+      }),
+    ],
+  });
+
+  it('marks arrivals and departures of the taken spots and counts them', () => {
+    const spots = buildDaySpots(input({ day: marked }));
+    expect(spots.map((s) => s.markers)).toEqual([['arrival'], ['arrival', 'departure'], []]);
+    expect(countMarkers(spots)).toEqual({ arrival: 2, departure: 1 });
   });
 });

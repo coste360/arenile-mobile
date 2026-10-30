@@ -149,6 +149,74 @@ describe('reports screen', () => {
     });
   });
 
+  it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletLandscape'])(
+    'charts the week day by day against last year on a %s',
+    async (size) => {
+      const { screen } = await renderApp({
+        session: SESSION,
+        routes: routes('owner'),
+        initialUrl: '/reports',
+        size,
+      });
+      expect(await screen.findByText('Incassato')).toBeOnTheScreen();
+      // The day period has a single point: nothing to chart.
+      expect(screen.queryByText('Andamento della settimana')).toBeNull();
+
+      await fireEvent.press(screen.getByRole('radio', { name: 'Settimana' }));
+
+      expect(await screen.findByText('Andamento della settimana')).toBeOnTheScreen();
+      // Legend in words (the years, hidden from screen readers: the chart label names them),
+      // scale and weekdays written as text.
+      expect(screen.getByText('2026', { includeHiddenElements: true })).toBeOnTheScreen();
+      expect(screen.getByText('2025', { includeHiddenElements: true })).toBeOnTheScreen();
+      expect(screen.getByText(nbsp('Scala fino a 500,00 €'))).toBeOnTheScreen();
+      expect(screen.getByText('Scala fino a 100,0%')).toBeOnTheScreen();
+      expect(screen.getAllByText('lun')).toHaveLength(2);
+      expect(screen.getAllByText('dom')).toHaveLength(2);
+
+      // Each chart is one image for screen readers, with every number.
+      const revenue = screen.getByTestId('daily-chart-revenue');
+      expect(revenue.props.role).toBe('img');
+      // Intl spaces (no-break) read as plain spaces for the comparison.
+      const plain = (s: unknown) => String(s).replace(/\s/g, ' ');
+      const label = plain(revenue.props.accessibilityLabel);
+      expect(
+        label.startsWith(
+          'Grafico: Incassato giorno per giorno, 2026 a confronto con 2025. lun 19 ott: 500,00 €, nel 2025 400,00 €. ',
+        ),
+      ).toBe(true);
+      expect(label).toContain('dom 25 ott: 500,00 €, nel 2025 400,00 €.');
+      expect(plain(screen.getByTestId('daily-chart-occupancy').props.accessibilityLabel)).toContain(
+        'Occupazione giorno per giorno, 2026 a confronto con 2025. lun 19 ott: 62,3%, nel 2025 50,0%.',
+      );
+      // The values stay written in the day-by-day list.
+      expect(await screen.findByText('Giorno per giorno')).toBeOnTheScreen();
+    },
+  );
+
+  it('says so instead of drawing a week without takings', async () => {
+    const { screen } = await renderApp({
+      session: SESSION,
+      routes: routes('owner', (req) => {
+        const url = new URL(req.url);
+        const report = yearComparison(url.searchParams.get('from')!, url.searchParams.get('to')!);
+        return json(200, {
+          ...report,
+          series: report.series.map((p) => ({ ...p, current_revenue: 0, previous_revenue: 0 })),
+        });
+      }),
+      initialUrl: '/reports',
+    });
+    expect(await screen.findByText('Incassato')).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('radio', { name: 'Settimana' }));
+
+    expect(
+      await screen.findByText("Nessun valore nella settimana, né quest'anno né l'anno precedente."),
+    ).toBeOnTheScreen();
+    expect(screen.queryByTestId('daily-chart-revenue')).toBeNull();
+    expect(screen.getByTestId('daily-chart-occupancy')).toBeOnTheScreen();
+  });
+
   it('goes back one day and never past today', async () => {
     const { screen, network } = await renderApp({
       session: SESSION,

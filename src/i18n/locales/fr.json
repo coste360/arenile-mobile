@@ -4,7 +4,8 @@
     "back": "Retour",
     "cancel": "Annuler",
     "retry": "Réessayer",
-    "loading": "Chargement en cours"
+    "loading": "Chargement en cours",
+    "clearSearch": "Effacer la recherche"
   },
   "languages": {
     "it": "Italiano",
@@ -24,7 +25,9 @@
     "description": "Connectez l'application à votre établissement avec le QR code du panneau : Configuration → Appareils → Associer un appareil.",
     "scan": "Scanner le QR code",
     "manual": "Saisir l'adresse et le code",
-    "privacy": "L'application ne parle qu'à votre instance Arenile : aucune donnée ne passe par Coste360, aucune télémétrie.",
+    "demo": "Essayer la démo",
+    "demoHint": "Ouvre un établissement d'exemple sur le serveur de démonstration de Coste360, avec des données fictives réinitialisées chaque nuit.",
+    "privacy": "L'application ne parle qu'à l'instance à laquelle vous l'associez, sans télémétrie : associée à la vôtre, aucune donnée ne passe par Coste360.",
     "revoked": {
       "title": "Appareil déconnecté",
       "description": "L'accès de cet appareil a été révoqué depuis le panneau ou a expiré. Associez-le de nouveau avec un nouveau code."
@@ -75,6 +78,7 @@
   "pair": {
     "title": "Connexion",
     "progress": "Connexion à {{target}} en cours",
+    "demoTarget": "la démo d'Arenile",
     "confirm": {
       "title": "Connecter cet appareil ?",
       "description": "Le lien demande de connecter l'application à l'instance {{host}}. Continuez seulement s'il s'agit de l'adresse de votre établissement.",
@@ -117,6 +121,10 @@
         "title": "Association indisponible",
         "description": "L'instance n'accepte pas de nouveaux appareils pour le moment. Si vous utilisez l'application de bureau, activez le mode réseau local."
       },
+      "demo_unavailable": {
+        "title": "Démo indisponible",
+        "description": "La démo d'Arenile n'accepte pas de nouveaux appareils pour le moment. Réessayez plus tard ou associez l'application à votre établissement."
+      },
       "code_invalid": {
         "title": "Code non valide",
         "description": "Le code n'est pas valide, a expiré ou a déjà été utilisé. Générez-en un nouveau dans le panneau."
@@ -124,6 +132,10 @@
       "rate_limited": {
         "title": "Trop de tentatives",
         "description": "Les tentatives sont limitées par sécurité. Attendez une minute et réessayez."
+      },
+      "demo_rate_limited": {
+        "title": "Trop d'essais de la démo",
+        "description": "La démo accepte un nombre limité de sessions par heure. Réessayez dans une heure."
       },
       "unexpected": {
         "title": "Un problème est survenu",
@@ -156,12 +168,16 @@
     "bookings": "Réservations",
     "booking": "Réservation",
     "spots": "Emplacements",
+    "lifeguard": "Liste des maîtres-nageurs",
     "operations": "Opérations",
     "reports": "Rapports",
     "sale": "Vente du jour",
     "move": "Déplacer la réservation",
     "waitlist": "Liste d'attente",
-    "waitlistEntry": "Inscription"
+    "waitlistEntry": "Inscription",
+    "toggleMenu": "Afficher ou masquer le menu",
+    "closeMenu": "Fermer le menu",
+    "newBooking": "Nouvelle réservation"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -310,11 +326,6 @@
     "mapFallback": "Plan",
     "seaLabel": "Mer",
     "maps": "Plans",
-    "day": {
-      "label": "Jour",
-      "today": "Aujourd'hui",
-      "tomorrow": "Demain"
-    },
     "slot": {
       "label": "Créneau",
       "FULL": "Journée",
@@ -357,7 +368,9 @@
       "extra": "Suppléments",
       "note": "Note",
       "vip": "VIP",
-      "to_assign": "À attribuer"
+      "to_assign": "À attribuer",
+      "arrival": "Arrivée",
+      "departure": "Départ"
     },
     "occupant": {
       "anonymous": "Client anonyme",
@@ -371,7 +384,6 @@
       "label": "Rechercher un emplacement",
       "placeholder": "Emplacement, client ou code",
       "placeholderNoCustomers": "Emplacement ou code",
-      "clear": "Effacer la recherche",
       "results_one": "{{count}} emplacement trouvé",
       "results_other": "{{count}} emplacements trouvés",
       "none": "Aucun emplacement ne correspond à la recherche"
@@ -403,7 +415,6 @@
       "forbidden": {
         "title": "Non autorisé"
       },
-      "closed": "Jour de fermeture ou hors saison.",
       "dayLoading": "Chargement des statuts du jour…",
       "dayError": "Statuts du jour indisponibles : le plan n'affiche que les emplacements."
     },
@@ -474,8 +485,6 @@
   },
   "today": {
     "heading": "Aujourd'hui, {{date}}",
-    "closedTitle": "Établissement fermé",
-    "closedDescription": "Aujourd'hui est un jour de fermeture ou hors saison.",
     "figures": {
       "arrivals": "Arrivées",
       "present": "Présents",
@@ -494,6 +503,19 @@
       "title": "La journée",
       "today": "Résumé du jour",
       "bookings": "Réservations du jour"
+    },
+    "slots": {
+      "title": "Occupation par créneau",
+      "AM": "Matin",
+      "PM": "Après-midi",
+      "uses": {
+        "occupied": "Occupés",
+        "free": "Libres",
+        "closed": "Indisponibles"
+      },
+      "count": "{{label}} {{count}}",
+      "rowA11y": "{{slot}} : occupés {{occupied}}, libres {{free}}, indisponibles {{closed}}, sur {{total}} emplacements.",
+      "hint": "Libres comprend les jours libérés par les abonnés ; indisponibles désigne les emplacements fermés ou bloqués."
     }
   },
   "spots": {
@@ -506,7 +528,31 @@
     "released": "Libéré",
     "free": "Libre",
     "emptyFree": "Aucun emplacement libre ce jour-là.",
-    "emptyReleased": "Aucun abonné n'a libéré son emplacement ce jour-là."
+    "emptyReleased": "Aucun abonné n'a libéré son emplacement ce jour-là.",
+    "openOnMap": "Ouvre l'emplacement sur le plan"
+  },
+  "lifeguard": {
+    "filtersLabel": "Filtrer les emplacements",
+    "filters": {
+      "all": "Tous",
+      "arriving": "Arrivées",
+      "departing": "Départs",
+      "balance_due": "Solde dû"
+    },
+    "chipLabel": "{{label}} : {{count}}",
+    "results_one": "{{count}} emplacement occupé",
+    "results_other": "{{count}} emplacements occupés",
+    "row": "Rangée {{row}}",
+    "noRow": "Sans rangée",
+    "anonymous": "Client anonyme",
+    "flags": {
+      "arriving": "Arrivée",
+      "departing": "Départ",
+      "balance_due": "Solde dû"
+    },
+    "emptyTitle": "Aucun emplacement occupé ce jour-là.",
+    "noMatchTitle": "Aucun emplacement ne correspond à ce filtre.",
+    "showAll": "Tout afficher"
   },
   "bookings": {
     "status": {
@@ -560,11 +606,6 @@
         "season_pass": "Abonnés"
       },
       "chipLabel": "{{label}}, {{count}}",
-      "dayLabel": "Jour",
-      "days": {
-        "today": "Aujourd'hui",
-        "tomorrow": "Demain"
-      },
       "channelLabel": "Canal",
       "channels": {
         "all": "Tous les canaux",
@@ -596,6 +637,7 @@
     "detail": {
       "stay": "Emplacement et période",
       "spots": "Emplacements",
+      "segment": "{{spot}} : du {{from}} au {{to}}",
       "period": "Période",
       "days_one": "{{count}} jour",
       "days_other": "{{count}} jours",
@@ -678,7 +720,59 @@
       "errorTitle": "Réservation indisponible",
       "errorDescription": "Impossible de la lire depuis l'instance. Vérifiez la connexion et réessayez.",
       "notFound": "La réservation n'existe plus.",
-      "actionsTitle": "Actions"
+      "actionsTitle": "Actions",
+      "actionsOnlineOnly": "Ces actions nécessitent que l'instance soit joignable."
+    },
+    "share": {
+      "action": "Envoyer le récapitulatif au client",
+      "hint": "Ouvre le partage avec le texte dans la langue du client et le lien pour gérer la réservation.",
+      "newLink": "Chaque envoi crée un nouveau lien de gestion : celui envoyé avant ne fonctionne plus.",
+      "errors": {
+        "offline": "Instance injoignable : le récapitulatif n'a pas été créé.",
+        "forbidden": "Votre rôle ne peut pas envoyer le récapitulatif.",
+        "not_found": "La réservation n'existe plus.",
+        "unavailable": "Cette instance ne prépare pas encore le récapitulatif client.",
+        "default": "Le récapitulatif n'a pas pu être préparé. Réessayez.",
+        "sheet": "Le récapitulatif est prêt mais le partage ne s'est pas ouvert. Appuyez de nouveau pour le rouvrir : le lien reste le même."
+      }
+    },
+    "agreement": {
+      "title": "Convention",
+      "name": "Convention",
+      "partner": "Partenaire",
+      "share": "Part du partenaire",
+      "shareFull": "Entièrement à la charge du partenaire",
+      "sharePercent": "{{percent}} % à la charge du partenaire",
+      "shareAmount": "{{amount}} à la charge du partenaire",
+      "partnerAmount": "Montant à la charge du partenaire",
+      "guestStay": "Séjour de l'hôte",
+      "toVerify": "Condition à vérifier",
+      "verify": "Vérifié",
+      "verifyHint": "Enregistre la date et l'opérateur de la vérification, jamais une copie du document.",
+      "onlineOnly": "Enregistrer la vérification nécessite que l'instance soit joignable.",
+      "verifiedAt": "Vérifié le {{when}}",
+      "verifiedBy": "Vérifié le {{when}} par {{name}}",
+      "errors": {
+        "offline": "Instance injoignable : la vérification n'a pas été enregistrée.",
+        "forbidden": "Votre rôle ne peut pas enregistrer la vérification.",
+        "changed": "La réservation a changé entre-temps : consultez la fiche à jour et réessayez.",
+        "not_modifiable": "La réservation est terminée ou annulée : la vérification ne peut plus être enregistrée.",
+        "invalid": "La réservation n'a pas de convention à vérifier.",
+        "not_found": "La réservation n'existe plus.",
+        "unavailable": "Cette instance n'enregistre pas encore les vérifications.",
+        "default": "La vérification n'a pas pu être enregistrée. Réessayez."
+      }
+    },
+    "guests": {
+      "title": "Groupe et hôtes",
+      "group": "Groupe",
+      "origin": "Provenance",
+      "party": "Personnes",
+      "adults_one": "{{count}} adulte",
+      "adults_other": "{{count}} adultes",
+      "children_one": "{{count}} enfant",
+      "children_other": "{{count}} enfants",
+      "names": "Hôtes"
     }
   },
   "operations": {
@@ -697,7 +791,12 @@
       "spotsSearchPlaceholder": "Par exemple A1",
       "spotsEmpty": "Aucun emplacement trouvé.",
       "spotsUnavailable": "Le plan du jour n'est pas disponible : une connexion est nécessaire au moins une fois.",
-      "spotsMore": "Affinez la recherche pour voir les autres emplacements."
+      "spotsMore": "Affinez la recherche pour voir les autres emplacements.",
+      "detailLabel": "Détail de l'opération",
+      "selectTitle": "Choisissez un emplacement",
+      "selectDescription": "Ou recherchez le code d'une réservation ou d'un billet.",
+      "spotsCount_one": "{{count}} emplacement",
+      "spotsCount_other": "{{count}} emplacements"
     },
     "scan": {
       "cameraLabel": "Aperçu de la caméra pour les QR codes des réservations et des billets",
@@ -935,6 +1034,13 @@
       "error": "Les rapports n'ont pas pu être chargés depuis l'instance.",
       "stale": "Données non à jour. {{reason}}",
       "retry": "Réessayer"
+    },
+    "chart": {
+      "title": "La semaine en un coup d’œil",
+      "scale": "Échelle jusqu’à {{value}}",
+      "a11y": "Graphique : {{metric}} jour par jour, {{year}} comparé à {{previousYear}}. {{days}}",
+      "dayA11y": "{{day}} : {{value}}, en {{year}} {{previous}}.",
+      "empty": "Aucune valeur cette semaine, ni cette année ni l’année précédente."
     }
   },
   "widget": {
@@ -1040,9 +1146,97 @@
       "no_price": "Aucun prix pour cette formule à cette date : vérifiez la grille tarifaire dans le panneau.",
       "in_progress": "La vente est déjà en cours : patientez quelques secondes.",
       "not_found": "Emplacement ou formule plus disponible.",
+      "policy": "La vente ne respecte pas les règles de réservation de l'établissement.",
       "default": "Vente non aboutie. Réessayez."
     },
     "onlineOnly": "La vente nécessite l'instance joignable : le serveur garantit la disponibilité et le numéro du ticket."
+  },
+  "newBooking": {
+    "title": "Nouvelle réservation",
+    "titleSpot": "Réserver {{label}}",
+    "subtitle": "Le prix et les règles viennent du serveur pendant la saisie ; le paiement est enregistré ensuite depuis la réservation.",
+    "action": "Nouvelle réservation",
+    "actionSpot": "Réserver {{label}}",
+    "onlineOnly": "Pour réserver, une connexion à l'instance est nécessaire.",
+    "spot": "Emplacement",
+    "search": "Rechercher un emplacement",
+    "searchPlaceholder": "Ex. A12",
+    "freeOn": "Libres le {{day}} · {{slot}} ; le serveur vérifie les autres jours.",
+    "noSpots": "Aucun emplacement libre ne correspond à cette recherche.",
+    "more": "Il y a d'autres emplacements : affinez la recherche.",
+    "loadingSpots": "Chargement des emplacements du jour…",
+    "dayError": "Impossible de charger les emplacements de ce jour.",
+    "spotOption": "Emplacement {{label}}",
+    "from": "Du",
+    "to": "Au",
+    "length": "Durée",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours",
+    "slot": "Créneau",
+    "pack": "Forfait",
+    "noPacks": "Aucun forfait ne peut être réservé en caisse dans cette zone.",
+    "noPacksForStay": "Aucun forfait de cette zone ne permet cette durée.",
+    "extras": "Suppléments",
+    "customer": "Client",
+    "customerHint": "Le nom suffit. Le téléphone et l'e-mail sont facultatifs et servent à retrouver le client.",
+    "form": {
+      "lastName": "Nom",
+      "firstName": "Prénom",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "lastNameRequired": "Saisissez le nom.",
+      "phoneInvalid": "Numéro non valide : utilisez l'indicatif international, ex. +39 333 1234567.",
+      "emailInvalid": "E-mail non valide.",
+      "tooLong": "Texte trop long.",
+      "phonePlaceholder": "+39 333 1234567"
+    },
+    "summary": "Récapitulatif",
+    "stay": "Séjour",
+    "period": "du {{from}} au {{to}}",
+    "total": "Total estimé",
+    "totalA11y": "Total estimé {{total}}",
+    "computing": "Calcul du prix…",
+    "incomplete": "Choisissez un emplacement, les dates et un forfait pour voir le prix.",
+    "payAtDesk": "La réservation est confirmée tout de suite ; le solde s'encaisse depuis la réservation.",
+    "unavailable": "{{label}} n'est pas libre pendant tout le séjour",
+    "conflictDay": "{{day}}, {{slot}}",
+    "balance": "Solde dû",
+    "failedTitle": "Réservation échouée",
+    "submit": "Réserver",
+    "submitTotal": "Réserver · {{total}}",
+    "hold": {
+      "submit": "Bloquer {{minutes}} minutes",
+      "active": "{{label}} bloqué jusqu'à {{time}}",
+      "hint": "Personne d'autre ne peut le prendre pendant que vous terminez la réservation.",
+      "expired": "Le blocage a expiré : l'emplacement est de nouveau libre.",
+      "release": "Lever le blocage",
+      "locked": "Emplacement, dates et créneau sont bloqués : levez le blocage pour les modifier."
+    },
+    "confirm": {
+      "title": "Réserver {{label}} ?",
+      "description": "{{label}}, {{period}}, total {{total}}. Le solde s'encaisse ensuite depuis la réservation.",
+      "submit": "Réserver"
+    },
+    "done": {
+      "title": "Réservation {{code}} créée",
+      "description": "L'emplacement apparaît maintenant occupé sur le plan.",
+      "awaitingApproval": "En attente de l'accord du gérant : l'emplacement reste réservé.",
+      "open": "Ouvrir la réservation",
+      "back": "Terminé"
+    },
+    "errors": {
+      "offline": "Instance injoignable : la réservation n'a pas été créée. Réessayez quand la connexion revient.",
+      "forbidden": "Votre rôle ne peut pas créer de réservations.",
+      "spot_unavailable": "L'emplacement n'est plus libre pour ces dates : choisissez-en un autre.",
+      "agreement": "La convention ne s'applique pas à cette réservation.",
+      "no_price": "Aucun prix pour ce forfait à ces dates : vérifiez la grille tarifaire dans le panneau.",
+      "policy": "La réservation ne respecte pas les règles de réservation de l'établissement.",
+      "hold_expired": "Le blocage a expiré avant la confirmation : vérifiez que l'emplacement est encore libre.",
+      "invalid": "Données non valides : vérifiez les dates, le forfait et le client.",
+      "in_progress": "La réservation est déjà en cours : patientez quelques secondes.",
+      "not_found": "Emplacement ou forfait plus disponible.",
+      "default": "Réservation échouée. Réessayez."
+    }
   },
   "move": {
     "action": "Déplacer vers un autre emplacement",
@@ -1051,6 +1245,16 @@
     "notMovable": "{{code}} ne peut plus être déplacée.",
     "noLines": "{{code}} n'a aucun emplacement attribué à déplacer.",
     "line": "Emplacement à déplacer",
+    "mode": {
+      "label": "Que voulez-vous faire",
+      "move": "Déplacer sur un emplacement libre",
+      "swap": "Échanger avec une autre réservation"
+    },
+    "start": {
+      "label": "À partir de quand",
+      "today": "À partir d'aujourd'hui",
+      "tomorrow": "À partir de demain"
+    },
     "target": "Nouvel emplacement",
     "search": "Rechercher l'emplacement",
     "searchPlaceholder": "Ex. B12",
@@ -1062,6 +1266,7 @@
     "from": "De",
     "to": "Vers",
     "fromToday": "Le déplacement s'applique à partir du {{day}} : les jours passés restent où ils sont.",
+    "fromTomorrow": "Le déplacement s'applique à partir du {{day}} : aujourd'hui reste où il est.",
     "ticketPrice": "Vente du jour {{number}} : le total du ticket ne change pas.",
     "previewing": "Vérification de la disponibilité…",
     "conflicts": "{{label}} n'est pas libre pour tout le séjour :",
@@ -1092,10 +1297,65 @@
       "spot_unavailable": "L'emplacement vient d'être occupé : choisissez-en un autre.",
       "version_conflict": "La réservation a été modifiée entre-temps : rouvrez le déplacement.",
       "not_modifiable": "Cette réservation ne peut pas être déplacée dans son statut.",
-      "policy": "Cet emplacement nécessite une approbation : déplacez la réservation depuis le panneau.",
+      "policy": "Le déplacement ne respecte pas les règles de réservation de l'établissement.",
+      "approval": "L'approbation d'un responsable est nécessaire : demandez à un responsable de déplacer la réservation.",
+      "concurrent": "La réservation était en cours de modification : réessayez dans quelques secondes.",
       "invalid": "La formule n'est pas valable sur cet emplacement : choisissez-en un autre.",
       "not_found": "La réservation ou l'emplacement n'existe plus.",
       "default": "Déplacement non abouti. Réessayez."
+    },
+    "swap": {
+      "target": "Réservation avec laquelle échanger",
+      "search": "Rechercher l'emplacement occupé",
+      "takenOn": "Occupés le {{day}} · {{slot}}. Le serveur vérifie les jours en commun.",
+      "none": "Aucune réservation à échanger ne correspond.",
+      "more": "Il y a d'autres réservations : affinez la recherche.",
+      "option": "Emplacement {{label}}, {{name}}",
+      "with": "Échanger avec",
+      "days": "Échange du {{from}} au {{to}} : les autres jours restent où ils sont.",
+      "side": "{{code}} : {{change}}",
+      "conflicts": "L'échange n'est pas possible ces jours-ci :",
+      "submit": "Échanger",
+      "submitWith": "Échanger avec {{label}}",
+      "confirm": {
+        "title": "Échanger {{code}} avec {{other}} ?",
+        "description": "{{code}} passe sur {{to}} et {{other}} sur {{from}}.",
+        "submit": "Échanger"
+      },
+      "done": {
+        "title": "{{code}} et {{other}} échangées"
+      },
+      "errors": {
+        "conflict": "Ces deux réservations ne peuvent pas être échangées : elles n'ont aucun jour en commun à partir de cette date ou sont déjà sur le même emplacement.",
+        "version_conflict": "L'une des deux réservations a changé entre-temps : vérifiez l'aperçu mis à jour."
+      }
+    },
+    "undo": {
+      "action": "Annuler le déplacement",
+      "until": "Vous pouvez l'annuler jusqu'à {{time}}.",
+      "lastTitle": "Déplacement récent",
+      "lastDescription": "Vous venez de déplacer cette réservation.",
+      "lastSwap": "Vous venez d'échanger cette réservation avec {{other}}.",
+      "lastGroup_one": "Vous venez de déplacer cette réservation avec une autre.",
+      "lastGroup_other": "Vous venez de déplacer cette réservation et {{count}} autres réservations.",
+      "anotherBooking": "une autre réservation",
+      "confirm": {
+        "title": "Annuler le déplacement ?",
+        "swap": "Cette réservation et {{other}} reviennent toutes deux à leur place.",
+        "group_one": "Une autre réservation revient aussi à sa place.",
+        "group_other": "{{count}} autres réservations reviennent aussi à leur place.",
+        "submit": "Rétablir les emplacements"
+      },
+      "done": "Déplacement annulé : les emplacements sont revenus comme avant.",
+      "failedTitle": "L'annulation a échoué",
+      "errors": {
+        "offline": "Instance injoignable : le déplacement n'a pas été annulé.",
+        "forbidden": "Votre rôle n'est pas autorisé à annuler un déplacement.",
+        "expired": "Plus de 5 minutes se sont écoulées : le déplacement ne peut plus être annulé.",
+        "conflict": "Impossible d'annuler : les emplacements de départ ont été occupés ou la réservation a changé entre-temps.",
+        "concurrent": "Une autre modification de ces réservations est en cours : réessayez dans quelques secondes.",
+        "default": "L'annulation a échoué. Réessayez."
+      }
     }
   },
   "waitlist": {
@@ -1179,6 +1439,93 @@
       "invalid": "Données non valides : vérifiez l'emplacement et la durée.",
       "notFound": "L'inscription n'existe plus.",
       "default": "Opération non aboutie. Réessayez."
+    },
+    "results_one": "{{count}} inscription",
+    "results_other": "{{count}} inscriptions"
+  },
+  "dayPicker": {
+    "label": "Jour",
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "other": "Choisir un autre jour",
+    "change": "changer de jour",
+    "title": "Choisir le jour"
+  },
+  "closedDay": {
+    "title": "Établissement fermé",
+    "today": "Aujourd'hui est un jour de fermeture ou hors saison.",
+    "tomorrow": "Demain est un jour de fermeture ou hors saison.",
+    "other": "{{date}} : jour de fermeture ou hors saison.",
+    "offlineTitle": "Jour disponible en ligne uniquement",
+    "offlineDescription": "Seuls aujourd'hui et demain restent sur l'appareil. Les autres jours demandent une connexion à l'instance."
+  },
+  "policy": {
+    "violations": {
+      "cutoff_passed": "Heure limite dépassée pour aujourd'hui.",
+      "duration_too_long": "Durée supérieure au maximum autorisé.",
+      "duration_too_short": "Durée inférieure au minimum autorisé.",
+      "formula_not_allowed": "Formule non autorisée.",
+      "lead_time_too_long": "Réservation trop à l'avance.",
+      "lead_time_too_short": "Délai minimum non respecté.",
+      "same_day_closed": "Réservations du jour fermées.",
+      "start_weekday_not_allowed": "Jour d'arrivée non autorisé.",
+      "too_many_spots": "Trop d'emplacements dans une réservation.",
+      "other": "Ne respecte pas une règle de réservation de l'établissement."
+    }
+  },
+  "mapFilters": {
+    "label": "Mettre en évidence",
+    "arrivals": "Arrivées",
+    "departures": "Départs",
+    "to_collect": "À encaisser",
+    "present": "Présents",
+    "agreement": "Convention : {{name}}",
+    "group": "Groupe : {{name}}",
+    "chip": "{{label}}, {{count}}",
+    "results_one": "{{count}} emplacement mis en évidence",
+    "results_other": "{{count}} emplacements mis en évidence",
+    "none": "Aucun emplacement pour ce filtre.",
+    "labels": "Étiquettes",
+    "customer": "Client",
+    "end": "Fin du séjour",
+    "setup": "Équipement",
+    "labelChip": "Étiquette sous les emplacements : {{label}}"
+  },
+  "mapSheet": {
+    "setup": "Équipement",
+    "agreement": "Convention",
+    "partner": "Partenaire",
+    "group": "Groupe",
+    "partySize": "Personnes",
+    "calendar": "Calendrier de l'emplacement"
+  },
+  "spotCalendar": {
+    "title": "Calendrier",
+    "heading": "Calendrier de l'emplacement {{label}}",
+    "season": "Saison du {{from}} au {{to}}",
+    "loading": "Chargement du calendrier",
+    "errorTitle": "Calendrier indisponible",
+    "error": "Le calendrier n'a pas pu être chargé. Vérifiez la connexion et réessayez.",
+    "notFound": "Emplacement ou saison introuvable.",
+    "notImplemented": "Cette instance n'a pas le calendrier des emplacements : mettez-la à jour.",
+    "halves": "Chaque jour : matin à gauche, après-midi à droite.",
+    "legend": "Légende du calendrier",
+    "half": "{{slot}} {{status}}",
+    "halfBooking": "{{slot}} {{status}} ({{booking}})",
+    "day": "{{date}} : {{am}}, {{pm}}",
+    "openBooking": "Ouvre la réservation",
+    "newBooking": "Crée une nouvelle réservation à partir de ce jour",
+    "bookings": "Réservations de la saison",
+    "noBookings": "Aucune réservation cette saison.",
+    "period": "{{from}} – {{to}}",
+    "balance": "Reste à payer {{amount}}",
+    "choose": {
+      "hint": "Ouvre la réservation ou en crée une nouvelle sur la moitié libre",
+      "description": "Une moitié de la journée est occupée et l'autre est libre.",
+      "open": "Ouvrir la réservation",
+      "bookFULL": "Nouvelle réservation (journée)",
+      "bookAM": "Nouvelle réservation (matin)",
+      "bookPM": "Nouvelle réservation (après-midi)"
     }
   }
 }

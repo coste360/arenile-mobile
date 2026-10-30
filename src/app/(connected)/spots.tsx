@@ -1,7 +1,14 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { CircleAlertIcon, RefreshCwIcon, TicketIcon, UmbrellaIcon } from 'lucide-react-native';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import {
+  CalendarPlusIcon,
+  ChevronRightIcon,
+  CircleAlertIcon,
+  RefreshCwIcon,
+  TicketIcon,
+  UmbrellaIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { CachedNotice, servedFromCache } from '@/components/cached-notice';
 import { Screen } from '@/components/layout/screen';
@@ -17,14 +24,19 @@ import {
   type SpotFilter,
 } from '@/features/operations/day-spots';
 import { useMaps } from '@/features/maps/queries';
+import { canCreateBooking } from '@/features/new-booking/new-booking';
+import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useOperationalDays, useOperationsDay } from '@/features/operations/queries';
+import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { localizedText } from '@/lib/i18n-text';
 
 /**
  * Free spots, or spots released by their pass holders, of today: the lists
  * opened by the spot figures of "Oggi". Each released spot says which half
- * of the day is free.
+ * of the day is free; a tap opens the spot's sheet on the day map (sale,
+ * booking and the other actions of the role). Roles that write bookings
+ * also get "Prenota" on each row, online only.
  */
 export default function SpotsScreen() {
   const { t } = useTranslation();
@@ -34,6 +46,8 @@ export default function SpotsScreen() {
   const day = useOperationsDay(today);
   const { locale } = usePreferences();
   const maps = useMaps();
+  const book = canCreateBooking(useAbilities());
+  const { available: online } = useOnlineOnly();
   // The map name tells spots apart only when the establishment has more than one map.
   const mapName = (id: string) =>
     maps.data && maps.data.length > 1
@@ -94,20 +108,56 @@ export default function SpotsScreen() {
                     <View
                       key={s.spot_id}
                       role="listitem"
-                      accessible
-                      accessibilityLabel={[s.label, map, state].filter(Boolean).join(', ')}
-                      className="min-h-12 flex-row items-center gap-3 border-b border-border px-4 py-2"
+                      className="flex-row items-center border-b border-border"
                     >
-                      <Icon
-                        as={released ? TicketIcon : UmbrellaIcon}
-                        size={18}
-                        className="text-muted-foreground"
-                      />
-                      <Text className="w-16 font-semibold">{s.label}</Text>
-                      <View className="flex-1">
-                        <Text>{state}</Text>
-                        {map ? <Text variant="muted">{map}</Text> : null}
-                      </View>
+                      <Pressable
+                        role="link"
+                        accessibilityLabel={[s.label, map, state].filter(Boolean).join(', ')}
+                        accessibilityHint={t('spots.openOnMap')}
+                        onPress={() =>
+                          router.push({
+                            pathname: '/map',
+                            params: { spot: s.spot_id, map: s.map_id },
+                          })
+                        }
+                        testID={`spot-row-${s.spot_id}`}
+                        className="min-h-12 flex-1 flex-row items-center gap-3 px-4 py-2 active:bg-accent"
+                      >
+                        <Icon
+                          as={released ? TicketIcon : UmbrellaIcon}
+                          size={18}
+                          className="text-muted-foreground"
+                        />
+                        <Text className="w-16 font-semibold">{s.label}</Text>
+                        <View className="flex-1">
+                          <Text>{state}</Text>
+                          {map ? <Text variant="muted">{map}</Text> : null}
+                        </View>
+                        <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
+                      </Pressable>
+                      {book ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="mr-2 size-11"
+                          disabled={!online}
+                          accessibilityLabel={t('newBooking.actionSpot', { label: s.label })}
+                          onPress={() =>
+                            router.push({
+                              pathname: '/new-booking',
+                              params: {
+                                spotId: s.spot_id,
+                                from: today,
+                                // A half-day release is free for that half only.
+                                slot: released ? releasedHalf(s) : 'FULL',
+                              },
+                            })
+                          }
+                          testID={`spot-book-${s.spot_id}`}
+                        >
+                          <Icon as={CalendarPlusIcon} size={20} />
+                        </Button>
+                      ) : null}
                     </View>
                   );
                 })}

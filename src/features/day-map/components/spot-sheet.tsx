@@ -1,7 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
 import {
   BanIcon,
   CalendarMinusIcon,
+  CalendarRangeIcon,
   CircleAlertIcon,
   CircleCheckIcon,
   CloudOffIcon,
@@ -41,7 +43,8 @@ import { hasAnyAction, spotActions } from '../actions';
 import { blockSchema, type BlockValues } from '../block-form';
 import { blockErrorKey, useBlockSpot, useUnblockSpot } from '../blocks';
 import type { DaySpot } from '../model';
-import { indicatorsOf } from '../status';
+import { daysOnSpot, indicatorsOf } from '../status';
+import { canViewSpotCalendar } from '../spot-calendar';
 import { SpotSheetExtras } from './spot-sheet-extras';
 import { StatusGlyph } from './status-glyph';
 
@@ -202,12 +205,24 @@ export function SpotSheet({
             <View className="gap-1.5">
               {b.ticket ? <Row label={t('dayMap.sheet.ticket')}>{b.ticket.label}</Row> : null}
               <Row label={t('dayMap.sheet.code')}>{b.code}</Row>
-              <Row label={t('dayMap.sheet.period')}>
-                {b.starts_on === b.ends_on
-                  ? formatDayLabel(b.starts_on, locale)
-                  : `${formatDayLabel(b.starts_on, locale)} – ${formatDayLabel(b.ends_on, locale)}`}
-              </Row>
+              <Row label={t('dayMap.sheet.period')}>{periodLabel(daysOnSpot(b), locale)}</Row>
               <Row label={t('dayMap.sheet.slots')}>{t(`dayMap.slot.${b.slots}`)}</Row>
+              {b.setup_label?.trim() ? (
+                <Row label={t('mapSheet.setup')}>{b.setup_label.trim()}</Row>
+              ) : null}
+              {b.party_size ? (
+                <Row label={t('mapSheet.partySize')}>{String(b.party_size)}</Row>
+              ) : null}
+              {b.group_name ? <Row label={t('mapSheet.group')}>{b.group_name}</Row> : null}
+              {b.agreement ? (
+                <Row label={t('mapSheet.agreement')}>
+                  {b.agreement.partner_name
+                    ? `${b.agreement.name} · ${b.agreement.partner_name}`
+                    : b.agreement.name}
+                </Row>
+              ) : b.partner ? (
+                <Row label={t('mapSheet.partner')}>{b.partner.name}</Row>
+              ) : null}
               <Row label={t('dayMap.sheet.bookingStatus')}>
                 {t(`dayMap.bookingStatus.${b.status}`)}
               </Row>
@@ -290,6 +305,23 @@ export function SpotSheet({
         ) : null}
 
         <SpotSheetExtras spot={spot} date={date} today={today} slot={slot} />
+
+        {canViewSpotCalendar(abilities) ? (
+          <Button
+            size="lg"
+            variant="outline"
+            disabled={!online}
+            onPress={() =>
+              router.push({
+                pathname: '/spot-calendar/[spotId]',
+                params: { spotId: spot.id, label: spot.label },
+              })
+            }
+          >
+            <Icon as={CalendarRangeIcon} size={18} />
+            <Text>{t('mapSheet.calendar')}</Text>
+          </Button>
+        ) : null}
       </ScrollView>
 
       <ConfirmDialog
@@ -495,4 +527,10 @@ function BlockDialog({
       </AlertDialogContent>
     </AlertDialog>
   );
+}
+
+function periodLabel({ from, to }: { from: string; to: string }, locale: string): string {
+  return from === to
+    ? formatDayLabel(from, locale)
+    : `${formatDayLabel(from, locale)} – ${formatDayLabel(to, locale)}`;
 }

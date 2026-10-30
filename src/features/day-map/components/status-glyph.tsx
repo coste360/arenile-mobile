@@ -1,9 +1,9 @@
 import { useColorScheme } from 'nativewind';
 import Svg, { Circle, G, Path } from 'react-native-svg';
 
-import { GLYPH_PATHS, glyphStrokeWidth, STATUS_GLYPHS } from '../glyphs';
+import { GLYPH_PATHS, glyphStrokeWidth, MARKER_PATHS, STATUS_GLYPHS } from '../glyphs';
 import { MAP_PALETTE } from '../palette';
-import type { SpotStatus } from '../status';
+import type { MapMarker, SpotStatus } from '../status';
 
 /** Colour scheme of the map palette (NativeWind follows the user's preference). */
 export function useMapPalette() {
@@ -41,6 +41,31 @@ export function StatusGlyph({ status, size = 20 }: { status: SpotStatus; size?: 
           />
         </G>
       ) : null}
+    </Svg>
+  );
+}
+
+/** Swatch of an arrival or departure marker as drawn on the map. Decorative, as StatusGlyph. */
+export function MarkerGlyph({ marker, size = 20 }: { marker: MapMarker; size?: number }) {
+  const palette = useMapPalette();
+  const colours = palette.marker[marker];
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
+      <Circle cx={12} cy={12} r={11} fill={colours.fill} />
+      <Path
+        d={MARKER_PATHS[marker]}
+        stroke={colours.foreground}
+        strokeWidth={2.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
     </Svg>
   );
 }

@@ -11,7 +11,7 @@ import { prefetchOfflineWindow } from './prefetch';
 const EST = `/api/admin/v1/establishments/${EST_ID}`;
 
 describe('prefetchOfflineWindow', () => {
-  it("fetches maps, documents and the day of today and tomorrow in the establishment's zone", async () => {
+  it("fetches maps, documents, the day and the lifeguard list of today and tomorrow in the establishment's zone", async () => {
     const network = fakeFetch({
       [`GET ${EST}`]: () => json(200, { id: EST_ID, timezone: 'Europe/Rome' }),
       [`GET ${EST}/maps`]: () =>
@@ -26,6 +26,13 @@ describe('prefetchOfflineWindow', () => {
       [`GET ${EST}/operations/day`]: (r) =>
         json(200, operationsDay({ date: new URL(r.url).searchParams.get('date')! })),
       [`GET ${EST}/bookings`]: () => json(200, { items: [bookingSummary()] }),
+      [`GET ${EST}/operations/lifeguard-list`]: (r) =>
+        json(200, {
+          date: new URL(r.url).searchParams.get('date')!,
+          slot: 'FULL',
+          rows: [],
+          totals: operationsDay().totals,
+        }),
       'GET /api/admin/v1/auth/me': () => problem(403, 'forbidden'),
     });
     const client = createApiClient({ baseUrl: SESSION.instanceUrl, fetch: network.fetch });
@@ -41,6 +48,8 @@ describe('prefetchOfflineWindow', () => {
     expect(qc.getQueryData(estKeys.map(EST_ID, 'm-2'))).toBeDefined();
     expect(qc.getQueryData(estKeys.operationsDay(EST_ID, '2026-10-26'))).toBeDefined();
     expect(qc.getQueryData(estKeys.operationsDay(EST_ID, '2026-10-27'))).toBeDefined();
+    expect(qc.getQueryData(estKeys.lifeguardList(EST_ID, '2026-10-26'))).toBeDefined();
+    expect(qc.getQueryData(estKeys.lifeguardList(EST_ID, '2026-10-27'))).toBeDefined();
     expect(qc.getQueryData(estKeys.bookingsOfDay(EST_ID, '2026-10-27'))).toEqual([
       bookingSummary(),
     ]);

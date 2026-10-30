@@ -11,7 +11,7 @@ import type { OperationError } from './types';
 /**
  * What the queue does with a failed send:
  * - `retry`: transient (no network, timeout, 429, 5xx, 409
- *   idempotency_in_progress, a non-JSON answer
+ *   idempotency_in_progress or concurrent_update, a non-JSON answer
  *   such as a captive portal, a desktop LAN certificate that changed, ADR
  *   0006): the operation stays pending, in order, and the flush stops; the
  *   idempotency key makes the next attempt safe;
@@ -43,6 +43,12 @@ export function classifyFailure(err: unknown): ClassifiedFailure {
     // killed app, replayed at start): wait for its answer with the same key;
     // a conflict would invite a "riprova" with a new key, applying it twice.
     if (err.type === 'idempotency_in_progress') return { outcome: 'retry', error };
+    // Core 1.1.1: the request lost a race with another change of the same
+    // data; the core did not store the answer, so the same key tries again
+    // at the next flush (interval, foreground, reconnection). `retry_after`
+    // is not read: it is a few seconds, the flush interval is longer, and an
+    // early attempt only loses the race again.
+    if (err.type === 'concurrent_update') return { outcome: 'retry', error };
     if (err.status === 409 || err.status === 412 || err.status === 422) {
       return { outcome: 'conflict', error };
     }

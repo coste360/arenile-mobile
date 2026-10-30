@@ -5,3 +5,6 @@ coverage/
 src/api/generated/
 package-lock.json
 api/openapi.yaml
+src/features/day-map/kit/generated/
+assets/map-kits/
+.claude/worktrees/

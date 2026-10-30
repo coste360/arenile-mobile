@@ -1,6 +1,6 @@
 # 0004 — UI kit: React Native Reusables su NativeWind, solo token del tema, layout per tablet
 
-- **Stato:** accettato
+- **Stato:** accettato; eccezione per il calendario in [0014](0014-giorni-oltre-la-finestra-offline.md)
 - **Data:** 2026-10-25
 - **Sezioni della specifica:** core ADR 0009 (UI kit shadcn/ui, niente CSS custom), core ADR 0018
   (marchio e colori), `docs/spec/01-fase-0-fondamenta.md`

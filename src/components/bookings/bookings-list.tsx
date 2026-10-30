@@ -1,24 +1,28 @@
+import { router } from 'expo-router';
 import {
+  CalendarPlusIcon,
   CalendarXIcon,
   CircleAlertIcon,
+  CloudOffIcon,
   LockIcon,
   RefreshCwIcon,
-  SearchIcon,
   SearchXIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react-native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { isForbidden } from '@/api/errors';
 import type { BookingSummary } from '@/api/types';
 import { CachedNotice, servedFromCache } from '@/components/cached-notice';
+import { DayPicker } from '@/components/day-picker';
 import { ChipRow, FilterChip } from '@/components/filter-chip';
+import type { ListState } from '@/components/layout/master-detail';
+import { SearchField } from '@/components/search-field';
 import { StateView } from '@/components/state-view';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import {
   CHANNEL_FILTERS,
@@ -32,14 +36,24 @@ import {
   type DaySort,
 } from '@/features/bookings/day-list';
 import { useBookingsOfDay } from '@/features/bookings/queries';
+import { canCreateBooking } from '@/features/new-booking/new-booking';
+import { useOnlineOnly } from '@/features/offline/offline-provider';
 import { useOperationalDays } from '@/features/operations/queries';
+import { useAbilities } from '@/features/permissions/use-abilities';
+import { usePreferences } from '@/features/preferences/preferences-provider';
+import { inOfflineWindow, isCalendarDate, resolveDay, type DaySelection } from '@/lib/calendar';
 
 import { BookingRow } from './booking-row';
 
-export type ListDay = 'today' | 'tomorrow';
+/** The `day` route parameter: today, tomorrow or a calendar date (default today). */
+export function daySelectionParam(value: unknown): DaySelection {
+  if (value === 'tomorrow' || value === 'today') return value;
+  return isCalendarDate(value) ? value : 'today';
+}
 
 /**
- * Bookings of today or tomorrow (the offline window) with the filters of
+ * Bookings of a day (today and tomorrow also offline, other days online
+ * only; ADR 0014) with the filters of
  * phase 1, search and sort. Selecting a row is up to the screen: the phone
  * opens the sheet, the tablet shows it beside the list.
  */
@@ -48,15 +62,18 @@ export function BookingsList({
   initialDay = 'today',
   selectedId,
   onSelect,
+  onListState,
 }: {
   initialFilter?: DayFilter;
-  initialDay?: ListDay;
+  initialDay?: DaySelection;
   selectedId?: string;
   onSelect: (booking: BookingSummary) => void;
+  /** What the list shows, for the detail beside it (MasterDetail). */
+  onListState?: (state: ListState) => void;
 }) {
   const { t } = useTranslation();
   const days = useOperationalDays();
-  const [day, setDay] = useState<ListDay>(initialDay);
+  const [day, setDay] = useState<DaySelection>(initialDay);
   const [filter, setFilter] = useState<DayFilter>(initialFilter);
   const [channel, setChannel] = useState<ChannelFilter>(DEFAULT_DAY_LIST_QUERY.channel);
   const [sort, setSort] = useState<DaySort>(DEFAULT_DAY_LIST_QUERY.sort);
@@ -73,7 +90,12 @@ export function BookingsList({
     setDay(initialDay);
   }
 
-  const date = day === 'today' ? days.today : days.tomorrow;
+  const date = resolveDay(day, days);
+  const { available: online } = useOnlineOnly();
+  const book = canCreateBooking(useAbilities());
+  // A new booking starts on the day shown (today for a past day).
+  const newFrom = date < days.today ? days.today : date;
+  const { locale } = usePreferences();
   const query = useBookingsOfDay(date);
   const all = query.data;
 
@@ -85,6 +107,17 @@ export function BookingsList({
     () => (all ? filterCounts(all, { date, channel, search, includeClosed }) : null),
     [all, date, channel, search, includeClosed],
   );
+
+  const listState: ListState = all
+    ? all.length === 0
+      ? 'empty'
+      : shown.length === 0
+        ? 'noMatch'
+        : 'items'
+    : query.isError || query.isPaused
+      ? 'empty'
+      : 'loading';
+  useEffect(() => onListState?.(listState), [listState, onListState]);
 
   const extraActive =
     (channel !== DEFAULT_DAY_LIST_QUERY.channel ? 1 : 0) +
@@ -109,21 +142,13 @@ export function BookingsList({
   return (
     <View className="flex-1 bg-background">
       <View className="gap-3 border-b border-border px-4 pb-3 pt-4">
-        <View className="flex-row items-center gap-2">
-          <Icon as={SearchIcon} size={18} className="text-muted-foreground" />
-          <Input
-            className="flex-1"
-            value={search}
-            onChangeText={setSearch}
-            accessibilityLabel={t('bookings.list.searchLabel')}
-            placeholder={t('bookings.list.searchPlaceholder')}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="search"
-            clearButtonMode="while-editing"
-          />
-        </View>
-        <ChipRow label={t('bookings.list.filtersLabel')}>
+        <SearchField
+          value={search}
+          onChangeText={setSearch}
+          label={t('bookings.list.searchLabel')}
+          placeholder={t('bookings.list.searchPlaceholder')}
+        />
+        <ChipRow bleed label={t('bookings.list.filtersLabel')}>
           {DAY_FILTERS.map((f) => (
             <FilterChip
               key={f}
@@ -142,17 +167,8 @@ export function BookingsList({
             />
           ))}
         </ChipRow>
-        <View className="flex-row flex-wrap items-end justify-between gap-2">
-          <ChipRow label={t('bookings.list.dayLabel')} scroll={false}>
-            {(['today', 'tomorrow'] as const).map((d) => (
-              <FilterChip
-                key={d}
-                label={t(`bookings.list.days.${d}`)}
-                selected={day === d}
-                onPress={() => setDay(d)}
-              />
-            ))}
-          </ChipRow>
+        <View className="flex-row flex-wrap items-end justify-between gap-x-2 gap-y-1">
+          <DayPicker value={day} onChange={setDay} days={days} locale={locale} />
           <Button
             variant="ghost"
             onPress={() => setExpanded((v) => !v)}
@@ -170,7 +186,7 @@ export function BookingsList({
         </View>
         {expanded ? (
           <View className="gap-3">
-            <ChipRow label={t('bookings.list.channelLabel')}>
+            <ChipRow bleed label={t('bookings.list.channelLabel')}>
               {CHANNEL_FILTERS.map((c) => (
                 <FilterChip
                   key={c}
@@ -180,7 +196,7 @@ export function BookingsList({
                 />
               ))}
             </ChipRow>
-            <ChipRow label={t('bookings.list.sortLabel')}>
+            <ChipRow bleed label={t('bookings.list.sortLabel')}>
               {DAY_SORTS.map((s) => (
                 <FilterChip
                   key={s}
@@ -199,10 +215,27 @@ export function BookingsList({
             </View>
           </View>
         ) : null}
-        {all ? (
-          <Text variant="muted" accessibilityLiveRegion="polite">
-            {t('bookings.list.results', { count: shown.length })}
-          </Text>
+        {all || book ? (
+          <View className="flex-row items-center justify-between gap-2">
+            {all ? (
+              <Text variant="muted" className="flex-1" accessibilityLiveRegion="polite">
+                {t('bookings.list.results', { count: shown.length })}
+              </Text>
+            ) : (
+              <View className="flex-1" />
+            )}
+            {book ? (
+              <Button
+                variant="outline"
+                className="min-h-11"
+                disabled={!online}
+                onPress={() => router.push({ pathname: '/new-booking', params: { from: newFrom } })}
+              >
+                <Icon as={CalendarPlusIcon} size={16} />
+                <Text>{t('newBooking.action')}</Text>
+              </Button>
+            ) : null}
+          </View>
         ) : null}
       </View>
 
@@ -230,12 +263,14 @@ export function BookingsList({
             ListEmptyComponent={
               all.length === 0 ? (
                 <StateView
+                  align="top"
                   icon={CalendarXIcon}
                   title={t('bookings.list.emptyTitle')}
                   description={t('bookings.list.emptyDescription')}
                 />
               ) : (
                 <StateView
+                  align="top"
                   icon={SearchXIcon}
                   title={t('bookings.list.noMatchTitle')}
                   description={t('bookings.list.noMatchDescription')}
@@ -250,11 +285,19 @@ export function BookingsList({
             }
           />
         </>
+      ) : (query.isError || query.isPaused) && !online && !inOfflineWindow(date, days) ? (
+        <StateView
+          align="top"
+          icon={CloudOffIcon}
+          title={t('closedDay.offlineTitle')}
+          description={t('closedDay.offlineDescription')}
+        />
       ) : query.isError || query.isPaused ? (
         isForbidden(query.error) ? (
-          <StateView icon={LockIcon} title={t('offline.errors.forbidden')} />
+          <StateView align="top" icon={LockIcon} title={t('offline.errors.forbidden')} />
         ) : (
           <StateView
+            align="top"
             icon={CircleAlertIcon}
             tone="destructive"
             title={t('today.errorTitle')}
@@ -267,7 +310,7 @@ export function BookingsList({
           </StateView>
         )
       ) : (
-        <StateView busy title={t('common.loading')} />
+        <StateView align="top" busy title={t('common.loading')} />
       )}
     </View>
   );

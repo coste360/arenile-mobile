@@ -32,6 +32,15 @@ radio-group, separator, text.
   `text-white` (the dark theme's destructive is a light red, white text would fail contrast);
   `button` destructive no longer dims to `dark:bg-destructive/60` for the same reason.
 
+- `input`, `button`: 44 pt touch targets at every width (`.claude/rules/frontend.md`). The generated
+  sizes shrink at `sm:` (640 dp, i.e. on every iPad) and start at 40 pt: `input` and the `default`
+  and `icon` button sizes are `h-11`, `lg` is `h-12`, `sm` keeps `h-9` (callers add `min-h-11` when
+  it is a touch target); no `sm:` heights.
+
+- `alert-dialog`: `AlertDialogContent` takes `windowOverlay` (default `true`). With `false` the
+  dialog skips react-native-screens' `FullWindowOverlay` on iOS and draws in the root `PortalHost`:
+  SwiftUI views of `@expo/ui` (the day picker's calendar, ADR 0014) stay blank inside that overlay.
+
 ## Theme
 
 `src/global.css` holds the tokens as HSL triplets (so `bg-primary/90` works), converted from the core

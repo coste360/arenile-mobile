@@ -29,6 +29,15 @@ describe('isPersistable', () => {
     ["tomorrow's day", estKeys.operationsDay(EST_ID, '2026-10-26'), undefined, true],
     ["yesterday's day", estKeys.operationsDay(EST_ID, '2026-10-24'), undefined, false],
     ['the day after tomorrow', estKeys.operationsDay(EST_ID, '2026-10-27'), undefined, false],
+    ["today's lifeguard list", estKeys.lifeguardList(EST_ID, '2026-10-25'), undefined, true],
+    ["tomorrow's lifeguard list", estKeys.lifeguardList(EST_ID, '2026-10-26'), undefined, true],
+    ["next week's lifeguard list", estKeys.lifeguardList(EST_ID, '2026-11-01'), undefined, false],
+    [
+      'another operations list',
+      ['est', EST_ID, 'operations', 'other', { date: '2026-10-25' }],
+      undefined,
+      false,
+    ],
     ["today's bookings", estKeys.bookingsOfDay(EST_ID, '2026-10-25'), [], true],
     ["next week's bookings", estKeys.bookingsOfDay(EST_ID, '2026-11-01'), [], false],
     [

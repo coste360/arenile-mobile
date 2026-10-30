@@ -84,3 +84,59 @@ export function formatDayLabel(date: CalendarDate, locale: string): string {
     timeZone: 'UTC',
   }).format(new Date(toUtc(date)));
 }
+
+/** Short weekday of a calendar date, e.g. "lun" (it) or "Mon" (en), for chart axes. */
+export function formatWeekdayShort(date: CalendarDate, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: 'UTC' }).format(
+    new Date(toUtc(date)),
+  );
+}
+
+/**
+ * A calendar day relative to today, so it rolls over at the establishment's
+ * midnight, or a fixed date chosen in the calendar.
+ */
+export type DaySelection = 'today' | 'tomorrow' | CalendarDate;
+
+/** The date a selection stands for. */
+export function resolveDay(
+  selection: DaySelection,
+  days: { today: CalendarDate; tomorrow: CalendarDate },
+): CalendarDate {
+  if (selection === 'today') return days.today;
+  if (selection === 'tomorrow') return days.tomorrow;
+  return selection;
+}
+
+/** A date chosen in the calendar as a selection: today and tomorrow stay relative. */
+export function selectionOf(
+  date: CalendarDate,
+  days: { today: CalendarDate; tomorrow: CalendarDate },
+): DaySelection {
+  if (date === days.today) return 'today';
+  if (date === days.tomorrow) return 'tomorrow';
+  return date;
+}
+
+/** True for today and tomorrow: the days kept in the offline cache (ADR 0007). */
+export function inOfflineWindow(
+  date: CalendarDate,
+  days: { today: CalendarDate; tomorrow: CalendarDate },
+): boolean {
+  return date === days.today || date === days.tomorrow;
+}
+
+/**
+ * The native date picker works on device-local instants: a calendar date is
+ * given to it as local noon (no zone or DST shift can move it to another
+ * day) and read back from the local fields.
+ */
+export function toPickerDate(date: CalendarDate): Date {
+  const [y, m, d] = date.split('-').map(Number) as [number, number, number];
+  return new Date(y, m - 1, d, 12);
+}
+
+export function fromPickerDate(value: Date): CalendarDate {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}`;
+}

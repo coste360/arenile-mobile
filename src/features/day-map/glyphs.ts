@@ -39,3 +39,9 @@ export const GLYPH_PATHS: Readonly<Record<StatusGlyph, string>> = {
 
 /** Stroke width of a glyph on its 24-unit grid (the star is filled instead). */
 export const glyphStrokeWidth = (g: StatusGlyph) => (g === 'star' ? 1 : 2.6);
+
+/** Glyphs of the arrival and departure markers (an arrow into and out of a door), 24-unit grid. */
+export const MARKER_PATHS: Readonly<Record<'arrival' | 'departure', string>> = {
+  arrival: 'M4.5 12h10M11 8l4 4-4 4M19 5v14',
+  departure: 'M9 12h10M15.5 8l4 4-4 4M5 5v14',
+};

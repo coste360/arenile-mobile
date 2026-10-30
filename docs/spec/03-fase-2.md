@@ -23,7 +23,20 @@ coperte da test delle schermate; nessuna è stata provata su un dispositivo o co
   prenotazione (`bookings.write`). Postazioni libere per le fasce della prenotazione nel primo giorno
   spostato, anteprima del server (conflitti negli altri giorni, nuovo totale), conferma. Un soggiorno già
   iniziato si sposta da oggi; una vendita giornaliera si sposta tramite il biglietto, senza cambiare il
-  totale.
+  totale. Dal core 1.1 (spec 30.7 del core): un soggiorno in corso che continua dopo oggi si sposta _da
+  oggi_ o _da domani_; _Scambiare con un'altra prenotazione_ scambia le postazioni di due prenotazioni sui
+  giorni in comune (anteprima con i due nuovi totali, versioni attese di entrambe); l'ultimo spostamento o
+  scambio si annulla entro 5 minuti dall'esito o riaprendo lo spostamento della prenotazione
+  (`moves/last`). Lo spostamento di gruppo resta nel pannello.
+- **Nuova prenotazione al volo:** _Nuova prenotazione_ nella scheda di una postazione libera (da quel
+  giorno), sulle righe delle postazioni libere e nelle prenotazioni del giorno, per chi scrive le
+  prenotazioni (`bookings.write`). Postazione (libere nel primo giorno; il server controlla gli altri),
+  date dal–al, fascia, pacchetto vendibile in cassa nella zona e ammesso per la durata, extra, cognome
+  del cliente (telefono ed email facoltativi, per ritrovarlo). Prezzo stimato, regole violate e giorni
+  occupati dall'anteprima del server; _Blocca per 15 minuti_ tiene la postazione finché si conferma
+  (rilasciata uscendo dalla schermata). Nasce confermata, il saldo si incassa dalla scheda. Una
+  regola di prenotazione violata blocca la prenotazione: l'app non manda mai `force`, la deroga resta
+  nel pannello.
 - **Lista d'attesa:** schermata _Lista d'attesa_ (home del telefono, pannello di navigazione del tablet)
   per chi legge le prenotazioni: coda in ordine di priorità, offerte in corso, ricerca per cliente,
   dettaglio della richiesta e dell'offerta. Chi scrive le prenotazioni offre un posto (la prima

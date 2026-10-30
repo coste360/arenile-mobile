@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
 import type { OperationsDay } from '@/api/types';
 import { QUEUE_KEY } from '@/features/offline/queue';
@@ -13,7 +13,7 @@ import {
   operationsDay,
   spot,
 } from '@/test/operations-fixtures';
-import { renderApp, type WindowSize } from '@/test/render-app';
+import { renderApp, setWindow, type WindowSize } from '@/test/render-app';
 
 // The camera is native: the fake exposes the scan callback to the tests.
 let mockOnScanned: ((result: { data: string }) => void) | undefined;
@@ -119,12 +119,14 @@ describe('operations hub', () => {
       });
       const { screen } = await renderApp({ session: SESSION, routes, size });
       await openOperations(screen);
-      expect(await screen.findByRole('link', { name: 'A1, Prenotata' })).toBeOnTheScreen();
-      expect(screen.getByRole('link', { name: 'B7, Libera' })).toBeOnTheScreen();
+      // Phones link to the spot screen; the tablet split selects it beside the list.
+      const role = size === 'phone' ? 'link' : 'button';
+      expect(await screen.findByRole(role, { name: 'A1, Prenotata' })).toBeOnTheScreen();
+      expect(screen.getByRole(role, { name: 'B7, Libera' })).toBeOnTheScreen();
 
       await fireEvent.changeText(screen.getByLabelText('Cerca una postazione'), 'b');
-      expect(screen.queryByRole('link', { name: 'A1, Prenotata' })).toBeNull();
-      await fireEvent.press(screen.getByRole('link', { name: 'B7, Libera' }));
+      expect(screen.queryByRole(role, { name: 'A1, Prenotata' })).toBeNull();
+      await fireEvent.press(screen.getByRole(role, { name: 'B7, Libera' }));
       expect(await screen.findByText('Blocca la postazione')).toBeOnTheScreen();
     },
   );
@@ -368,6 +370,27 @@ describe('booking operations', () => {
     },
   );
 
+  it('shows the agreement requirement still to check before the check-in (core 1.1)', async () => {
+    const posts: Request[] = [];
+    const agreement = { id: 'ag-1', name: 'Residenti', requirement: 'Residenza nel comune' };
+    const { screen } = await openBooking({
+      routes: {
+        [`GET ${EST}/bookings/b-1`]: () => json(200, bookingDetail({ agreement })),
+        [`POST ${EST}/bookings/b-1/requirement-verification`]: (r) => {
+          posts.push(r);
+          return json(200, bookingDetail({ agreement }));
+        },
+      },
+    });
+    expect(await screen.findByText('Requisito da verificare')).toBeOnTheScreen();
+    expect(screen.getByText('Residenza nel comune')).toBeOnTheScreen();
+    // Not a condition of the check-in, as in the core.
+    expect(screen.getByRole('button', { name: 'Fai il check-in' })).toBeEnabled();
+    await fireEvent.press(screen.getByRole('button', { name: 'Verificato' }));
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]!.headers.get('If-Match')).toBe('"3"');
+  });
+
   it('hides cash and notes from the beach staff', async () => {
     const { screen } = await openBooking({ role: 'beach_staff' });
     expect(screen.getByRole('button', { name: 'Fai il check-in' })).toBeOnTheScreen();
@@ -562,4 +585,171 @@ describe('spot operations', () => {
     expect(await screen.findByText('Postazione B7')).toBeOnTheScreen();
     expect(screen.queryByText('Blocca la postazione')).toBeNull();
   });
+});
+
+describe('operations hub on tablets (master/detail)', () => {
+  const twoSpots = operationsDay({
+    spots: [
+      spot({ booking: operationalBooking() }),
+      spot({ spot_id: 's-2', label: 'B7', status: 'free' }),
+    ],
+  });
+
+  // The region is not an accessibility element, so it is found by its label.
+  const detailRegion = (screen: Awaited<ReturnType<typeof renderApp>>['screen']) =>
+    screen
+      .queryAllByLabelText("Dettaglio dell'operazione")
+      .find((e) => e.props.role === 'region') ?? null;
+
+  /** The ≡ button of the visible header, if any. */
+  const toggle = (screen: Awaited<ReturnType<typeof renderApp>>['screen']) =>
+    screen.queryAllByRole('button', { name: 'Mostra o nascondi il menu' }).at(-1) ?? null;
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'shows the placeholder beside the list and the chosen spot in the detail (%s)',
+    async (size) => {
+      const { routes } = instance({ day: twoSpots });
+      const { screen, getPathname, getSearchParams } = await renderApp({
+        session: SESSION,
+        routes,
+        size,
+      });
+      await openOperations(screen);
+      const row = await screen.findByRole('button', { name: 'B7, Libera' });
+      expect(row.props.accessibilityState).toEqual(expect.objectContaining({ selected: false }));
+      expect(screen.getByText('2 postazioni')).toBeOnTheScreen();
+      expect(within(detailRegion(screen)!).getByText('Scegli una postazione')).toBeOnTheScreen();
+
+      await fireEvent.press(row);
+      expect(
+        await within(detailRegion(screen)!).findByText('Blocca la postazione'),
+      ).toBeOnTheScreen();
+      expect(screen.queryByText('Scegli una postazione')).toBeNull();
+      expect(getPathname()).toBe('/operations');
+      expect(getSearchParams()).toEqual(expect.objectContaining({ spot: 's-2' }));
+      expect(screen.getByRole('button', { name: 'B7, Libera' }).props.accessibilityState).toEqual(
+        expect.objectContaining({ selected: true }),
+      );
+      // The list stays beside the detail.
+      expect(screen.getByRole('button', { name: 'A1, Prenotata' })).toBeOnTheScreen();
+    },
+  );
+
+  it('pushes the chosen spot when the window narrows, and brings it back when it widens', async () => {
+    const { routes } = instance({ day: twoSpots });
+    const { screen, getPathname, getSearchParams } = await renderApp({
+      session: SESSION,
+      routes,
+      size: 'tabletLandscape',
+    });
+    await openOperations(screen);
+    await fireEvent.press(await screen.findByRole('button', { name: 'B7, Libera' }));
+    await waitFor(() =>
+      expect(getSearchParams()).toEqual(expect.objectContaining({ spot: 's-2' })),
+    );
+
+    await act(async () => setWindow('tabletSplitView'));
+    await waitFor(() => expect(getPathname()).toBe('/operations/spot/s-2'));
+    expect(await screen.findByText('Blocca la postazione')).toBeOnTheScreen();
+
+    await act(async () => setWindow('tabletLandscape'));
+    await waitFor(() => expect(getPathname()).toBe('/operations'));
+    expect(getSearchParams()).toEqual(expect.objectContaining({ spot: 's-2' }));
+    expect(
+      await within(detailRegion(screen)!).findByText('Blocca la postazione'),
+    ).toBeOnTheScreen();
+    // Back leaves the hub: no second hub stacked under it.
+    await act(async () => router.back());
+    await waitFor(() => expect(getPathname()).not.toBe('/operations'));
+  });
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'shows a typed code result in the detail and clears the spot selection (%s)',
+    async (size) => {
+      const { routes } = instance({ day: twoSpots });
+      const { screen, getSearchParams } = await renderApp({ session: SESSION, routes, size });
+      await openOperations(screen);
+      await fireEvent.press(await screen.findByRole('button', { name: 'B7, Libera' }));
+      expect(
+        await within(detailRegion(screen)!).findByText('Blocca la postazione'),
+      ).toBeOnTheScreen();
+
+      await fireEvent.changeText(
+        screen.getByLabelText('Codice della prenotazione o numero del biglietto'),
+        'AR-7K3Q9',
+      );
+      await fireEvent.press(screen.getByRole('button', { name: 'Cerca' }));
+      expect(
+        await within(detailRegion(screen)!).findByText('Prenotazione AR-7K3Q9'),
+      ).toBeOnTheScreen();
+      expect(within(detailRegion(screen)!).queryByText('Blocca la postazione')).toBeNull();
+      expect(screen.getByRole('button', { name: 'B7, Libera' }).props.accessibilityState).toEqual(
+        expect.objectContaining({ selected: false }),
+      );
+      await waitFor(() => expect(getSearchParams().spot).toBeUndefined());
+    },
+  );
+
+  it.each<WindowSize>(['phone', 'tabletSplitView'])(
+    'opens the spot screen from a spot without room for the split (%s)',
+    async (size) => {
+      const { routes } = instance({ day: twoSpots });
+      const { screen, getPathname } = await renderApp({ session: SESSION, routes, size });
+      await openOperations(screen);
+      expect(detailRegion(screen)).toBeNull();
+      expect(screen.queryByText('Scegli una postazione')).toBeNull();
+      await fireEvent.press(await screen.findByRole('link', { name: 'B7, Libera' }));
+      await waitFor(() => expect(getPathname()).toBe('/operations/spot/s-2'));
+      expect(await screen.findByText('Blocca la postazione')).toBeOnTheScreen();
+    },
+  );
+
+  it('gives the hub opened from the pane the ≡ toggle and the pushed spot screen a way back', async () => {
+    const { routes } = instance({ day: twoSpots });
+    const { screen, getPathname } = await renderApp({
+      session: SESSION,
+      routes,
+      size: 'tabletSplitView',
+    });
+    expect(await screen.findByText(/Anna · /)).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('link', { name: 'Operazioni' }));
+    expect(await screen.findByText('Postazioni di oggi')).toBeOnTheScreen();
+    // Opened from the pane: nothing under it in the stack, so the ≡ toggle.
+    expect(toggle(screen)).toBeOnTheScreen();
+    expect(router.canGoBack()).toBe(false);
+
+    await fireEvent.press(await screen.findByRole('link', { name: 'B7, Libera' }));
+    await waitFor(() => expect(getPathname()).toBe('/operations/spot/s-2'));
+    expect(await screen.findByText('Blocca la postazione')).toBeOnTheScreen();
+    // Pushed from the hub: the native back button (not in the Jest tree)
+    // instead of the toggle.
+    expect(toggle(screen)).toBeNull();
+    expect(router.canGoBack()).toBe(true);
+
+    await act(async () => router.back());
+    await waitFor(() => expect(getPathname()).toBe('/operations'));
+    expect(toggle(screen)).toBeOnTheScreen();
+  });
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'opens a spot link in the hub with that spot selected (%s)',
+    async (size) => {
+      const { routes } = instance({ day: twoSpots });
+      const { screen, getPathname, getSearchParams } = await renderApp({
+        session: SESSION,
+        routes,
+        size,
+      });
+      expect(await screen.findByText(/Anna · /)).toBeOnTheScreen();
+      await act(async () => router.push('/operations/spot/s-2'));
+      await waitFor(() => expect(getPathname()).toBe('/operations'));
+      expect(getSearchParams()).toEqual(expect.objectContaining({ spot: 's-2' }));
+      expect(
+        await within(detailRegion(screen)!).findByText('Blocca la postazione'),
+      ).toBeOnTheScreen();
+      expect(
+        (await screen.findByRole('button', { name: 'B7, Libera' })).props.accessibilityState,
+      ).toEqual(expect.objectContaining({ selected: true }));
+    },
+  );
 });

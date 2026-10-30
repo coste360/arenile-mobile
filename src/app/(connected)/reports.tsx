@@ -7,6 +7,7 @@ import { NetworkError, ProblemError, isForbidden } from '@/api/errors';
 import type { ComparisonAlign } from '@/api/types';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { Screen } from '@/components/layout/screen';
+import { DailyChart } from '@/components/reports/daily-chart';
 import { DailyComparison } from '@/components/reports/daily-comparison';
 import { MetricCard } from '@/components/reports/metric-card';
 import { PeriodPicker } from '@/components/reports/period-picker';
@@ -114,6 +115,14 @@ function Reports() {
               );
             })}
           </View>
+          {range === 'week' && data.series.length > 1 ? (
+            <DailyChart
+              points={data.series}
+              locale={locale}
+              currentYear={data.current.from.slice(0, 4)}
+              previousYear={previousYear}
+            />
+          ) : null}
           {range === 'week' && data.series.length > 0 ? (
             <DailyComparison
               points={data.series}

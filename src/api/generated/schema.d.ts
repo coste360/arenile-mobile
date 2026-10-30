@@ -1,6 +1,6 @@
 /**
  * GENERATED FILE, DO NOT EDIT.
- * Source: openapi.yaml of Arenile core v1.0.1 (sha256 8ed42c2281584008b21f57cc0c60ed344c3a26a8a67ad43fdde115f454a391f2).
+ * Source: openapi.yaml of Arenile core v1.1.2 (sha256 247c6643204577a8369661c420aafb2f0707abcca7e1b0dea87fd3f73a50cabc).
  * Regenerate with 'make gen' (scripts/gen-api.mjs, openapi-typescript).
  */
 
@@ -917,6 +917,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/v1/establishments/{establishmentId}/setup/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ricomincia la configurazione o azzera lo stabilimento
+         * @description Solo il titolare (permessi `establishment.configure`, `users.manage` e `payments.configure`), con una sessione utente (non chiavi API né dispositivi). `confirm_name` deve essere il nome dello stabilimento. `scope: configuration` cancella stagioni e periodi, chiusure, mappe, postazioni, zone, pool, catalogo, prezzi, codici sconto, convenzioni, policy e biglietti d'ingresso, e riapre la configurazione guidata; è rifiutato con `409` se lo stabilimento ha dati operativi (`SetupStatus.has_operations`). `scope: everything` cancella anche prenotazioni, abbonamenti, clienti, incassi, sessioni di cassa, biglietti, documenti fiscali, crediti, lista d'attesa e rinnovi; è rifiutato con `409` finché un pagamento online o un rimborso è in corso presso il provider o se ci sono documenti di un registratore telematico (driver fiscale diverso da `none`: emessi, annullati o ancora in stampa, o lavori del bridge in corso), che vanno conservati. Entrambi spengono `booking_enabled` e scrivono gli eventi `config.map_changed` e `config.pricing_changed`. Restano sempre il profilo dello stabilimento, i contatori dei biglietti del giorno, gli utenti, i pagamenti online, le email, i dispositivi, le casse e le stampanti, il registro attività. Irreversibile; tutto in una transazione, con una voce `setup.reset` nel registro attività.
+         */
+        post: operations["resetEstablishmentSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/v1/establishments/{establishmentId}/customers": {
         parameters: {
             query?: never;
@@ -1089,7 +1109,7 @@ export interface paths {
         put?: never;
         /**
          * Registra il check-in
-         * @description Da confirmed a checked_in (permesso operations.run). Stato non ammesso: 409 invalid_transition. Idempotency-Key consigliata (coda offline del pannello, spec 21.2).
+         * @description Da confirmed a checked_in (permesso operations.run). Stato non ammesso: 409 invalid_transition. Idempotency-Key consigliata (coda offline del pannello e dell'app, spec 21.2, 29.2).
          */
         post: operations["checkInBooking"];
         delete?: never;
@@ -1209,7 +1229,7 @@ export interface paths {
         put?: never;
         /**
          * Aggiunge una nota
-         * @description Idempotency-Key consigliata (coda offline del pannello, spec 21.2).
+         * @description Permesso bookings.write. Idempotency-Key consigliata (coda offline del pannello e dell'app, spec 21.2, 29.2): senza chiave due invii aggiungono due note.
          */
         post: operations["addBookingNote"];
         delete?: never;
@@ -1249,7 +1269,7 @@ export interface paths {
         put?: never;
         /**
          * Prezzo e disponibilità di una vendita giornaliera (nessuna scrittura)
-         * @description Vendita giornaliera (biglietto): prezzo dal motore dei prezzi per il giorno, la fascia, il pack e gli extra, e disponibilità della postazione (spot-first) o della zona (zone-first, posti liberi residui). Permesso bookings.write.
+         * @description Vendita giornaliera (biglietto): prezzo dal motore dei prezzi per il giorno, la fascia, il pack e gli extra, e disponibilità della postazione (spot-first) o della zona (zone-first, posti liberi residui). Valuta le stesse regole di prenotazione della vendita: se la vendita sarebbe rifiutata risponde 422 `policy_violation` con `violations` (es. `same_day_closed`). Permesso bookings.write.
          */
         post: operations["quoteDailySale"];
         delete?: never;
@@ -1507,7 +1527,7 @@ export interface paths {
         put?: never;
         /**
          * Ingresso al varco: scansione del QR del biglietto
-         * @description Un ingresso per biglietto: il primo passaggio registra entered_at (condizionale, mai due volte anche da due telefoni), i successivi rispondono already_entered. outcome descrive l'esito per lo scanner (voided, wrong_date). Il codice è il token casuale del QR (gate token): il codice della prenotazione, sequenziale, o il numero del giorno da soli non fanno entrare (404); li accetta solo un inserimento manuale confermato dallo staff (manual = true), registrato nell'audit. Un biglietto la cui prenotazione non è più confermata non entra. 404 se il codice non è un biglietto dello stabilimento. Permesso operations.run.
+         * @description Un ingresso per biglietto: il primo passaggio registra entered_at (condizionale, mai due volte anche da due telefoni), i successivi rispondono already_entered. outcome descrive l'esito per lo scanner (voided, wrong_date). Il codice è il token casuale del QR (gate token): il codice della prenotazione, sequenziale, o il numero del giorno da soli non fanno entrare (404); li accetta solo un inserimento manuale confermato dallo staff (manual = true), registrato nell'audit. Un biglietto la cui prenotazione non è più confermata non entra. 404 se il codice non è un biglietto dello stabilimento. Permesso operations.run. Idempotency-Key consigliata (coda offline dell'app, spec 29.2): la ripetizione con la stessa chiave restituisce l'esito originale (admitted), non already_entered.
          */
         post: operations["checkInEntryTicket"];
         delete?: never;
@@ -1611,7 +1631,7 @@ export interface paths {
         put?: never;
         /**
          * Registra un incasso manuale (contanti, carta, bonifico, altro)
-         * @description Driver manual. Idempotency-Key fortemente consigliata (coda offline, spec 21.2). I contanti richiedono una sessione di cassa aperta (409 cash_session_closed). Aggiorna paid_amount (INV-22).
+         * @description Driver manual. Idempotency-Key fortemente consigliata (coda offline del pannello e dell'app, spec 21.2, 29.2). I contanti richiedono una sessione di cassa aperta (409 cash_session_closed). Aggiorna paid_amount (INV-22).
          */
         post: operations["recordBookingPayment"];
         delete?: never;
@@ -1768,7 +1788,7 @@ export interface paths {
         put?: never;
         /**
          * Blocca postazioni su un intervallo
-         * @description Allocazioni kind=block (permesso operations.run); 409 spot_unavailable.
+         * @description Allocazioni kind=block (permesso operations.run); 409 spot_unavailable. Idempotency-Key consigliata (coda offline dell'app, spec 29.2).
          */
         post: operations["createSpotBlock"];
         delete?: never;
@@ -1848,7 +1868,7 @@ export interface paths {
         put?: never;
         /**
          * Rilascia giorni: la postazione diventa prenotabile
-         * @description Rimuove le allocazioni season di quei giorni ed emette season.day_released (spec 7.7, INV-10).
+         * @description Rimuove le allocazioni season di quei giorni ed emette season.day_released (spec 7.7, INV-10). Idempotency-Key consigliata (coda offline del pannello e dell'app, spec 21.2, 29.2).
          */
         post: operations["createSeasonPassReleases"];
         delete?: never;
@@ -3145,6 +3165,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/v1/system/update/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verifica subito se c'è una nuova versione di Arenile
+         * @description ADR 0025. Esegue subito il controllo degli aggiornamenti ("Verifica aggiornamenti") e restituisce lo stato aggiornato, come `getSystemUpdate`. Il server limita i controlli: se ne è già avvenuto uno (automatico o manuale) nell'ultimo minuto, o uno è in corso, risponde con lo stato in memoria senza chiamate di rete. Con il controllo spento (`ARENILE_UPDATE_CHECK=false`, impostazione `update_check` dell'app desktop) o con una versione di sviluppo non fa chiamate di rete e risponde `status: disabled`. Un controllo non riuscito non è un errore: risponde `200` con `status: unavailable`. Solo titolari e gestori (permesso `establishment.configure` su almeno uno stabilimento); le chiavi API non hanno accesso.
+         */
+        post: operations["checkSystemUpdate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/v1/establishments/{establishmentId}/devices/pairing-codes": {
         parameters: {
             query?: never;
@@ -3239,6 +3279,26 @@ export interface paths {
          * @description Spec 29.2. Non autenticato, limitato per IP (10 tentativi al minuto). Il codice è monouso: lo scambio lo consuma con un UPDATE condizionale, quindi due richieste concorrenti con lo stesso codice producono un solo token. Codice inesistente, scaduto o già usato rispondono tutti `400 pairing_code_invalid` (nessun oracolo). Il token (`ar_dev_<prefix>_<secret>`) è restituito solo qui; il server conserva lo SHA-256. Si usa poi come `Authorization: Bearer` sulle API admin (permessi del ruolo dell'utente nello stabilimento del codice) e sulle API `/api/device/v1`. Nessun cookie, quindi nessun CSRF.
          */
         post: operations["pairDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/device/v1/demo-pairing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Codice di abbinamento allo stabilimento dimostrativo
+         * @description Spec 29.2. Solo sulle istanze dimostrative (`ARENILE_DEMO_PAIRING_USER` e `ARENILE_DEMO_PAIRING_ESTABLISHMENT`, spec 24.4); sulle altre risponde `404`. Non autenticato, limitato per rete del client (5 richieste all'ora; la /64 per IPv6) e in totale (300 all'ora). Restituisce un codice di abbinamento nuovo per l'utente dimostrativo configurato, valido 5 minuti: il pulsante "Prova la demo" dell'app lo scambia subito con `POST /api/device/v1/pair`. Il dispositivo abbinato ha il ruolo di quell'utente, ammesso solo se è `cashier`, `beach_staff` o `viewer` (con un titolare o un gestore l'endpoint risponde `404`). Nessun corpo.
+         */
+        post: operations["createDemoPairingCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4510,6 +4570,529 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/v1/establishments/{establishmentId}/partners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Elenco dei partner
+         * @description Spec 30.2.1: soggetti con cui il lido ha un accordo (strutture ricettive, enti, aziende, associazioni), separati dai clienti. Permesso bookings.read (la cassa sceglie il partner sulla prenotazione).
+         */
+        get: operations["listPartners"];
+        put?: never;
+        /**
+         * Crea un partner
+         * @description Permesso establishment.configure. Referente, email e telefono non vanno mai nei log.
+         */
+        post: operations["createPartner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/partners/{partnerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dettaglio del partner */
+        get: operations["getPartner"];
+        /**
+         * Sostituisce il partner
+         * @description Sostituzione completa (i campi facoltativi assenti vengono azzerati). If-Match consigliato.
+         */
+        put: operations["updatePartner"];
+        post?: never;
+        /**
+         * Elimina il partner
+         * @description Solo se nessuna convenzione, prenotazione o pagamento lo usa; altrimenti `409 partner_in_use` e il partner si disattiva (active = false) per conservarne lo storico.
+         */
+        delete: operations["deletePartner"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/partners/{partnerId}/statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Estratto conto del partner per periodo
+         * @description Spec 30.2.4: prenotazioni a carico del partner (tutte o in parte), giorni-postazione, persone, importi addebitati, pagamenti registrati e saldo. Saldo finale = saldo iniziale + addebitato - pagato (INV-104). Base soggiorno: una prenotazione entra nel periodo con i suoi giorni di soggiorno. Esportazione in Excel (`format=xlsx`) o HTML stampabile (`format=html`, PDF con la stampa del browser, ADR 0019). La fattura resta fuori da Arenile. Permesso reports.read.
+         */
+        get: operations["getPartnerStatement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/partners/{partnerId}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pagamenti ricevuti dal partner
+         * @description Pagamenti registrati sul conto del partner (decisione 30.13 in ADR 0028). Permesso reports.read.
+         */
+        get: operations["listPartnerPayments"];
+        put?: never;
+        /**
+         * Registra un pagamento del partner
+         * @description Registra un incasso dal partner (bonifico, contanti...). Non è un movimento di cassa né un documento fiscale: riduce il saldo del conto del partner. Audit nella stessa transazione. Permesso cash.operate.
+         */
+        post: operations["recordPartnerPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/partners/{partnerId}/payments/{partnerPaymentId}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Annulla un pagamento del partner registrato per errore
+         * @description La riga resta con data, operatore e motivo dell'annullamento; non conta più nel saldo.
+         */
+        post: operations["voidPartnerPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/customer-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Categorie di clienti
+         * @description Spec 30.2.2: residenti, over 65, persone con disabilità e accompagnatore, famiglie numerose... assegnabili ai clienti e destinatarie di convenzioni. Permesso bookings.read.
+         */
+        get: operations["listCustomerCategories"];
+        put?: never;
+        /**
+         * Crea una categoria di clienti
+         * @description Permesso establishment.configure.
+         */
+        post: operations["createCustomerCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/customer-categories/{customerCategoryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dettaglio della categoria di clienti */
+        get: operations["getCustomerCategory"];
+        /** Sostituisce la categoria di clienti */
+        put: operations["updateCustomerCategory"];
+        post?: never;
+        /**
+         * Elimina la categoria di clienti
+         * @description Solo se nessuna convenzione la usa (`409 customer_category_in_use`); i clienti perdono l'appartenenza.
+         */
+        delete: operations["deleteCustomerCategory"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/customers/{customerId}/requirement-verifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Verifiche dei requisiti del cliente
+         * @description Storico delle verifiche (data e operatore), mai copie dei documenti. Permesso bookings.read.
+         */
+        get: operations["listCustomerRequirementVerifications"];
+        put?: never;
+        /**
+         * Registra la verifica di un requisito sul cliente
+         * @description Spec 30.2.2: l'operatore spunta "verificato" (es. residente verificato); si registrano data e operatore, mai una copia del documento. Vale per le prenotazioni successive del cliente finché la convenzione o la categoria non cambiano requisito. Permesso bookings.write; audit nella stessa transazione.
+         */
+        post: operations["verifyCustomerRequirement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/bookings/{bookingId}/requirement-verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Registra la verifica del requisito della convenzione sulla prenotazione
+         * @description Spec 30.2.2-30.2.3: data e operatore della verifica (es. conferma dell'hotel), mai una copia del documento. Passa da internal/domain/booking (audit ed evento booking.modified nella stessa transazione). Permesso bookings.write.
+         */
+        post: operations["verifyBookingRequirement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/agreements/{agreementId}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Storico delle versioni della convenzione
+         * @description Spec 30.2.2: ogni modifica delle condizioni, dell'ambito, della validità o del contingente salva una versione. La condizione applicata a una prenotazione resta nel suo price_snapshot (INV-21).
+         */
+        get: operations["listAgreementVersions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/agreements/{agreementId}/quota": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Uso del contingente della convenzione per giorno
+         * @description Spec 30.2.2: per ogni mezza giornata il contingente riservato, quanto è stato usato e se è già tornato alla vendita generale (release_days_before giorni prima, INV-103). Permesso bookings.read.
+         */
+        get: operations["getAgreementQuotaUsage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/bookings/{bookingId}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Duplica la prenotazione su nuove date
+         * @description Spec 30.9: stessa postazione, cliente, extra, convenzione e dati del gruppo; nuove date; prezzo ricalcolato; disponibilità garantita dai vincoli del database (409 se la postazione non è libera). `dry_run = true` mostra prezzo e conflitti senza scrivere. Permesso bookings.write.
+         */
+        post: operations["duplicateBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/bookings/{bookingId}/share-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Riepilogo della prenotazione da inviare al cliente (WhatsApp)
+         * @description Spec 30.9: testo pronto nella lingua del cliente (date, postazioni, importo, saldo, link di gestione) e link `wa.me` al numero del cliente, solo se ha un telefono. Arenile non invia nulla a terzi: l'operatore conferma l'invio dalla propria app. Il link di gestione è nuovo a ogni chiamata e i precedenti sono revocati (come il link magico): per questo è un `POST` senza corpo, mai un `GET` (nessun prefetch o link può revocare il link del cliente). Permesso bookings.write.
+         */
+        post: operations["createBookingShareSummary"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/bookings/{bookingId}/summary-print": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Riepilogo stampabile per il cliente con QR
+         * @description Spec 30.9: documento HTML autonomo (stili di stampa, A4 o 80 mm) con date, postazioni, extra, importi e QR della prenotazione; PDF con la stampa del browser (ADR 0019). Permesso bookings.read.
+         */
+        get: operations["getBookingSummaryPrint"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/bookings/swap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Scambia le postazioni di due prenotazioni
+         * @description Spec 30.7: scambio delle allocazioni di due righe sull'intervallo comune a partire da `from`; fuori dall'intervallo comune ciascuna resta dov'era. Una sola transazione: righe delle prenotazioni bloccate in ordine di ID, allocazioni rilasciate e ricreate senza alcun istante di doppia occupazione (vincolo unico di spot_allocations, INV-101), prezzo ricalcolato se cambia la categoria, audit ed evento booking.modified per entrambe. `dry_run = true` mostra le differenze di prezzo senza scrivere. La risposta riporta `undo` per annullare entro 5 minuti. Permesso bookings.write.
+         */
+        post: operations["swapBookings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/bookings/group-move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sposta più prenotazioni o righe insieme
+         * @description Spec 30.7: ogni elemento indica la riga e la postazione di arrivo (il pannello calcola le destinazioni mantenendo la disposizione relativa). Tutto o niente in una sola transazione, a partire da `from`; audit ed evento per ogni prenotazione. `undo` per annullare entro 5 minuti. Permesso bookings.write.
+         */
+        post: operations["moveBookingGroup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/moves/last": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ultimo spostamento annullabile dell'utente
+         * @description Spec 30.7: l'ultimo spostamento, scambio o spostamento di gruppo fatto dall'utente corrente negli ultimi 5 minuti e non ancora annullato; `move` assente se non ce n'è.
+         */
+        get: operations["getLastMove"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/moves/{moveId}/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Annulla uno spostamento entro 5 minuti
+         * @description Spec 30.7: riporta le righe sulle postazioni di partenza se sono ancora libere (vincoli del database: 409 move_undo_conflict altrimenti, nulla cambia); dopo 5 minuti 410 move_undo_expired. Solo l'utente che ha fatto lo spostamento, e solo se le prenotazioni non sono cambiate nel frattempo (409). Audit ed evento per ogni prenotazione. Permesso bookings.write.
+         */
+        post: operations["undoMove"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/find-spot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Trova posto
+         * @description Spec 30.6: ricerca della disponibilità per la cassa (nessuna scrittura). Proposte ordinate: prima quelle senza cambi di posto, poi con meno cambi, poi per continuità e vicinanza; ogni proposta ha i segmenti per riga e il prezzo stimato con la convenzione (per un soggiorno spezzato su categorie diverse ogni giorno vale la categoria della postazione occupata, ADR 0028). Riusa l'algoritmo a segmenti dell'assegnazione automatica (spec 7.5) esteso alle zone seat. Permesso bookings.read.
+         */
+        post: operations["findSpot"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/find-spot/book": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Prenota una proposta di Trova posto
+         * @description Spec 30.6: crea la prenotazione con le allocazioni per segmento in una sola transazione (passa da internal/domain/booking). Se nel frattempo una mezza giornata è stata presa risponde 409 spot_unavailable con i conflitti e il pannello rifà la ricerca; se il prezzo è cambiato rispetto a `expected_total` 409 price_changed. Permesso bookings.write.
+         */
+        post: operations["bookFindSpotProposal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/spots/{spotId}/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Calendario della stagione della postazione
+         * @description Spec 30.5: per ogni giorno della stagione lo stato di mattina e pomeriggio (libero, prenotato, abbonato, rilasciato, bloccato, in attesa, chiuso) e le prenotazioni coinvolte con il saldo. L'etichetta del cliente (occupant_label) solo con bookings.read, mai negli eventi SSE. Senza `season_id` vale la stagione che contiene oggi o la prossima.
+         */
+        get: operations["getSpotCalendar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/operations/lifeguard-list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lista per i bagnini
+         * @description Spec 30.10: per fila e postazione, cognome dell'occupante, allestimento, arrivo/partenza e da saldare. JSON oppure HTML stampabile (`format=html`, A4, funziona offline). Mai email o telefono. Permesso bookings.read.
+         */
+        get: operations["getLifeguardList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/reports/partners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Rendiconto per partner
+         * @description Spec 30.2.5: per partner prenotazioni, presenze (persone), giorni-postazione, incasso, sconto concesso, addebitato al partner e pagato, per periodo (base soggiorno). Esclude le prenotazioni di prova. Permesso reports.read.
+         */
+        get: operations["getPartnersReport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/v1/establishments/{establishmentId}/reports/agreements-register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Registro delle convenzioni per il bando
+         * @description Spec 30.2.5: per una stagione o un periodo, le convenzioni attive con le loro condizioni e, per ciascuna, prenotazioni, giorni-postazione, persone e valore dello sconto concesso, con i totali per categoria (residenti, strutture ricettive, categorie tutelate...). Excel (`format=xlsx`) o HTML stampabile e firmabile (`format=html`, impaginazione neutra, PDF con la stampa del browser, ADR 0019 e 0028). Coerente con i report di cassa (stessa base dati, prenotazioni di prova escluse). Permesso reports.read.
+         */
+        get: operations["getAgreementsRegister"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/v1/{slug}/agreements/{agreementCode}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Convenzione dal link o dal codice
+         * @description Spec 30.2.2: il link della convenzione `/b/{slug}?c={codice}` mostra il nome della convenzione e del partner, la condizione e l'eventuale requisito da presentare in cassa. Solo convenzioni attive, valide e con canale online (codice o link); altrimenti 404 (non rivela se il codice esiste). Il codice si applica poi in preventivo e checkout con `agreement_code`. Nessun dato dei clienti.
+         */
+        get: operations["getPublicAgreement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4519,7 +5102,7 @@ export interface components {
          *     valore, mai sul testo di `title` o `detail`.
          * @enum {string}
          */
-        ProblemType: "bad_request" | "validation_failed" | "unauthorized" | "invalid_credentials" | "totp_required" | "invalid_totp" | "totp_enrolment_required" | "totp_already_enabled" | "forbidden" | "csrf_failed" | "not_found" | "conflict" | "method_not_allowed" | "unsupported_media_type" | "rate_limited" | "idempotency_key_reused" | "idempotency_in_progress" | "internal_error" | "spot_unavailable" | "no_price" | "policy_violation" | "hold_expired" | "version_conflict" | "precondition_required" | "spot_has_future_allocations" | "not_implemented" | "pool_exhausted" | "quota_exceeded" | "invalid_transition" | "cash_session_closed" | "cash_session_already_open" | "booking_outside_period" | "checkout_not_found" | "payment_provider_unavailable" | "webhook_signature_invalid" | "pairing_code_invalid" | "lan_mode_required" | "loopback_required" | "setup_token_invalid" | "setup_completed" | "renewal_expired" | "waitlist_offer_expired" | "waitlist_disabled" | "credit_insufficient" | "season_rollover_conflict" | "test_mode_preview_required" | "import_invalid" | "import_already_applied" | "refund_in_progress" | "zone_full" | "assignment_conflict" | "ticket_number_conflict" | "ticket_voided" | "ticket_already_entered" | "price_changed" | "ticket_owned" | "printing_unavailable" | "printer_address_not_allowed" | "print_route_missing" | "payment_provider_test_mode" | "email_template_invalid";
+        ProblemType: "bad_request" | "validation_failed" | "unauthorized" | "invalid_credentials" | "totp_required" | "invalid_totp" | "totp_enrolment_required" | "totp_already_enabled" | "forbidden" | "csrf_failed" | "not_found" | "conflict" | "method_not_allowed" | "unsupported_media_type" | "rate_limited" | "idempotency_key_reused" | "idempotency_in_progress" | "internal_error" | "spot_unavailable" | "no_price" | "policy_violation" | "hold_expired" | "version_conflict" | "precondition_required" | "spot_has_future_allocations" | "not_implemented" | "pool_exhausted" | "quota_exceeded" | "invalid_transition" | "cash_session_closed" | "cash_session_already_open" | "booking_outside_period" | "checkout_not_found" | "payment_provider_unavailable" | "webhook_signature_invalid" | "pairing_code_invalid" | "lan_mode_required" | "loopback_required" | "setup_token_invalid" | "setup_completed" | "renewal_expired" | "waitlist_offer_expired" | "waitlist_disabled" | "credit_insufficient" | "season_rollover_conflict" | "test_mode_preview_required" | "import_invalid" | "import_already_applied" | "refund_in_progress" | "zone_full" | "assignment_conflict" | "ticket_number_conflict" | "ticket_voided" | "ticket_already_entered" | "price_changed" | "ticket_owned" | "printing_unavailable" | "printer_address_not_allowed" | "print_route_missing" | "payment_provider_test_mode" | "email_template_invalid" | "agreement_quota_exceeded" | "agreement_not_applicable" | "swap_conflict" | "move_undo_expired" | "move_undo_conflict" | "partner_in_use" | "customer_category_in_use" | "concurrent_update" | "approval_required";
         /** @description Errore RFC 9457 (`application/problem+json`). */
         Problem: {
             type: components["schemas"]["ProblemType"];
@@ -4528,7 +5111,11 @@ export interface components {
             detail?: string;
             instance?: string;
             request_id?: string;
-            /** @description Secondi da attendere (solo per `rate_limited`). */
+            /**
+             * @description Secondi da attendere prima di riprovare (`rate_limited`, `payment_provider_unavailable`,
+             *     `concurrent_update`). Le risposte con `retry_after` non vengono memorizzate per
+             *     `Idempotency-Key`: la stessa richiesta con la stessa chiave viene eseguita di nuovo.
+             */
             retry_after?: number;
             errors?: components["schemas"]["FieldError"][];
             /**
@@ -5275,6 +5862,10 @@ export interface components {
             sort_order?: number;
             active?: boolean;
             vat_rate_bp?: components["schemas"]["BasisPoints"];
+            /** @description Mostra l'extra nell'allestimento della postazione sulla mappa (spec 30.4). */
+            show_on_map?: boolean;
+            /** @description Sigla sulla mappa (es. "L" per lettino, "S" per sdraio). */
+            map_label?: string;
         };
         /** @description Aggiunta opzionale a un pack o alla prenotazione. */
         Extra: {
@@ -5298,6 +5889,10 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            /** @description Mostra l'extra nell'allestimento della postazione sulla mappa (spec 30.4). */
+            show_on_map?: boolean;
+            /** @description Sigla sulla mappa (es. "L" per lettino, "S" per sdraio). */
+            map_label?: string;
         };
         ExtraList: {
             items: components["schemas"]["Extra"][];
@@ -5466,6 +6061,27 @@ export interface components {
             valid_to?: components["schemas"]["Date"];
             stackable?: boolean;
             active?: boolean;
+            target?: components["schemas"]["AgreementTarget"];
+            /**
+             * Format: uuid
+             * @description Partner destinatario (target = partner); partner_name resta per le convenzioni precedenti.
+             */
+            partner_id?: string;
+            /**
+             * Format: uuid
+             * @description Categoria destinataria (target = customer_category).
+             */
+            customer_category_id?: string;
+            /** @description Prezzi fissi per pack (condizione "prezzo fisso per pack", spec 30.2.2). */
+            pack_prices?: components["schemas"]["AgreementPackPrice"][];
+            scope?: components["schemas"]["AgreementScope"];
+            /** @description Stagioni di validità (oltre a valid_from/valid_to); vuoto = tutte. */
+            season_ids?: string[];
+            quota?: components["schemas"]["AgreementQuota"];
+            /** @description Requisito da verificare in cassa (es. "conferma dell'hotel"); vuoto = nessuno. */
+            requirement?: string;
+            channels?: components["schemas"]["AgreementChannel"][];
+            register_category?: components["schemas"]["RegisterCategory"];
         };
         /** @description Convenzione: come un codice promozionale, ma assegnata a un cliente o a un partner (hotel). */
         Agreement: {
@@ -5487,6 +6103,30 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            target?: components["schemas"]["AgreementTarget"];
+            /**
+             * Format: uuid
+             * @description Partner destinatario (target = partner); partner_name resta per le convenzioni precedenti.
+             */
+            partner_id?: string;
+            /**
+             * Format: uuid
+             * @description Categoria destinataria (target = customer_category).
+             */
+            customer_category_id?: string;
+            /** @description Prezzi fissi per pack (condizione "prezzo fisso per pack", spec 30.2.2). */
+            pack_prices?: components["schemas"]["AgreementPackPrice"][];
+            scope?: components["schemas"]["AgreementScope"];
+            /** @description Stagioni di validità (oltre a valid_from/valid_to); vuoto = tutte. */
+            season_ids?: string[];
+            quota?: components["schemas"]["AgreementQuota"];
+            /** @description Requisito da verificare in cassa (es. "conferma dell'hotel"); vuoto = nessuno. */
+            requirement?: string;
+            channels?: components["schemas"]["AgreementChannel"][];
+            register_category?: components["schemas"]["RegisterCategory"];
+            partner?: components["schemas"]["PartnerRef"];
+            /** @description Percorso del link della convenzione (`/b/{slug}?c={codice}`), con canale online_link e codice. */
+            public_link?: string;
         };
         AgreementList: {
             items: components["schemas"]["Agreement"][];
@@ -5680,6 +6320,8 @@ export interface components {
             price_category_override?: string;
             attributes: string[];
             active: boolean;
+            /** @description Vendibile online (spec 30.11), oltre alla quota online della zona; default true. La pagina pubblica mostra e vende solo le postazioni abilitate, la cassa le vede tutte. */
+            online_bookable?: boolean;
         };
         SpotInput: {
             /**
@@ -5706,6 +6348,8 @@ export interface components {
             price_category_override?: string;
             attributes?: string[];
             active?: boolean;
+            /** @description Vendibile online (spec 30.11), oltre alla quota online della zona; default true. La pagina pubblica mostra e vende solo le postazioni abilitate, la cassa le vede tutte. */
+            online_bookable?: boolean;
         };
         /** @description Elemento decorativo non prenotabile. */
         Decoration: {
@@ -6036,6 +6680,25 @@ export interface components {
             has_catalog: boolean;
             has_prices: boolean;
             booking_enabled: boolean;
+            /** @description Lo stabilimento ha dati operativi (prenotazioni, abbonamenti, incassi, sessioni di cassa, biglietti, lista d'attesa, rinnovi o crediti): la configurazione si ricomincia solo azzerando tutto. */
+            has_operations: boolean;
+        };
+        SetupResetRequest: {
+            /**
+             * @description `configuration`: solo la configurazione; `everything`: anche i dati operativi.
+             * @enum {string}
+             */
+            scope: "configuration" | "everything";
+            /** @description Nome dello stabilimento, scritto per confermare (spazi iniziali e finali ignorati). */
+            confirm_name: string;
+        };
+        SetupResetResult: {
+            /** @enum {string} */
+            scope: "configuration" | "everything";
+            /** @description Righe cancellate per tabella (solo quelle con almeno una riga). */
+            deleted: {
+                [key: string]: number;
+            };
         };
         /** @description Mezza giornata non disponibile per una risorsa (spec 7.2), restituita in Problem.conflicts e nelle anteprime. */
         AllocationConflict: {
@@ -6048,7 +6711,7 @@ export interface components {
             date: components["schemas"]["Date"];
             slot: components["schemas"]["Slot"];
             /** @enum {string} */
-            reason: "spot_unavailable" | "pool_exhausted" | "quota_exceeded" | "closed" | "inactive";
+            reason: "spot_unavailable" | "pool_exhausted" | "quota_exceeded" | "closed" | "inactive" | "agreement_reserved" | "agreement_quota";
         };
         /** @description Consenso marketing separato e facoltativo (spec 23). */
         MarketingConsent: {
@@ -6073,6 +6736,8 @@ export interface components {
             /** Format: uuid */
             agreement_id?: string;
             marketing_consent?: components["schemas"]["MarketingConsent"];
+            /** @description Categorie di clienti (residenti, over 65...; spec 30.2.2). */
+            category_ids?: string[];
         };
         Customer: {
             /** Format: uuid */
@@ -6096,6 +6761,8 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            /** @description Categorie di clienti (residenti, over 65...; spec 30.2.2). */
+            category_ids?: string[];
         };
         CustomerList: {
             items: components["schemas"]["Customer"][];
@@ -6146,6 +6813,8 @@ export interface components {
             bookings: components["schemas"]["BookingSummary"][];
             payments: components["schemas"]["Payment"][];
             credits: components["schemas"]["CustomerCredit"][];
+            /** @description Verifiche dei requisiti delle convenzioni sul cliente e sulle sue prenotazioni (M8, spec 30.2.2); solo data, operatore, requisito e nota. */
+            requirement_verifications?: components["schemas"]["RequirementVerification"][];
         };
         /**
          * @description Stato della prenotazione (spec 10.2).
@@ -6183,6 +6852,13 @@ export interface components {
             version: components["schemas"]["Version"];
             /** Format: date-time */
             created_at: string;
+            agreement_name?: string;
+            partner_name?: string;
+            group_name?: string;
+            /** @description Nomi degli ospiti (solo nell'esportazione GDPR del cliente, spec 23). */
+            guest_names?: string[];
+            /** @description Provenienza del gruppo, testo libero (solo nell'esportazione GDPR del cliente, spec 23). */
+            group_origin?: string;
         };
         BookingList: {
             items: components["schemas"]["BookingSummary"][];
@@ -6219,6 +6895,8 @@ export interface components {
             quantity: number;
             line_total: components["schemas"]["Money"];
             extras: components["schemas"]["BookingExtra"][];
+            /** @description Segmenti per postazione (soggiorno spezzato o spostamento programmato con from), in ordine di data. */
+            segments?: components["schemas"]["BookingLineSegment"][];
         };
         /** @description Una riga di spot_allocations o pool_allocations della prenotazione. */
         BookingAllocation: {
@@ -6306,6 +6984,19 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            agreement?: components["schemas"]["AgreementRef"];
+            partner?: components["schemas"]["PartnerRef"];
+            group_name?: string;
+            group_origin?: string;
+            party_adults?: number;
+            party_children?: number;
+            guest_names?: string[];
+            partner_share?: components["schemas"]["BookingPartnerShare"];
+            /** @description Importo a carico del partner calcolato da partner_share sul totale corrente. */
+            partner_amount?: components["schemas"]["Money"];
+            partner_guest_stay?: components["schemas"]["DateRange"];
+            requirement_verification?: components["schemas"]["RequirementVerification"];
+            last_move?: components["schemas"]["MoveUndoInfo"];
         };
         BookingLineInput: {
             /** Format: uuid */
@@ -6323,6 +7014,8 @@ export interface components {
             /** @description Default 1; >1 solo per zone quantity. */
             quantity?: number;
             extras?: components["schemas"]["SimulateExtra"][];
+            /** @description Soggiorno spezzato (Trova posto, spec 30.6): segmenti consecutivi che coprono le date della prenotazione esattamente una volta (INV-102); in alternativa a spot_id. */
+            segments?: components["schemas"]["BookingSegmentInput"][];
         };
         /** @description Prenotazione dal pannello. Il cliente è customer_id oppure customer (creato nella stessa transazione). status: draft (nessuna risorsa), held (hold con scadenza, M4 lo userà per il checkout), confirmed (default: conferma manuale immediata, incasso alla cassa). */
         BookingCreate: {
@@ -6356,6 +7049,23 @@ export interface components {
             hold_ttl_seconds?: number;
             /** @description Ignora le violazioni di policy (sempre permesso dal pannello, registrato nell'audit). */
             force?: boolean;
+            /**
+             * Format: uuid
+             * @description Struttura o partner di provenienza (ospite di Hotel Miramare).
+             */
+            partner_id?: string;
+            group_name?: string;
+            /** @description Provenienza in testo libero quando non è un partner. */
+            group_origin?: string;
+            party_adults?: number;
+            party_children?: number;
+            /** @description Nomi degli ospiti, facoltativi; nessun altro dato (spec 30.3, 23). */
+            guest_names?: string[];
+            partner_share?: components["schemas"]["BookingPartnerShare"];
+            /** @description Periodo del soggiorno nella struttura del partner, facoltativo. */
+            partner_guest_stay?: components["schemas"]["DateRange"];
+            /** @description Registra nella stessa transazione la verifica del requisito della convenzione (data e operatore). */
+            requirement_verified?: boolean;
         };
         BookingQuote: {
             breakdown: components["schemas"]["PriceBreakdown"];
@@ -6364,7 +7074,7 @@ export interface components {
             available: boolean;
             conflicts: components["schemas"]["AllocationConflict"][];
         };
-        /** @description Campi da modificare; i campi assenti restano invariati. lines sostituisce tutte le righe. */
+        /** @description Campi da modificare; i campi assenti restano invariati. lines sostituisce tutte le righe. customer_id cambia il cliente (spec 30.9, anteprima con la differenza di prezzo via dry_run della modifica). agreement_id e partner_id vuoti ("") rimuovono convenzione e partner. */
         BookingPatch: {
             /** Format: uuid */
             customer_id?: string;
@@ -6378,6 +7088,17 @@ export interface components {
             notes_internal?: string;
             /** @description Ignora i limiti di modifica della policy (registrato nell'audit). */
             force?: boolean;
+            /** @description Convenzione (UUID); stringa vuota = rimuove la convenzione (spec 10.3, differenza da incassare o rimborsare). */
+            agreement_id?: string;
+            /** @description Partner (UUID); stringa vuota = rimuove il partner. */
+            partner_id?: string;
+            group_name?: string;
+            group_origin?: string;
+            party_adults?: number;
+            party_children?: number;
+            guest_names?: string[];
+            partner_share?: components["schemas"]["BookingPartnerShare"];
+            partner_guest_stay?: components["schemas"]["DateRange"];
         };
         BookingChangeResult: {
             /** @description false con dry_run=true (nessuna scrittura). */
@@ -6387,6 +7108,7 @@ export interface components {
             new_total: components["schemas"]["Money"];
             price_difference: components["schemas"]["Money"];
             conflicts: components["schemas"]["AllocationConflict"][];
+            undo?: components["schemas"]["MoveUndoInfo"];
         };
         BookingActionRequest: {
             note?: string;
@@ -6864,6 +7586,12 @@ export interface components {
             status: "available" | "unavailable";
             /** @description Mezze giornate occupate nell'intervallo. */
             conflicts?: components["schemas"]["AllocationConflict"][];
+            /** @description Giorni dell'intervallo interamente liberi (stato "libero in parte", spec 30.4). */
+            free_days?: number;
+            /** @description Giorni dell'intervallo (esclusi i giorni di chiusura). */
+            total_days?: number;
+            /** @description I giorni interamente liberi, per il dettaglio al clic. */
+            free_dates?: components["schemas"]["Date"][];
         };
         ZoneAvailability: {
             /** Format: uuid */
@@ -6940,6 +7668,23 @@ export interface components {
             /** @description Versione della prenotazione per l'If-Match delle azioni dalla mappa (check-in, spostamento). */
             version: components["schemas"]["Version"];
             ticket?: components["schemas"]["OperationalTicket"];
+            /** @description Primo giorno della prenotazione (arrivo, spec 30.4). */
+            is_first_day?: boolean;
+            /** @description Ultimo giorno della prenotazione (partenza). */
+            is_last_day?: boolean;
+            /** @description Primo giorno sulla postazione (soggiorno spezzato). */
+            segment_starts_on?: components["schemas"]["Date"];
+            /** @description Ultimo giorno sulla postazione (soggiorno spezzato). */
+            segment_ends_on?: components["schemas"]["Date"];
+            /** @description Allestimento dagli extra con show_on_map. */
+            setup?: components["schemas"]["SetupItem"][];
+            /** @description Allestimento compatto (es. "2L 1S"). */
+            setup_label?: string;
+            agreement?: components["schemas"]["AgreementRef"];
+            partner?: components["schemas"]["PartnerRef"];
+            group_name?: string;
+            /** @description Adulti + bambini, se indicati. */
+            party_size?: number;
         };
         /** @description Biglietto della vendita giornaliera della prenotazione (spec 14.3, ADR 0020). Se presente, occupant_label è il nome facoltativo del biglietto oppure il numero ("#037"). Solo API admin, mai negli eventi SSE. */
         OperationalTicket: {
@@ -7172,10 +7917,15 @@ export interface components {
             pass: components["schemas"]["SeasonPass"];
             releases: components["schemas"]["SeasonRelease"][];
         };
+        /** @description Giorni da rilasciare (spec 30.8): `dates` singoli, oppure l'intervallo `from`-`to`, facoltativamente solo nei giorni della settimana `weekdays` ("ogni lunedì di luglio"); le due forme si sommano. Almeno un giorno. */
         SeasonReleaseCreate: {
             dates: components["schemas"]["Date"][];
             slots?: components["schemas"]["Slots"];
             note?: string;
+            from?: components["schemas"]["Date"];
+            to?: components["schemas"]["Date"];
+            /** @description Giorni ISO (1 = lunedì … 7 = domenica) dell'intervallo; assente = tutti. */
+            weekdays?: number[];
         };
         /**
          * @description Metodo di pagamento (spec 6.7); credit = uso del saldo crediti del cliente (spec 13.4).
@@ -7612,6 +8362,10 @@ export interface components {
             /** @description Extra della prenotazione (attach_to = booking). */
             extras?: components["schemas"]["PublicExtraInput"][];
             promo_code?: string;
+            /** @description Codice o link della convenzione (spec 30.2.2); esito in PublicQuote.agreement. */
+            agreement_code?: string;
+            /** @description Il cliente accetta esplicitamente un soggiorno spezzato su più postazioni (solo se la policy lo consente); i segmenti sono indicati nel preventivo prima del pagamento (spec 30.6). */
+            accept_spot_change?: boolean;
         };
         PublicBookingCreate: components["schemas"]["PublicSelection"] & {
             /** @description Lingua del cliente per le comunicazioni. */
@@ -7628,6 +8382,8 @@ export interface components {
             label: components["schemas"]["I18nText"];
             quantity?: number;
             amount: components["schemas"]["Money"];
+            /** @description Segmenti della riga quando il soggiorno è spezzato su più postazioni. */
+            segments?: components["schemas"]["BookingLineSegment"][];
         };
         PromoStatus: {
             code: string;
@@ -7651,6 +8407,7 @@ export interface components {
             violations: components["schemas"]["PolicyViolation"][];
             promo?: components["schemas"]["PromoStatus"];
             payment_plan: components["schemas"]["PaymentPlan"];
+            agreement?: components["schemas"]["AgreementStatus"];
         };
         /** @enum {string} */
         CheckoutSessionState: "open" | "paying" | "completed" | "expired" | "abandoned";
@@ -7868,6 +8625,7 @@ export interface components {
             days: components["schemas"]["ManageReleaseDay"][];
             /** @description Default true (solo anteprima); false rilascia. */
             dry_run?: boolean;
+            range?: components["schemas"]["ManageReleaseRange"];
         };
         ManageReleaseResult: {
             applied: boolean;
@@ -8685,7 +9443,7 @@ export interface components {
             fiscal_bridge: boolean;
             /** @description Flusso SSE `GET /api/admin/v1/stream` disponibile. */
             realtime: boolean;
-            /** @description Notifiche push tramite relay configurate (M7). */
+            /** @description Notifiche push non disponibili in questa edizione (spec 29.2), sempre false. */
             push_notifications: boolean;
         };
         /** @enum {string} */
@@ -8900,7 +9658,7 @@ export interface components {
             /** @description Versione in esecuzione (tag di release, `dev` in sviluppo). */
             current: string;
             /**
-             * @description `ok`: l'ultimo controllo è riuscito (o il primo non è ancora avvenuto); `unavailable`: l'ultimo controllo non è riuscito (rete, risposta non valida, server non raggiungibile), mai un errore per l'utente: il pannello mostra solo una riga neutra e conserva l'ultimo risultato riuscito degli ultimi 7 giorni; `disabled`: controllo spento o versione di sviluppo (nessuna chiamata di rete).
+             * @description `ok`: l'ultimo controllo è riuscito (o il primo non è ancora avvenuto, vedi `pending`); `unavailable`: l'ultimo controllo non è riuscito (rete, risposta non valida, server non raggiungibile), mai un errore per l'utente: il pannello mostra solo una riga neutra e conserva l'ultimo risultato riuscito degli ultimi 7 giorni; `disabled`: controllo spento o versione di sviluppo (nessuna chiamata di rete).
              * @enum {string}
              */
             status: "ok" | "unavailable" | "disabled";
@@ -8932,6 +9690,17 @@ export interface components {
              * @description Ultimo controllo riuscito (UTC).
              */
             checked_at?: string;
+            /** @description Vero finché il primo controllo dopo l'avvio non è avvenuto (controllo attivo, versione di release): il pannello rilegge lo stato a breve invece di attendere il prossimo aggiornamento orario. */
+            pending: boolean;
+            /**
+             * Format: date-time
+             * @description Ultimo tentativo di controllo, riuscito o no (UTC).
+             */
+            last_attempt_at?: string;
+            /** @description Sistema operativo dell'installazione (`darwin`, `windows`, `linux`), per l'etichetta del download. */
+            os?: string;
+            /** @description Architettura dell'installazione (`amd64`, `arm64`), per l'etichetta del download. */
+            arch?: string;
         };
         DesktopSettings: {
             /** @description Cartella dei backup (default `<cartella dati>/backups`). */
@@ -9948,6 +10717,662 @@ export interface components {
             items: components["schemas"]["PrintJob"][];
             next_cursor?: string;
         };
+        /** @description Formato dei documenti esportabili e stampabili: json, xlsx oppure html (stampa del browser / PDF, ADR 0019). Stringa con pattern e non enum, per non rinominare le costanti generate degli altri formati. */
+        PrintableFormat: string;
+        /**
+         * @description Tipo di partner (spec 30.2.1).
+         * @enum {string}
+         */
+        PartnerKind: "struttura_ricettiva" | "ente" | "azienda" | "associazione" | "altro";
+        /**
+         * @description Tipo di struttura ricettiva (solo per kind = struttura_ricettiva).
+         * @enum {string}
+         */
+        AccommodationType: "hotel" | "bnb" | "affittacamere" | "campeggio" | "casa_vacanze" | "altro";
+        PartnerInput: {
+            /** @description "Hotel Miramare", "Comune di …", "Associazione …". */
+            name: string;
+            kind: components["schemas"]["PartnerKind"];
+            accommodation_type?: components["schemas"]["AccommodationType"];
+            municipality?: string;
+            address?: string;
+            /** @description Referente; mai nei log. */
+            contact_name?: string;
+            /**
+             * Format: email
+             * @description Mai nei log.
+             */
+            email?: string;
+            /** @description E.164; mai nei log. */
+            phone?: string;
+            /** @description Partita IVA, per l'estratto conto. */
+            vat_number?: string;
+            /** @description Codice fiscale, per l'estratto conto. */
+            tax_code?: string;
+            notes?: string;
+            /** @description Default true. */
+            active?: boolean;
+        };
+        Partner: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            kind: components["schemas"]["PartnerKind"];
+            accommodation_type?: components["schemas"]["AccommodationType"];
+            municipality?: string;
+            address?: string;
+            contact_name?: string;
+            email?: string;
+            phone?: string;
+            vat_number?: string;
+            tax_code?: string;
+            notes: string;
+            active: boolean;
+            /** @description Convenzioni che hanno questo partner come destinatario. */
+            agreement_count?: number;
+            /** @description Saldo del conto del partner (addebitato - pagato), presente con reports.read. */
+            balance?: components["schemas"]["Money"];
+            version: components["schemas"]["Version"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        PartnerList: {
+            items: components["schemas"]["Partner"][];
+            /** @description Presente se esistono altri elementi. */
+            next_cursor?: string;
+        };
+        /** @description Riferimento breve a un partner (badge sulla mappa, scheda prenotazione). */
+        PartnerRef: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            kind: components["schemas"]["PartnerKind"];
+        };
+        /** @enum {string} */
+        PartnerPaymentMethod: "bank_transfer" | "cash" | "card" | "other";
+        PartnerPaymentInput: {
+            amount: components["schemas"]["Money"];
+            received_on: components["schemas"]["Date"];
+            method: components["schemas"]["PartnerPaymentMethod"];
+            /** @description Riferimento del bonifico o della fattura (esterna ad Arenile). */
+            reference?: string;
+            note?: string;
+        };
+        PartnerPaymentVoid: {
+            reason: string;
+        };
+        PartnerPayment: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            partner_id: string;
+            amount: components["schemas"]["Money"];
+            received_on: components["schemas"]["Date"];
+            method: components["schemas"]["PartnerPaymentMethod"];
+            reference?: string;
+            note?: string;
+            /** Format: uuid */
+            recorded_by_user_id?: string;
+            /** Format: date-time */
+            voided_at?: string;
+            void_reason?: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        PartnerPaymentList: {
+            items: components["schemas"]["PartnerPayment"][];
+            /** @description Presente se esistono altri elementi. */
+            next_cursor?: string;
+        };
+        PartnerStatementBooking: {
+            /** Format: uuid */
+            booking_id: string;
+            code: string;
+            status: components["schemas"]["BookingStatus"];
+            /** @description Cognome e nome dell'ospite (vuoto se anonimizzato). */
+            customer_display_name: string;
+            group_name?: string;
+            agreement_name?: string;
+            starts_on: components["schemas"]["Date"];
+            ends_on: components["schemas"]["Date"];
+            /** @description Giorni-postazione nel periodo (mezza giornata = 0,5 arrotondato per eccesso a livello di riga, ADR 0028). */
+            spot_days: number;
+            /** @description Adulti + bambini della prenotazione (0 se non indicati). */
+            people: number;
+            total_amount: components["schemas"]["Money"];
+            /** @description Sconto della convenzione dal price snapshot/current. */
+            discount_amount: components["schemas"]["Money"];
+            /** @description Quota a carico del partner (addebitata sul suo conto). */
+            partner_amount: components["schemas"]["Money"];
+        };
+        PartnerStatementTotals: {
+            bookings: number;
+            spot_days: number;
+            people: number;
+            total_amount: components["schemas"]["Money"];
+            discount_amount: components["schemas"]["Money"];
+            /** @description Somma di partner_amount nel periodo. */
+            charged: components["schemas"]["Money"];
+            /** @description Pagamenti del partner non annullati con received_on nel periodo. */
+            paid: components["schemas"]["Money"];
+            /** @description Saldo prima di `from` (addebitato - pagato). */
+            opening_balance: components["schemas"]["Money"];
+            /** @description opening_balance + charged - paid (INV-104). */
+            closing_balance: components["schemas"]["Money"];
+        };
+        PartnerStatement: {
+            partner: components["schemas"]["Partner"];
+            period: components["schemas"]["ReportPeriod"];
+            bookings: components["schemas"]["PartnerStatementBooking"][];
+            payments: components["schemas"]["PartnerPayment"][];
+            totals: components["schemas"]["PartnerStatementTotals"];
+        };
+        /**
+         * @description Categoria del registro delle convenzioni (spec 30.2.5): residenti, strutture ricettive, categorie tutelate, aziende, associazioni, altro.
+         * @enum {string}
+         */
+        RegisterCategory: "residents" | "accommodation" | "protected" | "companies" | "associations" | "other";
+        CustomerCategoryInput: {
+            code: string;
+            /** @description "Residenti", "Over 65", "Persone con disabilità e accompagnatore"... */
+            name: string;
+            description?: string;
+            /** @description Requisito da verificare in cassa (es. "documento di residenza"); vuoto = nessuno. */
+            requirement?: string;
+            register_category?: components["schemas"]["RegisterCategory"];
+            active?: boolean;
+        };
+        CustomerCategory: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            name: string;
+            description: string;
+            requirement: string;
+            register_category: components["schemas"]["RegisterCategory"];
+            active: boolean;
+            member_count?: number;
+            version: components["schemas"]["Version"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        CustomerCategoryList: {
+            items: components["schemas"]["CustomerCategory"][];
+        };
+        /** @description Verifica di un requisito: si registrano data e operatore, mai una copia del documento (spec 30.2.2, 23). Senza agreement_id e customer_category_id vale la convenzione della prenotazione. */
+        RequirementVerificationInput: {
+            /** Format: uuid */
+            agreement_id?: string;
+            /** Format: uuid */
+            customer_category_id?: string;
+            /** @description Nota libera breve (es. "tessera 2027"); mai numeri di documento. */
+            note?: string;
+        };
+        RequirementVerification: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            subject: "booking" | "customer";
+            /** Format: uuid */
+            booking_id?: string;
+            /** Format: uuid */
+            customer_id?: string;
+            /** Format: uuid */
+            agreement_id?: string;
+            /** Format: uuid */
+            customer_category_id?: string;
+            /** @description Testo del requisito al momento della verifica. */
+            requirement: string;
+            note?: string;
+            /** Format: date-time */
+            verified_at: string;
+            /** Format: uuid */
+            verified_by_user_id?: string;
+            verified_by_name?: string;
+        };
+        RequirementVerificationList: {
+            items: components["schemas"]["RequirementVerification"][];
+        };
+        /**
+         * @description Destinatari: un partner e i suoi ospiti, una categoria di clienti, oppure singoli clienti (convenzione predefinita sulla scheda cliente, customers.agreement_id). Assente = customers (convenzioni precedenti a M8).
+         * @enum {string}
+         */
+        AgreementTarget: "partner" | "customer_category" | "individual_customers";
+        /**
+         * @description Canali della convenzione (spec 30.2.2); assenti = solo cassa.
+         * @enum {string}
+         */
+        AgreementChannel: "desk" | "online_code" | "online_link";
+        /** @description Prezzo fisso per pack (es. "giornaliero residenti 12 €"): sostituisce il prezzo del pack. */
+        AgreementPackPrice: {
+            /** Format: uuid */
+            pack_id: string;
+            amount: components["schemas"]["Money"];
+            /** @description Default day. */
+            per?: components["schemas"]["AmountPer"];
+        };
+        /** @description Ambito oltre a `conditions` (che già limita zone, periodi tariffari, giorni della settimana e fasce): pack ed extra a cui si applica. Vuoto = tutti i pack; extra esclusi salvo apply_to_extras. */
+        AgreementScope: {
+            pack_ids?: string[];
+            extra_ids?: string[];
+            apply_to_extras?: boolean;
+        };
+        /** @description Contingente per mezza giornata (spec 30.2.2): max_per_day limita le postazioni vendibili in convenzione; reserved_per_day riserva capacità alla convenzione come una quota (spec 7.6), garantita dagli stessi vincoli del database (INV-103). La parte riservata non usata torna alla vendita generale release_days_before giorni prima (default 3, ADR 0028). */
+        AgreementQuota: {
+            /** @description Zone del contingente; vuoto = tutte le zone dello stabilimento. */
+            zone_ids?: string[];
+            max_per_day?: number;
+            reserved_per_day?: number;
+            release_days_before?: number;
+        };
+        AgreementQuotaDay: {
+            date: components["schemas"]["Date"];
+            slot: components["schemas"]["Slot"];
+            reserved: number;
+            used: number;
+            max?: number;
+            /** @description La parte riservata non usata è già tornata alla vendita generale. */
+            released: boolean;
+            release_on?: components["schemas"]["Date"];
+        };
+        AgreementQuotaUsage: {
+            /** Format: uuid */
+            agreement_id: string;
+            quota?: components["schemas"]["AgreementQuota"];
+            days: components["schemas"]["AgreementQuotaDay"][];
+        };
+        AgreementVersion: {
+            version: components["schemas"]["Version"];
+            /** Format: date-time */
+            changed_at: string;
+            /** Format: uuid */
+            changed_by_user_id?: string;
+            changed_by_name?: string;
+            agreement: components["schemas"]["AgreementInput"];
+        };
+        AgreementVersionList: {
+            items: components["schemas"]["AgreementVersion"][];
+        };
+        /** @description Riferimento breve a una convenzione (badge, scheda prenotazione). */
+        AgreementRef: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            code?: string;
+            /** Format: uuid */
+            partner_id?: string;
+            partner_name?: string;
+            requirement?: string;
+        };
+        /** @description Esito del codice o del link della convenzione sulla pagina pubblica. */
+        AgreementStatus: {
+            code: string;
+            /** @enum {string} */
+            status: "applied" | "invalid" | "not_applicable" | "quota_exhausted";
+            name?: string;
+            /** @description Requisito da presentare in cassa, se la convenzione lo prevede. */
+            requirement?: string;
+        };
+        PublicAgreement: {
+            code: string;
+            name: string;
+            partner_name?: string;
+            /** @description Condizione in breve, nella lingua richiesta (es. "-15% sui giornalieri"). */
+            summary?: string;
+            valid_from?: components["schemas"]["Date"];
+            valid_to?: components["schemas"]["Date"];
+            requirement?: string;
+        };
+        /** @description Quota della prenotazione a carico del partner (spec 30.2.4): full = tutto, percent = percentuale del totale, amount = importo fisso (al massimo il totale), none = nessuna (rimuove la quota in modifica). */
+        BookingPartnerShare: {
+            /** @enum {string} */
+            type: "none" | "full" | "percent" | "amount";
+            percent?: components["schemas"]["Decimal"];
+            amount?: components["schemas"]["Money"];
+        };
+        /** @description Parte del soggiorno di una riga su una postazione (soggiorno spezzato, spec 7.5 e 30.6). */
+        BookingSegmentInput: {
+            /** Format: uuid */
+            spot_id: string;
+            starts_on: components["schemas"]["Date"];
+            ends_on: components["schemas"]["Date"];
+        };
+        BookingLineSegment: {
+            /** Format: uuid */
+            spot_id: string;
+            spot_label?: string;
+            starts_on: components["schemas"]["Date"];
+            ends_on: components["schemas"]["Date"];
+            price_category?: string;
+        };
+        /** @description Spostamento annullabile (spec 30.7) fino a expires_at (5 minuti). */
+        MoveUndoInfo: {
+            /** Format: uuid */
+            move_id: string;
+            /** @enum {string} */
+            kind: "move" | "swap" | "group";
+            /** Format: date-time */
+            expires_at: string;
+            booking_ids: string[];
+        };
+        LastMove: {
+            move?: components["schemas"]["MoveUndoInfo"];
+        };
+        MoveUndoResult: {
+            undone: boolean;
+            bookings: components["schemas"]["BookingDetail"][];
+        };
+        BookingSwapSide: {
+            /** Format: uuid */
+            booking_id: string;
+            /** Format: uuid */
+            line_id: string;
+            /** @description Versione attesa della prenotazione (412 version_conflict se diversa). */
+            expected_version?: components["schemas"]["Version"];
+        };
+        BookingSwapRequest: {
+            a: components["schemas"]["BookingSwapSide"];
+            b: components["schemas"]["BookingSwapSide"];
+            /** @description Primo giorno dello scambio (oggi, domani o una data scelta). */
+            from: components["schemas"]["Date"];
+            dry_run?: boolean;
+        };
+        BookingSwapOutcome: {
+            booking: components["schemas"]["BookingDetail"];
+            /** Format: uuid */
+            from_spot_id: string;
+            /** Format: uuid */
+            to_spot_id: string;
+            previous_total: components["schemas"]["Money"];
+            new_total: components["schemas"]["Money"];
+            price_difference: components["schemas"]["Money"];
+        };
+        BookingSwapResult: {
+            /** @description false con dry_run=true (nessuna scrittura). */
+            applied: boolean;
+            from: components["schemas"]["Date"];
+            /** @description Ultimo giorno dell'intervallo comune scambiato. */
+            to: components["schemas"]["Date"];
+            a: components["schemas"]["BookingSwapOutcome"];
+            b: components["schemas"]["BookingSwapOutcome"];
+            conflicts: components["schemas"]["AllocationConflict"][];
+            undo?: components["schemas"]["MoveUndoInfo"];
+        };
+        GroupMoveItem: {
+            /** Format: uuid */
+            booking_id: string;
+            /** Format: uuid */
+            line_id: string;
+            /** Format: uuid */
+            spot_id: string;
+            expected_version?: components["schemas"]["Version"];
+        };
+        GroupMoveRequest: {
+            moves: components["schemas"]["GroupMoveItem"][];
+            /** @description Primo giorno dello spostamento (default oggi o il primo giorno del soggiorno). */
+            from?: components["schemas"]["Date"];
+            dry_run?: boolean;
+        };
+        GroupMoveResult: {
+            applied: boolean;
+            results: components["schemas"]["BookingChangeResult"][];
+            conflicts: components["schemas"]["AllocationConflict"][];
+            undo?: components["schemas"]["MoveUndoInfo"];
+        };
+        BookingDuplicateRequest: {
+            starts_on: components["schemas"]["Date"];
+            ends_on: components["schemas"]["Date"];
+            /** @description Default quelle della prenotazione di origine. */
+            slots?: components["schemas"]["Slots"];
+            /** @description Default dedotta dalle nuove date. */
+            formula?: components["schemas"]["Formula"];
+            /**
+             * @description Stato iniziale (default confirmed, come la nuova prenotazione dal pannello).
+             * @enum {string}
+             */
+            status?: "draft" | "held" | "confirmed";
+            dry_run?: boolean;
+        };
+        BookingDuplicateResult: {
+            applied: boolean;
+            booking?: components["schemas"]["BookingDetail"];
+            total: components["schemas"]["Money"];
+            price?: components["schemas"]["PriceBreakdown"];
+            conflicts: components["schemas"]["AllocationConflict"][];
+        };
+        BookingShareSummary: {
+            /** @description Testo pronto (date, postazioni, importo, saldo, link di gestione). */
+            text: string;
+            locale: string;
+            /** Format: uri */
+            manage_url?: string;
+            /**
+             * Format: uri
+             * @description `https://wa.me/<numero>?text=...`, presente solo se il cliente ha un telefono.
+             */
+            whatsapp_url?: string;
+        };
+        /** @description Un elemento dell'allestimento mostrato sulla mappa (extra con show_on_map). */
+        SetupItem: {
+            /** Format: uuid */
+            extra_id: string;
+            map_label: string;
+            quantity: number;
+        };
+        FindSpotRequest: {
+            starts_on: components["schemas"]["Date"];
+            ends_on: components["schemas"]["Date"];
+            slots: components["schemas"]["Slots"];
+            formula?: components["schemas"]["Formula"];
+            /** @description Numero di postazioni (default 1); per i gruppi preferibilmente vicine. */
+            count?: number;
+            zone_ids?: string[];
+            /**
+             * Format: uuid
+             * @description Pack o allestimento; senza pack le proposte non hanno prezzo.
+             */
+            pack_id?: string;
+            spot_kinds?: components["schemas"]["SpotKind"][];
+            /** @description Attributi richiesti (prima fila, vicino alla passerella, accessibile...). */
+            attributes?: string[];
+            /** @description Numero massimo di cambi di posto durante il soggiorno (default 0). */
+            max_spot_changes?: number;
+            /** Format: uuid */
+            agreement_id?: string;
+            /**
+             * Format: uuid
+             * @description Per prezzo (convenzione predefinita, tag) e continuità con la postazione degli anni scorsi.
+             */
+            customer_id?: string;
+            /** @description Numero massimo di proposte (default 10). */
+            limit?: number;
+        };
+        FindSpotSegment: {
+            /** Format: uuid */
+            spot_id: string;
+            spot_label: string;
+            /** Format: uuid */
+            zone_id: string;
+            starts_on: components["schemas"]["Date"];
+            ends_on: components["schemas"]["Date"];
+            price_category?: string;
+        };
+        FindSpotLine: {
+            segments: components["schemas"]["FindSpotSegment"][];
+        };
+        FindSpotProposal: {
+            /** @description Identificativo stabile della proposta (hash dei segmenti), per il pannello. */
+            id: string;
+            rank: number;
+            /** @description Cambi di posto totali della proposta. */
+            spot_changes: number;
+            /** @description Le postazioni della proposta sono vicine (gruppi). */
+            adjacent?: boolean;
+            lines: components["schemas"]["FindSpotLine"][];
+            /** @description Postazioni da evidenziare sulla mappa. */
+            spot_ids: string[];
+            total?: components["schemas"]["Money"];
+            price?: components["schemas"]["PriceBreakdown"];
+            agreement_applied?: boolean;
+            violations?: components["schemas"]["PolicyViolation"][];
+        };
+        FindSpotResult: {
+            proposals: components["schemas"]["FindSpotProposal"][];
+            /** @description Ci sono altre proposte oltre `limit`. */
+            truncated?: boolean;
+        };
+        /** @description La proposta scelta come prenotazione: `booking` è una normale BookingCreate le cui righe portano `segments` (uno per segmento della proposta); expected_total protegge da un prezzo cambiato nel frattempo. */
+        FindSpotBookRequest: {
+            booking: components["schemas"]["BookingCreate"];
+            /** @description Per l'audit e la diagnostica. */
+            proposal_id?: string;
+            expected_total?: components["schemas"]["Money"];
+        };
+        /**
+         * @description Stato di una mezza giornata nel calendario della postazione (spec 30.5).
+         * @enum {string}
+         */
+        SpotCalendarStatus: "free" | "booked" | "season_pass" | "released" | "held" | "blocked" | "closed" | "inactive";
+        SpotCalendarCell: {
+            status: components["schemas"]["SpotCalendarStatus"];
+            /** Format: uuid */
+            booking_id?: string;
+        };
+        SpotCalendarDay: {
+            date: components["schemas"]["Date"];
+            am: components["schemas"]["SpotCalendarCell"];
+            pm: components["schemas"]["SpotCalendarCell"];
+        };
+        SpotCalendarBooking: {
+            /** Format: uuid */
+            booking_id: string;
+            code: string;
+            status: components["schemas"]["BookingStatus"];
+            /** @description Come OperationalBooking.occupant_label (solo con bookings.read, mai email o telefono). */
+            occupant_label?: string;
+            starts_on: components["schemas"]["Date"];
+            ends_on: components["schemas"]["Date"];
+            is_season_pass: boolean;
+            balance_due: components["schemas"]["Money"];
+        };
+        SpotCalendar: {
+            /** Format: uuid */
+            spot_id: string;
+            label: string;
+            /** Format: uuid */
+            season_id: string;
+            from: components["schemas"]["Date"];
+            to: components["schemas"]["Date"];
+            days: components["schemas"]["SpotCalendarDay"][];
+            bookings: components["schemas"]["SpotCalendarBooking"][];
+        };
+        LifeguardRow: {
+            row_label: string;
+            /** Format: uuid */
+            spot_id: string;
+            spot_label: string;
+            /** @description Cognome (vuoto se libera o cliente anonimizzato). */
+            occupant_label: string;
+            /** @description Allestimento compatto (es. "2L 1S"). */
+            setup_label?: string;
+            arriving: boolean;
+            departing: boolean;
+            balance_due: boolean;
+            group_name?: string;
+        };
+        LifeguardList: {
+            date: components["schemas"]["Date"];
+            slot: components["schemas"]["Slots"];
+            rows: components["schemas"]["LifeguardRow"][];
+            totals: components["schemas"]["OperationsTotals"];
+        };
+        PartnersReportRow: {
+            /** Format: uuid */
+            partner_id: string;
+            partner_name: string;
+            kind: components["schemas"]["PartnerKind"];
+            bookings: number;
+            /** @description Presenze (adulti + bambini). */
+            people: number;
+            spot_days: number;
+            /** @description Totale delle prenotazioni (venduto, base soggiorno). */
+            revenue: components["schemas"]["Money"];
+            /** @description Sconto concesso dalle convenzioni. */
+            discount: components["schemas"]["Money"];
+            /** @description Quota addebitata al partner. */
+            charged: components["schemas"]["Money"];
+            /** @description Pagamenti del partner nel periodo. */
+            paid: components["schemas"]["Money"];
+        };
+        PartnersReport: {
+            period: components["schemas"]["ReportPeriod"];
+            rows: components["schemas"]["PartnersReportRow"][];
+            totals: components["schemas"]["PartnersReportTotals"];
+        };
+        PartnersReportTotals: {
+            bookings: number;
+            people: number;
+            spot_days: number;
+            revenue: components["schemas"]["Money"];
+            discount: components["schemas"]["Money"];
+            charged: components["schemas"]["Money"];
+            paid: components["schemas"]["Money"];
+        };
+        AgreementsRegisterEntry: {
+            /** Format: uuid */
+            agreement_id: string;
+            name: string;
+            code?: string;
+            partner_name?: string;
+            customer_category_name?: string;
+            target: components["schemas"]["AgreementTarget"];
+            register_category: components["schemas"]["RegisterCategory"];
+            /** @description Condizioni in italiano leggibile (condizione economica, ambito, validità, contingente, requisito). */
+            conditions_text: string;
+            valid_from?: components["schemas"]["Date"];
+            valid_to?: components["schemas"]["Date"];
+            bookings: number;
+            spot_days: number;
+            people: number;
+            revenue: components["schemas"]["Money"];
+            /** @description Valore dello sconto concesso (prezzo di listino - prezzo applicato). */
+            discount: components["schemas"]["Money"];
+        };
+        /** @description Totali di una categoria del registro (register_category assente nei totali generali). */
+        AgreementsRegisterCategoryTotal: {
+            register_category?: components["schemas"]["RegisterCategory"];
+            agreements: number;
+            bookings: number;
+            spot_days: number;
+            people: number;
+            revenue: components["schemas"]["Money"];
+            discount: components["schemas"]["Money"];
+        };
+        AgreementsRegister: {
+            establishment_name: string;
+            establishment_legal_name?: string;
+            establishment_vat_number?: string;
+            /** Format: uuid */
+            season_id?: string;
+            season_year?: number;
+            period: components["schemas"]["ReportPeriod"];
+            /** Format: date-time */
+            generated_at: string;
+            entries: components["schemas"]["AgreementsRegisterEntry"][];
+            by_category: components["schemas"]["AgreementsRegisterCategoryTotal"][];
+            totals: components["schemas"]["AgreementsRegisterCategoryTotal"];
+        };
+        /** @description Intervallo di giorni da rilasciare, facoltativamente solo in alcuni giorni della settimana (spec 30.8). */
+        ManageReleaseRange: {
+            from: components["schemas"]["Date"];
+            to: components["schemas"]["Date"];
+            weekdays?: number[];
+            slots?: components["schemas"]["Slots"];
+        };
     };
     responses: {
         /** @description Richiesta non valida */
@@ -9986,9 +11411,16 @@ export interface components {
                 "application/problem+json": components["schemas"]["Problem"];
             };
         };
-        /** @description Conflitto con lo stato corrente */
+        /**
+         * @description Conflitto con lo stato corrente. Con `concurrent_update` la richiesta ha perso una gara con
+         *     un'altra modifica degli stessi dati ed è da riprovare uguale (stessa `Idempotency-Key`) dopo
+         *     `retry_after` secondi; gli altri tipi (`conflict`, `spot_unavailable`, …) non cambiano
+         *     riprovando.
+         */
         Conflict: {
             headers: {
+                /** @description Secondi da attendere (solo con `concurrent_update`) */
+                "Retry-After"?: number;
                 [name: string]: unknown;
             };
             content: {
@@ -10091,7 +11523,16 @@ export interface components {
         /**
          * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
          *     richiesta ripetuta con la stessa chiave restituisce la risposta
-         *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+         *     originale (header `Idempotent-Replayed: true`) senza ripetere
+         *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+         *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+         *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+         *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+         *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+         *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+         *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+         *     definitiva per quella chiave. Quando l'utente corregge la causa e
+         *     invia di nuovo, il client deve usare una chiave nuova.
          */
         IdempotencyKey: string;
         /**
@@ -10148,6 +11589,15 @@ export interface components {
         WebhookDeliveryID: string;
         PrinterID: string;
         PrintJobID: string;
+        PartnerID: string;
+        PartnerPaymentID: string;
+        CustomerCategoryID: string;
+        MoveID: string;
+        SpotID: string;
+        /** @description Codice della convenzione (senza distinzione tra maiuscole e minuscole). */
+        AgreementCode: string;
+        /** @description Formato (default json; xlsx per Excel, html per il documento stampabile / PDF). */
+        PrintableFormat: components["schemas"]["PrintableFormat"];
     };
     requestBodies: never;
     headers: {
@@ -10377,7 +11827,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -10516,7 +11975,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -10659,7 +12127,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -10806,7 +12283,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -10883,7 +12369,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -11065,7 +12560,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -11245,7 +12749,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -11425,7 +12938,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -11603,7 +13125,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -11783,7 +13314,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -11963,7 +13503,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -12147,7 +13696,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -12329,7 +13887,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -12509,7 +14076,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -12689,7 +14265,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -12869,7 +14454,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -13047,7 +14641,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -13393,7 +14996,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -13436,7 +15048,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -13472,6 +15093,43 @@ export interface operations {
             409: components["responses"]["Conflict"];
         };
     };
+    resetEstablishmentSetup: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetupResetRequest"];
+            };
+        };
+        responses: {
+            /** @description Stabilimento azzerato */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupResetResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
     listCustomers: {
         parameters: {
             query?: {
@@ -13481,6 +15139,8 @@ export interface operations {
                 tag?: string;
                 /** @description Include i clienti anonimizzati (default false). */
                 include_anonymized?: boolean;
+                /** @description Solo i clienti di questa categoria. */
+                category_id?: string;
                 /** @description Cursore opaco restituito come `next_cursor` dalla pagina precedente. */
                 cursor?: components["parameters"]["Cursor"];
                 /** @description Numero massimo di elementi (default 50). */
@@ -13520,7 +15180,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -13717,6 +15386,12 @@ export interface operations {
                 balance_due?: boolean;
                 /** @description Codice prenotazione o nome/telefono del cliente. */
                 q?: string;
+                /** @description Solo le prenotazioni con questa convenzione. */
+                agreement_id?: string;
+                /** @description Solo le prenotazioni di questo partner. */
+                partner_id?: string;
+                /** @description Solo le prenotazioni di questo gruppo (uguaglianza, senza distinzione di maiuscole). */
+                group_name?: string;
                 /** @description Cursore opaco restituito come `next_cursor` dalla pagina precedente. */
                 cursor?: components["parameters"]["Cursor"];
                 /** @description Numero massimo di elementi (default 50). */
@@ -13753,7 +15428,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -13958,7 +15642,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -14219,7 +15912,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -14344,7 +16046,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -14692,7 +16403,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /** @description ETag (versione) della mappa letta in precedenza; obbligatorio (428 precondition_required se assente). `*` salva sulla versione corrente; la forma debole `W/"3"` è accettata (ADR 0008). */
@@ -14822,6 +16542,21 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
+                /**
+                 * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
+                 *     richiesta ripetuta con la stessa chiave restituisce la risposta
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
+                 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
                  * @description Obbligatorio per le richieste autenticate via cookie che modificano
                  *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
@@ -15074,7 +16809,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -15141,7 +16885,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -15186,7 +16939,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -15274,7 +17036,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -15318,7 +17089,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -15570,7 +17350,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -15685,7 +17474,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -15828,7 +17626,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -15949,7 +17756,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -16054,7 +17870,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -16450,7 +18275,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /** @description Token del link di anteprima (createTestModePreviewLink) inoltrato dalla pagina pubblica. Con la modalità prova attiva e public_enabled=false, senza un token valido le creazioni rispondono 403 test_mode_preview_required. Letto da tutte le operazioni pubbliche (dichiarato dove decide). */
@@ -16587,7 +18421,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -16777,7 +18620,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -17079,7 +18931,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -18631,6 +20492,34 @@ export interface operations {
             403: components["responses"]["Forbidden"];
         };
     };
+    checkSystemUpdate: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Stato degli aggiornamenti dopo il controllo */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemUpdate"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+        };
+    };
     createDevicePairingCode: {
         parameters: {
             query?: never;
@@ -18784,6 +20673,29 @@ export interface operations {
             400: components["responses"]["BadRequest"];
             429: components["responses"]["TooManyRequests"];
             501: components["responses"]["NotImplemented"];
+        };
+    };
+    createDemoPairingCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Codice creato */
+            201: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DevicePairingCode"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+            429: components["responses"]["TooManyRequests"];
         };
     };
     getCurrentDevice: {
@@ -19142,7 +21054,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -19264,7 +21185,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -19430,7 +21360,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -19505,7 +21444,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -19595,7 +21543,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -19681,7 +21638,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -19869,7 +21835,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -20053,7 +22028,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -20126,7 +22110,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -20230,7 +22223,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -20271,7 +22273,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -20360,7 +22371,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
@@ -20669,7 +22689,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -21135,7 +23164,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -21379,7 +23417,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -21565,7 +23612,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -21737,7 +23793,16 @@ export interface operations {
                 /**
                  * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
                  *     richiesta ripetuta con la stessa chiave restituisce la risposta
-                 *     originale; con un corpo diverso risponde `422 idempotency_key_reused`.
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
                  */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
                 /**
@@ -21841,6 +23906,1264 @@ export interface operations {
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
             409: components["responses"]["Conflict"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    listPartners: {
+        parameters: {
+            query?: {
+                /** @description Ricerca per nome, comune o referente. */
+                q?: string;
+                /** @description Filtra per tipo di partner. */
+                kind?: components["schemas"]["PartnerKind"];
+                /** @description Filtra per stato. */
+                active?: boolean;
+                /** @description Cursore opaco restituito come `next_cursor` dalla pagina precedente. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Numero massimo di elementi (default 50). */
+                limit?: components["parameters"]["Limit"];
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pagina di partner */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerList"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    createPartner: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
+                 *     richiesta ripetuta con la stessa chiave restituisce la risposta
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
+                 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartnerInput"];
+            };
+        };
+        responses: {
+            /** @description Partner creato */
+            201: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Partner"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getPartner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                partnerId: components["parameters"]["PartnerID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Partner */
+            200: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Partner"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    updatePartner: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ETag (versione) letto in precedenza: se non coincide la richiesta fallisce con 412 version_conflict. `*` equivale a "qualsiasi versione". È accettata anche la forma debole `W/"3"` prodotta dai proxy che comprimono le risposte (ADR 0008). */
+                "If-Match"?: components["parameters"]["IfMatch"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                partnerId: components["parameters"]["PartnerID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartnerInput"];
+            };
+        };
+        responses: {
+            /** @description Partner aggiornato */
+            200: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Partner"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            412: components["responses"]["PreconditionFailed"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    deletePartner: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ETag (versione) letto in precedenza: se non coincide la richiesta fallisce con 412 version_conflict. `*` equivale a "qualsiasi versione". È accettata anche la forma debole `W/"3"` prodotta dai proxy che comprimono le risposte (ADR 0008). */
+                "If-Match"?: components["parameters"]["IfMatch"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                partnerId: components["parameters"]["PartnerID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Eliminato */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            412: components["responses"]["PreconditionFailed"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getPartnerStatement: {
+        parameters: {
+            query: {
+                /** @description Primo giorno del periodo (incluso). */
+                from: components["parameters"]["ReportFrom"];
+                /** @description Ultimo giorno del periodo (incluso; al massimo 400 giorni dopo from). */
+                to: components["parameters"]["ReportTo"];
+                /** @description Formato (default json; xlsx per Excel, html per il documento stampabile / PDF). */
+                format?: components["parameters"]["PrintableFormat"];
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                partnerId: components["parameters"]["PartnerID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Estratto conto */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerStatement"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    "text/html": string;
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    listPartnerPayments: {
+        parameters: {
+            query?: {
+                /** @description Cursore opaco restituito come `next_cursor` dalla pagina precedente. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Numero massimo di elementi (default 50). */
+                limit?: components["parameters"]["Limit"];
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                partnerId: components["parameters"]["PartnerID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pagamenti del partner */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerPaymentList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    recordPartnerPayment: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
+                 *     richiesta ripetuta con la stessa chiave restituisce la risposta
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
+                 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                partnerId: components["parameters"]["PartnerID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartnerPaymentInput"];
+            };
+        };
+        responses: {
+            /** @description Pagamento registrato */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerPayment"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    voidPartnerPayment: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                partnerId: components["parameters"]["PartnerID"];
+                partnerPaymentId: components["parameters"]["PartnerPaymentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartnerPaymentVoid"];
+            };
+        };
+        responses: {
+            /** @description Pagamento annullato */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnerPayment"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    listCustomerCategories: {
+        parameters: {
+            query?: {
+                /** @description Filtra per stato. */
+                active?: boolean;
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Categorie */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerCategoryList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    createCustomerCategory: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
+                 *     richiesta ripetuta con la stessa chiave restituisce la risposta
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
+                 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomerCategoryInput"];
+            };
+        };
+        responses: {
+            /** @description Categoria creata */
+            201: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerCategory"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getCustomerCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                customerCategoryId: components["parameters"]["CustomerCategoryID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Categoria */
+            200: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerCategory"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    updateCustomerCategory: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ETag (versione) letto in precedenza: se non coincide la richiesta fallisce con 412 version_conflict. `*` equivale a "qualsiasi versione". È accettata anche la forma debole `W/"3"` prodotta dai proxy che comprimono le risposte (ADR 0008). */
+                "If-Match"?: components["parameters"]["IfMatch"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                customerCategoryId: components["parameters"]["CustomerCategoryID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomerCategoryInput"];
+            };
+        };
+        responses: {
+            /** @description Categoria aggiornata */
+            200: {
+                headers: {
+                    ETag: components["headers"]["ETag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerCategory"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            412: components["responses"]["PreconditionFailed"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    deleteCustomerCategory: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ETag (versione) letto in precedenza: se non coincide la richiesta fallisce con 412 version_conflict. `*` equivale a "qualsiasi versione". È accettata anche la forma debole `W/"3"` prodotta dai proxy che comprimono le risposte (ADR 0008). */
+                "If-Match"?: components["parameters"]["IfMatch"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                customerCategoryId: components["parameters"]["CustomerCategoryID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Eliminata */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            412: components["responses"]["PreconditionFailed"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    listCustomerRequirementVerifications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                customerId: components["parameters"]["CustomerID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Verifiche */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequirementVerificationList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    verifyCustomerRequirement: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
+                 *     richiesta ripetuta con la stessa chiave restituisce la risposta
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
+                 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                customerId: components["parameters"]["CustomerID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequirementVerificationInput"];
+            };
+        };
+        responses: {
+            /** @description Verifica registrata */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequirementVerification"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    verifyBookingRequirement: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ETag (versione) letto in precedenza: se non coincide la richiesta fallisce con 412 version_conflict. `*` equivale a "qualsiasi versione". È accettata anche la forma debole `W/"3"` prodotta dai proxy che comprimono le risposte (ADR 0008). */
+                "If-Match"?: components["parameters"]["IfMatch"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                bookingId: components["parameters"]["BookingID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequirementVerificationInput"];
+            };
+        };
+        responses: {
+            /** @description Verifica registrata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequirementVerification"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            412: components["responses"]["PreconditionFailed"];
+            422: components["responses"]["UnprocessableEntity"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    listAgreementVersions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                agreementId: components["parameters"]["AgreementID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Versioni, la più recente per prima */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementVersionList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getAgreementQuotaUsage: {
+        parameters: {
+            query: {
+                /** @description Primo giorno del periodo (incluso). */
+                from: components["parameters"]["ReportFrom"];
+                /** @description Ultimo giorno del periodo (incluso; al massimo 400 giorni dopo from). */
+                to: components["parameters"]["ReportTo"];
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                agreementId: components["parameters"]["AgreementID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Uso del contingente */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementQuotaUsage"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    duplicateBooking: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
+                 *     richiesta ripetuta con la stessa chiave restituisce la risposta
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
+                 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                bookingId: components["parameters"]["BookingID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingDuplicateRequest"];
+            };
+        };
+        responses: {
+            /** @description Anteprima (dry_run) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingDuplicateResult"];
+                };
+            };
+            /** @description Prenotazione creata */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingDuplicateResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["UnprocessableEntity"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    createBookingShareSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                bookingId: components["parameters"]["BookingID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Riepilogo */
+            200: {
+                headers: {
+                    /** @description Sempre no-store (contiene il link di gestione). */
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingShareSummary"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getBookingSummaryPrint: {
+        parameters: {
+            query?: {
+                /** @description Formato carta (default a4). */
+                paper?: "a4" | "receipt80";
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                bookingId: components["parameters"]["BookingID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Documento */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    swapBookings: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingSwapRequest"];
+            };
+        };
+        responses: {
+            /** @description Esito o anteprima dello scambio */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingSwapResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            412: components["responses"]["PreconditionFailed"];
+            422: components["responses"]["UnprocessableEntity"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    moveBookingGroup: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupMoveRequest"];
+            };
+        };
+        responses: {
+            /** @description Esito o anteprima */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupMoveResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            412: components["responses"]["PreconditionFailed"];
+            422: components["responses"]["UnprocessableEntity"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getLastMove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ultimo spostamento */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LastMove"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    undoMove: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                moveId: components["parameters"]["MoveID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Spostamento annullato */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoveUndoResult"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            410: components["responses"]["Gone"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    findSpot: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FindSpotRequest"];
+            };
+        };
+        responses: {
+            /** @description Proposte */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FindSpotResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["UnprocessableEntity"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    bookFindSpotProposal: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chiave di idempotenza scelta dal client (consigliato un UUID). Una
+                 *     richiesta ripetuta con la stessa chiave restituisce la risposta
+                 *     originale (header `Idempotent-Replayed: true`) senza ripetere
+                 *     l'effetto; con un corpo diverso risponde `422 idempotency_key_reused`,
+                 *     mentre la prima è ancora in corso `409 idempotency_in_progress`
+                 *     (da ritentare). La chiave vale per l'utente (sessione, chiave API o
+                 *     token del dispositivo) e per 24 ore: una coda offline più vecchia va
+                 *     ricontrollata prima dell'invio. Le risposte 5xx non sono memorizzate
+                 *     (si può ritentare con la stessa chiave); ogni altra risposta, compresi
+                 *     i rifiuti 4xx (validazione, conflitto, permesso), è memorizzata ed è
+                 *     definitiva per quella chiave. Quando l'utente corregge la causa e
+                 *     invia di nuovo, il client deve usare una chiave nuova.
+                 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                /**
+                 * @description Obbligatorio per le richieste autenticate via cookie che modificano
+                 *     dati: deve coincidere con il valore del cookie `arenile_csrf`.
+                 */
+                "X-CSRF-Token"?: components["parameters"]["CSRFToken"];
+            };
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FindSpotBookRequest"];
+            };
+        };
+        responses: {
+            /** @description Prenotazione creata */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingDetail"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["UnprocessableEntity"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getSpotCalendar: {
+        parameters: {
+            query?: {
+                /** @description Stagione (default quella corrente o la prossima). */
+                season_id?: string;
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+                spotId: components["parameters"]["SpotID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Calendario */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpotCalendar"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getLifeguardList: {
+        parameters: {
+            query: {
+                /** @description Giorno. */
+                date: components["schemas"]["Date"];
+                /** @description Fascia (default FULL). */
+                slot?: components["schemas"]["Slots"];
+                /** @description Solo le postazioni della mappa. */
+                map_id?: string;
+                /** @description Formato (default json; xlsx per Excel, html per il documento stampabile / PDF). */
+                format?: components["parameters"]["PrintableFormat"];
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lista */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LifeguardList"];
+                    "text/html": string;
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getPartnersReport: {
+        parameters: {
+            query: {
+                /** @description Primo giorno del periodo (incluso). */
+                from: components["parameters"]["ReportFrom"];
+                /** @description Ultimo giorno del periodo (incluso; al massimo 400 giorni dopo from). */
+                to: components["parameters"]["ReportTo"];
+                /** @description Solo questo partner. */
+                partner_id?: string;
+                /** @description Formato (default json; csv o xlsx, oppure Accept: text/csv). */
+                format?: components["parameters"]["ReportFormat"];
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Rendiconto */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartnersReport"];
+                    "text/csv": string;
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getAgreementsRegister: {
+        parameters: {
+            query: {
+                /** @description Primo giorno del periodo (incluso). */
+                from: components["parameters"]["ReportFrom"];
+                /** @description Ultimo giorno del periodo (incluso; al massimo 400 giorni dopo from). */
+                to: components["parameters"]["ReportTo"];
+                /** @description Stagione di riferimento per l'intestazione. */
+                season_id?: string;
+                /** @description Formato (default json; xlsx per Excel, html per il documento stampabile / PDF). */
+                format?: components["parameters"]["PrintableFormat"];
+            };
+            header?: never;
+            path: {
+                establishmentId: components["parameters"]["EstablishmentID"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Registro */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementsRegister"];
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    "text/html": string;
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            501: components["responses"]["NotImplemented"];
+        };
+    };
+    getPublicAgreement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: components["parameters"]["Slug"];
+                /** @description Codice della convenzione (senza distinzione tra maiuscole e minuscole). */
+                agreementCode: components["parameters"]["AgreementCode"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Convenzione */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicAgreement"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+            429: components["responses"]["TooManyRequests"];
             501: components["responses"]["NotImplemented"];
         };
     };

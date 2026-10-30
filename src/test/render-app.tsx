@@ -9,6 +9,7 @@ import BookingsScreen from '@/app/(connected)/bookings/index';
 import HomeScreen from '@/app/(connected)/home';
 import MapScreen from '@/app/(connected)/map';
 import MoveScreen from '@/app/(connected)/move/[bookingId]';
+import NewBookingScreen from '@/app/(connected)/new-booking';
 import BookingOperationsScreen from '@/app/(connected)/operations/booking/[bookingId]';
 import OperationsScreen from '@/app/(connected)/operations/index';
 import OperationsScanScreen from '@/app/(connected)/operations/scan';
@@ -17,7 +18,9 @@ import PendingScreen from '@/app/(connected)/pending';
 import ReportsScreen from '@/app/(connected)/reports';
 import SaleScreen from '@/app/(connected)/sale';
 import SettingsScreen from '@/app/(connected)/settings';
+import SpotCalendarScreen from '@/app/(connected)/spot-calendar/[spotId]';
 import SpotsScreen from '@/app/(connected)/spots';
+import LifeguardScreen from '@/app/(connected)/lifeguard';
 import TodayScreen from '@/app/(connected)/today';
 import WaitlistEntryScreen from '@/app/(connected)/waitlist/[entryId]';
 import WaitlistScreen from '@/app/(connected)/waitlist/index';
@@ -42,6 +45,12 @@ import { sequentialIds } from './ids';
 export const WINDOWS = {
   phone: { width: 390, height: 844 },
   tablet: { width: 1024, height: 1366 },
+  /** iPad 11" portrait: navigation pane collapsed to the icon rail. */
+  tabletPortrait: { width: 834, height: 1194 },
+  /** iPad 11" landscape: navigation pane expanded beside the content. */
+  tabletLandscape: { width: 1194, height: 834 },
+  /** iPad in Split View: still a tablet (short side ≥ 600), but no room for list and detail. */
+  tabletSplitView: { width: 678, height: 1032 },
 } as const;
 
 export type WindowSize = keyof typeof WINDOWS;
@@ -116,9 +125,11 @@ export async function renderApp({
       ? fakePinnedFetch(network.fetch, lanServerFingerprint).pinnedFetch
       : null,
     device: { name: 'iPhone di Anna', platform: 'ios' },
+    formFactor: size === 'phone' ? 'phone' : 'tablet',
     appVersion: '1.0.0',
     deviceLocales: () => ['it-IT'],
     openSystemSettings: jest.fn(),
+    shareText: jest.fn(async () => {}),
     widget,
   };
 
@@ -147,12 +158,15 @@ export async function renderApp({
       '(connected)/bookings/index': BookingsScreen,
       '(connected)/bookings/[bookingId]': BookingScreen,
       '(connected)/spots': SpotsScreen,
+      '(connected)/lifeguard': LifeguardScreen,
+      '(connected)/spot-calendar/[spotId]': SpotCalendarScreen,
       '(connected)/operations/index': OperationsScreen,
       '(connected)/operations/scan': OperationsScanScreen,
       '(connected)/operations/booking/[bookingId]': BookingOperationsScreen,
       '(connected)/operations/spot/[spotId]': SpotOperationsScreen,
       '(connected)/reports': ReportsScreen,
       '(connected)/sale': SaleScreen,
+      '(connected)/new-booking': NewBookingScreen,
       '(connected)/move/[bookingId]': MoveScreen,
       '(connected)/waitlist/index': WaitlistScreen,
       '(connected)/waitlist/[entryId]': WaitlistEntryScreen,

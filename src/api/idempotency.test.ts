@@ -23,6 +23,8 @@ describe('keepsIdempotencyKey', () => {
     ['server error (not stored)', problem(500, 'internal_error'), true],
     ['rate limited (not stored)', problem(429, 'rate_limited'), true],
     ['same key still running', problem(409, 'idempotency_in_progress'), true],
+    ['lost race, retry after (not stored)', problem(409, 'concurrent_update'), true],
+    ['generic conflict (stored refusal)', problem(409, 'conflict'), false],
     ['401 of a proxy', new ProblemError(401, null), true],
     ['token revoked', new UnauthorizedError(401, null), false],
     ['spot taken (stored refusal)', problem(409, 'spot_unavailable'), false],

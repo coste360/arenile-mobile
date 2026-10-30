@@ -99,6 +99,7 @@ describe('waitlistErrorKey', () => {
     ['disabled', problem(409, 'waitlist_disabled'), 'waitlist.errors.disabled'],
     ['taken', problem(409, 'spot_unavailable'), 'waitlist.errors.unavailable'],
     ['zone full', problem(409, 'pool_exhausted'), 'waitlist.errors.unavailable'],
+    ['agreement quota', problem(409, 'agreement_quota_exceeded'), 'waitlist.errors.unavailable'],
     ['already offered', problem(409, 'conflict'), 'waitlist.errors.alreadyOffered'],
     ['invalid', problem(422, 'validation_failed'), 'waitlist.errors.invalid'],
     ['gone', problem(404, 'not_found'), 'waitlist.errors.notFound'],

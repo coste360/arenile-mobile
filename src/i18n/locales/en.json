@@ -4,7 +4,8 @@
     "back": "Back",
     "cancel": "Cancel",
     "retry": "Try again",
-    "loading": "Loading"
+    "loading": "Loading",
+    "clearSearch": "Clear the search"
   },
   "languages": {
     "it": "Italiano",
@@ -24,7 +25,9 @@
     "description": "Connect the app to your establishment with the QR code in the panel: Configuration → Devices → Pair a device.",
     "scan": "Scan the QR code",
     "manual": "Enter address and code",
-    "privacy": "The app talks only to your Arenile instance: no data goes through Coste360, no telemetry.",
+    "demo": "Try the demo",
+    "demoHint": "Opens a sample establishment on Coste360's demo server, with made-up data reset every night.",
+    "privacy": "The app talks only to the instance you pair it with, without telemetry: paired with yours, no data goes through Coste360.",
     "revoked": {
       "title": "Device disconnected",
       "description": "This device's access was revoked from the panel or has expired. Pair it again with a new code."
@@ -75,6 +78,7 @@
   "pair": {
     "title": "Connecting",
     "progress": "Connecting to {{target}}",
+    "demoTarget": "the Arenile demo",
     "confirm": {
       "title": "Connect this device?",
       "description": "The link asks to connect the app to the instance {{host}}. Continue only if it is your establishment's address.",
@@ -117,6 +121,10 @@
         "title": "Pairing not available",
         "description": "The instance does not accept new devices right now. If you use the desktop app, turn on local network mode."
       },
+      "demo_unavailable": {
+        "title": "Demo unavailable",
+        "description": "The Arenile demo is not accepting new devices right now. Try again later or pair the app with your establishment."
+      },
       "code_invalid": {
         "title": "Invalid code",
         "description": "The code is invalid, expired or already used. Generate a new one in the panel."
@@ -124,6 +132,10 @@
       "rate_limited": {
         "title": "Too many attempts",
         "description": "Attempts are limited for security. Wait a minute and try again."
+      },
+      "demo_rate_limited": {
+        "title": "Too many demo attempts",
+        "description": "The demo accepts a limited number of sessions every hour. Try again in an hour."
       },
       "unexpected": {
         "title": "Something went wrong",
@@ -156,12 +168,16 @@
     "bookings": "Bookings",
     "booking": "Booking",
     "spots": "Spots",
+    "lifeguard": "Lifeguard list",
     "operations": "Operations",
     "reports": "Reports",
     "sale": "Daily sale",
     "move": "Move booking",
     "waitlist": "Waitlist",
-    "waitlistEntry": "Entry"
+    "waitlistEntry": "Entry",
+    "toggleMenu": "Show or hide the menu",
+    "closeMenu": "Close the menu",
+    "newBooking": "New booking"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -310,11 +326,6 @@
     "mapFallback": "Map",
     "seaLabel": "Sea",
     "maps": "Maps",
-    "day": {
-      "label": "Day",
-      "today": "Today",
-      "tomorrow": "Tomorrow"
-    },
     "slot": {
       "label": "Slot",
       "FULL": "Full day",
@@ -357,7 +368,9 @@
       "extra": "Extras",
       "note": "Note",
       "vip": "VIP",
-      "to_assign": "To assign"
+      "to_assign": "To assign",
+      "arrival": "Arrival",
+      "departure": "Departure"
     },
     "occupant": {
       "anonymous": "Anonymous customer",
@@ -371,7 +384,6 @@
       "label": "Search for a spot",
       "placeholder": "Spot, customer or code",
       "placeholderNoCustomers": "Spot or code",
-      "clear": "Clear the search",
       "results_one": "{{count}} spot found",
       "results_other": "{{count}} spots found",
       "none": "No spot matches the search"
@@ -403,7 +415,6 @@
       "forbidden": {
         "title": "Not allowed"
       },
-      "closed": "Closing day or out of season.",
       "dayLoading": "Loading the statuses of the day…",
       "dayError": "Statuses of the day not available: the map shows the spots only."
     },
@@ -474,8 +485,6 @@
   },
   "today": {
     "heading": "Today, {{date}}",
-    "closedTitle": "Establishment closed",
-    "closedDescription": "Today is a closing day or out of season.",
     "figures": {
       "arrivals": "Arrivals",
       "present": "Present",
@@ -494,6 +503,19 @@
       "title": "The day",
       "today": "Today's summary",
       "bookings": "The day's bookings"
+    },
+    "slots": {
+      "title": "Occupancy by slot",
+      "AM": "Morning",
+      "PM": "Afternoon",
+      "uses": {
+        "occupied": "Occupied",
+        "free": "Free",
+        "closed": "Unavailable"
+      },
+      "count": "{{label}} {{count}}",
+      "rowA11y": "{{slot}}: {{occupied}} occupied, {{free}} free, {{closed}} unavailable, out of {{total}} spots.",
+      "hint": "Free includes the days released by season pass holders; unavailable means closed or blocked spots."
     }
   },
   "spots": {
@@ -506,7 +528,31 @@
     "released": "Released",
     "free": "Free",
     "emptyFree": "No free spots for this day.",
-    "emptyReleased": "No pass holder released their spot for this day."
+    "emptyReleased": "No pass holder released their spot for this day.",
+    "openOnMap": "Opens the spot on the map"
+  },
+  "lifeguard": {
+    "filtersLabel": "Filter the spots",
+    "filters": {
+      "all": "All",
+      "arriving": "Arrivals",
+      "departing": "Departures",
+      "balance_due": "Balance due"
+    },
+    "chipLabel": "{{label}}: {{count}}",
+    "results_one": "{{count}} occupied spot",
+    "results_other": "{{count}} occupied spots",
+    "row": "Row {{row}}",
+    "noRow": "No row",
+    "anonymous": "Anonymous customer",
+    "flags": {
+      "arriving": "Arrival",
+      "departing": "Departure",
+      "balance_due": "Balance due"
+    },
+    "emptyTitle": "No spot is occupied on this day.",
+    "noMatchTitle": "No spot matches this filter.",
+    "showAll": "Show all"
   },
   "bookings": {
     "status": {
@@ -560,11 +606,6 @@
         "season_pass": "Pass holders"
       },
       "chipLabel": "{{label}}, {{count}}",
-      "dayLabel": "Day",
-      "days": {
-        "today": "Today",
-        "tomorrow": "Tomorrow"
-      },
       "channelLabel": "Channel",
       "channels": {
         "all": "All channels",
@@ -596,6 +637,7 @@
     "detail": {
       "stay": "Spot and period",
       "spots": "Spots",
+      "segment": "{{spot}}: {{from}} to {{to}}",
       "period": "Period",
       "days_one": "{{count}} day",
       "days_other": "{{count}} days",
@@ -678,7 +720,59 @@
       "errorTitle": "Booking not available",
       "errorDescription": "It could not be read from the instance. Check the connection and try again.",
       "notFound": "The booking no longer exists.",
-      "actionsTitle": "Actions"
+      "actionsTitle": "Actions",
+      "actionsOnlineOnly": "These actions need the instance to be reachable."
+    },
+    "share": {
+      "action": "Send summary to the customer",
+      "hint": "Opens sharing with the text in the customer's language and the link to manage the booking.",
+      "newLink": "Each send creates a new manage link: the one sent before stops working.",
+      "errors": {
+        "offline": "Instance unreachable: the summary was not created.",
+        "forbidden": "Your role cannot send the summary.",
+        "not_found": "The booking no longer exists.",
+        "unavailable": "This instance does not prepare the customer summary yet.",
+        "default": "The summary could not be prepared. Try again.",
+        "sheet": "The summary is ready but sharing did not open. Press again to reopen it: the link stays the same."
+      }
+    },
+    "agreement": {
+      "title": "Agreement",
+      "name": "Agreement",
+      "partner": "Partner",
+      "share": "Partner's share",
+      "shareFull": "Paid entirely by the partner",
+      "sharePercent": "{{percent}}% paid by the partner",
+      "shareAmount": "{{amount}} paid by the partner",
+      "partnerAmount": "Amount paid by the partner",
+      "guestStay": "Guest's stay",
+      "toVerify": "Requirement to verify",
+      "verify": "Verified",
+      "verifyHint": "Records the date and the operator of the check, never a copy of the document.",
+      "onlineOnly": "Recording the check needs the instance to be reachable.",
+      "verifiedAt": "Verified on {{when}}",
+      "verifiedBy": "Verified on {{when}} by {{name}}",
+      "errors": {
+        "offline": "Instance unreachable: the check was not recorded.",
+        "forbidden": "Your role cannot record the check.",
+        "changed": "The booking changed in the meantime: look at the updated sheet and try again.",
+        "not_modifiable": "The booking is over or cancelled: the check can no longer be recorded.",
+        "invalid": "The booking has no agreement to verify.",
+        "not_found": "The booking no longer exists.",
+        "unavailable": "This instance does not record checks yet.",
+        "default": "The check could not be recorded. Try again."
+      }
+    },
+    "guests": {
+      "title": "Group and guests",
+      "group": "Group",
+      "origin": "From",
+      "party": "People",
+      "adults_one": "{{count}} adult",
+      "adults_other": "{{count}} adults",
+      "children_one": "{{count}} child",
+      "children_other": "{{count}} children",
+      "names": "Guests"
     }
   },
   "operations": {
@@ -697,7 +791,12 @@
       "spotsSearchPlaceholder": "For example A1",
       "spotsEmpty": "No spot found.",
       "spotsUnavailable": "Today's map is not available: a connection is needed at least once.",
-      "spotsMore": "Refine the search to see the other spots."
+      "spotsMore": "Refine the search to see the other spots.",
+      "detailLabel": "Operation detail",
+      "selectTitle": "Choose a spot",
+      "selectDescription": "Or look up the code of a booking or a ticket.",
+      "spotsCount_one": "{{count}} spot",
+      "spotsCount_other": "{{count}} spots"
     },
     "scan": {
       "cameraLabel": "Camera preview for booking and ticket QR codes",
@@ -935,6 +1034,13 @@
       "error": "The reports could not be loaded from the instance.",
       "stale": "Data not up to date. {{reason}}",
       "retry": "Try again"
+    },
+    "chart": {
+      "title": "Week at a glance",
+      "scale": "Scale up to {{value}}",
+      "a11y": "Chart: {{metric}} day by day, {{year}} compared with {{previousYear}}. {{days}}",
+      "dayA11y": "{{day}}: {{value}}, in {{year}} {{previous}}.",
+      "empty": "No values this week, this year or last year."
     }
   },
   "widget": {
@@ -1040,9 +1146,97 @@
       "no_price": "No price for this package on this date: check the price list in the panel.",
       "in_progress": "The sale is already in progress: wait a few seconds.",
       "not_found": "Spot or package no longer available.",
+      "policy": "The sale breaks the establishment's booking rules.",
       "default": "Sale failed. Try again."
     },
     "onlineOnly": "Selling needs the instance to be reachable: the server guarantees availability and the ticket number."
+  },
+  "newBooking": {
+    "title": "New booking",
+    "titleSpot": "Book {{label}}",
+    "subtitle": "Price and rules come from the server as you fill in the form; the payment is recorded later from the booking.",
+    "action": "New booking",
+    "actionSpot": "Book {{label}}",
+    "onlineOnly": "Booking needs a connection to the instance.",
+    "spot": "Spot",
+    "search": "Search a spot",
+    "searchPlaceholder": "E.g. A12",
+    "freeOn": "Free on {{day}} · {{slot}}; the server checks the other days.",
+    "noSpots": "No free spot matches this search.",
+    "more": "There are more spots: refine the search.",
+    "loadingSpots": "Loading the spots of the day…",
+    "dayError": "Could not load the spots of that day.",
+    "spotOption": "Spot {{label}}",
+    "from": "From",
+    "to": "To",
+    "length": "Length",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "slot": "Time slot",
+    "pack": "Package",
+    "noPacks": "No package can be booked at the desk in this zone.",
+    "noPacksForStay": "No package of this zone allows this length.",
+    "extras": "Extras",
+    "customer": "Customer",
+    "customerHint": "The surname is enough. Phone and email are optional and help find the customer again.",
+    "form": {
+      "lastName": "Surname",
+      "firstName": "First name",
+      "phone": "Phone",
+      "email": "Email",
+      "lastNameRequired": "Enter the surname.",
+      "phoneInvalid": "Invalid number: use the international prefix, e.g. +39 333 1234567.",
+      "emailInvalid": "Invalid email.",
+      "tooLong": "Text too long.",
+      "phonePlaceholder": "+39 333 1234567"
+    },
+    "summary": "Summary",
+    "stay": "Stay",
+    "period": "from {{from}} to {{to}}",
+    "total": "Estimated total",
+    "totalA11y": "Estimated total {{total}}",
+    "computing": "Calculating the price…",
+    "incomplete": "Choose a spot, the dates and a package to see the price.",
+    "payAtDesk": "The booking is confirmed straight away; the balance is collected from the booking.",
+    "unavailable": "{{label}} is not free for the whole stay",
+    "conflictDay": "{{day}}, {{slot}}",
+    "balance": "Balance due",
+    "failedTitle": "Booking failed",
+    "submit": "Book",
+    "submitTotal": "Book · {{total}}",
+    "hold": {
+      "submit": "Hold for {{minutes}} minutes",
+      "active": "{{label}} held until {{time}}",
+      "hint": "Nobody else can take it while you complete the booking.",
+      "expired": "The hold has expired: the spot is free again.",
+      "release": "Release the hold",
+      "locked": "Spot, dates and time slot are held: release the hold to change them."
+    },
+    "confirm": {
+      "title": "Book {{label}}?",
+      "description": "{{label}}, {{period}}, total {{total}}. The balance is collected later from the booking.",
+      "submit": "Book"
+    },
+    "done": {
+      "title": "Booking {{code}} created",
+      "description": "The spot now shows as taken on the map.",
+      "awaitingApproval": "Waiting for the manager's approval: the spot stays reserved.",
+      "open": "Open the booking",
+      "back": "Done"
+    },
+    "errors": {
+      "offline": "Instance unreachable: the booking was not created. Try again when the connection is back.",
+      "forbidden": "Your role cannot create bookings.",
+      "spot_unavailable": "The spot is no longer free for these dates: choose another one.",
+      "agreement": "The agreement does not apply to this booking.",
+      "no_price": "No price for this package on these dates: check the price list in the panel.",
+      "policy": "The booking breaks the establishment's booking rules.",
+      "hold_expired": "The hold expired before the confirmation: check that the spot is still free.",
+      "invalid": "Invalid data: check the dates, the package and the customer.",
+      "in_progress": "The booking is already in progress: wait a few seconds.",
+      "not_found": "Spot or package no longer available.",
+      "default": "Booking failed. Try again."
+    }
   },
   "move": {
     "action": "Move to another spot",
@@ -1051,6 +1245,16 @@
     "notMovable": "{{code}} can no longer be moved.",
     "noLines": "{{code}} has no assigned spot to move.",
     "line": "Spot to move",
+    "mode": {
+      "label": "What do you want to do",
+      "move": "Move to a free spot",
+      "swap": "Swap with another booking"
+    },
+    "start": {
+      "label": "Starting",
+      "today": "From today",
+      "tomorrow": "From tomorrow"
+    },
     "target": "New spot",
     "search": "Search the spot",
     "searchPlaceholder": "E.g. B12",
@@ -1062,6 +1266,7 @@
     "from": "From",
     "to": "To",
     "fromToday": "The move applies from {{day}}: past days stay where they are.",
+    "fromTomorrow": "The move applies from {{day}}: today stays where it is.",
     "ticketPrice": "Daily sale {{number}}: the ticket total does not change.",
     "previewing": "Checking availability…",
     "conflicts": "{{label}} is not free for the whole stay:",
@@ -1092,10 +1297,65 @@
       "spot_unavailable": "The spot was just taken: pick another one.",
       "version_conflict": "The booking changed meanwhile: open the move again.",
       "not_modifiable": "This booking cannot be moved in its status.",
-      "policy": "This spot needs approval: move the booking from the panel.",
+      "policy": "The move does not meet the establishment's booking rules.",
+      "approval": "A manager's approval is needed: ask a manager to move the booking.",
+      "concurrent": "The booking was being changed at that moment: try again in a few seconds.",
       "invalid": "The package is not valid on this spot: pick another one.",
       "not_found": "The booking or the spot no longer exists.",
       "default": "Move failed. Try again."
+    },
+    "swap": {
+      "target": "Booking to swap with",
+      "search": "Search the taken spot",
+      "takenOn": "Taken on {{day}} · {{slot}}. The server checks the shared days.",
+      "none": "No booking to swap with matches.",
+      "more": "There are more bookings: narrow the search.",
+      "option": "Spot {{label}}, {{name}}",
+      "with": "Swap with",
+      "days": "Swap from {{from}} to {{to}}: the other days stay where they are.",
+      "side": "{{code}}: {{change}}",
+      "conflicts": "The swap is not possible on these days:",
+      "submit": "Swap",
+      "submitWith": "Swap with {{label}}",
+      "confirm": {
+        "title": "Swap {{code}} with {{other}}?",
+        "description": "{{code}} goes to {{to}} and {{other}} to {{from}}.",
+        "submit": "Swap"
+      },
+      "done": {
+        "title": "{{code}} and {{other}} swapped"
+      },
+      "errors": {
+        "conflict": "These two bookings cannot be swapped: they share no day from this date or are already on the same spot.",
+        "version_conflict": "One of the two bookings changed meanwhile: check the updated preview."
+      }
+    },
+    "undo": {
+      "action": "Undo move",
+      "until": "You can undo it until {{time}}.",
+      "lastTitle": "Recent move",
+      "lastDescription": "You moved this booking a moment ago.",
+      "lastSwap": "You recently swapped this booking with {{other}}.",
+      "lastGroup_one": "You recently moved this booking together with another one.",
+      "lastGroup_other": "You recently moved this booking and {{count}} other bookings.",
+      "anotherBooking": "another booking",
+      "confirm": {
+        "title": "Undo the move?",
+        "swap": "Both this booking and {{other}} go back where they were.",
+        "group_one": "Another booking goes back where it was too.",
+        "group_other": "{{count}} other bookings go back where they were too.",
+        "submit": "Restore the spots"
+      },
+      "done": "Move undone: the spots are back as before.",
+      "failedTitle": "Undo failed",
+      "errors": {
+        "offline": "Instance unreachable: the move was not undone.",
+        "forbidden": "Your role is not allowed to undo moves.",
+        "expired": "More than 5 minutes have passed: the move can no longer be undone.",
+        "conflict": "It cannot be undone: the original spots were taken or the booking changed meanwhile.",
+        "concurrent": "Another change of these bookings is running: try again in a few seconds.",
+        "default": "Undo failed. Try again."
+      }
     }
   },
   "waitlist": {
@@ -1179,6 +1439,93 @@
       "invalid": "Invalid data: check the spot and the duration.",
       "notFound": "The entry no longer exists.",
       "default": "Operation failed. Try again."
+    },
+    "results_one": "{{count}} entry",
+    "results_other": "{{count}} entries"
+  },
+  "dayPicker": {
+    "label": "Day",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "other": "Choose another day",
+    "change": "change day",
+    "title": "Choose the day"
+  },
+  "closedDay": {
+    "title": "Establishment closed",
+    "today": "Today is a closure day or out of season.",
+    "tomorrow": "Tomorrow is a closure day or out of season.",
+    "other": "{{date}}: closure day or out of season.",
+    "offlineTitle": "Day available online only",
+    "offlineDescription": "Only today and tomorrow are kept on this device. Other days need a connection to the instance."
+  },
+  "policy": {
+    "violations": {
+      "cutoff_passed": "Today's cut-off time has passed.",
+      "duration_too_long": "Longer than the maximum allowed.",
+      "duration_too_short": "Shorter than the minimum allowed.",
+      "formula_not_allowed": "Formula not allowed.",
+      "lead_time_too_long": "Booked too far in advance.",
+      "lead_time_too_short": "Minimum advance notice not met.",
+      "same_day_closed": "Same-day bookings are closed.",
+      "start_weekday_not_allowed": "Start day not allowed.",
+      "too_many_spots": "Too many spots in one booking.",
+      "other": "Breaks one of the establishment's booking rules."
+    }
+  },
+  "mapFilters": {
+    "label": "Highlight",
+    "arrivals": "Arrivals",
+    "departures": "Departures",
+    "to_collect": "To collect",
+    "present": "Present",
+    "agreement": "Agreement: {{name}}",
+    "group": "Group: {{name}}",
+    "chip": "{{label}}, {{count}}",
+    "results_one": "{{count}} spot highlighted",
+    "results_other": "{{count}} spots highlighted",
+    "none": "No spot matches this filter.",
+    "labels": "Labels",
+    "customer": "Customer",
+    "end": "End of stay",
+    "setup": "Setup",
+    "labelChip": "Label under the spots: {{label}}"
+  },
+  "mapSheet": {
+    "setup": "Setup",
+    "agreement": "Agreement",
+    "partner": "Partner",
+    "group": "Group",
+    "partySize": "People",
+    "calendar": "Spot calendar"
+  },
+  "spotCalendar": {
+    "title": "Calendar",
+    "heading": "Calendar of spot {{label}}",
+    "season": "Season from {{from}} to {{to}}",
+    "loading": "Loading the calendar",
+    "errorTitle": "Calendar not available",
+    "error": "The calendar could not be loaded. Check the connection and try again.",
+    "notFound": "Spot or season not found.",
+    "notImplemented": "This instance has no spot calendar: update it to the latest version.",
+    "halves": "Each day: morning on the left, afternoon on the right.",
+    "legend": "Calendar legend",
+    "half": "{{slot}} {{status}}",
+    "halfBooking": "{{slot}} {{status}} ({{booking}})",
+    "day": "{{date}}: {{am}}, {{pm}}",
+    "openBooking": "Opens the booking",
+    "newBooking": "Starts a new booking from this day",
+    "bookings": "Bookings of the season",
+    "noBookings": "No bookings this season.",
+    "period": "{{from}} – {{to}}",
+    "balance": "Balance due {{amount}}",
+    "choose": {
+      "hint": "Opens the booking or creates a new one in the free half",
+      "description": "One half of the day is taken and the other is free.",
+      "open": "Open the booking",
+      "bookFULL": "New booking (full day)",
+      "bookAM": "New booking (morning)",
+      "bookPM": "New booking (afternoon)"
     }
   }
 }

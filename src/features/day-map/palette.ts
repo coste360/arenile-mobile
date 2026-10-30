@@ -5,7 +5,7 @@
 // src/global.css (from the core panel), HSL triplets verbatim;
 // palette.test.ts fails when they drift. One of the two files allowed raw
 // colours (scripts/style-guard.js).
-import type { SpotStatus } from './status';
+import type { MapMarker, SpotStatus } from './status';
 
 export interface StatusColours {
   /** Fill of the spot and of the badge. */
@@ -16,8 +16,9 @@ export interface StatusColours {
 
 export interface MapPalette {
   status: Readonly<Record<SpotStatus, StatusColours>>;
-  sand: string;
-  sea: string;
+  /** Arrival (--success) and departure (--warning) markers, with their glyph colour. */
+  marker: Readonly<Record<MapMarker, StatusColours>>;
+  /** "Mare" label of the sea band; sand and sea are the --beach-* tokens (backdrop.ts, as the panel). */
   seaLabel: string;
   decoration: string;
   decorationStroke: string;
@@ -28,12 +29,74 @@ export interface MapPalette {
   spotSelected: string;
   /** Fill of a spot whose status is not known yet (day still loading). */
   unknown: string;
+  /** Pill behind spot codes and captions, its text, and the blocked bar (theme background/foreground). */
+  labelBackground: string;
+  labelForeground: string;
+  /** Colours of the kit illustrations (`var(--beach-<token>)` of the art; ADR 0013). */
+  beach: Readonly<Record<BeachToken, string>>;
+  /** Sea flag colours a decoration `variant` picks (bandiera_mare). */
+  flags: Readonly<Record<'green' | 'yellow' | 'red', string>>;
 }
 
-/** Opacity of the spot outline (the panel's rgb(… / 0.35)). */
-export const SPOT_STROKE_OPACITY = 0.35;
+/** The --beach-* tokens the kit art reads (`flag` and `state` are set per element). */
+export type BeachToken =
+  | 'ink'
+  | 'muted'
+  | 'frame'
+  | 'canvas'
+  | 'sand'
+  | 'sand-soft'
+  | 'navy'
+  | 'navy-soft'
+  | 'sage'
+  | 'sage-soft'
+  | 'clay'
+  | 'clay-soft'
+  | 'wood'
+  | 'wood-soft'
+  | 'water'
+  | 'water-soft';
 
 const INK = 'hsl(220.9 39.3% 11%)';
+
+// Kit tokens: the values of the panel's web/shared/src/styles/globals.css in
+// the pinned core (unchanged up to v1.1.2), which override the kits' own beach-tokens.css.
+const BEACH_LIGHT = {
+  ink: '#263746',
+  muted: '#94a3b8',
+  frame: '#dce4e8',
+  canvas: '#ffffff',
+  sand: '#f5ecdd',
+  'sand-soft': '#fbf7f0',
+  navy: '#365b78',
+  'navy-soft': '#dbe9f1',
+  sage: '#779c87',
+  'sage-soft': '#deece2',
+  clay: '#c77c69',
+  'clay-soft': '#f6e6df',
+  wood: '#ba9472',
+  'wood-soft': '#ebdbc7',
+  water: '#a9d7e4',
+  'water-soft': '#e3f4f7',
+} as const;
+const BEACH_DARK = {
+  ink: '#b8c9d6',
+  muted: '#8396a6',
+  frame: '#465765',
+  canvas: '#243442',
+  sand: '#695e50',
+  'sand-soft': '#3a3833',
+  navy: '#b1cbdf',
+  'navy-soft': '#415b70',
+  sage: '#a3c3ad',
+  'sage-soft': '#3b5d4c',
+  clay: '#d9a493',
+  'clay-soft': '#664f4c',
+  wood: '#cfb396',
+  'wood-soft': '#615443',
+  water: '#74afc4',
+  'water-soft': '#2c4553',
+} as const;
 const WHITE = 'hsl(0 0% 100%)';
 
 export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
@@ -51,8 +114,10 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
       renewal_hold: { fill: 'hsl(333.3 71.4% 50.6%)', foreground: WHITE },
       unavailable: { fill: 'hsl(216 12.2% 83.9%)', foreground: INK },
     },
-    sand: 'hsl(42.2 72.5% 90%)',
-    sea: 'hsl(200 70.1% 69.8%)',
+    marker: {
+      arrival: { fill: 'hsl(142.4 71.8% 29.2%)', foreground: 'hsl(210 40% 98%)' },
+      departure: { fill: 'hsl(37.7 92.1% 50.2%)', foreground: 'hsl(222.2 47.4% 11.2%)' },
+    },
     seaLabel: 'hsl(202 80.3% 23.9%)',
     decoration: 'hsl(42.2 43.5% 83.3%)',
     decorationStroke: 'hsl(40.4 25.9% 62.9%)',
@@ -60,6 +125,10 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
     spotStroke: INK,
     spotSelected: INK,
     unknown: 'hsl(216 12.2% 83.9%)',
+    labelBackground: 'hsl(210 40% 98%)',
+    labelForeground: 'hsl(222.2 47.4% 11.2%)',
+    beach: BEACH_LIGHT,
+    flags: { green: '#3f9c5f', yellow: '#e5b20b', red: '#d6453d' },
   },
   dark: {
     status: {
@@ -75,8 +144,10 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
       renewal_hold: { fill: 'hsl(328.6 85.5% 70.2%)', foreground: INK },
       unavailable: { fill: 'hsl(240 5.2% 33.9%)', foreground: WHITE },
     },
-    sand: 'hsl(40 18.4% 19.2%)',
-    sea: 'hsl(203 58.3% 27.3%)',
+    marker: {
+      arrival: { fill: 'hsl(141.9 69.2% 58%)', foreground: 'hsl(211.6 73.1% 10.2%)' },
+      departure: { fill: 'hsl(43.3 96.4% 56.3%)', foreground: 'hsl(211.6 73.1% 10.2%)' },
+    },
     seaLabel: 'hsl(200 72.4% 88.6%)',
     decoration: 'hsl(40 19.4% 24.3%)',
     decorationStroke: 'hsl(41.1 22.1% 52.2%)',
@@ -84,5 +155,9 @@ export const MAP_PALETTE: Readonly<Record<'light' | 'dark', MapPalette>> = {
     spotStroke: WHITE,
     spotSelected: WHITE,
     unknown: 'hsl(240 5.2% 33.9%)',
+    labelBackground: 'hsl(211.6 73.1% 10.2%)',
+    labelForeground: 'hsl(210 40% 98%)',
+    beach: BEACH_DARK,
+    flags: { green: '#5cbf7d', yellow: '#f2c94c', red: '#ef6b62' },
   },
 };

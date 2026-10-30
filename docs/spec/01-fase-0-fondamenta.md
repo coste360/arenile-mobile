@@ -86,7 +86,7 @@ certificato con quell'impronta (ADR 0006). In dettaglio:
   di almeno 44 pt.
 - Layout: su telefono una pila di schermate; su tablet e iPad (lato corto di almeno 600 dp) un pannello
   di navigazione laterale con il dettaglio a destra; su iPad in Slide Over o Split View stretta il
-  layout da telefono. Tutte le orientazioni.
+  layout da telefono. Telefono in verticale, tablet in ogni orientazione (ADR 0016).
 
 ## Stato
 

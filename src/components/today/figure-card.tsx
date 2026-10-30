@@ -33,7 +33,7 @@ export function FigureCard({
       accessibilityHint={t('today.figureHint')}
       onPress={onPress}
       testID={testID}
-      className="min-h-28 flex-1 basis-40 gap-2 rounded-xl border border-border bg-card p-4 active:bg-accent"
+      className="min-h-28 flex-1 gap-2 rounded-xl border border-border bg-card p-4 active:bg-accent"
     >
       <View className="flex-row items-center justify-between">
         <Icon as={icon} size={20} className="text-primary" />

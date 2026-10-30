@@ -49,6 +49,10 @@ export type ComparisonMetricKey = Schemas['ComparisonMetricKey'];
 export type ComparisonPoint = Schemas['ComparisonPoint'];
 export type ComparisonAlign = Schemas['ComparisonAlign'];
 
+// Core 1.1 (spec 30.10): the lifeguard list.
+export type LifeguardList = Schemas['LifeguardList'];
+export type LifeguardRow = Schemas['LifeguardRow'];
+
 // Phase 2: daily quick sale, move, waitlist, ticket printing (spec 03).
 export type DailySaleQuoteRequest = Schemas['DailySaleQuoteRequest'];
 export type DailySaleQuote = Schemas['DailySaleQuote'];
@@ -62,6 +66,11 @@ export type Extra = Schemas['Extra'];
 export type Zone = Schemas['Zone'];
 export type BookingMoveRequest = Schemas['BookingMoveRequest'];
 export type BookingChangeResult = Schemas['BookingChangeResult'];
+export type BookingSwapRequest = Schemas['BookingSwapRequest'];
+export type BookingSwapResult = Schemas['BookingSwapResult'];
+export type MoveUndoInfo = Schemas['MoveUndoInfo'];
+export type LastMove = Schemas['LastMove'];
+export type MoveUndoResult = Schemas['MoveUndoResult'];
 export type WaitlistEntry = Schemas['WaitlistEntry'];
 export type WaitlistEntryDetail = Schemas['WaitlistEntryDetail'];
 export type WaitlistEntryStatus = Schemas['WaitlistEntryStatus'];
@@ -74,3 +83,20 @@ export type PrintRouteResolution = Schemas['PrintRouteResolution'];
 export type PrintRouteUnreadyReason = Schemas['PrintRouteUnreadyReason'];
 export type PrintJob = Schemas['PrintJob'];
 export type PrintJobStatus = Schemas['PrintJobStatus'];
+
+// Core 1.1 (spec 30.5): season calendar of a spot.
+export type SpotCalendar = Schemas['SpotCalendar'];
+export type SpotCalendarDay = Schemas['SpotCalendarDay'];
+export type SpotCalendarCell = Schemas['SpotCalendarCell'];
+export type SpotCalendarBooking = Schemas['SpotCalendarBooking'];
+// Core 1.1 (M8): agreements, partners and the summary for the customer on the booking sheet.
+export type AgreementRef = Schemas['AgreementRef'];
+export type BookingPartnerShare = Schemas['BookingPartnerShare'];
+export type BookingShareSummary = Schemas['BookingShareSummary'];
+export type RequirementVerification = Schemas['RequirementVerification'];
+// New booking on the fly: quote, hold and creation from the desk (core spec 7, 10).
+export type BookingCreate = Schemas['BookingCreate'];
+export type BookingQuote = Schemas['BookingQuote'];
+export type Formula = Schemas['Formula'];
+export type Hold = Schemas['Hold'];
+export type HoldCreate = Schemas['HoldCreate'];

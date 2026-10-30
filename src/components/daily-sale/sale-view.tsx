@@ -19,6 +19,8 @@ import type { DailySaleResult, Slots, TicketPaymentMethod } from '@/api/types';
 import { DetailRow } from '@/components/detail-row';
 import { FilterChip, ChipRow } from '@/components/filter-chip';
 import { FormField } from '@/components/form-field';
+import { PolicyReasons } from '@/components/policy-reasons';
+import { ScrollToTop } from '@/components/layout/scroll-top';
 import { useDeviceLayout } from '@/components/layout/use-device-layout';
 import { OnlineOnlyNotice } from '@/components/online-only-notice';
 import { ChoiceGroup } from '@/components/operations/choice-group';
@@ -49,7 +51,6 @@ import {
   sellableSpot,
   toCreateRequest,
   toQuoteRequest,
-  type SaleErrorKey,
   type SaleFormValues,
   type SaleValues,
 } from '@/features/daily-sale/sale';
@@ -120,7 +121,7 @@ function SaleForm({
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [method, setMethod] = useState<TicketPaymentMethod>('cash');
   const [confirming, setConfirming] = useState(false);
-  const [failure, setFailure] = useState<SaleErrorKey | null>(null);
+  const [failure, setFailure] = useState<unknown>(null);
   const { control, handleSubmit } = useForm<SaleFormValues>({
     resolver: zodResolver(saleFormSchema),
     defaultValues: { firstName: '', lastName: '', tendered: '' },
@@ -174,7 +175,7 @@ function SaleForm({
     try {
       onSold(await create.mutateAsync(body));
     } catch (e) {
-      setFailure(saleErrorKey(e));
+      setFailure(e);
     }
   };
 
@@ -290,6 +291,7 @@ function SaleForm({
         {quote.error ? (
           <Alert icon={CircleAlertIcon} variant="destructive">
             <AlertDescription>{t(saleErrorKey(quote.error))}</AlertDescription>
+            <PolicyReasons error={quote.error} />
           </Alert>
         ) : null}
 
@@ -328,7 +330,8 @@ function SaleForm({
         {failure ? (
           <Alert icon={CircleAlertIcon} variant="destructive" accessibilityLiveRegion="assertive">
             <AlertTitle>{t('sale.failedTitle')}</AlertTitle>
-            <AlertDescription>{t(failure)}</AlertDescription>
+            <AlertDescription>{t(saleErrorKey(failure))}</AlertDescription>
+            <PolicyReasons error={failure} />
           </Alert>
         ) : null}
 
@@ -390,6 +393,7 @@ function SaleDone({ result }: { result: DailySaleResult }) {
   const ticket = result.ticket;
   return (
     <View className="gap-4" testID="sale-done">
+      <ScrollToTop />
       <Alert icon={CircleCheckIcon} accessibilityLiveRegion="assertive">
         <AlertTitle>{t('sale.done.title', { number: ticket.number_label })}</AlertTitle>
         <AlertDescription>

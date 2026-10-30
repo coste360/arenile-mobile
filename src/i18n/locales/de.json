@@ -4,7 +4,8 @@
     "back": "Zurück",
     "cancel": "Abbrechen",
     "retry": "Erneut versuchen",
-    "loading": "Wird geladen"
+    "loading": "Wird geladen",
+    "clearSearch": "Suche löschen"
   },
   "languages": {
     "it": "Italiano",
@@ -24,7 +25,9 @@
     "description": "Verbinde die App mit deinem Strandbad über den QR-Code im Panel: Konfiguration → Geräte → Gerät koppeln.",
     "scan": "QR-Code scannen",
     "manual": "Adresse und Code eingeben",
-    "privacy": "Die App spricht nur mit deiner Arenile-Instanz: Keine Daten laufen über Coste360, keine Telemetrie.",
+    "demo": "Demo ausprobieren",
+    "demoHint": "Öffnet einen Beispielbetrieb auf dem Demo-Server von Coste360, mit erfundenen Daten, die jede Nacht zurückgesetzt werden.",
+    "privacy": "Die App spricht nur mit der Instanz, mit der du sie verbindest, ohne Telemetrie: Mit deiner verbunden laufen keine Daten über Coste360.",
     "revoked": {
       "title": "Gerät getrennt",
       "description": "Der Zugang dieses Geräts wurde im Panel widerrufen oder ist abgelaufen. Kopple es mit einem neuen Code erneut."
@@ -75,6 +78,7 @@
   "pair": {
     "title": "Verbindung",
     "progress": "Verbindung mit {{target}} wird hergestellt",
+    "demoTarget": "die Arenile-Demo",
     "confirm": {
       "title": "Dieses Gerät verbinden?",
       "description": "Der Link möchte die App mit der Instanz {{host}} verbinden. Fahre nur fort, wenn das die Adresse deines Strandbads ist.",
@@ -117,6 +121,10 @@
         "title": "Koppeln nicht verfügbar",
         "description": "Die Instanz nimmt derzeit keine neuen Geräte an. Wenn du die Desktop-App nutzt, aktiviere den lokalen Netzwerkmodus."
       },
+      "demo_unavailable": {
+        "title": "Demo nicht verfügbar",
+        "description": "Die Arenile-Demo nimmt gerade keine neuen Geräte an. Versuche es später erneut oder verbinde die App mit deinem Betrieb."
+      },
       "code_invalid": {
         "title": "Ungültiger Code",
         "description": "Der Code ist ungültig, abgelaufen oder wurde bereits verwendet. Erzeuge im Panel einen neuen."
@@ -124,6 +132,10 @@
       "rate_limited": {
         "title": "Zu viele Versuche",
         "description": "Aus Sicherheitsgründen sind die Versuche begrenzt. Warte eine Minute und versuche es erneut."
+      },
+      "demo_rate_limited": {
+        "title": "Zu viele Demo-Versuche",
+        "description": "Die Demo nimmt pro Stunde nur eine begrenzte Zahl von Sitzungen an. Versuche es in einer Stunde erneut."
       },
       "unexpected": {
         "title": "Etwas ist schiefgelaufen",
@@ -156,12 +168,16 @@
     "bookings": "Buchungen",
     "booking": "Buchung",
     "spots": "Plätze",
+    "lifeguard": "Rettungsschwimmer-Liste",
     "operations": "Vorgänge",
     "reports": "Berichte",
     "sale": "Tagesverkauf",
     "move": "Buchung verschieben",
     "waitlist": "Warteliste",
-    "waitlistEntry": "Eintrag"
+    "waitlistEntry": "Eintrag",
+    "toggleMenu": "Menü ein- oder ausblenden",
+    "closeMenu": "Menü schließen",
+    "newBooking": "Neue Buchung"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -310,11 +326,6 @@
     "mapFallback": "Karte",
     "seaLabel": "Meer",
     "maps": "Karten",
-    "day": {
-      "label": "Tag",
-      "today": "Heute",
-      "tomorrow": "Morgen"
-    },
     "slot": {
       "label": "Zeitfenster",
       "FULL": "Ganzer Tag",
@@ -357,7 +368,9 @@
       "extra": "Extras",
       "note": "Notiz",
       "vip": "VIP",
-      "to_assign": "Zuzuweisen"
+      "to_assign": "Zuzuweisen",
+      "arrival": "Anreise",
+      "departure": "Abreise"
     },
     "occupant": {
       "anonymous": "Anonymer Gast",
@@ -371,7 +384,6 @@
       "label": "Platz suchen",
       "placeholder": "Platz, Gast oder Code",
       "placeholderNoCustomers": "Platz oder Code",
-      "clear": "Suche löschen",
       "results_one": "{{count}} Platz gefunden",
       "results_other": "{{count}} Plätze gefunden",
       "none": "Kein Platz entspricht der Suche"
@@ -403,7 +415,6 @@
       "forbidden": {
         "title": "Nicht erlaubt"
       },
-      "closed": "Ruhetag oder außerhalb der Saison.",
       "dayLoading": "Status des Tages werden geladen…",
       "dayError": "Status des Tages nicht verfügbar: Die Karte zeigt nur die Plätze."
     },
@@ -474,8 +485,6 @@
   },
   "today": {
     "heading": "Heute, {{date}}",
-    "closedTitle": "Betrieb geschlossen",
-    "closedDescription": "Heute ist Ruhetag oder außerhalb der Saison.",
     "figures": {
       "arrivals": "Anreisen",
       "present": "Anwesend",
@@ -494,6 +503,19 @@
       "title": "Der Tag",
       "today": "Heutige Übersicht",
       "bookings": "Buchungen des Tages"
+    },
+    "slots": {
+      "title": "Belegung nach Zeitfenster",
+      "AM": "Vormittag",
+      "PM": "Nachmittag",
+      "uses": {
+        "occupied": "Belegt",
+        "free": "Frei",
+        "closed": "Nicht verfügbar"
+      },
+      "count": "{{label}} {{count}}",
+      "rowA11y": "{{slot}}: belegt {{occupied}}, frei {{free}}, nicht verfügbar {{closed}}, von {{total}} Plätzen.",
+      "hint": "Frei umfasst die von Abonnenten freigegebenen Tage; nicht verfügbar sind geschlossene oder gesperrte Plätze."
     }
   },
   "spots": {
@@ -506,7 +528,31 @@
     "released": "Freigegeben",
     "free": "Frei",
     "emptyFree": "Keine freien Plätze an diesem Tag.",
-    "emptyReleased": "Kein Abonnent hat seinen Platz für diesen Tag freigegeben."
+    "emptyReleased": "Kein Abonnent hat seinen Platz für diesen Tag freigegeben.",
+    "openOnMap": "Öffnet den Platz auf der Karte"
+  },
+  "lifeguard": {
+    "filtersLabel": "Plätze filtern",
+    "filters": {
+      "all": "Alle",
+      "arriving": "Ankünfte",
+      "departing": "Abreisen",
+      "balance_due": "Offener Betrag"
+    },
+    "chipLabel": "{{label}}: {{count}}",
+    "results_one": "{{count}} belegter Platz",
+    "results_other": "{{count}} belegte Plätze",
+    "row": "Reihe {{row}}",
+    "noRow": "Ohne Reihe",
+    "anonymous": "Anonymer Kunde",
+    "flags": {
+      "arriving": "Ankunft",
+      "departing": "Abreise",
+      "balance_due": "Offener Betrag"
+    },
+    "emptyTitle": "An diesem Tag ist kein Platz belegt.",
+    "noMatchTitle": "Kein Platz entspricht diesem Filter.",
+    "showAll": "Alle anzeigen"
   },
   "bookings": {
     "status": {
@@ -560,11 +606,6 @@
         "season_pass": "Abonnenten"
       },
       "chipLabel": "{{label}}, {{count}}",
-      "dayLabel": "Tag",
-      "days": {
-        "today": "Heute",
-        "tomorrow": "Morgen"
-      },
       "channelLabel": "Kanal",
       "channels": {
         "all": "Alle Kanäle",
@@ -596,6 +637,7 @@
     "detail": {
       "stay": "Platz und Zeitraum",
       "spots": "Plätze",
+      "segment": "{{spot}}: vom {{from}} bis {{to}}",
       "period": "Zeitraum",
       "days_one": "{{count}} Tag",
       "days_other": "{{count}} Tage",
@@ -678,7 +720,59 @@
       "errorTitle": "Buchung nicht verfügbar",
       "errorDescription": "Sie konnte nicht von der Instanz gelesen werden. Prüfe die Verbindung und versuche es erneut.",
       "notFound": "Die Buchung existiert nicht mehr.",
-      "actionsTitle": "Aktionen"
+      "actionsTitle": "Aktionen",
+      "actionsOnlineOnly": "Diese Aktionen erfordern eine erreichbare Instanz."
+    },
+    "share": {
+      "action": "Zusammenfassung an den Kunden senden",
+      "hint": "Öffnet das Teilen mit dem Text in der Sprache des Kunden und dem Link zur Verwaltung der Buchung.",
+      "newLink": "Jeder Versand erzeugt einen neuen Verwaltungslink: Der zuvor gesendete funktioniert nicht mehr.",
+      "errors": {
+        "offline": "Instanz nicht erreichbar: Die Zusammenfassung wurde nicht erstellt.",
+        "forbidden": "Deine Rolle darf die Zusammenfassung nicht senden.",
+        "not_found": "Die Buchung existiert nicht mehr.",
+        "unavailable": "Diese Instanz erstellt die Kundenzusammenfassung noch nicht.",
+        "default": "Die Zusammenfassung konnte nicht erstellt werden. Versuche es erneut.",
+        "sheet": "Die Zusammenfassung ist bereit, aber das Teilen hat sich nicht geöffnet. Tippe erneut, um es wieder zu öffnen: Der Link bleibt gleich."
+      }
+    },
+    "agreement": {
+      "title": "Vereinbarung",
+      "name": "Vereinbarung",
+      "partner": "Partner",
+      "share": "Anteil des Partners",
+      "shareFull": "Vollständig vom Partner bezahlt",
+      "sharePercent": "{{percent}} % vom Partner bezahlt",
+      "shareAmount": "{{amount}} vom Partner bezahlt",
+      "partnerAmount": "Vom Partner bezahlter Betrag",
+      "guestStay": "Aufenthalt des Gastes",
+      "toVerify": "Voraussetzung zu prüfen",
+      "verify": "Geprüft",
+      "verifyHint": "Speichert Datum und Mitarbeiter der Prüfung, nie eine Kopie des Dokuments.",
+      "onlineOnly": "Das Speichern der Prüfung erfordert eine erreichbare Instanz.",
+      "verifiedAt": "Geprüft am {{when}}",
+      "verifiedBy": "Geprüft am {{when}} von {{name}}",
+      "errors": {
+        "offline": "Instanz nicht erreichbar: Die Prüfung wurde nicht gespeichert.",
+        "forbidden": "Deine Rolle darf die Prüfung nicht speichern.",
+        "changed": "Die Buchung wurde inzwischen geändert: Sieh dir die aktualisierte Karte an und versuche es erneut.",
+        "not_modifiable": "Die Buchung ist abgeschlossen oder storniert: Die Prüfung kann nicht mehr gespeichert werden.",
+        "invalid": "Die Buchung hat keine Vereinbarung zu prüfen.",
+        "not_found": "Die Buchung existiert nicht mehr.",
+        "unavailable": "Diese Instanz speichert noch keine Prüfungen.",
+        "default": "Die Prüfung konnte nicht gespeichert werden. Versuche es erneut."
+      }
+    },
+    "guests": {
+      "title": "Gruppe und Gäste",
+      "group": "Gruppe",
+      "origin": "Herkunft",
+      "party": "Personen",
+      "adults_one": "{{count}} Erwachsener",
+      "adults_other": "{{count}} Erwachsene",
+      "children_one": "{{count}} Kind",
+      "children_other": "{{count}} Kinder",
+      "names": "Gäste"
     }
   },
   "operations": {
@@ -697,7 +791,12 @@
       "spotsSearchPlaceholder": "Zum Beispiel A1",
       "spotsEmpty": "Kein Platz gefunden.",
       "spotsUnavailable": "Der heutige Plan ist nicht verfügbar: Es braucht mindestens einmal eine Verbindung.",
-      "spotsMore": "Verfeinere die Suche, um die weiteren Plätze zu sehen."
+      "spotsMore": "Verfeinere die Suche, um die weiteren Plätze zu sehen.",
+      "detailLabel": "Details des Vorgangs",
+      "selectTitle": "Platz auswählen",
+      "selectDescription": "Oder suche den Code einer Buchung oder eines Tickets.",
+      "spotsCount_one": "{{count}} Platz",
+      "spotsCount_other": "{{count}} Plätze"
     },
     "scan": {
       "cameraLabel": "Kameravorschau für QR-Codes von Buchungen und Tickets",
@@ -935,6 +1034,13 @@
       "error": "Die Berichte konnten nicht von der Instanz geladen werden.",
       "stale": "Daten nicht aktuell. {{reason}}",
       "retry": "Erneut versuchen"
+    },
+    "chart": {
+      "title": "Die Woche im Überblick",
+      "scale": "Skala bis {{value}}",
+      "a11y": "Diagramm: {{metric}} Tag für Tag, {{year}} im Vergleich zu {{previousYear}}. {{days}}",
+      "dayA11y": "{{day}}: {{value}}, {{year}} {{previous}}.",
+      "empty": "Keine Werte in dieser Woche, weder dieses noch letztes Jahr."
     }
   },
   "widget": {
@@ -1040,9 +1146,97 @@
       "no_price": "Kein Preis für dieses Paket an diesem Datum: Prüfe die Preisliste im Panel.",
       "in_progress": "Der Verkauf läuft bereits: Warte einige Sekunden.",
       "not_found": "Platz oder Paket nicht mehr verfügbar.",
+      "policy": "Der Verkauf verstößt gegen die Buchungsregeln des Betriebs.",
       "default": "Verkauf fehlgeschlagen. Versuche es erneut."
     },
     "onlineOnly": "Der Verkauf braucht die erreichbare Instanz: Verfügbarkeit und Ticketnummer garantiert der Server."
+  },
+  "newBooking": {
+    "title": "Neue Buchung",
+    "titleSpot": "{{label}} buchen",
+    "subtitle": "Preis und Regeln kommen beim Ausfüllen vom Server; die Zahlung wird später in der Buchung erfasst.",
+    "action": "Neue Buchung",
+    "actionSpot": "{{label}} buchen",
+    "onlineOnly": "Zum Buchen ist eine Verbindung zur Instanz nötig.",
+    "spot": "Platz",
+    "search": "Platz suchen",
+    "searchPlaceholder": "z. B. A12",
+    "freeOn": "Frei am {{day}} · {{slot}}; der Server prüft die anderen Tage.",
+    "noSpots": "Kein freier Platz passt zu dieser Suche.",
+    "more": "Es gibt weitere Plätze: Suche verfeinern.",
+    "loadingSpots": "Plätze des Tages werden geladen…",
+    "dayError": "Die Plätze dieses Tages konnten nicht geladen werden.",
+    "spotOption": "Platz {{label}}",
+    "from": "Von",
+    "to": "Bis",
+    "length": "Dauer",
+    "days_one": "{{count}} Tag",
+    "days_other": "{{count}} Tage",
+    "slot": "Zeitfenster",
+    "pack": "Paket",
+    "noPacks": "In dieser Zone kann kein Paket an der Kasse gebucht werden.",
+    "noPacksForStay": "Kein Paket dieser Zone erlaubt diese Dauer.",
+    "extras": "Extras",
+    "customer": "Kunde",
+    "customerHint": "Der Nachname genügt. Telefon und E-Mail sind optional und helfen, den Kunden wiederzufinden.",
+    "form": {
+      "lastName": "Nachname",
+      "firstName": "Vorname",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "lastNameRequired": "Nachnamen eingeben.",
+      "phoneInvalid": "Ungültige Nummer: internationale Vorwahl verwenden, z. B. +39 333 1234567.",
+      "emailInvalid": "Ungültige E-Mail.",
+      "tooLong": "Text zu lang.",
+      "phonePlaceholder": "+39 333 1234567"
+    },
+    "summary": "Übersicht",
+    "stay": "Aufenthalt",
+    "period": "vom {{from}} bis {{to}}",
+    "total": "Geschätzter Gesamtbetrag",
+    "totalA11y": "Geschätzter Gesamtbetrag {{total}}",
+    "computing": "Preis wird berechnet…",
+    "incomplete": "Platz, Daten und Paket wählen, um den Preis zu sehen.",
+    "payAtDesk": "Die Buchung ist sofort bestätigt; der Restbetrag wird in der Buchung kassiert.",
+    "unavailable": "{{label}} ist nicht für den ganzen Aufenthalt frei",
+    "conflictDay": "{{day}}, {{slot}}",
+    "balance": "Offener Betrag",
+    "failedTitle": "Buchung fehlgeschlagen",
+    "submit": "Buchen",
+    "submitTotal": "Buchen · {{total}}",
+    "hold": {
+      "submit": "{{minutes}} Minuten reservieren",
+      "active": "{{label}} reserviert bis {{time}}",
+      "hint": "Niemand sonst kann ihn nehmen, während du die Buchung abschließt.",
+      "expired": "Die Reservierung ist abgelaufen: der Platz ist wieder frei.",
+      "release": "Reservierung aufheben",
+      "locked": "Platz, Daten und Zeitfenster sind reserviert: Reservierung aufheben, um sie zu ändern."
+    },
+    "confirm": {
+      "title": "{{label}} buchen?",
+      "description": "{{label}}, {{period}}, Gesamtbetrag {{total}}. Der Restbetrag wird später in der Buchung kassiert.",
+      "submit": "Buchen"
+    },
+    "done": {
+      "title": "Buchung {{code}} erstellt",
+      "description": "Der Platz ist auf dem Plan jetzt belegt.",
+      "awaitingApproval": "Wartet auf die Freigabe der Leitung: der Platz bleibt reserviert.",
+      "open": "Buchung öffnen",
+      "back": "Fertig"
+    },
+    "errors": {
+      "offline": "Instanz nicht erreichbar: die Buchung wurde nicht erstellt. Erneut versuchen, sobald die Verbindung zurück ist.",
+      "forbidden": "Deine Rolle darf keine Buchungen erstellen.",
+      "spot_unavailable": "Der Platz ist für diese Daten nicht mehr frei: einen anderen wählen.",
+      "agreement": "Die Vereinbarung gilt nicht für diese Buchung.",
+      "no_price": "Kein Preis für dieses Paket an diesen Daten: Preisliste im Panel prüfen.",
+      "policy": "Die Buchung verstößt gegen die Buchungsregeln des Betriebs.",
+      "hold_expired": "Die Reservierung ist vor der Bestätigung abgelaufen: prüfen, ob der Platz noch frei ist.",
+      "invalid": "Ungültige Daten: Daten, Paket und Kunde prüfen.",
+      "in_progress": "Die Buchung läuft bereits: einige Sekunden warten.",
+      "not_found": "Platz oder Paket nicht mehr verfügbar.",
+      "default": "Buchung fehlgeschlagen. Erneut versuchen."
+    }
   },
   "move": {
     "action": "Auf einen anderen Platz verschieben",
@@ -1051,6 +1245,16 @@
     "notMovable": "{{code}} kann nicht mehr verschoben werden.",
     "noLines": "{{code}} hat keinen zugewiesenen Platz zum Verschieben.",
     "line": "Zu verschiebender Platz",
+    "mode": {
+      "label": "Was möchtest du tun",
+      "move": "Auf einen freien Platz umbuchen",
+      "swap": "Mit einer anderen Buchung tauschen"
+    },
+    "start": {
+      "label": "Ab wann",
+      "today": "Ab heute",
+      "tomorrow": "Ab morgen"
+    },
     "target": "Neuer Platz",
     "search": "Platz suchen",
     "searchPlaceholder": "z. B. B12",
@@ -1062,6 +1266,7 @@
     "from": "Von",
     "to": "Nach",
     "fromToday": "Die Verschiebung gilt ab {{day}}: Vergangene Tage bleiben, wo sie sind.",
+    "fromTomorrow": "Die Umbuchung gilt ab {{day}}: heute bleibt, wo es ist.",
     "ticketPrice": "Tagesverkauf {{number}}: Der Ticketbetrag ändert sich nicht.",
     "previewing": "Verfügbarkeit wird geprüft…",
     "conflicts": "{{label}} ist nicht für den ganzen Aufenthalt frei:",
@@ -1092,10 +1297,65 @@
       "spot_unavailable": "Der Platz wurde gerade belegt: Wähle einen anderen.",
       "version_conflict": "Die Buchung wurde inzwischen geändert: Öffne die Verschiebung erneut.",
       "not_modifiable": "Diese Buchung kann in ihrem Status nicht verschoben werden.",
-      "policy": "Dieser Platz erfordert eine Freigabe: Verschiebe die Buchung im Panel.",
+      "policy": "Die Verschiebung entspricht nicht den Buchungsregeln des Betriebs.",
+      "approval": "Die Freigabe eines Managers ist nötig: Bitte einen Manager, die Buchung zu verschieben.",
+      "concurrent": "Die Buchung wurde gerade geändert: Versuche es in ein paar Sekunden erneut.",
       "invalid": "Das Paket ist auf diesem Platz nicht gültig: Wähle einen anderen.",
       "not_found": "Die Buchung oder der Platz existiert nicht mehr.",
       "default": "Verschieben fehlgeschlagen. Versuche es erneut."
+    },
+    "swap": {
+      "target": "Buchung zum Tauschen",
+      "search": "Belegten Platz suchen",
+      "takenOn": "Belegt am {{day}} · {{slot}}. Die gemeinsamen Tage prüft der Server.",
+      "none": "Keine Buchung zum Tauschen passt.",
+      "more": "Es gibt weitere Buchungen: grenze die Suche ein.",
+      "option": "Platz {{label}}, {{name}}",
+      "with": "Tauschen mit",
+      "days": "Tausch vom {{from}} bis {{to}}: die übrigen Tage bleiben, wo sie sind.",
+      "side": "{{code}}: {{change}}",
+      "conflicts": "Der Tausch ist an diesen Tagen nicht möglich:",
+      "submit": "Tauschen",
+      "submitWith": "Mit {{label}} tauschen",
+      "confirm": {
+        "title": "{{code}} mit {{other}} tauschen?",
+        "description": "{{code}} kommt auf {{to}} und {{other}} auf {{from}}.",
+        "submit": "Tauschen"
+      },
+      "done": {
+        "title": "{{code}} und {{other}} getauscht"
+      },
+      "errors": {
+        "conflict": "Diese zwei Buchungen können nicht getauscht werden: Sie haben ab diesem Datum keinen gemeinsamen Tag oder sind bereits auf demselben Platz.",
+        "version_conflict": "Eine der zwei Buchungen hat sich inzwischen geändert: Prüfe die aktualisierte Vorschau."
+      }
+    },
+    "undo": {
+      "action": "Umbuchung rückgängig machen",
+      "until": "Du kannst sie bis {{time}} rückgängig machen.",
+      "lastTitle": "Kürzliche Umbuchung",
+      "lastDescription": "Du hast diese Buchung gerade umgebucht.",
+      "lastSwap": "Du hast diese Buchung gerade mit {{other}} getauscht.",
+      "lastGroup_one": "Du hast diese Buchung gerade zusammen mit einer weiteren umgebucht.",
+      "lastGroup_other": "Du hast diese Buchung und {{count}} weitere Buchungen gerade umgebucht.",
+      "anotherBooking": "eine andere Buchung",
+      "confirm": {
+        "title": "Umbuchung rückgängig machen?",
+        "swap": "Sowohl diese Buchung als auch {{other}} kommen zurück, wo sie waren.",
+        "group_one": "Auch eine weitere Buchung kommt zurück, wo sie war.",
+        "group_other": "Auch {{count}} weitere Buchungen kommen zurück, wo sie waren.",
+        "submit": "Plätze wiederherstellen"
+      },
+      "done": "Umbuchung rückgängig gemacht: Die Plätze sind wieder wie vorher.",
+      "failedTitle": "Rückgängig machen fehlgeschlagen",
+      "errors": {
+        "offline": "Instanz nicht erreichbar: Die Umbuchung wurde nicht rückgängig gemacht.",
+        "forbidden": "Deine Rolle darf Umbuchungen nicht rückgängig machen.",
+        "expired": "Mehr als 5 Minuten sind vergangen: Die Umbuchung kann nicht mehr rückgängig gemacht werden.",
+        "conflict": "Nicht möglich: Die ursprünglichen Plätze wurden belegt oder die Buchung hat sich inzwischen geändert.",
+        "concurrent": "Eine andere Änderung dieser Buchungen läuft gerade: Versuche es in ein paar Sekunden erneut.",
+        "default": "Rückgängig machen fehlgeschlagen. Versuche es erneut."
+      }
     }
   },
   "waitlist": {
@@ -1179,6 +1439,93 @@
       "invalid": "Ungültige Daten: Prüfe Platz und Dauer.",
       "notFound": "Der Eintrag existiert nicht mehr.",
       "default": "Vorgang fehlgeschlagen. Versuche es erneut."
+    },
+    "results_one": "{{count}} Eintrag",
+    "results_other": "{{count}} Einträge"
+  },
+  "dayPicker": {
+    "label": "Tag",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "other": "Anderen Tag wählen",
+    "change": "Tag ändern",
+    "title": "Tag wählen"
+  },
+  "closedDay": {
+    "title": "Betrieb geschlossen",
+    "today": "Heute ist ein Schließtag oder außerhalb der Saison.",
+    "tomorrow": "Morgen ist ein Schließtag oder außerhalb der Saison.",
+    "other": "{{date}}: Schließtag oder außerhalb der Saison.",
+    "offlineTitle": "Tag nur online verfügbar",
+    "offlineDescription": "Auf dem Gerät bleiben nur heute und morgen gespeichert. Andere Tage brauchen eine Verbindung zur Instanz."
+  },
+  "policy": {
+    "violations": {
+      "cutoff_passed": "Annahmeschluss für heute überschritten.",
+      "duration_too_long": "Länger als die maximal erlaubte Dauer.",
+      "duration_too_short": "Kürzer als die minimal erlaubte Dauer.",
+      "formula_not_allowed": "Tarifform nicht erlaubt.",
+      "lead_time_too_long": "Zu weit im Voraus gebucht.",
+      "lead_time_too_short": "Mindestvorlauf nicht eingehalten.",
+      "same_day_closed": "Buchungen für heute geschlossen.",
+      "start_weekday_not_allowed": "Anreisetag nicht erlaubt.",
+      "too_many_spots": "Zu viele Plätze in einer Buchung.",
+      "other": "Verstößt gegen eine Buchungsregel des Betriebs."
+    }
+  },
+  "mapFilters": {
+    "label": "Hervorheben",
+    "arrivals": "Anreisen",
+    "departures": "Abreisen",
+    "to_collect": "Zu kassieren",
+    "present": "Anwesend",
+    "agreement": "Vereinbarung: {{name}}",
+    "group": "Gruppe: {{name}}",
+    "chip": "{{label}}, {{count}}",
+    "results_one": "{{count}} Platz hervorgehoben",
+    "results_other": "{{count}} Plätze hervorgehoben",
+    "none": "Kein Platz passt zu diesem Filter.",
+    "labels": "Beschriftung",
+    "customer": "Kunde",
+    "end": "Ende des Aufenthalts",
+    "setup": "Ausstattung",
+    "labelChip": "Beschriftung unter den Plätzen: {{label}}"
+  },
+  "mapSheet": {
+    "setup": "Ausstattung",
+    "agreement": "Vereinbarung",
+    "partner": "Partner",
+    "group": "Gruppe",
+    "partySize": "Personen",
+    "calendar": "Kalender des Platzes"
+  },
+  "spotCalendar": {
+    "title": "Kalender",
+    "heading": "Kalender des Platzes {{label}}",
+    "season": "Saison vom {{from}} bis {{to}}",
+    "loading": "Kalender wird geladen",
+    "errorTitle": "Kalender nicht verfügbar",
+    "error": "Der Kalender konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.",
+    "notFound": "Platz oder Saison nicht gefunden.",
+    "notImplemented": "Diese Instanz hat keinen Platzkalender: aktualisiere sie auf die neueste Version.",
+    "halves": "Jeder Tag: Vormittag links, Nachmittag rechts.",
+    "legend": "Legende des Kalenders",
+    "half": "{{slot}} {{status}}",
+    "halfBooking": "{{slot}} {{status}} ({{booking}})",
+    "day": "{{date}}: {{am}}, {{pm}}",
+    "openBooking": "Öffnet die Buchung",
+    "newBooking": "Legt ab diesem Tag eine neue Buchung an",
+    "bookings": "Buchungen der Saison",
+    "noBookings": "Keine Buchungen in dieser Saison.",
+    "period": "{{from}} – {{to}}",
+    "balance": "Offen {{amount}}",
+    "choose": {
+      "hint": "Öffnet die Buchung oder legt in der freien Hälfte eine neue an",
+      "description": "Eine Hälfte des Tages ist belegt, die andere frei.",
+      "open": "Buchung öffnen",
+      "bookFULL": "Neue Buchung (ganzer Tag)",
+      "bookAM": "Neue Buchung (Vormittag)",
+      "bookPM": "Neue Buchung (Nachmittag)"
     }
   }
 }

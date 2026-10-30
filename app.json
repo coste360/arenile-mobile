@@ -4,7 +4,6 @@
     "slug": "arenile-mobile",
     "owner": "coste360",
     "version": "1.0.0",
-    "orientation": "default",
     "icon": "./assets/brand/icon.png",
     "scheme": "arenile",
     "userInterfaceStyle": "automatic",
@@ -15,7 +14,14 @@
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocalNetworkUsageDescription": "Arenile si collega all'app desktop del tuo stabilimento sulla rete locale, quando la usi in modalità rete locale."
+        "NSLocalNetworkUsageDescription": "Arenile si collega all'app desktop del tuo stabilimento sulla rete locale, quando la usi in modalità rete locale.",
+        "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+        "UISupportedInterfaceOrientations~ipad": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationPortraitUpsideDown",
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ]
       }
     },
     "android": {

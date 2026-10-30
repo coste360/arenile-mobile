@@ -6,7 +6,7 @@
 // Hidden is a courtesy: the server checks again (403 → "non consentito").
 import type { Slots } from '@/api/types';
 import type { Abilities } from '@/features/permissions/permissions';
-import type { CalendarDate } from '@/lib/calendar';
+import { addDays, inOfflineWindow, type CalendarDate } from '@/lib/calendar';
 
 import type { DaySpot } from './model';
 
@@ -30,8 +30,10 @@ export const NO_ACTIONS: SpotActions = {
 
 /**
  * Check-in only on the day shown when it is today: the server refuses it
- * outside the stay (422 booking_outside_period). Blocks and releases may be
- * planned for tomorrow too (the offline window of the map).
+ * outside the stay (422 booking_outside_period). A pass day release goes
+ * through the offline queue, so only today and tomorrow (the offline window,
+ * as `releasableDays`); blocks are online only and may be planned for any
+ * day from today on (ADR 0014). Past days chosen in the calendar are read only.
  */
 export function spotActions(
   spot: DaySpot,
@@ -42,15 +44,14 @@ export function spotActions(
   if (!status) return NO_ACTIONS;
   const b = spot.op?.booking;
   const isToday = day.date === day.today;
+  const notPast = day.date >= day.today;
+  const window = inOfflineWindow(day.date, { today: day.today, tomorrow: addDays(day.today, 1) });
   return {
     checkIn: abilities.canCheckIn && isToday && status === 'booked' && b?.status === 'confirmed',
     releaseDay:
-      abilities.canReleaseDay &&
-      day.date >= day.today &&
-      status === 'pass_holder' &&
-      !!b?.is_season_pass,
-    block: abilities.canBlockSpot && day.date >= day.today && status === 'free',
-    unblock: abilities.canBlockSpot && status === 'blocked' && !!spot.op?.block_id,
+      abilities.canReleaseDay && window && status === 'pass_holder' && !!b?.is_season_pass,
+    block: abilities.canBlockSpot && notPast && status === 'free',
+    unblock: abilities.canBlockSpot && notPast && status === 'blocked' && !!spot.op?.block_id,
   };
 }
 

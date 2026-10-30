@@ -29,7 +29,7 @@ export default function ManualScreen() {
     })();
 
   return (
-    <Screen className="max-w-lg">
+    <Screen className="max-w-lg self-center">
       <Text className="text-muted-foreground">{t('manual.description')}</Text>
       <FormField
         control={control}

@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Claude Code specifics
 
+- Project skills live in `.claude/skills/` (`polishing-adaptive-layouts` for phone/tablet layout
+  work).
 - Path-scoped rules live in `.claude/rules/`; they load automatically when you touch matching files.
   Follow them as strictly as AGENTS.md.
 - The Expo plugin (`expo@claude-plugins-official`) is enabled in `.claude/settings.json`: prefer its

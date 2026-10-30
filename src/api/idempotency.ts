@@ -20,7 +20,7 @@ import {
  * outcome is unknown (no network, timeout, a non-JSON answer from something
  * in between, a desktop certificate that changed) or the core did not store
  * an answer (5xx, 429/425/408, a 401 that is not the core's, the same key
- * still being processed). False after an answer the core stored for replay.
+ * still being processed, a lost race with another change). False after an answer the core stored for replay.
  */
 export function keepsIdempotencyKey(err: unknown): boolean {
   if (err instanceof NetworkError) return true;
@@ -29,6 +29,8 @@ export function keepsIdempotencyKey(err: unknown): boolean {
   if (err instanceof UnauthorizedError) return false;
   if (err instanceof ProblemError) {
     if (err.type === 'idempotency_in_progress') return true;
+    // Core 1.1.1: answers with Retry-After are not stored for the key.
+    if (err.type === 'concurrent_update') return true;
     if (err.status === 401 || err.status === 408 || err.status === 425 || err.status === 429) {
       return true;
     }

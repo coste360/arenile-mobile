@@ -123,14 +123,20 @@ describe('operation queue', () => {
     // The same key is still being processed (app killed mid-send, replayed at
     // start): a new key from "riprova" could apply the operation twice.
     ['a 409 idempotency_in_progress', () => problem(409, 'idempotency_in_progress')],
+    // Core 1.1.1: a lost race with another change, retried with the same key.
+    ['a 409 concurrent_update', () => problem(409, 'concurrent_update')],
   ])('treats %s as transient', async (_name, error) => {
     const { queue } = setup(async () => {
       throw error();
     });
-    await queue.enqueue(note('b1'));
+    const op = await queue.enqueue(note('b1'));
     const result = await queue.flush(SCOPE);
     expect(result).toMatchObject({ blocked: true, unauthorized: false });
-    expect(queue.getSnapshot()[0]).toMatchObject({ status: 'pending' });
+    // The next attempt carries the same key: the first one may have been applied.
+    expect(queue.getSnapshot()[0]).toMatchObject({
+      status: 'pending',
+      idempotencyKey: op.idempotencyKey,
+    });
     expect(queue.isPaused()).toBe(false);
   });
 

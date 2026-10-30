@@ -3,7 +3,8 @@
 L'app per lo staff degli stabilimenti balneari che usano [Arenile](https://arenile.app), il gestionale
 con codice sorgente disponibile di Coste360 SRL. Si collega alla **tua** istanza Arenile (VPS, hosting
 gestito o app desktop in rete locale) con il QR code del pannello: non ha un server predefinito e non
-invia dati a Coste360.
+invia dati a Coste360. Solo il pulsante **Prova la demo** collega, su richiesta, lo stabilimento di
+esempio di Coste360 (ADR 0015).
 
 > **Stato:** fasi 0–3 implementate e verificate con i test (`make check-full` verde), **non ancora
 > provate su dispositivi reali né compilate con EAS Build** e non pubblicate negli store: servono gli
@@ -70,7 +71,8 @@ diventare una funzione di una futura edizione a pagamento
 
 ## Privacy
 
-L'app parla solo con la tua istanza: nessuna telemetria, nessun SDK di analisi, pubblicità o crash
+L'app parla solo con la tua istanza (o, se lo scegli con **Prova la demo**, con la demo di Coste360,
+[ADR 0015](docs/adr/0015-prova-la-demo.md)): nessuna telemetria, nessun SDK di analisi, pubblicità o crash
 reporting, nessun aggiornamento remoto del codice ([ADR 0005](docs/adr/0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md)).
 Nessuna notifica push, quindi nessun identificativo del telefono dato ad Apple, Google o Coste360
 ([ADR 0012](docs/adr/0012-niente-notifiche-push-nell-edizione-pubblica.md)).
@@ -95,7 +97,7 @@ make         # tutti i comandi
 | `make api-bump VERSION=vX.Y.Z` | Per passare al contratto API di un'altra release del core                                           |
 
 Il contratto API è l'`openapi.yaml` della release del core indicata in `api/core-version.json` (oggi
-**v1.0.1**), verificato con SHA-256; i tipi TypeScript in `src/api/generated/` si generano con
+**v1.1.2**), verificato con SHA-256; i tipi TypeScript in `src/api/generated/` si generano con
 `make gen` e non si modificano a mano ([ADR 0002](docs/adr/0002-repository-separato-e-contratto-api.md)).
 
 Per provare l'app su un dispositivo serve una **build di sviluppo** con EAS Build, progetto

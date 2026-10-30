@@ -38,9 +38,15 @@ const TONE: Record<ConnectionState, string> = {
  *
  * - `compact` (phone header): the icon alone while all is well, a short
  *   label when not, and the count when operations wait;
- * - `full` (tablet sidebar): the label and the counts in words.
+ * - `full` (tablet pane): the label and the counts in words;
+ * - `rail` (collapsed tablet pane, 48 pt wide): the icon alone, with a badge
+ *   of the operations waiting (destructive when some need attention).
  */
-export function ConnectionIndicator({ variant = 'compact' }: { variant?: 'compact' | 'full' }) {
+export function ConnectionIndicator({
+  variant = 'compact',
+}: {
+  variant?: 'compact' | 'full' | 'rail';
+}) {
   const { t } = useTranslation();
   const { connection, pending, conflicts, failed } = useOfflineStatus();
   const attention = conflicts + failed;
@@ -61,16 +67,34 @@ export function ConnectionIndicator({ variant = 'compact' }: { variant?: 'compac
       hitSlop={8}
       className={cn(
         'min-h-11 flex-row items-center gap-2 rounded-md active:bg-accent',
-        variant === 'compact' ? 'min-w-11 justify-center px-2' : 'px-3 py-2',
+        variant === 'full' ? 'px-3 py-2' : 'min-w-11 justify-center px-2',
       )}
       testID="connection-indicator"
     >
       <Icon
         as={ICONS[connection]}
-        size={variant === 'compact' ? 20 : 18}
+        size={variant === 'full' ? 18 : 20}
         className={TONE[connection]}
       />
-      {variant === 'full' ? (
+      {variant === 'rail' ? (
+        pending + attention > 0 ? (
+          <View
+            className={cn(
+              'absolute -right-1 -top-1 min-w-5 items-center rounded-full px-1',
+              attention > 0 ? 'bg-destructive' : 'bg-secondary',
+            )}
+          >
+            <Text
+              className={cn(
+                'text-xs font-semibold',
+                attention > 0 ? 'text-destructive-foreground' : 'text-secondary-foreground',
+              )}
+            >
+              {pending + attention}
+            </Text>
+          </View>
+        ) : null
+      ) : variant === 'full' ? (
         <View className="flex-1 gap-0.5">
           <Text className="text-sm font-medium">{label}</Text>
           {pending > 0 ? (

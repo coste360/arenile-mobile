@@ -1,0 +1,402 @@
+import { router } from 'expo-router';
+import { ChevronRightIcon, CircleAlertIcon } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, View } from 'react-native';
+
+import { useContentWidth } from '@/components/layout/nav-pane';
+import { columnsFor } from '@/components/layout/panes';
+import { OnlineOnlyNotice } from '@/components/online-only-notice';
+import { StateView } from '@/components/state-view';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { isForbidden, ProblemError } from '@/api/errors';
+import type { Slots, SpotCalendarBooking, SpotCalendarDay } from '@/api/types';
+import { canCreateBooking } from '@/features/new-booking/new-booking';
+import { useOnlineOnly } from '@/features/offline/offline-provider';
+import { useOperationalDays } from '@/features/operations/queries';
+import { useAbilities } from '@/features/permissions/use-abilities';
+import { usePreferences } from '@/features/preferences/preferences-provider';
+import { formatDayLabel } from '@/lib/calendar';
+import { formatCents } from '@/lib/money';
+import { cn } from '@/lib/utils';
+
+import {
+  bookableSlot,
+  bookingOfDay,
+  CALENDAR_LEGEND,
+  calendarMonths,
+  cellStatus,
+  useSpotCalendar,
+} from '../spot-calendar';
+import { STATUS_CLASSES, type SpotStatus } from '../status';
+import { StatusGlyph } from './status-glyph';
+
+/** Monday 2024-01-01 … Sunday 2024-01-07: the weekday names of the header. */
+const WEEK = Array.from({ length: 7 }, (_, i) => `2024-01-0${i + 1}`);
+
+/**
+ * Season calendar of a spot (core spec 30.5), online only: one wall
+ * calendar per month, each day split in a morning and an afternoon half
+ * with the status colour and glyph of the map; a taken day opens its
+ * booking. Below, the bookings of the season. Months sit side by side when
+ * the window is wide (tablets).
+ */
+export function SpotCalendarView({ spotId, label }: { spotId: string; label?: string }) {
+  const { t } = useTranslation();
+  const { locale } = usePreferences();
+  const abilities = useAbilities();
+  const { available: online } = useOnlineOnly();
+  const { today } = useOperationalDays();
+  const query = useSpotCalendar(spotId);
+  const cal = query.data;
+  const bookings = useMemo(
+    () => new Map((cal?.bookings ?? []).map((b) => [b.booking_id, b])),
+    [cal],
+  );
+  const months = useMemo(() => calendarMonths(cal?.days ?? []), [cal]);
+  // Months side by side when each keeps a card's width (tablets), as `Columns`.
+  const perRow = columnsFor(useContentWidth(), Math.max(1, months.length));
+  const canOpen = abilities.canViewBookings;
+  // A free day starts a new booking there, as in the panel (online only).
+  const canBook = canCreateBooking(abilities) && online;
+  // A day with a booking and a free half: open the booking or book the free half.
+  const [choice, setChoice] = useState<DayChoice | null>(null);
+
+  if (!cal) {
+    if (!online && !query.isFetching) return <OnlineOnlyNotice />;
+    if (query.isError) {
+      const e = query.error;
+      const key = isForbidden(e)
+        ? 'offline.errors.forbidden'
+        : e instanceof ProblemError && e.status === 404
+          ? 'spotCalendar.notFound'
+          : e instanceof ProblemError && e.status === 501
+            ? 'spotCalendar.notImplemented'
+            : 'spotCalendar.error';
+      return (
+        <StateView
+          align="top"
+          icon={CircleAlertIcon}
+          tone="destructive"
+          title={t('spotCalendar.errorTitle')}
+          description={t(key)}
+        >
+          <Button variant="outline" size="lg" onPress={() => void query.refetch()}>
+            <Text>{t('common.retry')}</Text>
+          </Button>
+        </StateView>
+      );
+    }
+    return <StateView busy align="top" title={t('spotCalendar.loading')} />;
+  }
+
+  const name = (b: SpotCalendarBooking) => {
+    const who = abilities.canViewBookings ? b.occupant_label?.trim() : '';
+    return who ? `${b.code} ${who}` : b.code;
+  };
+  const half = (d: SpotCalendarDay, slot: 'am' | 'pm') => {
+    const cell = d[slot];
+    const status = t(`dayMap.status.${cellStatus(cell, bookings)}`);
+    const slotLabel = t(`dayMap.slot.${slot === 'am' ? 'AM' : 'PM'}`);
+    const b = cell.booking_id ? bookings.get(cell.booking_id) : undefined;
+    return b
+      ? t('spotCalendar.halfBooking', { slot: slotLabel, status, booking: name(b) })
+      : t('spotCalendar.half', { slot: slotLabel, status });
+  };
+  const describe = (d: SpotCalendarDay) =>
+    t('spotCalendar.day', {
+      date: formatDayLabel(d.date, locale),
+      am: half(d, 'am'),
+      pm: half(d, 'pm'),
+    });
+  const open = (bookingId: string) =>
+    router.push({ pathname: '/bookings/[bookingId]', params: { bookingId } });
+  const book = (from: string, slot: Slots) =>
+    router.push({ pathname: '/new-booking', params: { spotId, from, slot } });
+  const onDay = (d: SpotCalendarDay): { onOpen: () => void; hint: string } | undefined => {
+    const id = canOpen ? bookingOfDay(d) : undefined;
+    const slot = canBook ? bookableSlot(d, today) : undefined;
+    if (id && slot) {
+      return {
+        onOpen: () => setChoice({ date: d.date, bookingId: id, slot }),
+        hint: t('spotCalendar.choose.hint'),
+      };
+    }
+    if (id) return { onOpen: () => open(id), hint: t('spotCalendar.openBooking') };
+    if (slot) return { onOpen: () => book(d.date, slot), hint: t('spotCalendar.newBooking') };
+    return undefined;
+  };
+  const rows = Array.from({ length: Math.ceil(months.length / perRow) }, (_, i) =>
+    months.slice(i * perRow, i * perRow + perRow),
+  );
+  const weekdays = WEEK.map((d) =>
+    new Intl.DateTimeFormat(locale, { weekday: 'narrow', timeZone: 'UTC' }).format(
+      new Date(`${d}T00:00:00Z`),
+    ),
+  );
+  const monthName = (key: string) =>
+    new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+      new Date(`${key}-01T00:00:00Z`),
+    );
+
+  return (
+    <View className="gap-4" testID="spot-calendar">
+      <View className="gap-1">
+        <Text variant="large" role="heading">
+          {t('spotCalendar.heading', { label: label || cal.label })}
+        </Text>
+        <Text variant="muted">
+          {t('spotCalendar.season', {
+            from: formatDayLabel(cal.from, locale),
+            to: formatDayLabel(cal.to, locale),
+          })}
+        </Text>
+      </View>
+      <OnlineOnlyNotice />
+      <Legend />
+
+      <View className="gap-6">
+        {rows.map((row, ri) => (
+          <View key={ri} className="flex-row gap-4" testID={`months-row-${ri}`}>
+            {row.map((m) => (
+              <View key={m.key} className="flex-1 gap-1.5" testID={`month-${m.key}`}>
+                <Text className="font-semibold capitalize" role="heading">
+                  {monthName(m.key)}
+                </Text>
+                <View
+                  className="flex-row gap-1"
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  {weekdays.map((w, i) => (
+                    <Text key={i} variant="muted" className="flex-1 text-center text-xs">
+                      {w}
+                    </Text>
+                  ))}
+                </View>
+                {m.weeks.map((week, wi) => (
+                  <View key={wi} className="flex-row gap-1">
+                    {week.map((d, i) =>
+                      d ? (
+                        <DayCell
+                          key={d.date}
+                          day={d}
+                          am={cellStatus(d.am, bookings)}
+                          pm={cellStatus(d.pm, bookings)}
+                          label={describe(d)}
+                          action={onDay(d)}
+                        />
+                      ) : (
+                        <View key={`empty-${i}`} className="flex-1" />
+                      ),
+                    )}
+                  </View>
+                ))}
+              </View>
+            ))}
+            {/* The last row keeps the width of a column per month. */}
+            {Array.from({ length: perRow - row.length }, (_, k) => (
+              <View key={`pad-${k}`} className="flex-1" />
+            ))}
+          </View>
+        ))}
+      </View>
+
+      <View className="gap-2">
+        <Text className="font-semibold" role="heading">
+          {t('spotCalendar.bookings')}
+        </Text>
+        {cal.bookings.length === 0 ? (
+          <Text variant="muted">{t('spotCalendar.noBookings')}</Text>
+        ) : (
+          <View className="overflow-hidden rounded-lg border border-border">
+            {[...cal.bookings]
+              .sort((a, b) => a.starts_on.localeCompare(b.starts_on))
+              .map((b) => (
+                <BookingRow
+                  key={b.booking_id}
+                  title={name(b)}
+                  period={t('spotCalendar.period', {
+                    from: formatDayLabel(b.starts_on, locale),
+                    to: formatDayLabel(b.ends_on, locale),
+                  })}
+                  balance={
+                    b.balance_due > 0
+                      ? t('spotCalendar.balance', { amount: formatCents(b.balance_due) })
+                      : undefined
+                  }
+                  onOpen={canOpen ? () => open(b.booking_id) : undefined}
+                />
+              ))}
+          </View>
+        )}
+      </View>
+      <AlertDialog open={!!choice} onOpenChange={(next) => !next && setChoice(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{choice ? formatDayLabel(choice.date, locale) : ''}</AlertDialogTitle>
+            <AlertDialogDescription>{t('spotCalendar.choose.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              <Text>{t('common.cancel')}</Text>
+            </AlertDialogCancel>
+            <Button
+              variant="outline"
+              onPress={() => {
+                if (!choice) return;
+                setChoice(null);
+                open(choice.bookingId);
+              }}
+            >
+              <Text>{t('spotCalendar.choose.open')}</Text>
+            </Button>
+            <Button
+              onPress={() => {
+                if (!choice) return;
+                setChoice(null);
+                book(choice.date, choice.slot);
+              }}
+            >
+              <Text>{choice ? t(`spotCalendar.choose.book${choice.slot}`) : ''}</Text>
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </View>
+  );
+}
+
+interface DayChoice {
+  date: string;
+  bookingId: string;
+  slot: Slots;
+}
+
+function Legend() {
+  const { t } = useTranslation();
+  return (
+    <View className="gap-2" role="group" accessibilityLabel={t('spotCalendar.legend')}>
+      <View className="flex-row flex-wrap gap-x-4 gap-y-1.5">
+        {CALENDAR_LEGEND.map((s) => (
+          <View key={s} className="flex-row items-center gap-1.5">
+            <StatusGlyph status={s} size={16} />
+            <Text className="text-sm">{t(`dayMap.status.${s}`)}</Text>
+          </View>
+        ))}
+      </View>
+      <Text variant="muted" className="text-sm">
+        {t('spotCalendar.halves')}
+      </Text>
+    </View>
+  );
+}
+
+function DayCell({
+  day,
+  am,
+  pm,
+  label,
+  action,
+}: {
+  day: SpotCalendarDay;
+  am: SpotStatus;
+  pm: SpotStatus;
+  label: string;
+  action?: { onOpen: () => void; hint: string };
+}) {
+  const body = (
+    <>
+      <Text className="text-center text-xs tabular-nums">{Number(day.date.slice(8, 10))}</Text>
+      <View className="flex-1 flex-row">
+        <Half status={am} />
+        <Half status={pm} />
+      </View>
+    </>
+  );
+  const box = 'min-h-11 flex-1 overflow-hidden rounded-md border border-border bg-card';
+  if (!action) {
+    return (
+      <View className={box} accessible accessibilityLabel={label} testID={`day-${day.date}`}>
+        {body}
+      </View>
+    );
+  }
+  return (
+    <Pressable
+      role="button"
+      accessibilityLabel={label}
+      accessibilityHint={action.hint}
+      onPress={action.onOpen}
+      className={cn(box, 'active:opacity-70')}
+      testID={`day-${day.date}`}
+    >
+      {body}
+    </Pressable>
+  );
+}
+
+/** Half a day: the status colour with its glyph (none for free, as on the map). */
+function Half({ status }: { status: SpotStatus }) {
+  return (
+    <View
+      className={cn(
+        'flex-1 items-center justify-center',
+        STATUS_CLASSES[status].bg,
+        status === 'free' && 'opacity-40',
+      )}
+    >
+      {status !== 'free' ? <StatusGlyph status={status} size={14} /> : null}
+    </View>
+  );
+}
+
+function BookingRow({
+  title,
+  period,
+  balance,
+  onOpen,
+}: {
+  title: string;
+  period: string;
+  balance?: string;
+  onOpen?: () => void;
+}) {
+  const content = (
+    <>
+      <View className="flex-1 gap-0.5">
+        <Text className="font-medium">{title}</Text>
+        <Text variant="muted">{period}</Text>
+        {balance ? <Text className="text-destructive">{balance}</Text> : null}
+      </View>
+      {onOpen ? <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" /> : null}
+    </>
+  );
+  const row = 'min-h-12 flex-row items-center gap-3 border-b border-border px-4 py-2';
+  const a11y = [title, period, balance].filter(Boolean).join(', ');
+  return onOpen ? (
+    <Pressable
+      role="button"
+      accessibilityLabel={a11y}
+      onPress={onOpen}
+      className={cn(row, 'active:bg-accent')}
+    >
+      {content}
+    </Pressable>
+  ) : (
+    <View className={row} accessible accessibilityLabel={a11y}>
+      {content}
+    </View>
+  );
+}

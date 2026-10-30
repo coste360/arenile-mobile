@@ -22,8 +22,10 @@ import { Icon } from '@/components/ui/icon';
 import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import {
+  agreementView,
   canSeeCustomerContacts,
   customerView,
+  guestsView,
   historyViews,
   paymentViews,
   queuedFor,
@@ -42,6 +44,7 @@ import { cn } from '@/lib/utils';
 
 import { BookingKindBadges, BookingStatusBadge } from './booking-badges';
 import { BookingSheetActions } from './booking-sheet-actions';
+import { RequirementCheck } from './requirement-check';
 
 /** History entries shown before "show all". */
 const HISTORY_PREVIEW = 5;
@@ -143,23 +146,50 @@ function BookingSheet({ booking: b }: { booking: Booking }) {
         <CardContent className="gap-4">
           <View className="gap-2" accessibilityLabel={t('bookings.detail.spots')}>
             <Text variant="muted">{t('bookings.detail.spots')}</Text>
-            {lines.map((l) => (
-              <View key={l.id} className="flex-row items-center justify-between gap-3" accessible>
-                <View className="flex-1 gap-0.5">
-                  <Text className="font-semibold">{l.spot ?? t('bookings.unassigned')}</Text>
-                  <Text variant="muted">
-                    {[
-                      l.pack ? t('bookings.detail.pack', { pack: l.pack }) : null,
-                      l.quantity > 1 ? t('bookings.detail.quantity', { count: l.quantity }) : null,
-                      l.extras > 0 ? t('bookings.detail.extras', { count: l.extras }) : null,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </Text>
+            {lines.map((l) => {
+              const unassigned = t('bookings.unassigned');
+              const details = [
+                l.pack ? t('bookings.detail.pack', { pack: l.pack }) : null,
+                l.quantity > 1 ? t('bookings.detail.quantity', { count: l.quantity }) : null,
+                l.extras > 0 ? t('bookings.detail.extras', { count: l.extras }) : null,
+              ]
+                .filter(Boolean)
+                .join(' · ');
+              const segments = l.segments?.map((s) =>
+                t('bookings.detail.segment', {
+                  spot: s.spot ?? unassigned,
+                  from: formatDayLabel(s.from, locale),
+                  to: formatDayLabel(s.to, locale),
+                }),
+              );
+              const total = formatCents(l.total);
+              return (
+                <View
+                  key={l.id}
+                  className="flex-row items-center justify-between gap-3"
+                  accessible
+                  // A split stay is read once, segment by segment, without the arrows.
+                  accessibilityLabel={
+                    segments ? [...segments, details, total].filter(Boolean).join(', ') : undefined
+                  }
+                >
+                  <View className="flex-1 gap-0.5">
+                    <Text className="font-semibold">
+                      {l.segments
+                        ? l.segments.map((s) => s.spot ?? unassigned).join(' → ')
+                        : (l.spot ?? unassigned)}
+                    </Text>
+                    <Text variant="muted">{details}</Text>
+                    {segments?.map((s) => (
+                      <Text key={s} variant="muted">
+                        {s}
+                      </Text>
+                    ))}
+                  </View>
+                  <Text>{total}</Text>
                 </View>
-                <Text>{formatCents(l.total)}</Text>
-              </View>
-            ))}
+              );
+            })}
           </View>
           <DetailRow
             label={t('bookings.detail.period')}
@@ -178,6 +208,8 @@ function BookingSheet({ booking: b }: { booking: Booking }) {
       </Card>
 
       <CustomerCard booking={b} showContacts={canSeeCustomerContacts(abilities)} />
+      <GuestsCard booking={b} />
+      <AgreementCard booking={b} />
 
       <Card>
         <CardHeader>
@@ -251,6 +283,85 @@ function CustomerCard({ booking, showContacts }: { booking: Booking; showContact
         {c.notes ? <DetailRow label={t('bookings.detail.customerNotes')} value={c.notes} /> : null}
         {!showContacts && !c.anonymized ? (
           <Text variant="muted">{t('bookings.detail.contactsHidden')}</Text>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** Group and guests (core 1.1): only when the booking has them. */
+function GuestsCard({ booking }: { booking: Booking }) {
+  const { t } = useTranslation();
+  const g = guestsView(booking);
+  if (!g) return null;
+  const party = [
+    g.adults ? t('bookings.guests.adults', { count: g.adults }) : null,
+    g.children ? t('bookings.guests.children', { count: g.children }) : null,
+  ]
+    .filter(Boolean)
+    .join(', ');
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('bookings.guests.title')}</CardTitle>
+      </CardHeader>
+      <CardContent className="gap-4">
+        {g.group ? <DetailRow label={t('bookings.guests.group')} value={g.group} /> : null}
+        {g.origin ? <DetailRow label={t('bookings.guests.origin')} value={g.origin} /> : null}
+        {party ? <DetailRow label={t('bookings.guests.party')} value={party} /> : null}
+        {g.names.length > 0 ? (
+          <DetailRow label={t('bookings.guests.names')} value={g.names.join(', ')} />
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** Agreement, partner and requirement check (core 1.1): only when the booking has them. */
+function AgreementCard({ booking }: { booking: Booking }) {
+  const { t } = useTranslation();
+  const { locale } = usePreferences();
+  const a = agreementView(booking);
+  if (!a) return null;
+  const share =
+    a.share?.kind === 'full'
+      ? t('bookings.agreement.shareFull')
+      : a.share?.kind === 'percent'
+        ? t('bookings.agreement.sharePercent', {
+            percent: new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
+              a.share.percent,
+            ),
+          })
+        : a.share?.kind === 'amount'
+          ? t('bookings.agreement.shareAmount', { amount: formatCents(a.share.amount) })
+          : null;
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('bookings.agreement.title')}</CardTitle>
+      </CardHeader>
+      <CardContent className="gap-4">
+        {a.name ? <DetailRow label={t('bookings.agreement.name')} value={a.name} /> : null}
+        {a.partner ? <DetailRow label={t('bookings.agreement.partner')} value={a.partner} /> : null}
+        {share ? <DetailRow label={t('bookings.agreement.share')} value={share} /> : null}
+        {a.partnerAmount !== undefined ? (
+          <AmountRow label={t('bookings.agreement.partnerAmount')} cents={a.partnerAmount} />
+        ) : null}
+        {a.guestStay ? (
+          <DetailRow
+            label={t('bookings.agreement.guestStay')}
+            value={t('bookings.stay', {
+              from: formatDayLabel(a.guestStay.from, locale),
+              to: formatDayLabel(a.guestStay.to, locale),
+            })}
+          />
+        ) : null}
+        {a.requirement ? (
+          <RequirementCheck
+            bookingId={booking.id}
+            version={booking.version}
+            requirement={a.requirement}
+          />
         ) : null}
       </CardContent>
     </Card>

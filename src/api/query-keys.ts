@@ -33,6 +33,13 @@ export const estKeys = {
   /** GET operations/day: status of every spot for a day and slot (map, Oggi). */
   operationsDay: (establishmentId: string, date: CalendarDate, slot: Slots = 'FULL') =>
     ['est', establishmentId, 'operations', 'day', { date, slot }] as const,
+  /** GET operations/lifeguard-list: occupied spots by row for a day (lifeguards). */
+  lifeguardList: (establishmentId: string, date: CalendarDate, slot: Slots = 'FULL') =>
+    ['est', establishmentId, 'operations', 'lifeguard', { date, slot }] as const,
+
+  /** GET spots/{id}/calendar: the season of a spot, half day by half day (online only). */
+  spotCalendar: (establishmentId: string, spotId: string) =>
+    ['est', establishmentId, 'operations', 'spot-calendar', spotId] as const,
 
   /** GET bookings?from=date&to=date: every booking whose stay includes the day. */
   bookingsOfDay: (establishmentId: string, date: CalendarDate) =>
@@ -40,6 +47,10 @@ export const estKeys = {
   /** GET bookings/{id}: detail with lines, payments and history. */
   booking: (establishmentId: string, bookingId: string) =>
     ['est', establishmentId, 'bookings', 'detail', bookingId] as const,
+
+  /** POST bookings/quote: price, rules and availability of a new booking (no write, never persisted). */
+  bookingQuote: (establishmentId: string, body: unknown) =>
+    ['est', establishmentId, 'bookings', 'quote', body] as const,
 
   /** GET maps: the maps of the establishment, in display order. */
   maps: (establishmentId: string) => ['est', establishmentId, 'maps', 'list'] as const,
@@ -76,6 +87,8 @@ export const estKeys = {
     ['est', establishmentId, 'waitlist', 'detail', entryId] as const,
   waitlistSettings: (establishmentId: string) =>
     ['est', establishmentId, 'waitlist', 'settings'] as const,
+  /** GET moves/last: the user's last move still undoable (5 minutes). */
+  lastMove: (establishmentId: string) => ['est', establishmentId, 'bookings', 'last-move'] as const,
   /** GET print-routes/resolve: the ESC/POS printer of a document, if ready. */
   printRoute: (establishmentId: string, kind: string, registerId?: string) =>
     [

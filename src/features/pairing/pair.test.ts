@@ -12,7 +12,7 @@ import {
   type Handler,
 } from '@/test/fake-fetch';
 
-import { pairDevice, PairingError, type PairDeps } from './pair';
+import { pairDemo, pairDevice, PairingError, type PairDeps } from './pair';
 import type { PairingTarget } from './target';
 
 const TARGET: PairingTarget = {
@@ -250,5 +250,102 @@ describe('pairDevice', () => {
     await failure(TARGET, d);
 
     expect(d.calls.some((r) => r.method === 'POST')).toBe(false);
+  });
+
+  describe('"Prova la demo" (ADR 0015, core ADR 0027)', () => {
+    const DEMO_URL = 'https://demo.example.it';
+    const DEMO_CODE = {
+      code: 'WXYZ-2345',
+      expires_at: '2026-10-25T08:05:00Z',
+      establishment_id: DEVICE.establishment_id,
+      user_id: DEVICE.user_id,
+      qr_payload: { v: 1, url: DEMO_URL, code: 'WXYZ-2345' },
+      qr_text: 'arenile://pair?d=x',
+    };
+    const demoRoutes: Record<string, Handler> = {
+      ...okRoutes,
+      'POST /api/device/v1/demo-pairing': () => json(201, DEMO_CODE),
+      [`GET /api/admin/v1/establishments/${DEVICE.establishment_id}`]: () =>
+        json(200, { id: DEVICE.establishment_id, name: 'Lido Demo' }),
+    };
+
+    async function demoFailure(d: PairDeps) {
+      const err = await pairDemo(DEMO_URL, d).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(PairingError);
+      return (err as PairingError).reason;
+    }
+
+    it('checks /meta, asks the demo instance for a code and exchanges it', async () => {
+      const d = deps(demoRoutes);
+
+      const { session } = await pairDemo(DEMO_URL, d);
+
+      expect(session).toMatchObject({
+        instanceUrl: DEMO_URL,
+        token: 'ar_dev_abcd1234_secret',
+        establishmentName: 'Lido Demo',
+      });
+      expect(d.calls.map((r) => `${r.method} ${r.url}`)).toEqual([
+        `GET ${DEMO_URL}/api/admin/v1/meta`,
+        `POST ${DEMO_URL}/api/device/v1/demo-pairing`,
+        `POST ${DEMO_URL}/api/device/v1/pair`,
+        `GET ${DEMO_URL}/api/admin/v1/establishments/${DEVICE.establishment_id}`,
+      ]);
+      expect((await d.calls[2]?.json()).code).toBe('WXYZ2345');
+    });
+
+    it('asks for no code when the instance is incompatible', async () => {
+      const d = deps({
+        ...demoRoutes,
+        'GET /api/admin/v1/meta': () => json(200, meta({ version: '0.1.0' })),
+      });
+
+      expect(await demoFailure(d)).toBe('demo_unavailable');
+      expect(d.calls.some((r) => r.method === 'POST')).toBe(false);
+    });
+
+    it.each<[string, Handler, string]>([
+      ['not a demo instance (404)', () => problem(404, 'not_found'), 'demo_unavailable'],
+      ['hourly demo limit reached (429)', () => problem(429, 'rate_limited'), 'demo_rate_limited'],
+      ['network drop', networkDown, 'unreachable'],
+      ['server error', () => problem(500, 'internal_error'), 'unexpected'],
+      ['malformed code', () => json(201, { ...DEMO_CODE, code: 'nope' }), 'unexpected'],
+    ])('fails with a typed reason: %s', async (_name, handler, reason) => {
+      const d = deps({ ...demoRoutes, 'POST /api/device/v1/demo-pairing': handler });
+
+      expect(await demoFailure(d)).toBe(reason);
+      expect(d.calls.some((r) => r.url.endsWith('/api/device/v1/pair'))).toBe(false);
+    });
+
+    it.each<[string, Record<string, Handler>, string]>([
+      [
+        'not Arenile',
+        { 'GET /api/admin/v1/meta': () => problem(404, 'not_found') },
+        'demo_unavailable',
+      ],
+      [
+        'pairing switched off',
+        {
+          'GET /api/admin/v1/meta': () =>
+            json(200, meta({ capabilities: { ...meta().capabilities, device_pairing: false } })),
+        },
+        'demo_unavailable',
+      ],
+      [
+        'app too old for the demo',
+        {
+          'GET /api/admin/v1/meta': () =>
+            json(200, meta({ min_client_versions: { mobile: '2.0.0', desktop: '0.1.0' } })),
+        },
+        'app_too_old',
+      ],
+      [
+        'pairing limit after a minted code (429 on /pair)',
+        { 'POST /api/device/v1/pair': () => problem(429, 'rate_limited') },
+        'rate_limited',
+      ],
+    ])('reads problems of the demo instance as the demo: %s', async (_name, routes, reason) => {
+      expect(await demoFailure(deps({ ...demoRoutes, ...routes }))).toBe(reason);
+    });
   });
 });

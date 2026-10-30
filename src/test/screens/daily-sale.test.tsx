@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { ScrollView } from 'react-native';
 
 import type { DailySaleQuoteRequest, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
@@ -8,6 +9,16 @@ import { EST, extra, pack, phase2Instance, requestsTo, TICKET_LABEL } from '@/te
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const nbsp = (s: string) => s.replace(/ /g, ' ');
+
+/** A 422 policy_violation of the core's booking rules, with its violations. */
+const policyViolation = (...violations: { code: string; params?: Record<string, string> }[]) =>
+  json(
+    422,
+    { type: 'policy_violation', title: 'policy_violation', status: 422, violations },
+    'application/problem+json',
+  );
+
+const SAME_DAY_CLOSED = { code: 'same_day_closed', params: { reason: 'time' } };
 
 const BREAKDOWN = {
   engine_version: 1,
@@ -196,6 +207,30 @@ describe('daily quick sale', () => {
     expect((await sale!.json()).payment).toEqual({ method: 'card' });
   });
 
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'opens the outcome at the top of the screen, not at the offset of the form (%s)',
+    async (size) => {
+      const { screen } = await openSale(
+        { extra: { [`POST ${EST}/daily-sales`]: () => json(201, saleResult(2500, 0)) } },
+        size,
+      );
+      const scrollTo = jest.spyOn(ScrollView.prototype, 'scrollTo');
+      try {
+        await fireEvent.press(
+          await screen.findByRole('button', { name: nbsp('Incassa 25,00 € in contanti') }),
+        );
+        // The form and its confirmation keep the user's scroll offset.
+        expect(scrollTo).not.toHaveBeenCalled();
+        await fireEvent.press(screen.getByRole('button', { name: 'Conferma la vendita' }));
+        await screen.findByTestId('sale-done');
+        expect(scrollTo).toHaveBeenCalledTimes(1);
+        expect(scrollTo).toHaveBeenCalledWith({ y: 0, animated: false });
+      } finally {
+        scrollTo.mockRestore();
+      }
+    },
+  );
+
   it('says so when the spot was just taken, without leaving the form', async () => {
     const { screen } = await openSale({
       extra: { [`POST ${EST}/daily-sales`]: () => problem(409, 'spot_unavailable') },
@@ -210,6 +245,39 @@ describe('daily quick sale', () => {
       ),
     ).toBeOnTheScreen();
     expect(screen.queryByTestId('sale-done')).toBeNull();
+  });
+
+  it.each<WindowSize>(['phone', 'tablet'])(
+    'lists the booking rules a refused sale broke, without leaving the form (%s)',
+    async (size) => {
+      const { screen } = await openSale(
+        { extra: { [`POST ${EST}/daily-sales`]: () => policyViolation(SAME_DAY_CLOSED) } },
+        size,
+      );
+      await fireEvent.press(
+        await screen.findByRole('button', { name: nbsp('Incassa 25,00 € in contanti') }),
+      );
+      await fireEvent.press(screen.getByRole('button', { name: 'Conferma la vendita' }));
+      expect(
+        await screen.findByText(
+          'La vendita non rispetta le regole di prenotazione dello stabilimento.',
+        ),
+      ).toBeOnTheScreen();
+      expect(screen.getByText('Prenotazioni per oggi chiuse.')).toBeOnTheScreen();
+      expect(screen.queryByTestId('sale-done')).toBeNull();
+    },
+  );
+
+  // Core 1.1.2 (coste360/arenile#21): the quote refuses with the sale's rules.
+  it('explains a quote refused by the booking rules and keeps the sale disabled', async () => {
+    const { screen } = await openSale({
+      extra: { [`POST ${EST}/daily-sales/quote`]: () => policyViolation(SAME_DAY_CLOSED) },
+    });
+    expect(await screen.findByText('Prenotazioni per oggi chiuse.')).toBeOnTheScreen();
+    expect(
+      screen.getByText('La vendita non rispetta le regole di prenotazione dello stabilimento.'),
+    ).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Vendi' })).toBeDisabled();
   });
 
   it('reuses the Idempotency-Key when the same sale is retried after a failure', async () => {

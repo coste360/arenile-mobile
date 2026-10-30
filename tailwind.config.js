@@ -52,10 +52,6 @@ module.exports = {
             { DEFAULT: token(`status-${s}`), foreground: token(`status-${s}-foreground`) },
           ]),
         ),
-        map: {
-          sand: token('map-sand'),
-          sea: token('map-sea'),
-        },
       },
       borderRadius: {
         lg: 'var(--radius)',

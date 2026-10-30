@@ -8,6 +8,7 @@ import type {
   OperationalSpotStatus,
   Slots,
 } from '@/api/types';
+import type { CalendarDate } from '@/lib/calendar';
 
 /** Colour status of the panel's map palette (spec 11.3 table). */
 export type SpotStatus =
@@ -112,8 +113,15 @@ export function isBookable(status: OperationalSpotStatus): boolean {
   return status === 'free' || status === 'released';
 }
 
-/** Overlay indicators shown in the spot sheet (spec 11.3). */
-export type SpotIndicator = 'to_assign' | 'extra' | 'note' | 'vip';
+/**
+ * Overlay indicators of a booking shown as badges in the spot sheet (spec
+ * 11.3; spec 30.4 adds the arrival and departure day, also drawn on the map,
+ * see `markersOf`). The agreement and the group have rows of their own.
+ */
+export type SpotIndicator = 'to_assign' | 'extra' | 'note' | 'vip' | 'arrival' | 'departure';
+
+/** Indicators drawn on the map itself, next to the status badge. */
+export type MapMarker = Extract<SpotIndicator, 'arrival' | 'departure'>;
 
 export function indicatorsOf(booking: OperationalBooking | undefined): SpotIndicator[] {
   if (!booking) return [];
@@ -122,7 +130,36 @@ export function indicatorsOf(booking: OperationalBooking | undefined): SpotIndic
   if (booking.has_extras) out.push('extra');
   if (booking.has_notes) out.push('note');
   if (booking.customer_tags.some((tag) => tag.toLowerCase() === VIP_TAG)) out.push('vip');
+  if (booking.is_first_day) out.push('arrival');
+  if (booking.is_last_day) out.push('departure');
   return out;
+}
+
+/** Arrival and departure markers of the map (first and last day of the booking). */
+export function markersOf(
+  booking: Pick<OperationalBooking, 'is_first_day' | 'is_last_day'> | undefined,
+): MapMarker[] {
+  if (!booking) return [];
+  const out: MapMarker[] = [];
+  if (booking.is_first_day) out.push('arrival');
+  if (booking.is_last_day) out.push('departure');
+  return out;
+}
+
+/**
+ * Days the booking keeps this spot: the segment of a stay split across spots
+ * (core 1.1, spec 30.6), otherwise the whole stay.
+ */
+export function daysOnSpot(
+  booking: Pick<
+    OperationalBooking,
+    'starts_on' | 'ends_on' | 'segment_starts_on' | 'segment_ends_on'
+  >,
+): { from: CalendarDate; to: CalendarDate } {
+  return {
+    from: booking.segment_starts_on ?? booking.starts_on,
+    to: booking.segment_ends_on ?? booking.ends_on,
+  };
 }
 
 /** NativeWind classes of a status (legend swatch, sheet badge). Literal for Tailwind's scanner. */

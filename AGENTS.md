@@ -3,7 +3,8 @@
 Arenile mobile is the staff app of [Arenile](https://github.com/coste360/arenile), the source-available
 management system for beach establishments (stabilimenti balneari) maintained by Coste360 SRL. One app,
 published by Coste360 on the App Store and Google Play, that each establishment pairs with **its own**
-Arenile instance (VPS, managed hosting, or the desktop edition in LAN mode): it has no default server.
+Arenile instance (VPS, managed hosting, or the desktop edition in LAN mode): it has no default server (the only exception is "Prova la demo", which pairs with Coste360's
+demo instance on an explicit tap, ADR 0015).
 Expo + React Native + TypeScript, phone and tablet/iPad. The product plan (Italian) lives in
 `docs/spec/`; the authoritative specification is the core's `docs/spec/` (section 29.2 for the app,
 16 for roles, 21.2 for offline). Decisions are in `docs/adr/`.
@@ -39,8 +40,9 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   `connect` (welcome / "Collega"), `scan` (camera), `manual` (address + code), `pair` (pairing and
   its errors, also the target of `arenile://pair?d=…`), `(connected)/` (home, settings, pending
   operations, day map, `today` ("Oggi"), `bookings/` (day list; tablet list + sheet), `bookings/[bookingId]`
-  (sheet on phones), `spots` (free / released spots), `operations/` hub, QR scanner, booking and spot
-  operations, phase 2 `sale` (daily quick sale), `move/[bookingId]`, `waitlist/` (list; tablet list +
+  (sheet on phones), `spots` (free / released spots), `lifeguard` (lifeguard list), `spot-calendar/[spotId]`
+  (season calendar of a spot), `operations/` hub, QR scanner, booking and spot operations, phase 2 `sale`
+  (daily quick sale), `new-booking` (new booking on the fly), `move/[bookingId]`, `waitlist/` (list; tablet list +
   entry), `waitlist/[entryId]`; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
@@ -49,13 +51,14 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   manual form schema, in-memory pairing intent), `session` (session store, provider, queries), `instance` (compatibility),
   `preferences` (language, theme), `operations` / `bookings` / `maps` / `auth` (resource hooks of
   phase 1; `bookings/day-list` filters, search and sort, `bookings/detail` sheet rules and customer
-  visibility by role, `operations/day-spots` free and released spots), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
+  visibility by role, `operations/day-spots` free and released spots), `lifeguard` (lifeguard list: filters, rows, query), `permissions` (role rules of the panel, `useAbilities`), `offline` (persisted cache,
   operation queue, runtime and hooks), `day-map` (operational map of the day: status, search,
-  camera, SVG renderer, spot sheet; ADR 0008), `check-in` (booking/ticket QR formats, code resolution, gate
+  camera, SVG renderer, spot sheet, `kit/` illustrations of the map kits; ADR 0008, 0013), `check-in` (booking/ticket QR formats, code resolution, gate
   admission), `booking-actions` (booking facts, operation rules, form schemas, queued actions, cash
   desk state), `spot-blocks` (online-only blocks, spot search), `reports` (year comparison, periods,
   formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`), phase 2 (ADR 0011):
-  `daily-sale` (sale rules, catalogue, quote, sale), `move-booking` (move rules, dry run, booking or
+  `daily-sale` (sale rules, catalogue, quote, sale), `new-booking` (stay, quote, hold and booking
+  on the fly), `move-booking` (move rules, dry run, booking or
   ticket move), `waitlist` (list, compatibility, offer), `printing` (print route, jobs), `tickets`
   (ticket of a booking). No push notifications in this edition (ADR 0012): data refreshes when the app
   is opened or foregrounded. **Read `docs/data-and-offline.md` before adding a feature.**
@@ -64,8 +67,10 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 - `src/components/ui/` React Native Reusables components (vendored by their CLI);
   `src/components/` app components (`Screen`, `StateView`, `FormField`, layout helpers,
   `ConnectionIndicator`, `OnlineOnlyNotice`, `FilterChip`, `CachedNotice`); `bookings/` (list, row,
-  badges, sheet), `today/` (figure card, home shortcuts) and `operations/` (the embeddable operation
-  panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms) and `reports/`
+  badges, sheet), `today/` (figure card and grid, slot occupancy, home shortcuts) and `operations/` (the
+  embeddable operation panels `BookingActionsPanel`, `SpotActionsPanel`, `CodeResult` and their forms),
+  `lifeguard/` (lifeguard list), `reports/` (metric cards, week chart) and `charts/` (`useChartColors`: theme colours for
+  react-native-svg props, from `src/lib/theme.ts`)
 - `src/providers/` composition root (`app-providers.tsx`), injected dependencies, query client
 - `src/i18n/` i18next setup and locales (`it` source, `en`, `de`, `fr`)
 - `modules/pinned-fetch/` local Expo module (Swift, Kotlin, JS adapter): the certificate-pinning
@@ -77,8 +82,10 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   `ids.ts`, `render-app.tsx`) and screen tests
 - `src/global.css` the only stylesheet (theme tokens); `tailwind.config.js` maps them
 - `api/core-version.json` pinned core release + SHA-256; `api/openapi.yaml` its contract (verbatim)
-- `scripts/` `gen-api.mjs` (contract download/verify/generate), `style-guard.js`, `agents/` hooks
+- `scripts/` `gen-api.mjs` (contract download/verify/generate), `gen-map-kits.mjs` (map kits), `style-guard.js`, `agents/` hooks
 - `assets/brand/` official Arenile brand assets (not covered by the code licence, see NOTICE.md)
+- `assets/map-kits/` beach map kits of the pinned core release, verbatim, with `kits.lock.json`
+  (SHA-256) and each kit's `NOTICE.md` (© Coste360, BSL 1.1; ADR 0013)
 - `native-locales/` localized native strings (app name, permission prompts)
 - `docs/spec/` functional plan of the app, `docs/adr/` decisions, `docs/data-and-offline.md` the
   data, permission and offline APIs features build on
@@ -87,12 +94,15 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
 
 - `src/api/generated/schema.d.ts` from `api/openapi.yaml` via openapi-typescript (`make gen`)
 - `api/openapi.yaml` is the verbatim `openapi.yaml` asset of the core release in `api/core-version.json`
+- `assets/map-kits/` (verbatim kits of that release) and `src/features/day-map/kit/generated/` (their
+  art for react-native-svg) via `scripts/gen-map-kits.mjs` (`make gen`)
 - `ios/`, `android/` are generated by `expo prebuild` (Continuous Native Generation) and git-ignored
 - `make check` fails if the generated code differs from what is committed (`make gen-check`).
 
 ## Non-negotiable rules
 
-- The app talks only to the user's instance. No telemetry, no analytics, crash-reporting or ads SDK,
+- The app talks only to the user's instance (the one exception: Coste360's demo instance after an
+  explicit "Prova la demo", ADR 0015). No telemetry, no analytics, crash-reporting or ads SDK,
   no `expo-updates`/EAS Update (it would contact Expo servers), no remote config (ADR 0005).
 - The app never imports core code. API types come only from the generated contract of a pinned core
   release (ADR 0002); a missing endpoint is a core change first.

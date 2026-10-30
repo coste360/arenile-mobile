@@ -69,8 +69,6 @@
     --status-renewal-hold-foreground: 0 0% 100%; /* #ffffff */
     --status-unavailable: 216 12.2% 83.9%; /* #d1d5db */
     --status-unavailable-foreground: 220.9 39.3% 11%; /* #111827 */
-    --map-sand: 42.2 72.5% 90%; /* #f8edd3 */
-    --map-sea: 200 70.1% 69.8%; /* #7cc4e8 */
     --map-sea-label: 202 80.3% 23.9%; /* #0c4a6e */
     --map-decoration: 42.2 43.5% 83.3%; /* #e7dcc2 */
     --map-decoration-stroke: 40.4 25.9% 62.9%; /* #b9a988 */
@@ -128,8 +126,6 @@
     --status-renewal-hold-foreground: 220.9 39.3% 11%; /* #111827 */
     --status-unavailable: 240 5.2% 33.9%; /* #52525b */
     --status-unavailable-foreground: 0 0% 100%; /* #ffffff */
-    --map-sand: 40 18.4% 19.2%; /* #3a3428 */
-    --map-sea: 203 58.3% 27.3%; /* #1d4f6e */
     --map-sea-label: 200 72.4% 88.6%; /* #cde9f7 */
     --map-decoration: 40 19.4% 24.3%; /* #4a4232 */
     --map-decoration-stroke: 41.1 22.1% 52.2%; /* #a08f6a */

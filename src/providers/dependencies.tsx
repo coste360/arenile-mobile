@@ -5,7 +5,7 @@ import { randomUUID } from 'expo-crypto';
 import * as Device from 'expo-device';
 import { getLocales } from 'expo-localization';
 import { createContext, useContext, type ReactNode } from 'react';
-import { Linking, Platform } from 'react-native';
+import { Linking, Platform, Share } from 'react-native';
 
 import type { PinnedFetch } from '@/api/transport';
 import { APP_VERSION } from '@/config/app';
@@ -15,6 +15,8 @@ import { systemClock, type Clock } from '@/lib/clock';
 import { createExpoNetworkMonitor, type NetworkMonitor } from '@/lib/network';
 import { createOfflineKeyValueStore } from '@/lib/offline-storage';
 import { createSecureKeyValueStore, type KeyValueStore } from '@/lib/storage';
+
+export type FormFactor = 'phone' | 'tablet';
 
 export interface Dependencies {
   /** Keychain: the device token and the preferences. */
@@ -34,11 +36,24 @@ export interface Dependencies {
    */
   pinnedFetch?: PinnedFetch | null;
   device: DeviceInfo;
+  /**
+   * Hardware class: phones stay in portrait, tablets (and anything that is
+   * not a phone) rotate freely. Not the window size: an iPad in Split View is
+   * still a tablet.
+   */
+  formFactor: FormFactor;
   /** Version of this app (app.json), sent at pairing and checked against the instance. */
   appVersion: string;
   /** Device languages, most preferred first (BCP 47 tags). */
   deviceLocales: () => string[];
   openSystemSettings: () => void;
+  /**
+   * Native share sheet with a text (the booking summary for the customer):
+   * the operator picks the app (WhatsApp, Messages...) and sends it.
+   * Resolves also when the operator dismisses it; rejects only when the
+   * share sheet cannot open.
+   */
+  shareText: (message: string) => Promise<void>;
   /** Home screen widget (app group / shared preferences); absent means no widget. */
   widget?: WidgetBridge;
 }
@@ -61,9 +76,14 @@ export function createDefaultDependencies(): Dependencies {
       name: Device.deviceName ?? Device.modelName ?? 'Arenile mobile',
       platform: platform(),
     },
+    formFactor: Device.deviceType === Device.DeviceType.PHONE ? 'phone' : 'tablet',
     deviceLocales: () => getLocales().map((l) => l.languageTag),
     openSystemSettings: () => {
       void Linking.openSettings();
+    },
+    shareText: async (message) => {
+      // The result (shared or dismissed) does not matter: dismissing is not an error.
+      await Share.share({ message });
     },
     widget: createExpoWidgetBridge(),
   };

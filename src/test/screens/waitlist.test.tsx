@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
 import type { Role, WaitlistEntry } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
@@ -199,5 +199,199 @@ describe('waitlist', () => {
     const { screen } = await open();
     await fireEvent.press(await screen.findByRole('button', { name: "Lista d'attesa" }));
     expect(await screen.findByRole('button', { name: /Esposito Gennaro/ })).toBeOnTheScreen();
+  });
+});
+
+describe('waitlist: adaptive split (tablet portrait and landscape)', () => {
+  type Screen = Awaited<ReturnType<typeof open>>['screen'];
+  // The region is not an accessibility element, so it is found by its label.
+  const detailRegion = (screen: Screen) =>
+    screen.queryAllByLabelText('Iscrizione').find((e) => e.props.role === 'region') ?? null;
+
+  /** The waitlist route of the instance, filtering by `q` like the server. */
+  const searchable: Handler = (r) => {
+    const q = new URL(r.url).searchParams.get('q')?.toLowerCase();
+    const status = new URL(r.url).searchParams.get('status');
+    return json(200, {
+      items: ENTRIES.filter((e) => !status || e.status === status).filter(
+        (e) => !q || e.customer_display_name.toLowerCase().includes(q),
+      ),
+    });
+  };
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'shows the list beside the detail region and keeps it on selection (%s)',
+    async (size) => {
+      const { screen, getPathname } = await open({}, size);
+      await act(async () => router.push('/waitlist'));
+      expect(
+        await screen.findByRole('button', { name: /^1°, Esposito Gennaro/ }),
+      ).toBeOnTheScreen();
+      expect(within(detailRegion(screen)!).getByText("Scegli un'iscrizione")).toBeOnTheScreen();
+
+      await fireEvent.press(screen.getByRole('button', { name: /Esposito Gennaro/ }));
+      expect(
+        await within(detailRegion(screen)!).findByText('Ombrellone e 2 lettini'),
+      ).toBeOnTheScreen();
+      expect(screen.queryByText("Scegli un'iscrizione")).toBeNull();
+      expect(getPathname()).toBe('/waitlist');
+      expect(screen.getByRole('button', { name: /^2°, Ferrari Giulia/ })).toBeOnTheScreen();
+    },
+  );
+
+  it('has no detail region nor placeholder with an empty list', async () => {
+    const { screen } = await open(
+      { extra: { [`GET ${EST}/waitlist`]: () => json(200, { items: [] }) } },
+      'tabletPortrait',
+    );
+    await act(async () => router.push('/waitlist'));
+    expect(await screen.findByText('0 iscrizioni')).toBeOnTheScreen();
+    await waitFor(() => expect(detailRegion(screen)).toBeNull());
+    expect(screen.queryByText("Scegli un'iscrizione")).toBeNull();
+  });
+
+  it('leaves the detail blank when the search matches nothing', async () => {
+    const { screen } = await open(
+      { extra: { [`GET ${EST}/waitlist`]: searchable } },
+      'tabletLandscape',
+    );
+    await act(async () => router.push('/waitlist'));
+    await screen.findByRole('button', { name: /Esposito Gennaro/ });
+    await fireEvent.changeText(screen.getByLabelText('Cerca cliente'), 'zzz');
+    expect(await screen.findByText('0 iscrizioni')).toBeOnTheScreen();
+    const region = detailRegion(screen);
+    expect(region).toBeOnTheScreen();
+    expect(region!.children).toHaveLength(0);
+  });
+
+  it.each<WindowSize>(['tabletPortrait', 'tabletLandscape'])(
+    'redirects an entry link to the split keeping the freed spot (%s)',
+    async (size) => {
+      const { screen, getPathname, getSearchParams } = await open({}, size);
+      await act(async () =>
+        router.push({
+          pathname: '/waitlist/[entryId]',
+          params: {
+            entryId: 'w-2',
+            spotId: 's-4',
+            zoneId: 'z-2',
+            label: 'B1',
+            date: '2026-10-25',
+          },
+        }),
+      );
+      await waitFor(() => expect(getPathname()).toBe('/waitlist'));
+      expect(getSearchParams()).toEqual(
+        expect.objectContaining({
+          selected: 'w-2',
+          spotId: 's-4',
+          zoneId: 'z-2',
+          label: 'B1',
+          date: '2026-10-25',
+        }),
+      );
+      expect(await screen.findByText(/B1 è libera/)).toBeOnTheScreen();
+      expect(await within(detailRegion(screen)!).findByRole('radio', { name: 'B1' })).toBeChecked();
+    },
+  );
+});
+
+describe('waitlist: list header', () => {
+  it('orders search, chips and result count', async () => {
+    const { screen } = await open();
+    await act(async () => router.push('/waitlist'));
+    expect(await screen.findByText('2 iscrizioni')).toBeOnTheScreen();
+    // Accessible labels and texts in render order.
+    const order: string[] = [];
+    const walk = (node: unknown): void => {
+      if (typeof node === 'string') order.push(node);
+      else if (Array.isArray(node)) node.forEach(walk);
+      else if (node && typeof node === 'object') {
+        const { props, children } = node as {
+          props?: { accessibilityLabel?: unknown };
+          children?: unknown;
+        };
+        if (typeof props?.accessibilityLabel === 'string') order.push(props.accessibilityLabel);
+        walk(children);
+      }
+    };
+    walk(screen.toJSON());
+    const at = (text: string) => order.indexOf(text);
+    expect(at('Cerca cliente')).toBeGreaterThan(-1);
+    expect(at('Cerca cliente')).toBeLessThan(at('Offerta inviata'));
+    expect(at('Offerta inviata')).toBeLessThan(at('2 iscrizioni'));
+  });
+
+  it.each<WindowSize>(['phone', 'tabletPortrait'])(
+    'clears the search with the in-field button (%s)',
+    async (size) => {
+      const routes = {
+        [`GET ${EST}/waitlist`]: ((r) => {
+          const q = new URL(r.url).searchParams.get('q')?.toLowerCase();
+          return json(200, {
+            items: ENTRIES.filter((e) => e.status === 'waiting').filter(
+              (e) => !q || e.customer_display_name.toLowerCase().includes(q),
+            ),
+          });
+        }) as Handler,
+      };
+      const { screen } = await open({ extra: routes }, size);
+      await act(async () => router.push('/waitlist'));
+      await screen.findByText('2 iscrizioni');
+      expect(screen.queryByRole('button', { name: 'Cancella la ricerca' })).toBeNull();
+      await fireEvent.changeText(screen.getByLabelText('Cerca cliente'), 'ferrari');
+      expect(await screen.findByText('1 iscrizione')).toBeOnTheScreen();
+      await fireEvent.press(screen.getByRole('button', { name: 'Cancella la ricerca' }));
+      expect(await screen.findByText('2 iscrizioni')).toBeOnTheScreen();
+      expect(screen.getByLabelText('Cerca cliente')).toHaveDisplayValue('');
+      expect(screen.queryByRole('button', { name: 'Cancella la ricerca' })).toBeNull();
+    },
+  );
+});
+
+describe('waitlist in Split View (tablet without room for the entry beside the list)', () => {
+  type Screen = Awaited<ReturnType<typeof open>>['screen'];
+  const detailRegion = (screen: Screen) =>
+    screen.queryAllByLabelText('Iscrizione').find((e) => e.props.role === 'region') ?? null;
+
+  const FREED_B1 = { spotId: 's-4', zoneId: 'z-2', label: 'B1', date: '2026-10-25' };
+
+  it.each([
+    ['without a freed spot', {}],
+    ['keeping the freed spot of the map', FREED_B1],
+  ] as const)('shows the list alone and pushes the entry like on phones, %s', async (_, spot) => {
+    const { screen, getPathname, getSearchParams } = await open({}, 'tabletSplitView');
+    await act(async () => router.push({ pathname: '/waitlist', params: spot }));
+    await screen.findByRole('button', { name: /Ferrari Giulia/ });
+    expect(detailRegion(screen)).toBeNull();
+    expect(screen.queryByText("Scegli un'iscrizione")).toBeNull();
+
+    await fireEvent.press(screen.getByRole('button', { name: /Ferrari Giulia/ }));
+    await waitFor(() => expect(getPathname()).toBe('/waitlist/w-2'));
+    expect(getSearchParams()).toEqual({ entryId: 'w-2', ...spot });
+    expect(await screen.findByText(/Ombrellone e 2 lettini/)).toBeOnTheScreen();
+    expect(detailRegion(screen)).toBeNull();
+  });
+
+  it('opens an entry link as the entry, without redirecting to the list', async () => {
+    const { screen, getPathname } = await open({}, 'tabletSplitView');
+    await act(async () =>
+      router.push({ pathname: '/waitlist/[entryId]', params: { entryId: 'w-2', ...FREED_B1 } }),
+    );
+    expect(await screen.findByRole('radio', { name: 'B1' })).toBeChecked();
+    expect(getPathname()).toBe('/waitlist/w-2');
+    expect(screen.queryByRole('button', { name: /^1°, Esposito Gennaro/ })).toBeNull();
+  });
+
+  it('forwards only the freed spot to the split, not other parameters', async () => {
+    const { getPathname, getSearchParams } = await open({}, 'tabletPortrait');
+    await act(async () =>
+      router.push({
+        pathname: '/waitlist/[entryId]',
+        params: { entryId: 'w-2', ...FREED_B1, extra: 'x' },
+      }),
+    );
+    await waitFor(() => expect(getPathname()).toBe('/waitlist'));
+    expect(getSearchParams()).toEqual({ selected: 'w-2', ...FREED_B1 });
   });
 });
