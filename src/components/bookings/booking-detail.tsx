@@ -3,6 +3,9 @@ import {
   CircleAlertIcon,
   ClockIcon,
   LockIcon,
+  MailIcon,
+  MessageCircleIcon,
+  PhoneIcon,
   RefreshCwIcon,
   SearchXIcon,
 } from 'lucide-react-native';
@@ -32,11 +35,13 @@ import {
   spotLines,
   stayDays,
 } from '@/features/bookings/detail';
+import { contactLinks } from '@/features/bookings/contacts';
 import { useBooking } from '@/features/bookings/queries';
 import { useOfflineQueue } from '@/features/offline/offline-provider';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { useEstablishment } from '@/features/session/queries';
+import { useDependencies } from '@/providers/dependencies';
 import { formatDayLabel } from '@/lib/calendar';
 import { formatInstant } from '@/lib/datetime';
 import { formatCents } from '@/lib/money';
@@ -280,12 +285,61 @@ function CustomerCard({ booking, showContacts }: { booking: Booking; showContact
         ) : null}
         {c.email ? <DetailRow label={t('bookings.detail.email')} value={c.email} /> : null}
         {c.phone ? <DetailRow label={t('bookings.detail.phone')} value={c.phone} /> : null}
+        <ContactActions phone={c.phone} email={c.email} name={c.name} />
         {c.notes ? <DetailRow label={t('bookings.detail.customerNotes')} value={c.notes} /> : null}
         {!showContacts && !c.anonymized ? (
           <Text variant="muted">{t('bookings.detail.contactsHidden')}</Text>
         ) : null}
       </CardContent>
     </Card>
+  );
+}
+
+/**
+ * Call, WhatsApp and email from the sheet: shown only with the contacts the
+ * role may see (customerView), opened in the phone's own apps.
+ */
+function ContactActions({ phone, email, name }: { phone?: string; email?: string; name: string }) {
+  const { t } = useTranslation();
+  const { openUrl } = useDependencies();
+  const [failed, setFailed] = useState(false);
+  const links = contactLinks({ phone, email });
+  const actions = [
+    links.call && { key: 'call', url: links.call, icon: PhoneIcon },
+    links.whatsapp && { key: 'whatsapp', url: links.whatsapp, icon: MessageCircleIcon },
+    links.email && { key: 'email', url: links.email, icon: MailIcon },
+  ].filter((a) => !!a) as {
+    key: 'call' | 'whatsapp' | 'email';
+    url: string;
+    icon: typeof PhoneIcon;
+  }[];
+  if (actions.length === 0) return null;
+  const open = (url: string) => {
+    setFailed(false);
+    openUrl(url).catch(() => setFailed(true));
+  };
+  return (
+    <View className="gap-2">
+      <View className="flex-row flex-wrap gap-2">
+        {actions.map((a) => (
+          <Button
+            key={a.key}
+            variant="outline"
+            className="min-h-11"
+            accessibilityLabel={t(`bookings.contact.${a.key}Label`, { name })}
+            onPress={() => open(a.url)}
+          >
+            <Icon as={a.icon} size={16} />
+            <Text>{t(`bookings.contact.${a.key}`)}</Text>
+          </Button>
+        ))}
+      </View>
+      {failed ? (
+        <Text variant="muted" accessibilityLiveRegion="polite">
+          {t('bookings.contact.failed')}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 

@@ -55,7 +55,9 @@ anche offline.
 Lista del giorno dei clienti in spiaggia ("lista per i bagnini", sezione 30.10 del core): postazioni occupate per fila con il cognome,
 arrivi e partenze, allestimento e gruppo; filtri per arrivi, partenze e da saldare. Oggi e domani
 anche offline (cache e prefetch come il giorno operativo), gli altri giorni solo online. Visibile solo
-con `bookings.read`, dalla home e dal pannello di navigazione su tablet; mai email o telefono.
+con `bookings.read`, dalla home e dal pannello di navigazione su tablet; mai email o telefono nella
+lista. Una postazione apre la sua prenotazione quando il giorno della mappa la conosce: i contatti
+seguono le regole della scheda.
 
 ## Prenotazioni del giorno
 
@@ -69,7 +71,8 @@ italiano, pagamenti, note, cronologia essenziale.
   distingue). La ricerca trova codice, cliente (anche senza accenti) e postazione.
 - **Cliente secondo il ruolo:** nome ed etichette per tutti i ruoli con `bookings.read`; email,
   telefono e note sul cliente solo per chi ha `bookings.write` (titolare, gestore, cassiere), che
-  lavora con il cliente alla cassa. Personale di spiaggia e sola lettura vedono quanto basta a
+  lavora con il cliente alla cassa e da lì lo chiama, gli scrive su WhatsApp o gli manda un'email
+  con le app del telefono. Personale di spiaggia e sola lettura vedono quanto basta a
   riconoscere il cliente in spiaggia (minimizzazione, sezione 23 del core). Il core oggi invia lo
   stesso dettaglio a ogni ruolo con `bookings.read`: nascondere qui limita ciò che lo schermo espone,
   non ciò che il ruolo può ottenere; un filtro lato server sarebbe una modifica del core.

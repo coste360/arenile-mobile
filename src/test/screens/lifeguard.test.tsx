@@ -12,6 +12,7 @@ import { datesRequested, pickDay } from '@/test/day-picker';
 import { DAY, dayRoutes, EST, TODAY, TOMORROW } from '@/test/day-routes';
 import { DEVICE, json, networkDown, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
+import { operationalBooking, operationsDay, spot } from '@/test/operations-fixtures';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const PATH = `${EST}/operations/lifeguard-list`;
@@ -76,6 +77,21 @@ describe('Clienti per fila', () => {
       expect(new URL(asked.url).searchParams.get('format')).toBe('json');
     },
   );
+
+  it("opens a spot's booking when the day knows it, and leaves the others as text", async () => {
+    const day = operationsDay({
+      spots: [
+        spot({ spot_id: 's-A1', label: 'A1', booking: operationalBooking({ booking_id: 'b-1' }) }),
+        spot({ spot_id: 's-A2', label: 'A2' }),
+      ],
+    });
+    const r = { ...routes(), ...dayRoutes({ day }), [`GET ${PATH}`]: routes()[`GET ${PATH}`]! };
+    const { screen, getPathname } = await openList('phone', r);
+    const a1 = await screen.findByRole('link', { name: /^A1, Rossi/ });
+    expect(screen.queryByRole('link', { name: /^A2, Bianchi/ })).toBeNull();
+    await fireEvent.press(a1);
+    await waitFor(() => expect(getPathname()).toBe('/bookings/b-1'));
+  });
 
   it('filters arrivals, departures and balances due', async () => {
     const { screen } = await openList();

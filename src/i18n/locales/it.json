@@ -552,7 +552,8 @@
     },
     "emptyTitle": "Nessuna postazione occupata in questo giorno.",
     "noMatchTitle": "Nessuna postazione con questo filtro.",
-    "showAll": "Mostra tutte"
+    "showAll": "Mostra tutte",
+    "openBooking": "Apre la prenotazione"
   },
   "bookings": {
     "status": {
@@ -773,6 +774,15 @@
       "children_one": "{{count}} bambino",
       "children_other": "{{count}} bambini",
       "names": "Ospiti"
+    },
+    "contact": {
+      "call": "Chiama",
+      "whatsapp": "WhatsApp",
+      "email": "Scrivi",
+      "callLabel": "Chiama {{name}}",
+      "whatsappLabel": "Scrivi a {{name}} su WhatsApp",
+      "emailLabel": "Scrivi un'email a {{name}}",
+      "failed": "Nessuna app del telefono può aprire questo contatto."
     }
   },
   "operations": {

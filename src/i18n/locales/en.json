@@ -552,7 +552,8 @@
     },
     "emptyTitle": "No spot is occupied on this day.",
     "noMatchTitle": "No spot matches this filter.",
-    "showAll": "Show all"
+    "showAll": "Show all",
+    "openBooking": "Opens the booking"
   },
   "bookings": {
     "status": {
@@ -773,6 +774,15 @@
       "children_one": "{{count}} child",
       "children_other": "{{count}} children",
       "names": "Guests"
+    },
+    "contact": {
+      "call": "Call",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "callLabel": "Call {{name}}",
+      "whatsappLabel": "Message {{name}} on WhatsApp",
+      "emailLabel": "Email {{name}}",
+      "failed": "No app on this phone can open this contact."
     }
   },
   "operations": {

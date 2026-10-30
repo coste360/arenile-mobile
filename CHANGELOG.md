@@ -11,6 +11,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- **Contattare il cliente dalla scheda:** "Chiama", "WhatsApp" (solo numeri in formato internazionale,
+  come li salva il core) e "Scrivi" aprono le app del telefono, solo per i ruoli che vedono i contatti.
+- **Clienti per fila:** toccare una postazione apre la sua prenotazione.
 - **Clienti per fila** (la "lista per i bagnini" del core 1.1, spec 30.10): le postazioni occupate del giorno fila per fila, a
   caratteri grandi per la spiaggia, con cognome, allestimento, gruppo, arrivo, partenza e da saldare,
   mai contatti; filtri per arrivi, partenze e da saldare, calendario come mappa e prenotazioni. Oggi e
@@ -198,6 +201,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Corretto
 
+- In Expo Go la mappa mostrava l'errore "Cannot find native module 'ExpoWidgets'": il widget della
+  home non viene più cercato in Expo Go, dove non esiste.
 - Il calendario per scegliere il giorno su iOS si apriva vuoto: il calendario nativo non si disegna
   nella finestra sovrapposta dei dialoghi; ora il dialogo si apre nell'app e la tastiera si chiude.
 - Su tablet le righe delle prenotazioni erano illeggibili nella lista stretta: l'importo da saldare

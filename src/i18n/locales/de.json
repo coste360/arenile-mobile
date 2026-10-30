@@ -552,7 +552,8 @@
     },
     "emptyTitle": "An diesem Tag ist kein Platz belegt.",
     "noMatchTitle": "Kein Platz entspricht diesem Filter.",
-    "showAll": "Alle anzeigen"
+    "showAll": "Alle anzeigen",
+    "openBooking": "Öffnet die Buchung"
   },
   "bookings": {
     "status": {
@@ -773,6 +774,15 @@
       "children_one": "{{count}} Kind",
       "children_other": "{{count}} Kinder",
       "names": "Gäste"
+    },
+    "contact": {
+      "call": "Anrufen",
+      "whatsapp": "WhatsApp",
+      "email": "E-Mail",
+      "callLabel": "{{name}} anrufen",
+      "whatsappLabel": "{{name}} auf WhatsApp schreiben",
+      "emailLabel": "{{name}} eine E-Mail schreiben",
+      "failed": "Keine App auf diesem Telefon kann diesen Kontakt öffnen."
     }
   },
   "operations": {

@@ -552,7 +552,8 @@
     },
     "emptyTitle": "Aucun emplacement occupé ce jour-là.",
     "noMatchTitle": "Aucun emplacement ne correspond à ce filtre.",
-    "showAll": "Tout afficher"
+    "showAll": "Tout afficher",
+    "openBooking": "Ouvre la réservation"
   },
   "bookings": {
     "status": {
@@ -773,6 +774,15 @@
       "children_one": "{{count}} enfant",
       "children_other": "{{count}} enfants",
       "names": "Hôtes"
+    },
+    "contact": {
+      "call": "Appeler",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "callLabel": "Appeler {{name}}",
+      "whatsappLabel": "Écrire à {{name}} sur WhatsApp",
+      "emailLabel": "Envoyer un e-mail à {{name}}",
+      "failed": "Aucune app de ce téléphone ne peut ouvrir ce contact."
     }
   },
   "operations": {

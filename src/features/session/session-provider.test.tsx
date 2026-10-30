@@ -29,6 +29,7 @@ function setup() {
     deviceLocales: () => ['it-IT'],
     openSystemSettings: () => {},
     shareText: async () => {},
+    openUrl: async () => {},
   };
   const wrapper = ({ children }: { children: ReactNode }) => (
     <DependenciesProvider value={deps}>

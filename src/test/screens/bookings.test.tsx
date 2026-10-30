@@ -120,6 +120,27 @@ describe('booking sheet', () => {
     expect(screen.getByLabelText('Prenotazione creata, 20 ott, 12:00, Anna')).toBeOnTheScreen();
   });
 
+  it('calls, writes on WhatsApp or emails the customer from the sheet', async () => {
+    const { screen, dependencies } = await open('/bookings/b-1');
+    await fireEvent.press(await screen.findByRole('button', { name: 'Chiama Rossi Mario' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Scrivi a Rossi Mario su WhatsApp' }));
+    await fireEvent.press(screen.getByRole('button', { name: "Scrivi un'email a Rossi Mario" }));
+    expect(jest.mocked(dependencies.openUrl).mock.calls).toEqual([
+      ['tel:+393331234567'],
+      ['https://wa.me/393331234567'],
+      ['mailto:mario.rossi@example.it'],
+    ]);
+  });
+
+  it('says so when no app can open the contact', async () => {
+    const { screen, dependencies } = await open('/bookings/b-1');
+    jest.mocked(dependencies.openUrl).mockRejectedValueOnce(new Error('no handler'));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Chiama Rossi Mario' }));
+    expect(
+      await screen.findByText('Nessuna app del telefono può aprire questo contatto.'),
+    ).toBeOnTheScreen();
+  });
+
   it.each(['beach_staff', 'viewer'] as const)(
     'hides the customer contacts from %s',
     async (role) => {
@@ -128,6 +149,7 @@ describe('booking sheet', () => {
       expect(screen.queryByText('mario.rossi@example.it')).toBeNull();
       expect(screen.queryByText('+39 333 1234567')).toBeNull();
       expect(screen.queryByText('Preferisce la prima fila')).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Chiama Rossi Mario' })).toBeNull();
       expect(
         screen.getByText('I contatti del cliente sono visibili solo a cassa e direzione.'),
       ).toBeOnTheScreen();
