@@ -40,7 +40,11 @@ coperte da test delle schermate; nessuna è stata provata su un dispositivo o co
 - **Disponibilità:** per il cliente che arriva in cassa, le postazioni libere per tutto il soggiorno
   fila per fila ("Fila 1: nessun posto libero, Fila 2: 5 libere"), con date dal–al, durata rapida,
   fascia e mappa (se più di una); _Solo file con posti liberi_ nasconde le file piene, le postazioni
-  libere solo per alcuni giorni sono elencate a parte con i giorni liberi. Toccando una postazione
+  libere solo per alcuni giorni sono elencate a parte con i giorni liberi. Le zone vendute come zona o
+  a quantità (spec 5.2 del core) seguono le file, una scheda ciascuna con "N posti liberi su M" (solo
+  informativa: la prenotazione di una zona resta nel pannello). Le caratteristiche date dal gestore
+  alle postazioni della mappa ("prima fila", "ombra") diventano filtri: scelte insieme, restano le
+  postazioni che le hanno tutte (le zone si nascondono). Toccando una postazione
   libera si apre la nuova prenotazione con quella postazione, le date e la fascia. Dalla mappa
   (pulsante nell'intestazione, con il giorno e la mappa scelti), dalla home e dal pannello di
   navigazione del tablet, per chi scrive le prenotazioni; solo online (`GET availability`, spec 7.8 e

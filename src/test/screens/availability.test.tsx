@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { act, fireEvent, waitFor } from 'expo-router/testing-library';
+import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 
 import type { AvailabilityResult, BookingCreate, Role } from '@/api/types';
 import { QUEUE_KEY } from '@/features/offline/queue';
@@ -344,6 +344,160 @@ describe('Disponibilità', () => {
     await act(async () => router.push('/availability'));
     expect(await screen.findByText('Nessuna mappa')).toBeOnTheScreen();
     expect(requestsTo(network.calls, 'GET', `${EST}/availability`)).toHaveLength(0);
+  });
+
+  describe('zones sold as a whole or by quantity', () => {
+    const withZones: Record<string, Handler> = {
+      [`GET ${EST}/availability`]: (r) => {
+        const answer = availabilityOf(new URL(r.url));
+        return json(200, {
+          ...answer,
+          zones: [
+            ...answer.zones,
+            {
+              zone_id: 'z-lawn',
+              code: 'prato',
+              assignment_mode: 'zone',
+              capacity: 20,
+              available: 6,
+              spots: [],
+            },
+            {
+              zone_id: 'z-beds',
+              code: 'lettini',
+              assignment_mode: 'quantity',
+              capacity: 40,
+              available: 0,
+            },
+          ],
+        });
+      },
+      [`GET ${EST}/zones`]: () =>
+        json(200, {
+          items: [{ id: 'z-lawn', code: 'prato', name: { it: 'Prato', en: 'Lawn' } }],
+        }),
+    };
+
+    it.each<WindowSize>(['phone', 'tabletPortrait'])(
+      'shows each zone after the rows with its free places (%s)',
+      async (size) => {
+        const { screen } = await open({ size, extra: withZones });
+        await act(async () => router.push('/availability'));
+        await screen.findByText('Fila A');
+
+        const lawn = await screen.findByTestId('availability-zone-z-lawn');
+        expect(within(lawn).getByText('Prato')).toBeOnTheScreen();
+        expect(within(lawn).getByText('Posto nella zona')).toBeOnTheScreen();
+        expect(within(lawn).getByText('6 posti liberi su 20')).toBeOnTheScreen();
+        // Without a name in the zones list, the code.
+        const beds = screen.getByTestId('availability-zone-z-beds');
+        expect(within(beds).getByText('lettini')).toBeOnTheScreen();
+        expect(within(beds).getByText('A quantità')).toBeOnTheScreen();
+        expect(within(beds).getByText('Nessun posto libero')).toBeOnTheScreen();
+        // Informational: a zone is not booked from here.
+        expect(within(lawn).queryByRole('button')).toBeNull();
+      },
+    );
+
+    it('hides the full zones with the full rows', async () => {
+      const { screen } = await open({ extra: withZones });
+      await act(async () => router.push('/availability'));
+      await screen.findByTestId('availability-zone-z-beds');
+      await fireEvent.press(screen.getByRole('button', { name: 'Solo file con posti liberi' }));
+      await waitFor(() => expect(screen.queryByTestId('availability-zone-z-beds')).toBeNull());
+      expect(screen.getByTestId('availability-zone-z-lawn')).toBeOnTheScreen();
+    });
+  });
+
+  describe('attributes of the spots', () => {
+    const withAttributes: Record<string, Handler> = {
+      [`GET ${EST}/maps/m-1`]: () =>
+        json(200, {
+          ...PHASE2_MAP,
+          spots: PHASE2_MAP.spots.map((spot) =>
+            spot.id === 's-1'
+              ? { ...spot, attributes: ['Prima fila', 'ombra'] }
+              : spot.id === 's-3'
+                ? { ...spot, attributes: ['prima fila'] }
+                : spot.id === 's-4'
+                  ? { ...spot, attributes: ['Ombra'] }
+                  : spot,
+          ),
+        }),
+      // Every spot free, so that the filter shows in the counts.
+      [`GET ${EST}/availability`]: (r) => {
+        const answer = availabilityOf(new URL(r.url));
+        return json(200, {
+          ...answer,
+          zones: answer.zones.map((z) => ({
+            ...z,
+            spots: z.spots!.map((sp) => ({ ...sp, status: 'available', free_days: 1 })),
+          })),
+        });
+      },
+    };
+
+    it.each<WindowSize>(['phone', 'tabletPortrait'])(
+      'keeps only the spots with all the chosen attributes (%s)',
+      async (size) => {
+        const { screen } = await open({ size, extra: withAttributes });
+        await act(async () => router.push('/availability'));
+        expect(
+          await screen.findByText('4 postazioni libere per tutto il soggiorno'),
+        ).toBeOnTheScreen();
+        expect(screen.getByText('Caratteristiche (tutte quelle scelte)')).toBeOnTheScreen();
+        // Once each regardless of case, as first written by the manager.
+        expect(screen.getAllByRole('button', { name: /^prima fila$/i })).toHaveLength(1);
+        expect(screen.getAllByRole('button', { name: /^ombra$/i })).toHaveLength(1);
+
+        await fireEvent.press(screen.getByRole('button', { name: 'Prima fila' }));
+        expect(
+          await screen.findByText('2 postazioni libere per tutto il soggiorno'),
+        ).toBeOnTheScreen();
+        expect(screen.getByRole('button', { name: 'Prenota A1' })).toBeOnTheScreen();
+        expect(screen.getByRole('button', { name: 'Prenota A3' })).toBeOnTheScreen();
+        expect(screen.queryByText('Fila B')).toBeNull();
+
+        await fireEvent.press(screen.getByRole('button', { name: 'ombra' }));
+        expect(
+          await screen.findByText('1 postazione libera per tutto il soggiorno'),
+        ).toBeOnTheScreen();
+        expect(screen.getByRole('button', { name: 'Prenota A1' })).toBeOnTheScreen();
+        expect(screen.queryByRole('button', { name: 'Prenota A3' })).toBeNull();
+      },
+    );
+
+    it('says when no spot has all the chosen attributes', async () => {
+      const { screen } = await open({
+        extra: {
+          ...withAttributes,
+          [`GET ${EST}/maps/m-1`]: () =>
+            json(200, {
+              ...PHASE2_MAP,
+              spots: PHASE2_MAP.spots.map((spot) =>
+                spot.id === 's-1'
+                  ? { ...spot, attributes: ['prima fila'] }
+                  : spot.id === 's-4'
+                    ? { ...spot, attributes: ['ombra'] }
+                    : spot,
+              ),
+            }),
+        },
+      });
+      await act(async () => router.push('/availability'));
+      await fireEvent.press(await screen.findByRole('button', { name: 'prima fila' }));
+      await fireEvent.press(screen.getByRole('button', { name: 'ombra' }));
+      expect(
+        await screen.findByText('Nessuna postazione con tutte queste caratteristiche.'),
+      ).toBeOnTheScreen();
+    });
+
+    it('shows no attribute chips when no spot has attributes', async () => {
+      const { screen } = await open();
+      await act(async () => router.push('/availability'));
+      await screen.findByText('Fila A');
+      expect(screen.queryByText('Caratteristiche (tutte quelle scelte)')).toBeNull();
+    });
   });
 
   it('opens from the phone home', async () => {

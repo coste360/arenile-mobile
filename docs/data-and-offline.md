@@ -125,7 +125,9 @@ Other screens reuse them instead of rewriting the actions:
   persist: online only, like the days beyond tomorrow (ADR 0014).
 - **Availability by row** — `features/availability`: `useAvailability({ from, to, slots, mapId })`
   (GET availability, core spec 7.8 and 30.4) under `['est', id, 'operations', 'availability', params]`, never
-  persisted; `rowsOf()` joins it with the map document to group the spots by row.
+  persisted; `rowsOf()` joins it with the map document to group the spots of seat zones by row
+  (optionally only those with all the chosen `attributeOptions()`), `zoneCards()` counts the zone and
+  quantity zones; `useZones()` (GET zones, under `maps`) names them, falling back to the code.
 
 ## Phase 2: sale, move, waitlist, printing (online only)
 

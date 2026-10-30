@@ -1271,7 +1271,15 @@
     "errorTitle": "Verfügbarkeit nicht geladen",
     "errorDescription": "Prüfe die Verbindung zur Instanz und versuche es erneut.",
     "closedStay": "Der Betrieb ist während des ganzen Aufenthalts geschlossen.",
-    "updating": "Verfügbarkeit wird aktualisiert…"
+    "updating": "Verfügbarkeit wird aktualisiert…",
+    "attributes": "Merkmale (alle ausgewählten)",
+    "noMatch": "Kein Platz hat alle diese Merkmale.",
+    "zoneFree_one": "{{count}} von {{capacity}} Plätzen frei",
+    "zoneFree_other": "{{count}} von {{capacity}} Plätzen frei",
+    "zoneMode": {
+      "zone": "Platz im Bereich",
+      "quantity": "Nach Menge"
+    }
   },
   "move": {
     "action": "Auf einen anderen Platz verschieben",

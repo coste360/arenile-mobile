@@ -16,7 +16,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 - **Clienti per fila:** toccare una postazione apre la sua prenotazione.
 - **Disponibilità**: per il cliente che arriva in cassa, le postazioni libere per tutto il soggiorno
   fila per fila (date, durata, fascia, mappa), le file piene nascoste a richiesta e le postazioni libere
-  solo in parte elencate con i giorni liberi; una postazione libera apre la nuova prenotazione al volo con
+  solo in parte elencate con i giorni liberi, le zone a zona o a quantità con i posti liberi, filtri per
+  le caratteristiche delle postazioni (tutte quelle scelte); una postazione libera apre la nuova prenotazione al volo con
   le stesse date. Dal pulsante nell'intestazione della mappa (con il giorno e la mappa scelti), dalla home
   e dal pannello del tablet, per chi scrive le prenotazioni, solo online (core `GET availability`, spec
   7.8 e 30.4). Il _Trova posto_ del core (spec 30.6, proposte con cambi di posto) resta per dopo.

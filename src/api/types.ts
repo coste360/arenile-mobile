@@ -103,3 +103,4 @@ export type HoldCreate = Schemas['HoldCreate'];
 
 // Core 1.1 (spec 7.8, 30.4): availability of a stay, for "Disponibilità".
 export type AvailabilityResult = Schemas['AvailabilityResult'];
+export type AssignmentMode = Schemas['AssignmentMode'];

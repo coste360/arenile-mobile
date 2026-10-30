@@ -1271,7 +1271,15 @@
     "errorTitle": "Availability not loaded",
     "errorDescription": "Check the connection to the instance and try again.",
     "closedStay": "The establishment is closed for the whole stay.",
-    "updating": "Updating the availability…"
+    "updating": "Updating the availability…",
+    "attributes": "Features (all of the chosen ones)",
+    "noMatch": "No spot has all these features.",
+    "zoneFree_one": "{{count}} place free of {{capacity}}",
+    "zoneFree_other": "{{count}} places free of {{capacity}}",
+    "zoneMode": {
+      "zone": "A place in the area",
+      "quantity": "By quantity"
+    }
   },
   "move": {
     "action": "Move to another spot",

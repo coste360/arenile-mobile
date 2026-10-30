@@ -60,6 +60,8 @@ export const estKeys = {
 
   /** GET maps: the maps of the establishment, in display order. */
   maps: (establishmentId: string) => ['est', establishmentId, 'maps', 'list'] as const,
+  /** GET zones: every zone of the establishment (names of the zone cards in "Disponibilità"). */
+  zones: (establishmentId: string) => ['est', establishmentId, 'maps', 'zones'] as const,
   /** GET maps/{id}: the full map document (spots and decorations). */
   map: (establishmentId: string, mapId: string) =>
     ['est', establishmentId, 'maps', 'detail', mapId] as const,

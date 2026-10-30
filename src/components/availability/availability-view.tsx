@@ -16,6 +16,8 @@ import type { Slots } from '@/api/types';
 import { DateField } from '@/components/date-field';
 import { ChipRow, FilterChip } from '@/components/filter-chip';
 import { Columns } from '@/components/layout/columns';
+import { useContentWidth } from '@/components/layout/nav-pane';
+import { columnsFor } from '@/components/layout/panes';
 import { OnlineOnlyNotice } from '@/components/online-only-notice';
 import { StateView } from '@/components/state-view';
 import { Button } from '@/components/ui/button';
@@ -23,13 +25,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import {
+  attributeOptions,
   freeCount,
   rowsOf,
   visibleRows,
   wholeStayClosed,
+  zoneCards,
   type AvailabilityRow,
+  type AvailabilityZone,
 } from '@/features/availability/by-row';
-import { useAvailability, type AvailabilityParams } from '@/features/availability/queries';
+import {
+  useAvailability,
+  useZones,
+  type AvailabilityParams,
+} from '@/features/availability/queries';
 import { mapName } from '@/features/day-map/model';
 import { useMapDocument, useMaps } from '@/features/maps/queries';
 import {
@@ -46,6 +55,7 @@ import { useOperationalDays } from '@/features/operations/queries';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { usePreferences } from '@/features/preferences/preferences-provider';
 import { formatDayLabel, type CalendarDate } from '@/lib/calendar';
+import { localizedText } from '@/lib/i18n-text';
 import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { cn } from '@/lib/utils';
 
@@ -88,11 +98,34 @@ function AvailabilityForm({
   const [slots, setSlots] = useState<Slots>('FULL');
   const [chosenMap, setChosenMap] = useState<string | null>(initialMap ?? null);
   const [onlyFree, setOnlyFree] = useState(false);
+  // Attributes chosen on a map; another map starts with none.
+  const [chosenAttributes, setChosenAttributes] = useState<{ mapId: string; names: string[] }>({
+    mapId: '',
+    names: [],
+  });
+  const zones = useZones();
+  // Chips scroll to the pane edges only when form and results are stacked.
+  const stacked = columnsFor(useContentWidth(), 2) === 1;
 
   const mapList = maps.data ?? [];
   const mapId =
     chosenMap && mapList.some((m) => m.id === chosenMap) ? chosenMap : (mapList[0]?.id ?? '');
   const doc = useMapDocument(mapId);
+  const options = doc.data ? attributeOptions(doc.data) : [];
+  const attributes =
+    chosenAttributes.mapId === mapId
+      ? chosenAttributes.names.filter((n) => options.includes(n))
+      : [];
+  const toggleAttribute = (name: string) =>
+    setChosenAttributes({
+      mapId,
+      names: attributes.includes(name)
+        ? attributes.filter((n) => n !== name)
+        : [...attributes, name],
+    });
+  const zoneNames = new Map(
+    (zones.data ?? []).map((z) => [z.id, localizedText(z.name, locale)] as const),
+  );
 
   // Each input settles on its own; a change of several at once settles together.
   const from = useDebouncedValue(stay.startsOn, QUERY_DEBOUNCE_MS);
@@ -207,10 +240,19 @@ function AvailabilityForm({
       </View>
     );
   } else {
-    const rows = rowsOf(doc.data, availability.data);
+    const rows = rowsOf(doc.data, availability.data, { attributes });
     const shown = visibleRows(rows, onlyFree);
     const total = freeCount(rows);
+    // Zones have no spot attributes: with an attribute chosen, only spots answer.
+    const cards = attributes.length
+      ? []
+      : zoneCards(availability.data, zoneNames).filter((z) => !onlyFree || z.available > 0);
     const closed = availability.data.closed_dates ?? [];
+    const book = (spotId: string) =>
+      router.push({
+        pathname: '/new-booking',
+        params: { spotId, from: stay.startsOn, to: stay.endsOn, slot: slots },
+      });
     results = (
       <View className="gap-3">
         {stale ? (
@@ -233,19 +275,37 @@ function AvailabilityForm({
             })}
           </Text>
         ) : null}
-        {rows.length > 0 ? (
-          <ChipRow label={t('availability.filters')}>
-            <FilterChip
-              label={t('availability.onlyFree')}
-              selected={onlyFree}
-              onPress={() => setOnlyFree((v) => !v)}
-            />
+        <ChipRow label={t('availability.filters')} bleed={stacked}>
+          <FilterChip
+            label={t('availability.onlyFree')}
+            selected={onlyFree}
+            onPress={() => setOnlyFree((v) => !v)}
+          />
+        </ChipRow>
+        {options.length > 0 ? (
+          <ChipRow label={t('availability.attributes')} bleed={stacked}>
+            {options.map((name) => (
+              <FilterChip
+                key={name}
+                label={name}
+                selected={attributes.includes(name)}
+                onPress={() => toggleAttribute(name)}
+              />
+            ))}
           </ChipRow>
         ) : null}
-        {rows.length === 0 ? (
-          <StateView align="top" icon={UmbrellaIcon} title={t('availability.noSpots')} />
-        ) : shown.length === 0 ? (
-          <StateView align="top" icon={UmbrellaIcon} title={t('availability.noFreeRows')} />
+        {shown.length === 0 && cards.length === 0 ? (
+          <StateView
+            align="top"
+            icon={UmbrellaIcon}
+            title={
+              attributes.length > 0
+                ? t('availability.noMatch')
+                : rows.length === 0 && zoneCards(availability.data).length === 0
+                  ? t('availability.noSpots')
+                  : t('availability.noFreeRows')
+            }
+          />
         ) : (
           <View
             className={cn('gap-3', stale && 'opacity-50')}
@@ -253,17 +313,10 @@ function AvailabilityForm({
             accessibilityLabel={t('nav.availability')}
           >
             {shown.map((row) => (
-              <RowCard
-                key={row.row ?? ''}
-                row={row}
-                disabled={stale}
-                onBook={(spotId) =>
-                  router.push({
-                    pathname: '/new-booking',
-                    params: { spotId, from: stay.startsOn, to: stay.endsOn, slot: slots },
-                  })
-                }
-              />
+              <RowCard key={row.row ?? ''} row={row} disabled={stale} onBook={book} />
+            ))}
+            {cards.map((zone) => (
+              <ZoneCard key={zone.zoneId} zone={zone} />
             ))}
           </View>
         )}
@@ -340,6 +393,33 @@ function RowCard({
             })}
           </Text>
         ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * A zone sold as a whole or by quantity: free places for the stay. Booking
+ * it stays in the panel (the new booking on the fly books a spot).
+ */
+function ZoneCard({ zone }: { zone: AvailabilityZone }) {
+  const { t } = useTranslation();
+  const state =
+    zone.available > 0
+      ? t('availability.zoneFree', { count: zone.available, capacity: zone.capacity })
+      : t('availability.rowFull');
+  return (
+    <Card role="listitem" className="py-3" testID={`availability-zone-${zone.zoneId}`}>
+      <CardContent className="px-4">
+        <View className="flex-row items-baseline justify-between gap-3" accessible>
+          <View className="flex-1">
+            <Text className="font-semibold">{zone.name}</Text>
+            <Text variant="muted">{t(`availability.zoneMode.${zone.mode}`)}</Text>
+          </View>
+          <Text variant="muted" className={cn(zone.available > 0 && 'text-foreground')}>
+            {state}
+          </Text>
+        </View>
       </CardContent>
     </Card>
   );

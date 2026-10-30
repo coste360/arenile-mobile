@@ -2,8 +2,9 @@
 // the operator sees at a glance "Fila 1: nessuno, Fila 2: 5 liberi" when a
 // customer arrives. Availability comes from GET availability (core spec 7.8,
 // 30.4: a spot is available when every half day of the stay is free), the
-// rows from the map document. Pure.
-import type { AvailabilityResult, MapDocument } from '@/api/types';
+// rows from the map document. Seat zones (spec 5.2) go row by row; zones
+// assigned as a whole ("zone") or by quantity are counted per zone. Pure.
+import type { AssignmentMode, AvailabilityResult, MapDocument } from '@/api/types';
 import { daysBetween, type CalendarDate } from '@/lib/calendar';
 
 export type AvailabilityState = 'free' | 'partly' | 'taken';
@@ -27,19 +28,33 @@ export interface AvailabilityRow {
 const natural = new Intl.Collator('it', { numeric: true, sensitivity: 'base' });
 
 /**
- * Rows of the map with the state of each spot for the stay. Spots the
- * availability does not list (inactive, pool zones, other maps) are left
- * out. Rows in natural order (1, 2, 10, A, B), spots by number then label,
- * spots without a row last.
+ * Rows of the map with the state of each spot of a seat zone for the stay.
+ * Spots the availability does not list in a seat zone (inactive, zone or
+ * quantity zones, other maps) are left out. With `attributes`, only the spots
+ * that have all of them (case-insensitive); rows left empty disappear. Rows in
+ * natural order (1, 2, 10, A, B), spots by number then label, spots without a
+ * row last.
  */
-export function rowsOf(doc: MapDocument, availability: AvailabilityResult): AvailabilityRow[] {
+export function rowsOf(
+  doc: MapDocument,
+  availability: AvailabilityResult,
+  { attributes = [] }: { attributes?: readonly string[] } = {},
+): AvailabilityRow[] {
   const byId = new Map(
-    availability.zones.flatMap((z) => z.spots ?? []).map((s) => [s.spot_id, s] as const),
+    availability.zones
+      .filter((z) => z.assignment_mode === 'seat')
+      .flatMap((z) => z.spots ?? [])
+      .map((s) => [s.spot_id, s] as const),
   );
+  const wanted = attributes.map(fold);
   const rows = new Map<string, { spot: MapDocument['spots'][number]; entry: AvailabilitySpot }[]>();
   for (const spot of doc.spots) {
     const a = byId.get(spot.id);
     if (!a || !spot.active) continue;
+    if (wanted.length > 0) {
+      const has = new Set(spot.attributes.map(fold));
+      if (!wanted.every((w) => has.has(w))) continue;
+    }
     const totalDays = a.total_days ?? 0;
     const freeDays = a.status === 'available' ? totalDays : (a.free_days ?? 0);
     const state: AvailabilityState =
@@ -66,6 +81,56 @@ export function rowsOf(doc: MapDocument, availability: AvailabilityResult): Avai
         spots,
       };
     });
+}
+
+const fold = (s: string) => s.trim().toLocaleLowerCase('it');
+
+/**
+ * The attributes the manager gave the active spots of the map ("prima fila",
+ * "vicino al bar"), as written, once each regardless of case, sorted.
+ */
+export function attributeOptions(doc: MapDocument): string[] {
+  const seen = new Map<string, string>();
+  for (const spot of doc.spots) {
+    if (!spot.active) continue;
+    for (const raw of spot.attributes) {
+      const name = raw.trim();
+      if (name && !seen.has(fold(name))) seen.set(fold(name), name);
+    }
+  }
+  return [...seen.values()].sort(natural.compare);
+}
+
+/** A zone sold as a whole or by quantity (spec 5.2): how many places are free for the stay. */
+export interface AvailabilityZone {
+  zoneId: string;
+  /** Name from the zones list when known, otherwise the zone code. */
+  name: string;
+  mode: Exclude<AssignmentMode, 'seat'>;
+  /** Places of the zone (spots or units). */
+  capacity: number;
+  /** The fewest free on any day of the stay. */
+  available: number;
+}
+
+/** Zone and quantity zones of the answer, in its order; `names` by zone id. */
+export function zoneCards(
+  availability: AvailabilityResult,
+  names: ReadonlyMap<string, string> = new Map(),
+): AvailabilityZone[] {
+  return availability.zones.flatMap((z) =>
+    z.assignment_mode === 'seat'
+      ? []
+      : [
+          {
+            zoneId: z.zone_id,
+            name: names.get(z.zone_id) || z.code,
+            mode: z.assignment_mode,
+            capacity: z.capacity,
+            available: Math.max(0, Math.min(z.available, z.capacity)),
+          },
+        ],
+  );
 }
 
 /** Free spots of every row together. */

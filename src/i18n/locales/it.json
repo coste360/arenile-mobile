@@ -1271,7 +1271,15 @@
     "errorTitle": "Disponibilità non caricata",
     "errorDescription": "Controlla la connessione con l'istanza e riprova.",
     "closedStay": "Lo stabilimento è chiuso per tutto il soggiorno.",
-    "updating": "Aggiorno la disponibilità…"
+    "updating": "Aggiorno la disponibilità…",
+    "attributes": "Caratteristiche (tutte quelle scelte)",
+    "noMatch": "Nessuna postazione con tutte queste caratteristiche.",
+    "zoneFree_one": "{{count}} posto libero su {{capacity}}",
+    "zoneFree_other": "{{count}} posti liberi su {{capacity}}",
+    "zoneMode": {
+      "zone": "Posto nella zona",
+      "quantity": "A quantità"
+    }
   },
   "move": {
     "action": "Sposta su un'altra postazione",

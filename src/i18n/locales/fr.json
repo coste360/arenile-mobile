@@ -1271,7 +1271,15 @@
     "errorTitle": "Disponibilité non chargée",
     "errorDescription": "Vérifiez la connexion à l'instance et réessayez.",
     "closedStay": "L'établissement est fermé pendant tout le séjour.",
-    "updating": "Mise à jour de la disponibilité…"
+    "updating": "Mise à jour de la disponibilité…",
+    "attributes": "Caractéristiques (toutes celles choisies)",
+    "noMatch": "Aucune place n'a toutes ces caractéristiques.",
+    "zoneFree_one": "{{count}} place libre sur {{capacity}}",
+    "zoneFree_other": "{{count}} places libres sur {{capacity}}",
+    "zoneMode": {
+      "zone": "Une place dans la zone",
+      "quantity": "À la quantité"
+    }
   },
   "move": {
     "action": "Déplacer vers un autre emplacement",

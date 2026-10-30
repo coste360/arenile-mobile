@@ -1,7 +1,14 @@
 import type { AvailabilityResult } from '@/api/types';
 import { mapDocument, mapSpot } from '@/test/map-fixtures';
 
-import { freeCount, rowsOf, visibleRows, wholeStayClosed } from './by-row';
+import {
+  attributeOptions,
+  freeCount,
+  rowsOf,
+  visibleRows,
+  wholeStayClosed,
+  zoneCards,
+} from './by-row';
 
 type SpotAvailability = NonNullable<AvailabilityResult['zones'][number]['spots']>[number];
 
@@ -121,5 +128,127 @@ describe('wholeStayClosed', () => {
     ],
   ] as const)('%s → %s', (_, a, expected) => {
     expect(wholeStayClosed(a)).toBe(expected);
+  });
+});
+
+type ZoneAvailability = AvailabilityResult['zones'][number];
+
+const zone = (overrides: Partial<ZoneAvailability>): ZoneAvailability => ({
+  zone_id: 'z-1',
+  code: 'A',
+  assignment_mode: 'seat',
+  capacity: 0,
+  available: 0,
+  ...overrides,
+});
+
+describe('zones by assignment mode', () => {
+  const answer: AvailabilityResult = {
+    ...availability([]),
+    zones: [
+      zone({ zone_id: 'z-seat', spots: [free('a1', 'A1')] }),
+      zone({
+        zone_id: 'z-lawn',
+        code: 'prato',
+        assignment_mode: 'zone',
+        capacity: 20,
+        available: 6,
+        // Spots of a zone sold as a whole are not offered one by one.
+        spots: [free('b2', 'B2')],
+      }),
+      zone({
+        zone_id: 'z-beds',
+        code: 'lettini',
+        assignment_mode: 'quantity',
+        capacity: 40,
+        available: 0,
+      }),
+      zone({
+        zone_id: 'z-odd',
+        code: 'odd',
+        assignment_mode: 'quantity',
+        capacity: 5,
+        available: 9,
+      }),
+    ],
+  };
+
+  it('offers row by row only the spots of seat zones', () => {
+    expect(rowsOf(DOC, answer).flatMap((r) => r.spots.map((s) => s.label))).toEqual(['A1']);
+  });
+
+  it.each([
+    ['z-lawn', 'Prato', 'zone', 20, 6],
+    ['z-beds', 'lettini', 'quantity', 40, 0],
+    ['z-odd', 'odd', 'quantity', 5, 5],
+  ] as const)('%s: %s (%s), %d places, %d free', (zoneId, name, mode, capacity, available) => {
+    const cards = zoneCards(answer, new Map([['z-lawn', 'Prato']]));
+    expect(cards.map((c) => c.zoneId)).toEqual(['z-lawn', 'z-beds', 'z-odd']);
+    expect(cards.find((c) => c.zoneId === zoneId)).toEqual({
+      zoneId,
+      name,
+      mode,
+      capacity,
+      available,
+    });
+  });
+});
+
+describe('attributes', () => {
+  const doc = mapDocument({
+    spots: [
+      mapSpot({
+        id: 'a1',
+        label: 'A1',
+        row_label: '1',
+        number: 1,
+        attributes: ['Prima fila', 'ombra'],
+      }),
+      mapSpot({ id: 'a2', label: 'A2', row_label: '1', number: 2, attributes: ['prima fila'] }),
+      mapSpot({
+        id: 'b1',
+        label: 'B1',
+        row_label: '2',
+        number: 1,
+        attributes: ['Ombra', 'vicino al bar'],
+      }),
+      mapSpot({ id: 'b2', label: 'B2', row_label: '2', number: 2, attributes: [] }),
+      mapSpot({
+        id: 'off',
+        label: 'Z9',
+        row_label: '2',
+        number: 9,
+        active: false,
+        attributes: ['spenta'],
+      }),
+    ],
+  });
+  const answer = availability([
+    free('a1', 'A1'),
+    taken('a2', 'A2'),
+    free('b1', 'B1'),
+    free('b2', 'B2'),
+  ]);
+
+  it('lists the attributes of the active spots once, as written, sorted', () => {
+    expect(attributeOptions(doc)).toEqual(['ombra', 'Prima fila', 'vicino al bar']);
+  });
+
+  it('has no options when no spot has attributes', () => {
+    expect(attributeOptions(DOC)).toEqual([]);
+  });
+
+  it.each([
+    ['nothing selected', [], { '1': ['A1', 'A2'], '2': ['B1', 'B2'] }, 3],
+    ['one attribute, any case', ['PRIMA FILA'], { '1': ['A1', 'A2'] }, 1],
+    ['two attributes together (AND)', ['prima fila', 'Ombra'], { '1': ['A1'] }, 1],
+    ['an attribute of another row', ['vicino al bar'], { '2': ['B1'] }, 1],
+    ['no spot has them all', ['vicino al bar', 'prima fila'], {}, 0],
+  ] as const)('%s', (_, attributes, expected, free) => {
+    const rows = rowsOf(doc, answer, { attributes });
+    expect(Object.fromEntries(rows.map((r) => [r.row, r.spots.map((s) => s.label)]))).toEqual(
+      expected,
+    );
+    expect(freeCount(rows)).toBe(free);
   });
 });
