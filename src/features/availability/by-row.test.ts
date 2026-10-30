@@ -182,7 +182,7 @@ describe('zones by assignment mode', () => {
     ['z-beds', 'lettini', 'quantity', 40, 0],
     ['z-odd', 'odd', 'quantity', 5, 5],
   ] as const)('%s: %s (%s), %d places, %d free', (zoneId, name, mode, capacity, available) => {
-    const cards = zoneCards(answer, new Map([['z-lawn', 'Prato']]));
+    const cards = zoneCards(answer, 'm-1', new Map([['z-lawn', { name: 'Prato', mapId: 'm-1' }]]));
     expect(cards.map((c) => c.zoneId)).toEqual(['z-lawn', 'z-beds', 'z-odd']);
     expect(cards.find((c) => c.zoneId === zoneId)).toEqual({
       zoneId,
@@ -191,6 +191,25 @@ describe('zones by assignment mode', () => {
       capacity,
       available,
     });
+  });
+
+  // z-lawn on map m-1, z-beds without a map (quantity), z-odd on map m-2.
+  const zones = new Map([
+    ['z-lawn', { name: 'Prato', mapId: 'm-1' }],
+    ['z-beds', { name: 'Lettini' }],
+    ['z-odd', { name: 'Terrazza', mapId: 'm-2' }],
+  ]);
+
+  it.each([
+    ['m-1', ['z-lawn', 'z-beds']],
+    ['m-2', ['z-beds', 'z-odd']],
+    ['m-3', ['z-beds']],
+  ] as const)('on map %s: the zones of that map and those without a map', (mapId, expected) => {
+    expect(zoneCards(answer, mapId, zones).map((c) => c.zoneId)).toEqual(expected);
+  });
+
+  it('shows every zone while the zones list is unknown', () => {
+    expect(zoneCards(answer, 'm-2').map((c) => c.zoneId)).toEqual(['z-lawn', 'z-beds', 'z-odd']);
   });
 });
 

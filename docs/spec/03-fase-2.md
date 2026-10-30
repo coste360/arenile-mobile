@@ -41,8 +41,9 @@ coperte da test delle schermate; nessuna è stata provata su un dispositivo o co
   fila per fila ("Fila 1: nessun posto libero, Fila 2: 5 libere"), con date dal–al, durata rapida,
   fascia e mappa (se più di una); _Solo file con posti liberi_ nasconde le file piene, le postazioni
   libere solo per alcuni giorni sono elencate a parte con i giorni liberi. Le zone vendute come zona o
-  a quantità (spec 5.2 del core) seguono le file, una scheda ciascuna con "N posti liberi su M" (solo
-  informativa: la prenotazione di una zona resta nel pannello). Le caratteristiche date dal gestore
+  a quantità (spec 5.2 del core) seguono le file, una scheda ciascuna con "N posti liberi su M": quelle
+  della mappa scelta e quelle senza mappa (a quantità), per questo la disponibilità si chiede per tutto
+  lo stabilimento (solo informativa: la prenotazione di una zona resta nel pannello). Le caratteristiche date dal gestore
   alle postazioni della mappa ("prima fila", "ombra") diventano filtri: scelte insieme, restano le
   postazioni che le hanno tutte (le zone si nascondono). Toccando una postazione
   libera si apre la nuova prenotazione con quella postazione, le date e la fascia. Dalla mappa

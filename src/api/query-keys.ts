@@ -40,7 +40,7 @@ export const estKeys = {
   /** GET availability: spots free for a whole stay ("Disponibilità", online only, never persisted). */
   availability: (
     establishmentId: string,
-    params: { from: CalendarDate; to: CalendarDate; slots: Slots; mapId: string },
+    params: { from: CalendarDate; to: CalendarDate; slots: Slots },
   ) => ['est', establishmentId, 'operations', 'availability', params] as const,
 
   /** GET spots/{id}/calendar: the season of a spot, half day by half day (online only). */

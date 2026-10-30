@@ -123,8 +123,10 @@ function AvailabilityForm({
         ? attributes.filter((n) => n !== name)
         : [...attributes, name],
     });
-  const zoneNames = new Map(
-    (zones.data ?? []).map((z) => [z.id, localizedText(z.name, locale)] as const),
+  const zoneInfo = new Map(
+    (zones.data ?? []).map(
+      (z) => [z.id, { name: localizedText(z.name, locale), mapId: z.map_id }] as const,
+    ),
   );
 
   // Each input settles on its own; a change of several at once settles together.
@@ -132,7 +134,7 @@ function AvailabilityForm({
   const to = useDebouncedValue(stay.endsOn, QUERY_DEBOUNCE_MS);
   const settledSlots = useDebouncedValue(slots, QUERY_DEBOUNCE_MS);
   const asked: AvailabilityParams | null =
-    mapId && validStay(from, to) ? { from, to, slots: settledSlots, mapId } : null;
+    mapId && validStay(from, to) ? { from, to, slots: settledSlots } : null;
   const availability = useAvailability(asked);
   // The answer on screen is for other inputs: shown dimmed, its spots not bookable.
   const stale =
@@ -246,7 +248,7 @@ function AvailabilityForm({
     // Zones have no spot attributes: with an attribute chosen, only spots answer.
     const cards = attributes.length
       ? []
-      : zoneCards(availability.data, zoneNames).filter((z) => !onlyFree || z.available > 0);
+      : zoneCards(availability.data, mapId, zoneInfo).filter((z) => !onlyFree || z.available > 0);
     const closed = availability.data.closed_dates ?? [];
     const book = (spotId: string) =>
       router.push({
@@ -301,7 +303,7 @@ function AvailabilityForm({
             title={
               attributes.length > 0
                 ? t('availability.noMatch')
-                : rows.length === 0 && zoneCards(availability.data).length === 0
+                : rows.length === 0 && zoneCards(availability.data, mapId, zoneInfo).length === 0
                   ? t('availability.noSpots')
                   : t('availability.noFreeRows')
             }

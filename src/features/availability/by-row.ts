@@ -113,24 +113,35 @@ export interface AvailabilityZone {
   available: number;
 }
 
-/** Zone and quantity zones of the answer, in its order; `names` by zone id. */
+/** What the zones list says of a zone: its name and its map (none for quantity zones). */
+export interface ZoneInfo {
+  name: string;
+  mapId?: string;
+}
+
+/**
+ * Zone and quantity zones of the answer that belong to `mapId` or to no map
+ * (quantity zones), in the answer's order. While the zones list is unknown
+ * (`zones` without the zone) the card is shown, named by its code.
+ */
 export function zoneCards(
   availability: AvailabilityResult,
-  names: ReadonlyMap<string, string> = new Map(),
+  mapId: string,
+  zones: ReadonlyMap<string, ZoneInfo> = new Map(),
 ): AvailabilityZone[] {
-  return availability.zones.flatMap((z) =>
-    z.assignment_mode === 'seat'
-      ? []
-      : [
-          {
-            zoneId: z.zone_id,
-            name: names.get(z.zone_id) || z.code,
-            mode: z.assignment_mode,
-            capacity: z.capacity,
-            available: Math.max(0, Math.min(z.available, z.capacity)),
-          },
-        ],
-  );
+  return availability.zones.flatMap((z) => {
+    const info = zones.get(z.zone_id);
+    if (z.assignment_mode === 'seat' || (info?.mapId && info.mapId !== mapId)) return [];
+    return [
+      {
+        zoneId: z.zone_id,
+        name: info?.name || z.code,
+        mode: z.assignment_mode,
+        capacity: z.capacity,
+        available: Math.max(0, Math.min(z.available, z.capacity)),
+      },
+    ];
+  });
 }
 
 /** Free spots of every row together. */

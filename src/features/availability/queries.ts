@@ -1,7 +1,10 @@
 // Availability of a stay for "Disponibilità" (GET availability, core spec 7.8).
+// Asked for the whole establishment, not one map: with map_id the core drops
+// the zones without a map (quantity zones). The screen joins the answer with
+// the selected map, so changing map asks nothing new.
 // Online only and never persisted: it answers a question at the desk, and a
 // booking from it still goes through the server's checks (ADR 0009).
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { request } from '@/api/client';
 import { estKeys } from '@/api/query-keys';
@@ -14,10 +17,9 @@ export interface AvailabilityParams {
   from: CalendarDate;
   to: CalendarDate;
   slots: Slots;
-  mapId: string;
 }
 
-/** Free spots of the stay on one map; null params = nothing to ask yet. */
+/** Free spots and places of the stay; null params = nothing to ask yet. */
 export function useAvailability(params: AvailabilityParams | null) {
   const client = useApiClient();
   const { establishmentId } = usePairedSession();
@@ -33,28 +35,24 @@ export function useAvailability(params: AvailabilityParams | null) {
               from: params!.from,
               to: params!.to,
               slots: params!.slots,
-              map_id: params!.mapId,
             },
           },
           signal,
         }),
       ),
     enabled: !!params,
-    // New dates keep the previous answer on screen (marked stale); another map starts empty.
-    placeholderData: (previous, previousQuery) =>
-      previous && sameMap(previousQuery?.queryKey, params?.mapId) ? previous : undefined,
+    // New dates keep the previous answer on screen, marked stale by the screen.
+    placeholderData: keepPreviousData,
     retry: false,
     staleTime: 0,
   });
 }
 
-const sameMap = (key: readonly unknown[] | undefined, mapId: string | undefined) =>
-  !!mapId && (key?.[4] as Partial<AvailabilityParams> | undefined)?.mapId === mapId;
-
 /**
- * Every zone of the establishment, for the names of the zone cards; zones by
- * quantity have no map, so the list is not filtered by map. Optional: the
- * cards fall back to the zone code while it loads or if it is refused.
+ * Every zone of the establishment, for the names and the maps of the zone
+ * cards; zones by quantity have no map, so the list is not filtered by map.
+ * Same permission as the maps. While it loads or if it fails the cards show
+ * every zone, named by code.
  */
 export function useZones() {
   const client = useApiClient();
