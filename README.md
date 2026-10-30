@@ -6,10 +6,18 @@ gestito o app desktop in rete locale) con il QR code del pannello: non ha un ser
 invia dati a Coste360. Solo il pulsante **Prova la demo** collega, su richiesta, lo stabilimento di
 esempio di Coste360 (ADR 0015).
 
-> **Stato:** fasi 0–3 implementate e verificate con i test (`make check-full` verde), **non ancora
-> provate su dispositivi reali né compilate con EAS Build** e non pubblicate negli store: servono gli
-> account Expo/EAS, Apple Developer e Google Play di Coste360. Dettagli nel [piano dell'app](docs/spec/README.md) e in
-> [Da fare prima della pubblicazione](#da-fare-prima-della-pubblicazione).
+<p align="center">
+  <img src="store/app-store/iphone-6.9/01-map.png" width="200" alt="Mappa del giorno">
+  <img src="store/app-store/iphone-6.9/02-availability.png" width="200" alt="Disponibilità fila per fila">
+  <img src="store/app-store/iphone-6.9/04-booking.png" width="200" alt="Scheda della prenotazione con i contatti del cliente">
+  <img src="store/app-store/iphone-6.9/06-lifeguard.png" width="200" alt="Clienti per fila">
+</p>
+
+<p align="center">
+  <img src="store/app-store/ipad-13/02-bookings.png" width="600" alt="Elenco e scheda della prenotazione affiancati su iPad">
+</p>
+
+Le immagini per App Store e Google Play sono in [`store/`](store/README.md).
 
 ## Cosa fa oggi
 
@@ -137,8 +145,8 @@ docs/adr/           decisioni
   marchio: varianti dedicate per l'icona adattiva e per la schermata di avvio (oggi derivate dal simbolo
   ufficiale con margini) e le schede degli store.
 - **Account:** Expo/EAS (build e invio), Apple Developer Program e Google Play Console di Coste360,
-  identificativo `app.arenile.mobile` (progetto EAS `@coste360/arenile-mobile` collegato; nessuna build
-  ancora fatta); per il widget iOS anche l'estensione
+  identificativo `app.arenile.mobile` (progetto EAS `@coste360/arenile-mobile` collegato; prima build di
+  sviluppo Android avviata, per iOS manca ancora il team Apple Developer); per il widget iOS anche l'estensione
   `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile` (ADR 0010).
 - **Build e prove su dispositivo:** una build di sviluppo EAS per iOS e Android (servono per
   `expo-sqlite`, il modulo `modules/pinned-fetch` e l'estensione del widget), poi

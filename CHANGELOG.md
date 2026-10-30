@@ -11,6 +11,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- **Immagini per gli store** in `store/` (App Store iPhone 6,9" e iPad 13", Google Play telefono e
+  grafica in evidenza), generate da `scripts/store/compose.py`; il README le mostra.
 - **Contattare il cliente dalla scheda:** "Chiama", "WhatsApp" (solo numeri in formato internazionale,
   come li salva il core) e "Scrivi" aprono le app del telefono, solo per i ruoli che vedono i contatti.
 - **Clienti per fila:** toccare una postazione apre la sua prenotazione.

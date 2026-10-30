@@ -48,3 +48,5 @@ coverage/
 CLAUDE.local.md
 .claude/settings.local.json
 .claude/worktrees/
+store/raw/
+store/.fonts/
