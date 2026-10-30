@@ -30,14 +30,14 @@ describe('createExpoWidgetBridge', () => {
 
   it('schedules the whole timeline on iOS', () => {
     const widget = fakeWidget();
-    createExpoWidgetBridge(() => widget, 'ios').publish(ENTRIES);
+    createExpoWidgetBridge(() => widget, 'ios', false).publish(ENTRIES);
     expect(widget.updateTimeline).toHaveBeenCalledWith(ENTRIES);
     expect(widget.updateSnapshot).not.toHaveBeenCalled();
   });
 
   it('shows the current entry on Android (no timelines)', () => {
     const widget = fakeWidget();
-    createExpoWidgetBridge(() => widget, 'android').publish(ENTRIES);
+    createExpoWidgetBridge(() => widget, 'android', false).publish(ENTRIES);
     expect(widget.updateSnapshot).toHaveBeenCalledWith(ENTRIES[0]!.props);
     expect(widget.updateTimeline).not.toHaveBeenCalled();
   });
@@ -48,9 +48,15 @@ describe('createExpoWidgetBridge', () => {
     expect(load).not.toHaveBeenCalled();
   });
 
+  it.each(['ios', 'android'])('never loads the module in Expo Go (%s)', (os) => {
+    const load = jest.fn(fakeWidget);
+    createExpoWidgetBridge(load, os, true).publish(ENTRIES);
+    expect(load).not.toHaveBeenCalled();
+  });
+
   it('loads the widget module once', () => {
     const load = jest.fn(fakeWidget);
-    const bridge = createExpoWidgetBridge(load, 'ios');
+    const bridge = createExpoWidgetBridge(load, 'ios', false);
     bridge.publish(ENTRIES);
     bridge.publish(ENTRIES);
     expect(load).toHaveBeenCalledTimes(1);
@@ -60,7 +66,7 @@ describe('createExpoWidgetBridge', () => {
     const load = jest.fn(() => {
       throw new Error("Cannot find native module 'ExpoWidgets'");
     });
-    const bridge = createExpoWidgetBridge(load, 'ios');
+    const bridge = createExpoWidgetBridge(load, 'ios', false);
     expect(() => bridge.publish(ENTRIES)).not.toThrow();
     expect(() => bridge.publish(ENTRIES)).not.toThrow();
     expect(load).toHaveBeenCalledTimes(1);
@@ -73,13 +79,13 @@ describe('createExpoWidgetBridge', () => {
     widget.updateSnapshot.mockImplementation(() => {
       throw new TypeError('bad props');
     });
-    expect(() => createExpoWidgetBridge(() => widget, 'android').publish(ENTRIES)).not.toThrow();
+    expect(() => createExpoWidgetBridge(() => widget, 'android', false).publish(ENTRIES)).not.toThrow();
     expect(console.warn).toHaveBeenCalledWith('widget: update failed', 'TypeError');
   });
 
   it('ignores an empty publication', () => {
     const widget = fakeWidget();
-    createExpoWidgetBridge(() => widget, 'ios').publish([]);
+    createExpoWidgetBridge(() => widget, 'ios', false).publish([]);
     expect(widget.updateTimeline).not.toHaveBeenCalled();
   });
 });

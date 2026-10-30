@@ -3,6 +3,7 @@
 // writes to the app group (iOS) / shared preferences (Android) through
 // expo-widgets; nothing leaves the device.
 import { requireOptionalNativeModule } from 'expo';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 
 import { errorKind } from '@/lib/log';
@@ -21,14 +22,17 @@ export const noopWidgetBridge: WidgetBridge = { publish: () => {} };
  * Bridge to the DaySummary widget. The widget module is loaded lazily and
  * only on iOS and Android: in Expo Go or on a build without the widget
  * extension the native module is missing, and the app must keep working
- * without a widget. iOS gets the timeline (now, then "yesterday's data" at
+ * without a widget. In Expo Go the module is never even looked up: its
+ * native check is not reliable there and a failed load is a red screen in
+ * development. iOS gets the timeline (now, then "yesterday's data" at
  * midnight); Android, which has no timelines, the current entry.
  */
 export function createExpoWidgetBridge(
   load: () => DaySummaryWidget | null = loadDaySummaryWidget,
   os: string = Platform.OS,
+  expoGo: boolean = Constants.executionEnvironment === ExecutionEnvironment.StoreClient,
 ): WidgetBridge {
-  if (os !== 'ios' && os !== 'android') return noopWidgetBridge;
+  if (expoGo || (os !== 'ios' && os !== 'android')) return noopWidgetBridge;
   let widget: DaySummaryWidget | null | undefined;
   const get = () => {
     if (widget === undefined) {
