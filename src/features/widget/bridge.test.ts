@@ -79,7 +79,9 @@ describe('createExpoWidgetBridge', () => {
     widget.updateSnapshot.mockImplementation(() => {
       throw new TypeError('bad props');
     });
-    expect(() => createExpoWidgetBridge(() => widget, 'android', false).publish(ENTRIES)).not.toThrow();
+    expect(() =>
+      createExpoWidgetBridge(() => widget, 'android', false).publish(ENTRIES),
+    ).not.toThrow();
     expect(console.warn).toHaveBeenCalledWith('widget: update failed', 'TypeError');
   });
 
