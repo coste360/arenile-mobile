@@ -12,6 +12,7 @@ import { datesRequested, pickDay } from '@/test/day-picker';
 import { DAY, dayRoutes, EST, TODAY, TOMORROW } from '@/test/day-routes';
 import { DEVICE, json, networkDown, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
+import { operationalBooking, operationsDay, spot } from '@/test/operations-fixtures';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const PATH = `${EST}/operations/lifeguard-list`;
@@ -58,7 +59,7 @@ async function openList(size: WindowSize = 'phone', r = routes()) {
   return app;
 }
 
-describe('Lista bagnini', () => {
+describe('Clienti per fila', () => {
   it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletLandscape'])(
     'lists the occupied spots row by row on a %s',
     async (size) => {
@@ -74,6 +75,32 @@ describe('Lista bagnini', () => {
       expect(screen.getByText('3 postazioni occupate')).toBeOnTheScreen();
       const asked = network.calls.find((r) => new URL(r.url).pathname === PATH)!;
       expect(new URL(asked.url).searchParams.get('format')).toBe('json');
+    },
+  );
+
+  it.each<WindowSize>(['phone', 'tabletPortrait'])(
+    "opens a spot's booking when the day knows it, and leaves the others as text (%s)",
+    async (size) => {
+      const day = operationsDay({
+        spots: [
+          spot({
+            spot_id: 's-A1',
+            label: 'A1',
+            booking: operationalBooking({ booking_id: 'b-1', occupant_label: 'Rossi' }),
+          }),
+          spot({ spot_id: 's-A2', label: 'A2' }),
+        ],
+      });
+      const r = { ...routes(), ...dayRoutes({ day }), [`GET ${PATH}`]: routes()[`GET ${PATH}`]! };
+      const { screen, getPathname } = await openList(size, r);
+      const a1 = await screen.findByRole('link', { name: /^A1, Rossi/ });
+      expect(screen.queryByRole('link', { name: /^A2, Bianchi/ })).toBeNull();
+      await fireEvent.press(a1);
+      // Phones push the sheet; tablets show it beside the list.
+      await waitFor(() =>
+        expect(getPathname()).toBe(size === 'phone' ? '/bookings/b-1' : '/bookings'),
+      );
+      expect(await screen.findByRole('heading', { name: 'AR-7K3Q9' })).toBeOnTheScreen();
     },
   );
 
@@ -172,7 +199,7 @@ describe('Lista bagnini', () => {
 describe('Lista bagnini entry points', () => {
   it('opens from the phone home', async () => {
     const { screen, getPathname } = await renderApp({ session: SESSION, routes: routes() });
-    await fireEvent.press(await screen.findByRole('button', { name: 'Lista bagnini' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Clienti per fila' }));
     await waitFor(() => expect(getPathname()).toBe('/lifeguard'));
   });
 
@@ -182,10 +209,10 @@ describe('Lista bagnini entry points', () => {
       routes: routes(),
       size: 'tablet',
     });
-    await fireEvent.press(await screen.findByRole('link', { name: 'Lista bagnini' }));
+    await fireEvent.press(await screen.findByRole('link', { name: 'Clienti per fila' }));
     await waitFor(() => expect(getPathname()).toBe('/lifeguard'));
     expect(
-      await screen.findByRole('link', { name: 'Lista bagnini', selected: true }),
+      await screen.findByRole('link', { name: 'Clienti per fila', selected: true }),
     ).toBeOnTheScreen();
   });
 
@@ -210,7 +237,9 @@ describe('Lista bagnini entry points', () => {
   it('is not on the phone home without bookings.read', async () => {
     const { screen } = await renderApp({ session: SESSION, routes: withoutBookingsRead });
     expect(await screen.findByText(/^Anna · /)).toBeOnTheScreen();
-    await waitFor(() => expect(screen.queryByRole('button', { name: 'Lista bagnini' })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Clienti per fila' })).toBeNull(),
+    );
   });
 
   it('is not in the tablet navigation pane without bookings.read', async () => {
@@ -220,6 +249,8 @@ describe('Lista bagnini entry points', () => {
       size: 'tablet',
     });
     expect(await screen.findByRole('link', { name: 'Mappa' })).toBeOnTheScreen();
-    await waitFor(() => expect(screen.queryByRole('link', { name: 'Lista bagnini' })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole('link', { name: 'Clienti per fila' })).toBeNull(),
+    );
   });
 });

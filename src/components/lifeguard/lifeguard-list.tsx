@@ -10,9 +10,11 @@ import {
   WalletIcon,
   type LucideIcon,
 } from 'lucide-react-native';
+import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
 import { isForbidden } from '@/api/errors';
 import type { LifeguardRow } from '@/api/types';
@@ -29,31 +31,48 @@ import {
   groupByRow,
   LIFEGUARD_FILTERS,
   lifeguardCounts,
+  rowBookings,
   type LifeguardFilter,
   type LifeguardGroup,
 } from '@/features/lifeguard/lifeguard';
 import { useLifeguardList } from '@/features/lifeguard/queries';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
-import { useOperationalDays } from '@/features/operations/queries';
+import { operationsDayQuery, useOperationalDays } from '@/features/operations/queries';
 import { usePreferences } from '@/features/preferences/preferences-provider';
+import { useApiClient, usePairedSession } from '@/features/session/session-provider';
 import { inOfflineWindow, resolveDay, type DaySelection } from '@/lib/calendar';
+import { cn } from '@/lib/utils';
 
 /**
  * Lifeguard list (core spec 30.10): the occupied spots of a day, row by row,
  * in large type for the beach (today and tomorrow also offline, other days
  * online only; ADR 0014). Read only: last name, setup, arrival, departure
- * and balance due, never contacts.
+ * and balance due, never contacts. A spot opens its booking when the day of
+ * the map (same date, cached like this list) knows it: the booking sheet
+ * applies the role's rules on contacts.
  */
 export function LifeguardListView() {
   const { t } = useTranslation();
   const days = useOperationalDays();
   const { locale } = usePreferences();
   const { available: online } = useOnlineOnly();
+  const client = useApiClient();
+  const { establishmentId } = usePairedSession();
   const [day, setDay] = useState<DaySelection>('today');
   const [filter, setFilter] = useState<LifeguardFilter>('all');
   const date = resolveDay(day, days);
   const query = useLifeguardList(date);
   const rows = query.data?.rows;
+  // Only to link rows to their booking: from the cache offline, fetched
+  // online (an extra request for days outside the offline window).
+  const operations = useQuery({
+    ...operationsDayQuery(client, establishmentId, date),
+    enabled: online || inOfflineWindow(date, days),
+  });
+  const bookingOf = useMemo(
+    () => rowBookings(rows ?? [], operations.data?.spots ?? []),
+    [rows, operations.data],
+  );
 
   const counts = useMemo(() => (rows ? lifeguardCounts(rows) : null), [rows]);
   const groups = useMemo(
@@ -61,8 +80,8 @@ export function LifeguardListView() {
     [rows, filter],
   );
   const renderItem = useCallback(
-    ({ item }: { item: LifeguardGroup }) => <RowGroup group={item} />,
-    [],
+    ({ item }: { item: LifeguardGroup }) => <RowGroup group={item} bookingOf={bookingOf} />,
+    [bookingOf],
   );
 
   return (
@@ -160,7 +179,13 @@ export function LifeguardListView() {
 }
 
 /** One beach row: its heading and its occupied spots. */
-function RowGroup({ group }: { group: LifeguardGroup }) {
+function RowGroup({
+  group,
+  bookingOf,
+}: {
+  group: LifeguardGroup;
+  bookingOf: ReadonlyMap<string, string>;
+}) {
   const { t } = useTranslation();
   const title = group.row ? t('lifeguard.row', { row: group.row }) : t('lifeguard.noRow');
   return (
@@ -170,7 +195,12 @@ function RowGroup({ group }: { group: LifeguardGroup }) {
       </Text>
       <View role="list" accessibilityLabel={title}>
         {group.spots.map((s, i) => (
-          <SpotLine key={s.spot_id} spot={s} last={i === group.spots.length - 1} />
+          <SpotLine
+            key={s.spot_id}
+            spot={s}
+            bookingId={bookingOf.get(s.spot_id)}
+            last={i === group.spots.length - 1}
+          />
         ))}
       </View>
     </View>
@@ -178,7 +208,15 @@ function RowGroup({ group }: { group: LifeguardGroup }) {
 }
 
 /** A spot in large type: label, last name, setup, group and the day's flags. */
-function SpotLine({ spot, last }: { spot: LifeguardRow; last: boolean }) {
+function SpotLine({
+  spot,
+  bookingId,
+  last,
+}: {
+  spot: LifeguardRow;
+  bookingId?: string;
+  last: boolean;
+}) {
   const { t } = useTranslation();
   const name = spot.occupant_label || t('lifeguard.anonymous');
   const flags = FLAGS.filter((f) => spot[f.key]);
@@ -191,18 +229,13 @@ function SpotLine({ spot, last }: { spot: LifeguardRow; last: boolean }) {
   ]
     .filter(Boolean)
     .join(', ');
-  return (
-    <View
-      role="listitem"
-      accessible
-      accessibilityLabel={label}
-      testID={`lifeguard-spot-${spot.spot_id}`}
-      className={
-        last
-          ? 'min-h-14 flex-row items-center gap-4 px-4 py-3'
-          : 'min-h-14 flex-row items-center gap-4 border-b border-border px-4 py-3'
-      }
-    >
+  const className = cn(
+    'min-h-14 flex-row items-center gap-4 px-4 py-3',
+    !last && 'border-b border-border',
+    bookingId && 'active:bg-accent',
+  );
+  const content = (
+    <>
       <Text className="w-20 text-2xl font-bold" numberOfLines={1}>
         {spot.spot_label}
       </Text>
@@ -233,6 +266,30 @@ function SpotLine({ spot, last }: { spot: LifeguardRow; last: boolean }) {
           </View>
         ) : null}
       </View>
+    </>
+  );
+  return bookingId ? (
+    <View role="listitem">
+      <Pressable
+        role="link"
+        accessibilityLabel={label}
+        accessibilityHint={t('lifeguard.openBooking')}
+        testID={`lifeguard-spot-${spot.spot_id}`}
+        onPress={() => router.push({ pathname: '/bookings/[bookingId]', params: { bookingId } })}
+        className={className}
+      >
+        {content}
+      </Pressable>
+    </View>
+  ) : (
+    <View
+      role="listitem"
+      accessible
+      accessibilityLabel={label}
+      testID={`lifeguard-spot-${spot.spot_id}`}
+      className={className}
+    >
+      {content}
     </View>
   );
 }

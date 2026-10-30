@@ -168,7 +168,7 @@
     "bookings": "Prenotazioni",
     "booking": "Prenotazione",
     "spots": "Postazioni",
-    "lifeguard": "Lista bagnini",
+    "lifeguard": "Clienti per fila",
     "operations": "Operazioni",
     "reports": "Report",
     "sale": "Vendita giornaliera",
@@ -177,7 +177,8 @@
     "waitlistEntry": "Iscrizione",
     "toggleMenu": "Mostra o nascondi il menu",
     "closeMenu": "Chiudi il menu",
-    "newBooking": "Nuova prenotazione"
+    "newBooking": "Nuova prenotazione",
+    "availability": "Disponibilità"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -552,7 +553,8 @@
     },
     "emptyTitle": "Nessuna postazione occupata in questo giorno.",
     "noMatchTitle": "Nessuna postazione con questo filtro.",
-    "showAll": "Mostra tutte"
+    "showAll": "Mostra tutte",
+    "openBooking": "Apre la prenotazione"
   },
   "bookings": {
     "status": {
@@ -773,6 +775,15 @@
       "children_one": "{{count}} bambino",
       "children_other": "{{count}} bambini",
       "names": "Ospiti"
+    },
+    "contact": {
+      "call": "Chiama",
+      "whatsapp": "WhatsApp",
+      "email": "Scrivi",
+      "callLabel": "Chiama {{name}}",
+      "whatsappLabel": "Scrivi a {{name}} su WhatsApp",
+      "emailLabel": "Scrivi un'email a {{name}}",
+      "failed": "Nessuna app del telefono può aprire questo contatto."
     }
   },
   "operations": {
@@ -1237,6 +1248,40 @@
       "not_found": "Postazione o pacchetto non più disponibili.",
       "default": "Prenotazione non riuscita. Riprova."
     }
+  },
+  "availability": {
+    "subtitle": "Le postazioni libere per tutto il soggiorno, fila per fila. Tocca una postazione libera per prenotarla.",
+    "map": "Mappa",
+    "filters": "Filtra le file",
+    "onlyFree": "Solo con posti liberi",
+    "total_one": "{{count}} postazione libera per tutto il soggiorno",
+    "total_other": "{{count}} postazioni libere per tutto il soggiorno",
+    "none": "Nessuna postazione libera per tutto il soggiorno",
+    "closedDays": "Giorni di chiusura esclusi: {{dates}}",
+    "row": "Fila {{row}}",
+    "noRow": "Senza fila",
+    "rowFree_one": "{{count}} libera",
+    "rowFree_other": "{{count}} libere",
+    "rowFull": "Nessun posto libero",
+    "partly": "Libere solo in parte: {{spots}}",
+    "partlySpot": "{{label}} ({{free}} giorni su {{total}})",
+    "noSpots": "Nessuna postazione prenotabile su questa mappa.",
+    "noFreeRows": "Nessuna fila con postazioni libere.",
+    "loading": "Cerco le postazioni libere…",
+    "errorTitle": "Disponibilità non caricata",
+    "errorDescription": "Controlla la connessione con l'istanza e riprova.",
+    "closedStay": "Lo stabilimento è chiuso per tutto il soggiorno.",
+    "updating": "Aggiorno la disponibilità…",
+    "attributes": "Caratteristiche (tutte quelle scelte)",
+    "noMatch": "Nessuna postazione con tutte queste caratteristiche.",
+    "zoneFree_one": "{{count}} posto libero su {{capacity}}",
+    "zoneFree_other": "{{count}} posti liberi su {{capacity}}",
+    "zoneMode": {
+      "zone": "Posto nella zona",
+      "quantity": "A quantità"
+    },
+    "noneNumbered": "Nessuna postazione numerata libera per tutto il soggiorno",
+    "tooLong": "Periodo troppo lungo: la disponibilità si chiede per al massimo {{count}} giorni."
   },
   "move": {
     "action": "Sposta su un'altra postazione",

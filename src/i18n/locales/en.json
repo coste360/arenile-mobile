@@ -168,7 +168,7 @@
     "bookings": "Bookings",
     "booking": "Booking",
     "spots": "Spots",
-    "lifeguard": "Lifeguard list",
+    "lifeguard": "Customers by row",
     "operations": "Operations",
     "reports": "Reports",
     "sale": "Daily sale",
@@ -177,7 +177,8 @@
     "waitlistEntry": "Entry",
     "toggleMenu": "Show or hide the menu",
     "closeMenu": "Close the menu",
-    "newBooking": "New booking"
+    "newBooking": "New booking",
+    "availability": "Availability"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -552,7 +553,8 @@
     },
     "emptyTitle": "No spot is occupied on this day.",
     "noMatchTitle": "No spot matches this filter.",
-    "showAll": "Show all"
+    "showAll": "Show all",
+    "openBooking": "Opens the booking"
   },
   "bookings": {
     "status": {
@@ -773,6 +775,15 @@
       "children_one": "{{count}} child",
       "children_other": "{{count}} children",
       "names": "Guests"
+    },
+    "contact": {
+      "call": "Call",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "callLabel": "Call {{name}}",
+      "whatsappLabel": "Message {{name}} on WhatsApp",
+      "emailLabel": "Email {{name}}",
+      "failed": "No app on this phone can open this contact."
     }
   },
   "operations": {
@@ -1237,6 +1248,40 @@
       "not_found": "Spot or package no longer available.",
       "default": "Booking failed. Try again."
     }
+  },
+  "availability": {
+    "subtitle": "Spots free for the whole stay, row by row. Tap a free spot to book it.",
+    "map": "Map",
+    "filters": "Filter the rows",
+    "onlyFree": "Only with free places",
+    "total_one": "{{count}} spot free for the whole stay",
+    "total_other": "{{count}} spots free for the whole stay",
+    "none": "No spot free for the whole stay",
+    "closedDays": "Closed days left out: {{dates}}",
+    "row": "Row {{row}}",
+    "noRow": "No row",
+    "rowFree_one": "{{count}} free",
+    "rowFree_other": "{{count}} free",
+    "rowFull": "No free spot",
+    "partly": "Partly free: {{spots}}",
+    "partlySpot": "{{label}} ({{free}} of {{total}} days)",
+    "noSpots": "No bookable spot on this map.",
+    "noFreeRows": "No row with free spots.",
+    "loading": "Looking for free spots…",
+    "errorTitle": "Availability not loaded",
+    "errorDescription": "Check the connection to the instance and try again.",
+    "closedStay": "The establishment is closed for the whole stay.",
+    "updating": "Updating the availability…",
+    "attributes": "Features (all of the chosen ones)",
+    "noMatch": "No spot has all these features.",
+    "zoneFree_one": "{{count}} place free of {{capacity}}",
+    "zoneFree_other": "{{count}} places free of {{capacity}}",
+    "zoneMode": {
+      "zone": "A place in the area",
+      "quantity": "By quantity"
+    },
+    "noneNumbered": "No numbered spot free for the whole stay",
+    "tooLong": "Period too long: availability covers at most {{count}} days."
   },
   "move": {
     "action": "Move to another spot",

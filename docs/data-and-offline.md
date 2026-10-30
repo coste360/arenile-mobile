@@ -19,7 +19,9 @@ writing its own fetching, caching or permission logic.
   - `features/maps/queries.ts`: `useMaps()` (display order), `useMapDocument(mapId)`;
   - `features/lifeguard/queries.ts`: `useLifeguardList(date)`, `lifeguardListQuery` (core spec
     30.10) under `['est', id, 'operations', 'lifeguard', { date, slot }]`: persisted and prefetched
-    for today and tomorrow like the operations day, other days online only (ADR 0014);
+    for today and tomorrow like the operations day, other days online only (ADR 0014). The list
+    also reads the operations day of the same date (`rowBookings`) to link a row to its booking:
+    from the cache offline, one extra request online for days outside the offline window;
   - `features/auth/queries.ts`: `useMe()` (memberships and permissions of the pairing user).
 - **Types** — only from `src/api/types.ts` (aliases of the generated contract).
 - **Dates** — `src/lib/calendar.ts`: `todayIn(zone, now)`, `addDays`, `daysBetween`,
@@ -121,6 +123,16 @@ Other screens reuse them instead of rewriting the actions:
 - **Spot calendar** — `features/day-map/spot-calendar`: `useSpotCalendar(spotId)` (core 1.1, spec
   30.5) under `['est', id, 'operations', 'spot-calendar', spotId]`, a kind the allowlist does not
   persist: online only, like the days beyond tomorrow (ADR 0014).
+- **Availability by row** — `features/availability`: `useAvailability({ from, to, slots, mapId })`
+  (GET availability with `map_id`, core spec 7.8 and 30.4: the spots and zones of the selected map)
+  and `useMaplessZones(stay, zoneIds)` (one GET availability with `zone_id` per zone without a map,
+  which `map_id` leaves out), under `['est', id, 'operations', 'availability', params]`, never
+  persisted; stays of at most `MAX_AVAILABILITY_DAYS` (199: the core refuses 200 days or more).
+  `rowsOf()` joins the map's answer with its document to group the spots of seat zones by row
+  (optionally only those with all the chosen `attributeOptions()`, taken from the same spots);
+  `zoneCards()` lists the zone and quantity zones the zones list knows (`useZones()`: GET zones,
+  every page, under `maps`, same permission as the maps), without the zones without places. While
+  the zones list is unknown there are no zone cards and no map-less requests.
 
 ## Phase 2: sale, move, waitlist, printing (online only)
 

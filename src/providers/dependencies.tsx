@@ -54,6 +54,11 @@ export interface Dependencies {
    * share sheet cannot open.
    */
   shareText: (message: string) => Promise<void>;
+  /**
+   * Opens a link in the app that handles it (`tel:`, `mailto:`, WhatsApp).
+   * Rejects when no app can open it.
+   */
+  openUrl: (url: string) => Promise<void>;
   /** Home screen widget (app group / shared preferences); absent means no widget. */
   widget?: WidgetBridge;
 }
@@ -84,6 +89,9 @@ export function createDefaultDependencies(): Dependencies {
     shareText: async (message) => {
       // The result (shared or dismissed) does not matter: dismissing is not an error.
       await Share.share({ message });
+    },
+    openUrl: async (url) => {
+      await Linking.openURL(url);
     },
     widget: createExpoWidgetBridge(),
   };

@@ -1,10 +1,12 @@
-import type { LifeguardRow } from '@/api/types';
+import type { LifeguardRow, OperationalSpot } from '@/api/types';
+import { operationalBooking, spot } from '@/test/operations-fixtures';
 
 import {
   filterLifeguardRows,
   groupByRow,
   LIFEGUARD_FILTERS,
   lifeguardCounts,
+  rowBookings,
   type LifeguardFilter,
 } from './lifeguard';
 
@@ -82,5 +84,44 @@ describe('groupByRow', () => {
     ['nothing occupied', [], []],
   ])('%s', (_name, rows, want) => {
     expect(groupByRow(rows).map((g) => [g.row, g.spots.map((s) => s.spot_label)])).toEqual(want);
+  });
+});
+
+describe('rowBookings', () => {
+  const lifeguardRow = (spot_id: string, occupant_label = 'Rossi'): LifeguardRow => ({
+    row_label: 'A',
+    spot_id,
+    spot_label: spot_id,
+    occupant_label,
+    arriving: false,
+    departing: false,
+    balance_due: false,
+  });
+  const daySpot = (overrides: Partial<OperationalSpot> = {}): OperationalSpot =>
+    spot({
+      spot_id: 's-1',
+      booking: operationalBooking({ booking_id: 'b-1', occupant_label: 'Rossi' }),
+      ...overrides,
+    });
+
+  it.each<[string, OperationalSpot[], LifeguardRow, string | undefined]>([
+    ['the whole day is one booking with the same name', [daySpot()], lifeguardRow('s-1'), 'b-1'],
+    [
+      'same status in both halves',
+      [daySpot({ am_status: 'booked', pm_status: 'booked' })],
+      lifeguardRow('s-1'),
+      'b-1',
+    ],
+    [
+      'a split day: the booking may be the other half',
+      [daySpot({ am_status: 'booked', pm_status: 'checked_in' })],
+      lifeguardRow('s-1'),
+      undefined,
+    ],
+    ['another last name on the row', [daySpot()], lifeguardRow('s-1', 'Bianchi'), undefined],
+    ['no booking on the spot', [daySpot({ booking: undefined })], lifeguardRow('s-1'), undefined],
+    ['the spot is not in the day', [], lifeguardRow('s-1'), undefined],
+  ])('%s', (_name, spots, row, expected) => {
+    expect(rowBookings([row], spots).get(row.spot_id)).toBe(expected);
   });
 });

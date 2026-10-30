@@ -168,7 +168,7 @@
     "bookings": "Buchungen",
     "booking": "Buchung",
     "spots": "Plätze",
-    "lifeguard": "Rettungsschwimmer-Liste",
+    "lifeguard": "Kunden nach Reihe",
     "operations": "Vorgänge",
     "reports": "Berichte",
     "sale": "Tagesverkauf",
@@ -177,7 +177,8 @@
     "waitlistEntry": "Eintrag",
     "toggleMenu": "Menü ein- oder ausblenden",
     "closeMenu": "Menü schließen",
-    "newBooking": "Neue Buchung"
+    "newBooking": "Neue Buchung",
+    "availability": "Verfügbarkeit"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -552,7 +553,8 @@
     },
     "emptyTitle": "An diesem Tag ist kein Platz belegt.",
     "noMatchTitle": "Kein Platz entspricht diesem Filter.",
-    "showAll": "Alle anzeigen"
+    "showAll": "Alle anzeigen",
+    "openBooking": "Öffnet die Buchung"
   },
   "bookings": {
     "status": {
@@ -773,6 +775,15 @@
       "children_one": "{{count}} Kind",
       "children_other": "{{count}} Kinder",
       "names": "Gäste"
+    },
+    "contact": {
+      "call": "Anrufen",
+      "whatsapp": "WhatsApp",
+      "email": "E-Mail",
+      "callLabel": "{{name}} anrufen",
+      "whatsappLabel": "{{name}} auf WhatsApp schreiben",
+      "emailLabel": "{{name}} eine E-Mail schreiben",
+      "failed": "Keine App auf diesem Telefon kann diesen Kontakt öffnen."
     }
   },
   "operations": {
@@ -1237,6 +1248,40 @@
       "not_found": "Platz oder Paket nicht mehr verfügbar.",
       "default": "Buchung fehlgeschlagen. Erneut versuchen."
     }
+  },
+  "availability": {
+    "subtitle": "Die für den ganzen Aufenthalt freien Plätze, Reihe für Reihe. Tippe auf einen freien Platz, um ihn zu buchen.",
+    "map": "Karte",
+    "filters": "Reihen filtern",
+    "onlyFree": "Nur mit freien Plätzen",
+    "total_one": "{{count}} Platz für den ganzen Aufenthalt frei",
+    "total_other": "{{count}} Plätze für den ganzen Aufenthalt frei",
+    "none": "Kein Platz für den ganzen Aufenthalt frei",
+    "closedDays": "Ruhetage ausgenommen: {{dates}}",
+    "row": "Reihe {{row}}",
+    "noRow": "Ohne Reihe",
+    "rowFree_one": "{{count}} frei",
+    "rowFree_other": "{{count}} frei",
+    "rowFull": "Kein freier Platz",
+    "partly": "Teilweise frei: {{spots}}",
+    "partlySpot": "{{label}} ({{free}} von {{total}} Tagen)",
+    "noSpots": "Kein buchbarer Platz auf dieser Karte.",
+    "noFreeRows": "Keine Reihe mit freien Plätzen.",
+    "loading": "Freie Plätze werden gesucht…",
+    "errorTitle": "Verfügbarkeit nicht geladen",
+    "errorDescription": "Prüfe die Verbindung zur Instanz und versuche es erneut.",
+    "closedStay": "Der Betrieb ist während des ganzen Aufenthalts geschlossen.",
+    "updating": "Verfügbarkeit wird aktualisiert…",
+    "attributes": "Merkmale (alle ausgewählten)",
+    "noMatch": "Kein Platz hat alle diese Merkmale.",
+    "zoneFree_one": "{{count}} von {{capacity}} Plätzen frei",
+    "zoneFree_other": "{{count}} von {{capacity}} Plätzen frei",
+    "zoneMode": {
+      "zone": "Platz im Bereich",
+      "quantity": "Nach Menge"
+    },
+    "noneNumbered": "Kein nummerierter Platz für den ganzen Aufenthalt frei",
+    "tooLong": "Zeitraum zu lang: Die Verfügbarkeit umfasst höchstens {{count}} Tage."
   },
   "move": {
     "action": "Auf einen anderen Platz verschieben",

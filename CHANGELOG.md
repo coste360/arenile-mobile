@@ -11,7 +11,18 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
-- **Lista bagnini** (core 1.1, spec 30.10): le postazioni occupate del giorno fila per fila, a
+- **Contattare il cliente dalla scheda:** "Chiama", "WhatsApp" (solo numeri in formato internazionale,
+  come li salva il core) e "Scrivi" aprono le app del telefono, solo per i ruoli che vedono i contatti.
+- **Clienti per fila:** toccare una postazione apre la sua prenotazione.
+- **Disponibilità**: per il cliente che arriva in cassa, le postazioni libere per tutto il soggiorno
+  fila per fila (date fino a 199 giorni, durata, fascia, mappa), le file e le zone piene nascoste a
+  richiesta e le postazioni libere solo in parte elencate con i giorni liberi, le zone a zona o a
+  quantità della mappa e quelle senza mappa con i posti liberi, filtri per le caratteristiche delle
+  postazioni (tutte quelle scelte); una postazione libera apre la nuova prenotazione al volo con le
+  stesse date. Dal pulsante nell'intestazione della mappa (con il giorno e la mappa scelti), dalla home
+  e dal pannello del tablet, per chi scrive le prenotazioni, solo online (core `GET availability`, spec
+  7.8 e 30.4). Il _Trova posto_ del core (spec 30.6, proposte con cambi di posto) resta per dopo.
+- **Clienti per fila** (la "lista per i bagnini" del core 1.1, spec 30.10): le postazioni occupate del giorno fila per fila, a
   caratteri grandi per la spiaggia, con cognome, allestimento, gruppo, arrivo, partenza e da saldare,
   mai contatti; filtri per arrivi, partenze e da saldare, calendario come mappa e prenotazioni. Oggi e
   domani anche offline (scaricate e salvate con il giorno operativo), gli altri giorni solo online. Dal
@@ -162,7 +173,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   dov'era. Su Android il tasto Indietro la chiude.
 - Le postazioni libere e i giorni rilasciati di _Oggi_ si toccano: aprono la postazione sulla mappa,
   con vendita, prenotazione e le altre azioni del ruolo.
-- Contratto API e kit della mappa dalla release **v1.1.2** del core (prima v1.0.1). La versione minima
+- Contratto API e kit della mappa dalla release **v1.1.3** del core (prima v1.0.1; la 1.1.3 documenta
+  soltanto la risposta della verifica del requisito, nessun cambiamento per l'app). La versione minima
   di Arenile supportata resta la 1.0.0. Spostamento, vendita giornaliera e offerta della lista d'attesa
   rifiutati perché il contingente di una convenzione è esaurito (core 1.1) dicono che la postazione non
   è libera.
@@ -198,6 +210,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Corretto
 
+- In Expo Go la mappa mostrava l'errore "Cannot find native module 'ExpoWidgets'": il widget della
+  home non viene più cercato in Expo Go, dove non esiste.
 - Il calendario per scegliere il giorno su iOS si apriva vuoto: il calendario nativo non si disegna
   nella finestra sovrapposta dei dialoghi; ora il dialogo si apre nell'app e la tastiera si chiude.
 - Su tablet le righe delle prenotazioni erano illeggibili nella lista stretta: l'importo da saldare

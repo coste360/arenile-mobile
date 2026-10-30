@@ -37,6 +37,12 @@ export const estKeys = {
   lifeguardList: (establishmentId: string, date: CalendarDate, slot: Slots = 'FULL') =>
     ['est', establishmentId, 'operations', 'lifeguard', { date, slot }] as const,
 
+  /** GET availability of a stay on a map (mapId) or for one zone (zoneId): "Disponibilità", online only, never persisted. */
+  availability: (
+    establishmentId: string,
+    params: { from: CalendarDate; to: CalendarDate; slots: Slots; mapId?: string; zoneId?: string },
+  ) => ['est', establishmentId, 'operations', 'availability', params] as const,
+
   /** GET spots/{id}/calendar: the season of a spot, half day by half day (online only). */
   spotCalendar: (establishmentId: string, spotId: string) =>
     ['est', establishmentId, 'operations', 'spot-calendar', spotId] as const,
@@ -54,6 +60,8 @@ export const estKeys = {
 
   /** GET maps: the maps of the establishment, in display order. */
   maps: (establishmentId: string) => ['est', establishmentId, 'maps', 'list'] as const,
+  /** GET zones: every zone of the establishment (names of the zone cards in "Disponibilità"). */
+  zones: (establishmentId: string) => ['est', establishmentId, 'maps', 'zones'] as const,
   /** GET maps/{id}: the full map document (spots and decorations). */
   map: (establishmentId: string, mapId: string) =>
     ['est', establishmentId, 'maps', 'detail', mapId] as const,

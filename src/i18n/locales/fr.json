@@ -168,7 +168,7 @@
     "bookings": "Réservations",
     "booking": "Réservation",
     "spots": "Emplacements",
-    "lifeguard": "Liste des maîtres-nageurs",
+    "lifeguard": "Clients par rangée",
     "operations": "Opérations",
     "reports": "Rapports",
     "sale": "Vente du jour",
@@ -177,7 +177,8 @@
     "waitlistEntry": "Inscription",
     "toggleMenu": "Afficher ou masquer le menu",
     "closeMenu": "Fermer le menu",
-    "newBooking": "Nouvelle réservation"
+    "newBooking": "Nouvelle réservation",
+    "availability": "Disponibilité"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -552,7 +553,8 @@
     },
     "emptyTitle": "Aucun emplacement occupé ce jour-là.",
     "noMatchTitle": "Aucun emplacement ne correspond à ce filtre.",
-    "showAll": "Tout afficher"
+    "showAll": "Tout afficher",
+    "openBooking": "Ouvre la réservation"
   },
   "bookings": {
     "status": {
@@ -773,6 +775,15 @@
       "children_one": "{{count}} enfant",
       "children_other": "{{count}} enfants",
       "names": "Hôtes"
+    },
+    "contact": {
+      "call": "Appeler",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "callLabel": "Appeler {{name}}",
+      "whatsappLabel": "Écrire à {{name}} sur WhatsApp",
+      "emailLabel": "Envoyer un e-mail à {{name}}",
+      "failed": "Aucune app de ce téléphone ne peut ouvrir ce contact."
     }
   },
   "operations": {
@@ -1237,6 +1248,40 @@
       "not_found": "Emplacement ou forfait plus disponible.",
       "default": "Réservation échouée. Réessayez."
     }
+  },
+  "availability": {
+    "subtitle": "Les places libres pour tout le séjour, rangée par rangée. Touchez une place libre pour la réserver.",
+    "map": "Plan",
+    "filters": "Filtrer les rangées",
+    "onlyFree": "Seulement avec des places libres",
+    "total_one": "{{count}} place libre pour tout le séjour",
+    "total_other": "{{count}} places libres pour tout le séjour",
+    "none": "Aucune place libre pour tout le séjour",
+    "closedDays": "Jours de fermeture exclus : {{dates}}",
+    "row": "Rangée {{row}}",
+    "noRow": "Sans rangée",
+    "rowFree_one": "{{count}} libre",
+    "rowFree_other": "{{count}} libres",
+    "rowFull": "Aucune place libre",
+    "partly": "Libres en partie : {{spots}}",
+    "partlySpot": "{{label}} ({{free}} jours sur {{total}})",
+    "noSpots": "Aucune place réservable sur ce plan.",
+    "noFreeRows": "Aucune rangée avec des places libres.",
+    "loading": "Recherche des places libres…",
+    "errorTitle": "Disponibilité non chargée",
+    "errorDescription": "Vérifiez la connexion à l'instance et réessayez.",
+    "closedStay": "L'établissement est fermé pendant tout le séjour.",
+    "updating": "Mise à jour de la disponibilité…",
+    "attributes": "Caractéristiques (toutes celles choisies)",
+    "noMatch": "Aucune place n'a toutes ces caractéristiques.",
+    "zoneFree_one": "{{count}} place libre sur {{capacity}}",
+    "zoneFree_other": "{{count}} places libres sur {{capacity}}",
+    "zoneMode": {
+      "zone": "Une place dans la zone",
+      "quantity": "À la quantité"
+    },
+    "noneNumbered": "Aucune place numérotée libre pour tout le séjour",
+    "tooLong": "Période trop longue : la disponibilité couvre au plus {{count}} jours."
   },
   "move": {
     "action": "Déplacer vers un autre emplacement",
