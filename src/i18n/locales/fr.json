@@ -177,7 +177,8 @@
     "waitlistEntry": "Inscription",
     "toggleMenu": "Afficher ou masquer le menu",
     "closeMenu": "Fermer le menu",
-    "newBooking": "Nouvelle réservation"
+    "newBooking": "Nouvelle réservation",
+    "findSpot": "Trouver une place"
   },
   "home": {
     "establishmentFallback": "Établissement",
@@ -1247,6 +1248,28 @@
       "not_found": "Emplacement ou forfait plus disponible.",
       "default": "Réservation échouée. Réessayez."
     }
+  },
+  "findSpot": {
+    "subtitle": "Les places libres pour tout le séjour, rangée par rangée. Touchez une place libre pour la réserver.",
+    "map": "Plan",
+    "filters": "Filtrer les rangées",
+    "onlyFree": "Seulement les rangées avec des places libres",
+    "total_one": "{{count}} place libre pour tout le séjour",
+    "total_other": "{{count}} places libres pour tout le séjour",
+    "none": "Aucune place libre pour tout le séjour",
+    "closedDays": "Jours de fermeture exclus : {{dates}}",
+    "row": "Rangée {{row}}",
+    "noRow": "Sans rangée",
+    "rowFree_one": "{{count}} libre",
+    "rowFree_other": "{{count}} libres",
+    "rowFull": "Aucune place libre",
+    "partly": "Libres en partie : {{spots}}",
+    "partlySpot": "{{label}} ({{free}} jours sur {{total}})",
+    "noSpots": "Aucune place réservable sur ce plan.",
+    "noFreeRows": "Aucune rangée avec des places libres.",
+    "loading": "Recherche des places libres…",
+    "errorTitle": "Disponibilité non chargée",
+    "errorDescription": "Vérifiez la connexion à l'instance et réessayez."
   },
   "move": {
     "action": "Déplacer vers un autre emplacement",

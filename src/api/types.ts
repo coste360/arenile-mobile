@@ -100,3 +100,6 @@ export type BookingQuote = Schemas['BookingQuote'];
 export type Formula = Schemas['Formula'];
 export type Hold = Schemas['Hold'];
 export type HoldCreate = Schemas['HoldCreate'];
+
+// Core 1.1 (spec 7.8, 30.4): availability of a stay, for "Trova posto".
+export type AvailabilityResult = Schemas['AvailabilityResult'];

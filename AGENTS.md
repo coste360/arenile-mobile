@@ -42,7 +42,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   operations, day map, `today` ("Oggi"), `bookings/` (day list; tablet list + sheet), `bookings/[bookingId]`
   (sheet on phones), `spots` (free / released spots), `lifeguard` (lifeguard list), `spot-calendar/[spotId]`
   (season calendar of a spot), `operations/` hub, QR scanner, booking and spot operations, phase 2 `sale`
-  (daily quick sale), `new-booking` (new booking on the fly), `move/[bookingId]`, `waitlist/` (list; tablet list +
+  (daily quick sale), `new-booking` (new booking on the fly), `find-spot` (free spots of a stay row by row), `move/[bookingId]`, `waitlist/` (list; tablet list +
   entry), `waitlist/[entryId]`; phone stack or tablet master/detail)
 - `src/api/` the single API client (`client.ts`), transport selection (`transport.ts`), typed errors
   (`errors.ts`), contract type aliases (`types.ts`), TanStack Query keys (`query-keys.ts`);
@@ -58,7 +58,7 @@ The same applies to NativeWind (v4, Tailwind 3) and React Native Reusables: chec
   desk state), `spot-blocks` (online-only blocks, spot search), `reports` (year comparison, periods,
   formats; phase 3), `widget` (home screen widget snapshot, bridge, `WidgetSync`), phase 2 (ADR 0011):
   `daily-sale` (sale rules, catalogue, quote, sale), `new-booking` (stay, quote, hold and booking
-  on the fly), `move-booking` (move rules, dry run, booking or
+  on the fly), `find-spot` (availability of a stay by row), `move-booking` (move rules, dry run, booking or
   ticket move), `waitlist` (list, compatibility, offer), `printing` (print route, jobs), `tickets`
   (ticket of a booking). No push notifications in this edition (ADR 0012): data refreshes when the app
   is opened or foregrounded. **Read `docs/data-and-offline.md` before adding a feature.**

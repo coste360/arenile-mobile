@@ -14,6 +14,11 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 - **Contattare il cliente dalla scheda:** "Chiama", "WhatsApp" (solo numeri in formato internazionale,
   come li salva il core) e "Scrivi" aprono le app del telefono, solo per i ruoli che vedono i contatti.
 - **Clienti per fila:** toccare una postazione apre la sua prenotazione.
+- **Trova posto**: per il cliente che arriva in cassa, le postazioni libere per tutto il soggiorno fila
+  per fila (date, durata, fascia, mappa), le file piene nascoste a richiesta e le postazioni libere solo
+  in parte elencate con i giorni liberi; una postazione libera apre la nuova prenotazione al volo con le
+  stesse date. Dal pulsante nell'intestazione della mappa, dalla home e dal pannello del tablet, per chi
+  scrive le prenotazioni, solo online (core `GET availability`).
 - **Clienti per fila** (la "lista per i bagnini" del core 1.1, spec 30.10): le postazioni occupate del giorno fila per fila, a
   caratteri grandi per la spiaggia, con cognome, allestimento, gruppo, arrivo, partenza e da saldare,
   mai contatti; filtri per arrivi, partenze e da saldare, calendario come mappa e prenotazioni. Oggi e

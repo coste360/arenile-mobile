@@ -177,7 +177,8 @@
     "waitlistEntry": "Entry",
     "toggleMenu": "Show or hide the menu",
     "closeMenu": "Close the menu",
-    "newBooking": "New booking"
+    "newBooking": "New booking",
+    "findSpot": "Find a spot"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -1247,6 +1248,28 @@
       "not_found": "Spot or package no longer available.",
       "default": "Booking failed. Try again."
     }
+  },
+  "findSpot": {
+    "subtitle": "Spots free for the whole stay, row by row. Tap a free spot to book it.",
+    "map": "Map",
+    "filters": "Filter the rows",
+    "onlyFree": "Only rows with free spots",
+    "total_one": "{{count}} spot free for the whole stay",
+    "total_other": "{{count}} spots free for the whole stay",
+    "none": "No spot free for the whole stay",
+    "closedDays": "Closed days left out: {{dates}}",
+    "row": "Row {{row}}",
+    "noRow": "No row",
+    "rowFree_one": "{{count}} free",
+    "rowFree_other": "{{count}} free",
+    "rowFull": "No free spot",
+    "partly": "Partly free: {{spots}}",
+    "partlySpot": "{{label}} ({{free}} of {{total}} days)",
+    "noSpots": "No bookable spot on this map.",
+    "noFreeRows": "No row with free spots.",
+    "loading": "Looking for free spots…",
+    "errorTitle": "Availability not loaded",
+    "errorDescription": "Check the connection to the instance and try again."
   },
   "move": {
     "action": "Move to another spot",

@@ -9,6 +9,7 @@ import {
   ListOrderedIcon,
   MapIcon,
   MenuIcon,
+  SearchCheckIcon,
   SettingsIcon,
   type LucideIcon,
 } from 'lucide-react-native';
@@ -26,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
 import { Text } from '@/components/ui/text';
+import { canCreateBooking } from '@/features/new-booking/new-booking';
 import type { Abilities } from '@/features/permissions/permissions';
 import { useAbilities } from '@/features/permissions/use-abilities';
 import { useSession } from '@/features/session/session-provider';
@@ -41,7 +43,8 @@ interface NavItem {
     | '/settings'
     | '/today'
     | '/bookings'
-    | '/lifeguard';
+    | '/lifeguard'
+    | '/find-spot';
   label:
     | 'nav.home'
     | 'nav.map'
@@ -51,7 +54,8 @@ interface NavItem {
     | 'nav.settings'
     | 'nav.today'
     | 'nav.bookings'
-    | 'nav.lifeguard';
+    | 'nav.lifeguard'
+    | 'nav.findSpot';
   icon: LucideIcon;
   /** Shown only when the role may open it (hidden, the server stays the judge). */
   visible?: (abilities: Abilities) => boolean;
@@ -62,6 +66,12 @@ const NAV: NavItem[] = [
   { href: '/today', label: 'nav.today', icon: CalendarDaysIcon },
   { href: '/bookings', label: 'nav.bookings', icon: ClipboardListIcon },
   { href: '/map', label: 'nav.map', icon: MapIcon },
+  {
+    href: '/find-spot',
+    label: 'nav.findSpot',
+    icon: SearchCheckIcon,
+    visible: canCreateBooking,
+  },
   {
     href: '/lifeguard',
     label: 'nav.lifeguard',
@@ -131,12 +141,19 @@ function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') =>
 /** Phase 2 screens (spec 03) and the new booking, online only, declared once for both layouts. */
 function phase2Screens(
   t: (
-    key: 'nav.sale' | 'nav.move' | 'nav.waitlist' | 'nav.waitlistEntry' | 'nav.newBooking',
+    key:
+      | 'nav.sale'
+      | 'nav.move'
+      | 'nav.waitlist'
+      | 'nav.waitlistEntry'
+      | 'nav.newBooking'
+      | 'nav.findSpot',
   ) => string,
 ) {
   return [
     <Stack.Screen key="sale" name="sale" options={{ title: t('nav.sale') }} />,
     <Stack.Screen key="new-booking" name="new-booking" options={{ title: t('nav.newBooking') }} />,
+    <Stack.Screen key="find-spot" name="find-spot" options={{ title: t('nav.findSpot') }} />,
     <Stack.Screen key="move" name="move/[bookingId]" options={{ title: t('nav.move') }} />,
     <Stack.Screen key="waitlist" name="waitlist/index" options={{ title: t('nav.waitlist') }} />,
     <Stack.Screen

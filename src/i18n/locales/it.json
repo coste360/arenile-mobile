@@ -177,7 +177,8 @@
     "waitlistEntry": "Iscrizione",
     "toggleMenu": "Mostra o nascondi il menu",
     "closeMenu": "Chiudi il menu",
-    "newBooking": "Nuova prenotazione"
+    "newBooking": "Nuova prenotazione",
+    "findSpot": "Trova posto"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -1247,6 +1248,28 @@
       "not_found": "Postazione o pacchetto non più disponibili.",
       "default": "Prenotazione non riuscita. Riprova."
     }
+  },
+  "findSpot": {
+    "subtitle": "Le postazioni libere per tutto il soggiorno, fila per fila. Tocca una postazione libera per prenotarla.",
+    "map": "Mappa",
+    "filters": "Filtra le file",
+    "onlyFree": "Solo file con posti liberi",
+    "total_one": "{{count}} postazione libera per tutto il soggiorno",
+    "total_other": "{{count}} postazioni libere per tutto il soggiorno",
+    "none": "Nessuna postazione libera per tutto il soggiorno",
+    "closedDays": "Giorni di chiusura esclusi: {{dates}}",
+    "row": "Fila {{row}}",
+    "noRow": "Senza fila",
+    "rowFree_one": "{{count}} libera",
+    "rowFree_other": "{{count}} libere",
+    "rowFull": "Nessun posto libero",
+    "partly": "Libere solo in parte: {{spots}}",
+    "partlySpot": "{{label}} ({{free}} giorni su {{total}})",
+    "noSpots": "Nessuna postazione prenotabile su questa mappa.",
+    "noFreeRows": "Nessuna fila con posti liberi.",
+    "loading": "Cerco le postazioni libere…",
+    "errorTitle": "Disponibilità non caricata",
+    "errorDescription": "Controlla la connessione con l'istanza e riprova."
   },
   "move": {
     "action": "Sposta su un'altra postazione",
