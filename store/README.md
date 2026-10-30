@@ -4,14 +4,15 @@ Schermate vere dell'app (Expo Go nei simulatori iPhone 6,9" e iPad 13", collegat
 ora fissata alle 9:41) con una didascalia in Titillium Web, il carattere del marchio Arenile, sul blu
 Coste360. Le genera `scripts/store/compose.py`.
 
-| Cartella                          | Misura      | Per                                                       |
-| --------------------------------- | ----------- | --------------------------------------------------------- |
-| `app-store/iphone-6.9/`           | 1320 × 2868 | App Store, iPhone 6,9" (richiesto)                        |
-| `app-store/ipad-13/`              | 2064 × 2752 | App Store, iPad 13" (richiesto); anche tablet Google Play |
-| `app-store/header-16x9.png`       | 5244 × 2950 | App Store, intestazione e risultati di ricerca (16:9)     |
-| `app-store/header-21x9.png`       | 3840 × 1646 | App Store, intestazione (21:9)                            |
-| `google-play/phone/`              | 1080 × 1920 | Google Play, telefoni                                     |
-| `google-play/feature-graphic.png` | 1024 × 500  | Google Play, grafica in evidenza                          |
+| Cartella                          | Misura      | Per                                                          |
+| --------------------------------- | ----------- | ------------------------------------------------------------ |
+| `app-store/iphone-6.3/`           | 1206 × 2622 | App Store, iPhone 6,3" (obbligatorio)                        |
+| `app-store/iphone-6.9/`           | 1320 × 2868 | App Store, iPhone 6,9" (facoltativo)                         |
+| `app-store/ipad-13/`              | 2064 × 2752 | App Store, iPad 13" (obbligatorio); anche tablet Google Play |
+| `app-store/header-16x9.png`       | 5244 × 2950 | App Store, intestazione e risultati di ricerca (16:9)        |
+| `app-store/header-21x9.png`       | 3840 × 1646 | App Store, intestazione (21:9)                               |
+| `google-play/phone/`              | 1080 × 1920 | Google Play, telefoni                                        |
+| `google-play/feature-graphic.png` | 1024 × 500  | Google Play, grafica in evidenza                             |
 
 Le didascalie sono in italiano; per le altre lingue si rifanno le schermate con l'app in quella lingua.
 

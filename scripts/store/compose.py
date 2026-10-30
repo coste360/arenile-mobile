@@ -175,6 +175,8 @@ def main():
     # Google Play tablets take the iPad 13" images as they are (4:3, under 3840 px).
     targets = {
         "app-store/iphone-6.9": ((1320, 2868), PHONE, False),
+        # The size App Store Connect requires (Dynamic Island, medium display).
+        "app-store/iphone-6.3": ((1206, 2622), PHONE, False),
         "app-store/ipad-13": ((2064, 2752), IPAD, True),
         "google-play/phone": ((1080, 1920), PHONE, False),
     }
