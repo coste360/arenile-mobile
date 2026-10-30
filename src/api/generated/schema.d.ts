@@ -1,6 +1,6 @@
 /**
  * GENERATED FILE, DO NOT EDIT.
- * Source: openapi.yaml of Arenile core v1.1.2 (sha256 247c6643204577a8369661c420aafb2f0707abcca7e1b0dea87fd3f73a50cabc).
+ * Source: openapi.yaml of Arenile core v1.1.3 (sha256 9c24727096c7a35254b8067d2ff0763d4a0988f8ab3212e6661d34a28549069d).
  * Regenerate with 'make gen' (scripts/gen-api.mjs, openapi-typescript).
  */
 
@@ -24562,19 +24562,21 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Verifica registrata */
+            /** @description Verifica registrata; la risposta è la prenotazione aggiornata */
             200: {
                 headers: {
+                    ETag: components["headers"]["ETag"];
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RequirementVerification"];
+                    "application/json": components["schemas"]["BookingDetail"];
                 };
             };
             400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
             412: components["responses"]["PreconditionFailed"];
             422: components["responses"]["UnprocessableEntity"];
             501: components["responses"]["NotImplemented"];

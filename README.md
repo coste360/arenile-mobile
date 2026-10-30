@@ -97,7 +97,7 @@ make         # tutti i comandi
 | `make api-bump VERSION=vX.Y.Z` | Per passare al contratto API di un'altra release del core                                           |
 
 Il contratto API è l'`openapi.yaml` della release del core indicata in `api/core-version.json` (oggi
-**v1.1.2**), verificato con SHA-256; i tipi TypeScript in `src/api/generated/` si generano con
+**v1.1.3**), verificato con SHA-256; i tipi TypeScript in `src/api/generated/` si generano con
 `make gen` e non si modificano a mano ([ADR 0002](docs/adr/0002-repository-separato-e-contratto-api.md)).
 
 Per provare l'app su un dispositivo serve una **build di sviluppo** con EAS Build, progetto

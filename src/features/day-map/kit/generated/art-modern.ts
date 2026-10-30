@@ -1,5 +1,5 @@
 // GENERATED FILE, DO NOT EDIT.
-// Art of the "modern" kit (v3.0.0) from assets/map-kits of Arenile core v1.1.2 (scripts/gen-map-kits.mjs,
+// Art of the "modern" kit (v3.0.0) from assets/map-kits of Arenile core v1.1.3 (scripts/gen-map-kits.mjs,
 // 'make gen'). Artwork © Coste360 SRL, BSL 1.1: see assets/map-kits/*/NOTICE.md.
 
 import type { KitArt } from '../art-types';
