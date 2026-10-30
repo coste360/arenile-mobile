@@ -8,6 +8,8 @@ Coste360. Le genera `scripts/store/compose.py`.
 | --------------------------------- | ----------- | --------------------------------------------------------- |
 | `app-store/iphone-6.9/`           | 1320 × 2868 | App Store, iPhone 6,9" (richiesto)                        |
 | `app-store/ipad-13/`              | 2064 × 2752 | App Store, iPad 13" (richiesto); anche tablet Google Play |
+| `app-store/header-16x9.png`       | 5244 × 2950 | App Store, intestazione e risultati di ricerca (16:9)     |
+| `app-store/header-21x9.png`       | 3840 × 1646 | App Store, intestazione (21:9)                            |
 | `google-play/phone/`              | 1080 × 1920 | Google Play, telefoni                                     |
 | `google-play/feature-graphic.png` | 1024 × 500  | Google Play, grafica in evidenza                          |
 
