@@ -214,6 +214,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Corretto
 
+- Android: l'app non chiede più permessi che non usa (memoria esterna, sovrapposizione ad altre app,
+  impronta digitale), aggiunti in automatico dal modello di Expo e da `expo-secure-store`.
 - Disponibilità: una postazione libera un solo giorno del soggiorno diceva "1 giorni su 7", ora "1 giorno su 7".
 - In Expo Go la mappa mostrava l'errore "Cannot find native module 'ExpoWidgets'": il widget della
   home non viene più cercato in Expo Go, dove non esiste.
