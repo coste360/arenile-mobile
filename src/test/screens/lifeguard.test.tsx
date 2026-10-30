@@ -58,7 +58,7 @@ async function openList(size: WindowSize = 'phone', r = routes()) {
   return app;
 }
 
-describe('Lista bagnini', () => {
+describe('Clienti per fila', () => {
   it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletLandscape'])(
     'lists the occupied spots row by row on a %s',
     async (size) => {
@@ -172,7 +172,7 @@ describe('Lista bagnini', () => {
 describe('Lista bagnini entry points', () => {
   it('opens from the phone home', async () => {
     const { screen, getPathname } = await renderApp({ session: SESSION, routes: routes() });
-    await fireEvent.press(await screen.findByRole('button', { name: 'Lista bagnini' }));
+    await fireEvent.press(await screen.findByRole('button', { name: 'Clienti per fila' }));
     await waitFor(() => expect(getPathname()).toBe('/lifeguard'));
   });
 
@@ -182,10 +182,10 @@ describe('Lista bagnini entry points', () => {
       routes: routes(),
       size: 'tablet',
     });
-    await fireEvent.press(await screen.findByRole('link', { name: 'Lista bagnini' }));
+    await fireEvent.press(await screen.findByRole('link', { name: 'Clienti per fila' }));
     await waitFor(() => expect(getPathname()).toBe('/lifeguard'));
     expect(
-      await screen.findByRole('link', { name: 'Lista bagnini', selected: true }),
+      await screen.findByRole('link', { name: 'Clienti per fila', selected: true }),
     ).toBeOnTheScreen();
   });
 
@@ -210,7 +210,9 @@ describe('Lista bagnini entry points', () => {
   it('is not on the phone home without bookings.read', async () => {
     const { screen } = await renderApp({ session: SESSION, routes: withoutBookingsRead });
     expect(await screen.findByText(/^Anna · /)).toBeOnTheScreen();
-    await waitFor(() => expect(screen.queryByRole('button', { name: 'Lista bagnini' })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Clienti per fila' })).toBeNull(),
+    );
   });
 
   it('is not in the tablet navigation pane without bookings.read', async () => {
@@ -220,6 +222,8 @@ describe('Lista bagnini entry points', () => {
       size: 'tablet',
     });
     expect(await screen.findByRole('link', { name: 'Mappa' })).toBeOnTheScreen();
-    await waitFor(() => expect(screen.queryByRole('link', { name: 'Lista bagnini' })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole('link', { name: 'Clienti per fila' })).toBeNull(),
+    );
   });
 });

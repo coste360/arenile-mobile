@@ -11,7 +11,7 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
-- **Lista bagnini** (core 1.1, spec 30.10): le postazioni occupate del giorno fila per fila, a
+- **Clienti per fila** (la "lista per i bagnini" del core 1.1, spec 30.10): le postazioni occupate del giorno fila per fila, a
   caratteri grandi per la spiaggia, con cognome, allestimento, gruppo, arrivo, partenza e da saldare,
   mai contatti; filtri per arrivi, partenze e da saldare, calendario come mappa e prenotazioni. Oggi e
   domani anche offline (scaricate e salvate con il giorno operativo), gli altri giorni solo online. Dal

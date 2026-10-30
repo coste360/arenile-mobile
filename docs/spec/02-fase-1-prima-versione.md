@@ -50,9 +50,9 @@ anche offline.
   occupato apre la prenotazione (con `bookings.read`), un giorno libero da oggi in poi avvia una nuova
   prenotazione (con `bookings.write`); un giorno occupato a metà offre le due scelte.
 
-## Lista bagnini
+## Clienti per fila
 
-Lista del giorno per i bagnini (sezione 30.10 del core): postazioni occupate per fila con il cognome,
+Lista del giorno dei clienti in spiaggia ("lista per i bagnini", sezione 30.10 del core): postazioni occupate per fila con il cognome,
 arrivi e partenze, allestimento e gruppo; filtri per arrivi, partenze e da saldare. Oggi e domani
 anche offline (cache e prefetch come il giorno operativo), gli altri giorni solo online. Visibile solo
 con `bookings.read`, dalla home e dal pannello di navigazione su tablet; mai email o telefono.
