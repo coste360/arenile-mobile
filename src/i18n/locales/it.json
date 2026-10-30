@@ -178,7 +178,7 @@
     "toggleMenu": "Mostra o nascondi il menu",
     "closeMenu": "Chiudi il menu",
     "newBooking": "Nuova prenotazione",
-    "findSpot": "Trova posto"
+    "availability": "Disponibilità"
   },
   "home": {
     "establishmentFallback": "Stabilimento",
@@ -1249,7 +1249,7 @@
       "default": "Prenotazione non riuscita. Riprova."
     }
   },
-  "findSpot": {
+  "availability": {
     "subtitle": "Le postazioni libere per tutto il soggiorno, fila per fila. Tocca una postazione libera per prenotarla.",
     "map": "Mappa",
     "filters": "Filtra le file",
@@ -1269,7 +1269,9 @@
     "noFreeRows": "Nessuna fila con posti liberi.",
     "loading": "Cerco le postazioni libere…",
     "errorTitle": "Disponibilità non caricata",
-    "errorDescription": "Controlla la connessione con l'istanza e riprova."
+    "errorDescription": "Controlla la connessione con l'istanza e riprova.",
+    "closedStay": "Lo stabilimento è chiuso per tutto il soggiorno.",
+    "updating": "Aggiorno la disponibilità…"
   },
   "move": {
     "action": "Sposta su un'altra postazione",

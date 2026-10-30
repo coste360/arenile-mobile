@@ -6,7 +6,7 @@ import { Dimensions } from 'react-native';
 import ConnectedLayout from '@/app/(connected)/_layout';
 import BookingScreen from '@/app/(connected)/bookings/[bookingId]';
 import BookingsScreen from '@/app/(connected)/bookings/index';
-import FindSpotScreen from '@/app/(connected)/find-spot';
+import AvailabilityScreen from '@/app/(connected)/availability';
 import HomeScreen from '@/app/(connected)/home';
 import MapScreen from '@/app/(connected)/map';
 import MoveScreen from '@/app/(connected)/move/[bookingId]';
@@ -169,7 +169,7 @@ export async function renderApp({
       '(connected)/reports': ReportsScreen,
       '(connected)/sale': SaleScreen,
       '(connected)/new-booking': NewBookingScreen,
-      '(connected)/find-spot': FindSpotScreen,
+      '(connected)/availability': AvailabilityScreen,
       '(connected)/move/[bookingId]': MoveScreen,
       '(connected)/waitlist/index': WaitlistScreen,
       '(connected)/waitlist/[entryId]': WaitlistEntryScreen,

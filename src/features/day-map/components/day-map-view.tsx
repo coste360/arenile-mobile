@@ -1,8 +1,10 @@
+import { Stack } from 'expo-router';
 import { CircleAlertIcon, CloudOffIcon, ListIcon, MapIcon } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, BackHandler, useWindowDimensions, View } from 'react-native';
 
+import { AvailabilityHeaderButton } from '@/components/availability/availability-header-button';
 import { ClosedDayNotice } from '@/components/closed-day-notice';
 import { SearchField } from '@/components/search-field';
 import { ChoiceGroup } from '@/components/segmented-choice';
@@ -464,9 +466,21 @@ function MapPane({
     </View>
   ) : null;
 
+  // "Disponibilità" in the header starts from this map and day (never before today).
+  const header = (
+    <Stack.Screen
+      options={{
+        headerRight: () => (
+          <AvailabilityHeaderButton from={date < today ? today : date} mapId={mapId} />
+        ),
+      }}
+    />
+  );
+
   if (tablet) {
     return (
       <View className="flex-1 flex-row bg-background">
+        {header}
         <View className="pb-safe flex-1">
           {column}
           {cover}
@@ -478,6 +492,7 @@ function MapPane({
 
   return (
     <View className="flex-1 bg-background">
+      {header}
       {column}
       {cover}
     </View>

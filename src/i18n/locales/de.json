@@ -178,7 +178,7 @@
     "toggleMenu": "Menü ein- oder ausblenden",
     "closeMenu": "Menü schließen",
     "newBooking": "Neue Buchung",
-    "findSpot": "Platz finden"
+    "availability": "Verfügbarkeit"
   },
   "home": {
     "establishmentFallback": "Strandbad",
@@ -1249,7 +1249,7 @@
       "default": "Buchung fehlgeschlagen. Erneut versuchen."
     }
   },
-  "findSpot": {
+  "availability": {
     "subtitle": "Die für den ganzen Aufenthalt freien Plätze, Reihe für Reihe. Tippe auf einen freien Platz, um ihn zu buchen.",
     "map": "Karte",
     "filters": "Reihen filtern",
@@ -1269,7 +1269,9 @@
     "noFreeRows": "Keine Reihe mit freien Plätzen.",
     "loading": "Freie Plätze werden gesucht…",
     "errorTitle": "Verfügbarkeit nicht geladen",
-    "errorDescription": "Prüfe die Verbindung zur Instanz und versuche es erneut."
+    "errorDescription": "Prüfe die Verbindung zur Instanz und versuche es erneut.",
+    "closedStay": "Der Betrieb ist während des ganzen Aufenthalts geschlossen.",
+    "updating": "Verfügbarkeit wird aktualisiert…"
   },
   "move": {
     "action": "Auf einen anderen Platz verschieben",

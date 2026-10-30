@@ -19,7 +19,7 @@ import { useAbilities } from '@/features/permissions/use-abilities';
 
 /**
  * Entry to the day screens from the home: "Oggi", the bookings of the day,
- * "Trova posto" (roles that create bookings), the lifeguard list and the waitlist (on tablets they are also in the navigation pane). Hidden for a role
+ * "Disponibilità" (roles that create bookings), the lifeguard list and the waitlist (on tablets they are also in the navigation pane). Hidden for a role
  * that cannot read bookings.
  */
 export function DayShortcuts() {
@@ -47,10 +47,10 @@ export function DayShortcuts() {
           <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
         </Button>
         {canCreateBooking(abilities) ? (
-          <Button size="lg" variant="outline" onPress={() => router.push('/find-spot')}>
+          <Button size="lg" variant="outline" onPress={() => router.push('/availability')}>
             <Icon as={SearchCheckIcon} size={18} />
             <View className="flex-1">
-              <Text className="text-left">{t('nav.findSpot')}</Text>
+              <Text className="text-left">{t('nav.availability')}</Text>
             </View>
             <Icon as={ChevronRightIcon} size={18} className="text-muted-foreground" />
           </Button>

@@ -1,26 +1,27 @@
-// "Trova posto" at the desk: the free spots of a stay row by row, so that
+// "Disponibilità" at the desk: the free spots of a stay row by row, so that
 // the operator sees at a glance "Fila 1: nessuno, Fila 2: 5 liberi" when a
 // customer arrives. Availability comes from GET availability (core spec 7.8,
 // 30.4: a spot is available when every half day of the stay is free), the
 // rows from the map document. Pure.
 import type { AvailabilityResult, MapDocument } from '@/api/types';
+import { daysBetween, type CalendarDate } from '@/lib/calendar';
 
-export type FindSpotState = 'free' | 'partly' | 'taken';
+export type AvailabilityState = 'free' | 'partly' | 'taken';
 
-export interface FindSpotEntry {
+export interface AvailabilitySpot {
   spotId: string;
   label: string;
-  state: FindSpotState;
+  state: AvailabilityState;
   /** Fully free days of the stay (closed days excluded), for "libero in parte". */
   freeDays: number;
   totalDays: number;
 }
 
-export interface FindSpotRow {
+export interface AvailabilityRow {
   /** Row label of the map; null for spots without a row ("Senza fila"). */
   row: string | null;
   free: number;
-  spots: FindSpotEntry[];
+  spots: AvailabilitySpot[];
 }
 
 const natural = new Intl.Collator('it', { numeric: true, sensitivity: 'base' });
@@ -31,17 +32,17 @@ const natural = new Intl.Collator('it', { numeric: true, sensitivity: 'base' });
  * out. Rows in natural order (1, 2, 10, A, B), spots by number then label,
  * spots without a row last.
  */
-export function rowsOf(doc: MapDocument, availability: AvailabilityResult): FindSpotRow[] {
+export function rowsOf(doc: MapDocument, availability: AvailabilityResult): AvailabilityRow[] {
   const byId = new Map(
     availability.zones.flatMap((z) => z.spots ?? []).map((s) => [s.spot_id, s] as const),
   );
-  const rows = new Map<string, { spot: MapDocument['spots'][number]; entry: FindSpotEntry }[]>();
+  const rows = new Map<string, { spot: MapDocument['spots'][number]; entry: AvailabilitySpot }[]>();
   for (const spot of doc.spots) {
     const a = byId.get(spot.id);
     if (!a || !spot.active) continue;
     const totalDays = a.total_days ?? 0;
     const freeDays = a.status === 'available' ? totalDays : (a.free_days ?? 0);
-    const state: FindSpotState =
+    const state: AvailabilityState =
       a.status === 'available' ? 'free' : freeDays > 0 ? 'partly' : 'taken';
     const key = spot.row_label.trim();
     const list = rows.get(key) ?? [];
@@ -68,8 +69,17 @@ export function rowsOf(doc: MapDocument, availability: AvailabilityResult): Find
 }
 
 /** Free spots of every row together. */
-export const freeCount = (rows: readonly FindSpotRow[]) => rows.reduce((n, r) => n + r.free, 0);
+export const freeCount = (rows: readonly AvailabilityRow[]) => rows.reduce((n, r) => n + r.free, 0);
 
 /** Only the rows with at least one free spot, when asked. */
-export const visibleRows = (rows: readonly FindSpotRow[], onlyFree: boolean) =>
+export const visibleRows = (rows: readonly AvailabilityRow[], onlyFree: boolean) =>
   onlyFree ? rows.filter((r) => r.free > 0) : [...rows];
+
+/** True when the establishment is closed on every day of the stay: nothing to book. */
+export function wholeStayClosed(availability: AvailabilityResult): boolean {
+  const { from, to } = availability;
+  const closed = new Set((availability.closed_dates ?? []).filter((d) => d >= from && d <= to));
+  return closed.size > 0 && closed.size >= stayDays(from, to);
+}
+
+const stayDays = (from: CalendarDate, to: CalendarDate) => daysBetween(from, to) + 1;

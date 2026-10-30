@@ -123,8 +123,8 @@ Other screens reuse them instead of rewriting the actions:
 - **Spot calendar** — `features/day-map/spot-calendar`: `useSpotCalendar(spotId)` (core 1.1, spec
   30.5) under `['est', id, 'operations', 'spot-calendar', spotId]`, a kind the allowlist does not
   persist: online only, like the days beyond tomorrow (ADR 0014).
-- **Find a spot** — `features/find-spot`: `useAvailability({ from, to, slots, mapId })` (GET
-  availability, core spec 7.8) under `['est', id, 'operations', 'availability', params]`, never
+- **Availability by row** — `features/availability`: `useAvailability({ from, to, slots, mapId })`
+  (GET availability, core spec 7.8 and 30.4) under `['est', id, 'operations', 'availability', params]`, never
   persisted; `rowsOf()` joins it with the map document to group the spots by row.
 
 ## Phase 2: sale, move, waitlist, printing (online only)

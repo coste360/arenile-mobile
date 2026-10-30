@@ -37,13 +37,15 @@ coperte da test delle schermate; nessuna è stata provata su un dispositivo o co
   (rilasciata uscendo dalla schermata). Nasce confermata, il saldo si incassa dalla scheda. Una
   regola di prenotazione violata blocca la prenotazione: l'app non manda mai `force`, la deroga resta
   nel pannello.
-- **Trova posto:** per il cliente che arriva in cassa, le postazioni libere per tutto il soggiorno
+- **Disponibilità:** per il cliente che arriva in cassa, le postazioni libere per tutto il soggiorno
   fila per fila ("Fila 1: nessun posto libero, Fila 2: 5 libere"), con date dal–al, durata rapida,
   fascia e mappa (se più di una); _Solo file con posti liberi_ nasconde le file piene, le postazioni
   libere solo per alcuni giorni sono elencate a parte con i giorni liberi. Toccando una postazione
   libera si apre la nuova prenotazione con quella postazione, le date e la fascia. Dalla mappa
-  (pulsante nell'intestazione), dalla home e dal pannello di navigazione del tablet, per chi scrive le
-  prenotazioni; solo online (`GET availability`, spec 7.8 e 30.4 del core).
+  (pulsante nell'intestazione, con il giorno e la mappa scelti), dalla home e dal pannello di
+  navigazione del tablet, per chi scrive le prenotazioni; solo online (`GET availability`, spec 7.8 e
+  30.4 del core). Il _Trova posto_ del core (spec 30.6: `find-spot` e `find-spot/book`, proposte con
+  cambi di posto, attributi come la prima fila e gruppi vicini) è un'opzione successiva.
 - **Lista d'attesa:** schermata _Lista d'attesa_ (home del telefono, pannello di navigazione del tablet)
   per chi legge le prenotazioni: coda in ordine di priorità, offerte in corso, ricerca per cliente,
   dettaglio della richiesta e dell'offerta. Chi scrive le prenotazioni offre un posto (la prima

@@ -178,7 +178,7 @@
     "toggleMenu": "Show or hide the menu",
     "closeMenu": "Close the menu",
     "newBooking": "New booking",
-    "findSpot": "Find a spot"
+    "availability": "Availability"
   },
   "home": {
     "establishmentFallback": "Establishment",
@@ -1249,7 +1249,7 @@
       "default": "Booking failed. Try again."
     }
   },
-  "findSpot": {
+  "availability": {
     "subtitle": "Spots free for the whole stay, row by row. Tap a free spot to book it.",
     "map": "Map",
     "filters": "Filter the rows",
@@ -1269,7 +1269,9 @@
     "noFreeRows": "No row with free spots.",
     "loading": "Looking for free spots…",
     "errorTitle": "Availability not loaded",
-    "errorDescription": "Check the connection to the instance and try again."
+    "errorDescription": "Check the connection to the instance and try again.",
+    "closedStay": "The establishment is closed for the whole stay.",
+    "updating": "Updating the availability…"
   },
   "move": {
     "action": "Move to another spot",

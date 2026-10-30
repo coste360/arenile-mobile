@@ -44,7 +44,7 @@ interface NavItem {
     | '/today'
     | '/bookings'
     | '/lifeguard'
-    | '/find-spot';
+    | '/availability';
   label:
     | 'nav.home'
     | 'nav.map'
@@ -55,7 +55,7 @@ interface NavItem {
     | 'nav.today'
     | 'nav.bookings'
     | 'nav.lifeguard'
-    | 'nav.findSpot';
+    | 'nav.availability';
   icon: LucideIcon;
   /** Shown only when the role may open it (hidden, the server stays the judge). */
   visible?: (abilities: Abilities) => boolean;
@@ -67,8 +67,8 @@ const NAV: NavItem[] = [
   { href: '/bookings', label: 'nav.bookings', icon: ClipboardListIcon },
   { href: '/map', label: 'nav.map', icon: MapIcon },
   {
-    href: '/find-spot',
-    label: 'nav.findSpot',
+    href: '/availability',
+    label: 'nav.availability',
     icon: SearchCheckIcon,
     visible: canCreateBooking,
   },
@@ -147,13 +147,17 @@ function phase2Screens(
       | 'nav.waitlist'
       | 'nav.waitlistEntry'
       | 'nav.newBooking'
-      | 'nav.findSpot',
+      | 'nav.availability',
   ) => string,
 ) {
   return [
     <Stack.Screen key="sale" name="sale" options={{ title: t('nav.sale') }} />,
     <Stack.Screen key="new-booking" name="new-booking" options={{ title: t('nav.newBooking') }} />,
-    <Stack.Screen key="find-spot" name="find-spot" options={{ title: t('nav.findSpot') }} />,
+    <Stack.Screen
+      key="availability"
+      name="availability"
+      options={{ title: t('nav.availability') }}
+    />,
     <Stack.Screen key="move" name="move/[bookingId]" options={{ title: t('nav.move') }} />,
     <Stack.Screen key="waitlist" name="waitlist/index" options={{ title: t('nav.waitlist') }} />,
     <Stack.Screen

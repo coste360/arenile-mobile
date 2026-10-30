@@ -1,7 +1,7 @@
 import type { AvailabilityResult } from '@/api/types';
 import { mapDocument, mapSpot } from '@/test/map-fixtures';
 
-import { freeCount, rowsOf, visibleRows } from './find-spot';
+import { freeCount, rowsOf, visibleRows, wholeStayClosed } from './by-row';
 
 type SpotAvailability = NonNullable<AvailabilityResult['zones'][number]['spots']>[number];
 
@@ -94,5 +94,32 @@ describe('rowsOf', () => {
     expect(freeCount(rows)).toBe(4);
     expect(visibleRows(rows, true).map((r) => r.row)).toEqual(['2', '10', null]);
     expect(visibleRows(rows, false)).toHaveLength(4);
+  });
+});
+
+describe('wholeStayClosed', () => {
+  const closedOn = (from: string, to: string, closed_dates?: string[]) => ({
+    ...availability([]),
+    from,
+    to,
+    ...(closed_dates ? { closed_dates } : {}),
+  });
+
+  it.each([
+    ['no closed day', closedOn('2026-10-25', '2026-10-27'), false],
+    ['some days closed', closedOn('2026-10-25', '2026-10-27', ['2026-10-26']), false],
+    [
+      'every day closed',
+      closedOn('2026-10-25', '2026-10-27', ['2026-10-25', '2026-10-26', '2026-10-27']),
+      true,
+    ],
+    ['a closed single day', closedOn('2026-10-26', '2026-10-26', ['2026-10-26']), true],
+    [
+      'closed days outside the stay do not count',
+      closedOn('2026-10-25', '2026-10-26', ['2026-10-25', '2026-10-24', '2026-10-27']),
+      false,
+    ],
+  ] as const)('%s → %s', (_, a, expected) => {
+    expect(wholeStayClosed(a)).toBe(expected);
   });
 });

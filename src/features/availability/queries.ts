@@ -1,7 +1,7 @@
-// Availability of a stay for "Trova posto" (GET availability, core spec 7.8).
+// Availability of a stay for "Disponibilità" (GET availability, core spec 7.8).
 // Online only and never persisted: it answers a question at the desk, and a
 // booking from it still goes through the server's checks (ADR 0009).
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { request } from '@/api/client';
 import { estKeys } from '@/api/query-keys';
@@ -39,8 +39,13 @@ export function useAvailability(params: AvailabilityParams | null) {
         }),
       ),
     enabled: !!params,
-    placeholderData: keepPreviousData,
+    // New dates keep the previous answer on screen (marked stale); another map starts empty.
+    placeholderData: (previous, previousQuery) =>
+      previous && sameMap(previousQuery?.queryKey, params?.mapId) ? previous : undefined,
     retry: false,
     staleTime: 0,
   });
 }
+
+const sameMap = (key: readonly unknown[] | undefined, mapId: string | undefined) =>
+  !!mapId && (key?.[4] as Partial<AvailabilityParams> | undefined)?.mapId === mapId;
