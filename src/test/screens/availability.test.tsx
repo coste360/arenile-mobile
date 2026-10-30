@@ -352,6 +352,16 @@ describe('Disponibilità', () => {
     expect(requestsTo(network.calls, 'GET', `${EST}/availability`)).toHaveLength(1);
   });
 
+  it('says "1 giorno" for a spot free on a single day of the stay', async () => {
+    const { screen } = await open();
+    await act(async () => router.push('/availability'));
+    await screen.findByText('Fila A');
+    await fireEvent.press(screen.getByRole('button', { name: /^Al, / }));
+    const calendar = await screen.findByTestId('availability-to-calendar');
+    await fireEvent(calendar, 'valueChange', { type: 'set' }, new Date(2026, 9, 26, 12));
+    expect(await screen.findByText('Libere solo in parte: A3 (1 giorno su 2)')).toBeOnTheScreen();
+  });
+
   it('asks again for a week and shows the spots free only on some days', async () => {
     const { screen, network } = await open();
     await act(async () => router.push('/availability'));
