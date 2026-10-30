@@ -123,14 +123,16 @@ Other screens reuse them instead of rewriting the actions:
 - **Spot calendar** — `features/day-map/spot-calendar`: `useSpotCalendar(spotId)` (core 1.1, spec
   30.5) under `['est', id, 'operations', 'spot-calendar', spotId]`, a kind the allowlist does not
   persist: online only, like the days beyond tomorrow (ADR 0014).
-- **Availability by row** — `features/availability`: `useAvailability({ from, to, slots })` (GET
-  availability, core spec 7.8 and 30.4) under `['est', id, 'operations', 'availability', params]`,
-  never persisted. It is asked for the whole establishment, never with `map_id`: the core drops the
-  zones without a map (quantity zones) when a map is given. `rowsOf()` joins it with the selected map
-  document to group the spots of its seat zones by row (optionally only those with all the chosen
-  `attributeOptions()`); `zoneCards()` counts the zone and quantity zones of that map or of no map,
-  using `useZones()` (GET zones, under `maps`, same permission as the maps) for names and maps; while
-  the zones list is unknown every zone is shown, named by its code.
+- **Availability by row** — `features/availability`: `useAvailability({ from, to, slots, mapId })`
+  (GET availability with `map_id`, core spec 7.8 and 30.4: the spots and zones of the selected map)
+  and `useMaplessZones(stay, zoneIds)` (one GET availability with `zone_id` per zone without a map,
+  which `map_id` leaves out), under `['est', id, 'operations', 'availability', params]`, never
+  persisted; stays of at most `MAX_AVAILABILITY_DAYS` (199: the core refuses 200 days or more).
+  `rowsOf()` joins the map's answer with its document to group the spots of seat zones by row
+  (optionally only those with all the chosen `attributeOptions()`, taken from the same spots);
+  `zoneCards()` lists the zone and quantity zones the zones list knows (`useZones()`: GET zones,
+  every page, under `maps`, same permission as the maps), without the zones without places. While
+  the zones list is unknown there are no zone cards and no map-less requests.
 
 ## Phase 2: sale, move, waitlist, printing (online only)
 

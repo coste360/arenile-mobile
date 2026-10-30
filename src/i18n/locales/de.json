@@ -1253,7 +1253,7 @@
     "subtitle": "Die für den ganzen Aufenthalt freien Plätze, Reihe für Reihe. Tippe auf einen freien Platz, um ihn zu buchen.",
     "map": "Karte",
     "filters": "Reihen filtern",
-    "onlyFree": "Nur Reihen mit freien Plätzen",
+    "onlyFree": "Nur mit freien Plätzen",
     "total_one": "{{count}} Platz für den ganzen Aufenthalt frei",
     "total_other": "{{count}} Plätze für den ganzen Aufenthalt frei",
     "none": "Kein Platz für den ganzen Aufenthalt frei",
@@ -1279,7 +1279,9 @@
     "zoneMode": {
       "zone": "Platz im Bereich",
       "quantity": "Nach Menge"
-    }
+    },
+    "noneNumbered": "Kein nummerierter Platz für den ganzen Aufenthalt frei",
+    "tooLong": "Zeitraum zu lang: Die Verfügbarkeit umfasst höchstens {{count}} Tage."
   },
   "move": {
     "action": "Auf einen anderen Platz verschieben",

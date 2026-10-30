@@ -40,12 +40,7 @@ export function rowsOf(
   availability: AvailabilityResult,
   { attributes = [] }: { attributes?: readonly string[] } = {},
 ): AvailabilityRow[] {
-  const byId = new Map(
-    availability.zones
-      .filter((z) => z.assignment_mode === 'seat')
-      .flatMap((z) => z.spots ?? [])
-      .map((s) => [s.spot_id, s] as const),
-  );
+  const byId = seatSpots(availability);
   const wanted = attributes.map(fold);
   const rows = new Map<string, { spot: MapDocument['spots'][number]; entry: AvailabilitySpot }[]>();
   for (const spot of doc.spots) {
@@ -85,14 +80,25 @@ export function rowsOf(
 
 const fold = (s: string) => s.trim().toLocaleLowerCase('it');
 
+/** Spots of the seat zones of the answer, by id. */
+const seatSpots = (availability: AvailabilityResult) =>
+  new Map(
+    availability.zones
+      .filter((z) => z.assignment_mode === 'seat')
+      .flatMap((z) => z.spots ?? [])
+      .map((s) => [s.spot_id, s] as const),
+  );
+
 /**
- * The attributes the manager gave the active spots of the map ("prima fila",
- * "vicino al bar"), as written, once each regardless of case, sorted.
+ * The attributes the manager gave the spots `rowsOf` offers (active spots of
+ * the map in a seat zone of the answer: "prima fila", "vicino al bar"), as
+ * written, once each regardless of case, sorted.
  */
-export function attributeOptions(doc: MapDocument): string[] {
+export function attributeOptions(doc: MapDocument, availability: AvailabilityResult): string[] {
+  const offered = seatSpots(availability);
   const seen = new Map<string, string>();
   for (const spot of doc.spots) {
-    if (!spot.active) continue;
+    if (!spot.active || !offered.has(spot.id)) continue;
     for (const raw of spot.attributes) {
       const name = raw.trim();
       if (name && !seen.has(fold(name))) seen.set(fold(name), name);
@@ -119,23 +125,25 @@ export interface ZoneInfo {
   mapId?: string;
 }
 
+type ZoneAvailability = AvailabilityResult['zones'][number];
+
 /**
- * Zone and quantity zones of the answer that belong to `mapId` or to no map
- * (quantity zones), in the answer's order. While the zones list is unknown
- * (`zones` without the zone) the card is shown, named by its code.
+ * Cards of the zones sold as a whole or by quantity among `zones` (the
+ * selected map's and the map-less ones), in order. Only zones the zones list
+ * knows (`info`): while it is unknown no card is shown. Zones without places
+ * are left out.
  */
 export function zoneCards(
-  availability: AvailabilityResult,
-  mapId: string,
-  zones: ReadonlyMap<string, ZoneInfo> = new Map(),
+  zones: readonly ZoneAvailability[],
+  info: ReadonlyMap<string, ZoneInfo>,
 ): AvailabilityZone[] {
-  return availability.zones.flatMap((z) => {
-    const info = zones.get(z.zone_id);
-    if (z.assignment_mode === 'seat' || (info?.mapId && info.mapId !== mapId)) return [];
+  return zones.flatMap((z) => {
+    const known = info.get(z.zone_id);
+    if (z.assignment_mode === 'seat' || !known || z.capacity <= 0) return [];
     return [
       {
         zoneId: z.zone_id,
-        name: info?.name || z.code,
+        name: known.name || z.code,
         mode: z.assignment_mode,
         capacity: z.capacity,
         available: Math.max(0, Math.min(z.available, z.capacity)),
@@ -143,6 +151,10 @@ export function zoneCards(
     ];
   });
 }
+
+/** Free places of the zone cards together. */
+export const freePlaces = (cards: readonly AvailabilityZone[]) =>
+  cards.reduce((n, c) => n + c.available, 0);
 
 /** Free spots of every row together. */
 export const freeCount = (rows: readonly AvailabilityRow[]) => rows.reduce((n, r) => n + r.free, 0);
@@ -159,3 +171,10 @@ export function wholeStayClosed(availability: AvailabilityResult): boolean {
 }
 
 const stayDays = (from: CalendarDate, to: CalendarDate) => daysBetween(from, to) + 1;
+
+/** Longest stay GET availability answers (the core refuses 200 days or more: MaxAvailabilityDays). */
+export const MAX_AVAILABILITY_DAYS = 199;
+
+/** True when the core answers the availability of this stay. */
+export const askableStay = (from: CalendarDate, to: CalendarDate) =>
+  to >= from && stayDays(from, to) <= MAX_AVAILABILITY_DAYS;

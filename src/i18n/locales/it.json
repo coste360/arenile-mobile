@@ -1253,7 +1253,7 @@
     "subtitle": "Le postazioni libere per tutto il soggiorno, fila per fila. Tocca una postazione libera per prenotarla.",
     "map": "Mappa",
     "filters": "Filtra le file",
-    "onlyFree": "Solo file con posti liberi",
+    "onlyFree": "Solo con posti liberi",
     "total_one": "{{count}} postazione libera per tutto il soggiorno",
     "total_other": "{{count}} postazioni libere per tutto il soggiorno",
     "none": "Nessuna postazione libera per tutto il soggiorno",
@@ -1266,7 +1266,7 @@
     "partly": "Libere solo in parte: {{spots}}",
     "partlySpot": "{{label}} ({{free}} giorni su {{total}})",
     "noSpots": "Nessuna postazione prenotabile su questa mappa.",
-    "noFreeRows": "Nessuna fila con posti liberi.",
+    "noFreeRows": "Nessuna fila con postazioni libere.",
     "loading": "Cerco le postazioni libere…",
     "errorTitle": "Disponibilità non caricata",
     "errorDescription": "Controlla la connessione con l'istanza e riprova.",
@@ -1279,7 +1279,9 @@
     "zoneMode": {
       "zone": "Posto nella zona",
       "quantity": "A quantità"
-    }
+    },
+    "noneNumbered": "Nessuna postazione numerata libera per tutto il soggiorno",
+    "tooLong": "Periodo troppo lungo: la disponibilità si chiede per al massimo {{count}} giorni."
   },
   "move": {
     "action": "Sposta su un'altra postazione",

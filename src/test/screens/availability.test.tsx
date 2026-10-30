@@ -108,62 +108,65 @@ const POOL_MAP = mapDocument({
   spots: [mapSpot({ id: 'p-1', map_id: 'm-2', label: 'P1', row_label: 'P' })],
 });
 
+/** A zone of the answer sold as a whole or by quantity. */
+const zoneOf = (
+  zone_id: string,
+  code: string,
+  assignment_mode: 'zone' | 'quantity',
+  capacity: number,
+  available: number,
+) => ({ zone_id, code, assignment_mode, capacity, available });
+
 /**
- * One answer for the whole establishment: the seat spots of both maps, the
- * lawn of the beach (sold as a zone), the terrace of the pool (sold as a
- * zone) and the sunbeds by quantity, which have no map.
+ * Answers per map (map_id) or per zone (zone_id): the beach with its lawn
+ * (sold as a zone), the pool with its terrace, and the sunbeds by quantity,
+ * which have no map and come only with zone_id.
  */
-function establishmentAnswer(url: URL): AvailabilityResult {
+function answerOf(url: URL): AvailabilityResult {
   const answer = availabilityOf(url);
   const days = answer.zones[0]!.spots![0]!.total_days;
-  return {
-    ...answer,
-    zones: [
-      ...answer.zones,
-      {
-        zone_id: 'z-pool',
-        code: 'piscina',
-        assignment_mode: 'seat',
-        capacity: 1,
-        available: 1,
-        spots: [
-          { spot_id: 'p-1', label: 'P1', status: 'available', free_days: days, total_days: days },
-        ],
-      },
-      { zone_id: 'z-lawn', code: 'prato', assignment_mode: 'zone', capacity: 20, available: 6 },
-      {
-        zone_id: 'z-terrace',
-        code: 'terrazza',
-        assignment_mode: 'zone',
-        capacity: 8,
-        available: 2,
-      },
-      {
-        zone_id: 'z-beds',
-        code: 'lettini',
-        assignment_mode: 'quantity',
-        capacity: 40,
-        available: 0,
-      },
-    ],
-  };
+  if (url.searchParams.get('zone_id') === 'z-beds') {
+    return { ...answer, zones: [zoneOf('z-beds', 'lettini', 'quantity', 40, 0)] };
+  }
+  if (url.searchParams.get('map_id') === 'm-2') {
+    return {
+      ...answer,
+      zones: [
+        {
+          zone_id: 'z-pool',
+          code: 'piscina',
+          assignment_mode: 'seat',
+          capacity: 1,
+          available: 1,
+          spots: [
+            { spot_id: 'p-1', label: 'P1', status: 'available', free_days: days, total_days: days },
+          ],
+        },
+        zoneOf('z-terrace', 'terrazza', 'zone', 8, 2),
+      ],
+    };
+  }
+  return { ...answer, zones: [...answer.zones, zoneOf('z-lawn', 'prato', 'zone', 20, 6)] };
 }
+
+const ZONES = {
+  items: [
+    { id: 'z-lawn', map_id: 'm-1', code: 'prato', name: { it: 'Prato' } },
+    { id: 'z-terrace', map_id: 'm-2', code: 'terrazza', name: { it: 'Terrazza' } },
+    { id: 'z-beds', code: 'lettini', name: { it: 'Lettini' } },
+  ],
+};
 
 const TWO_MAPS: Record<string, Handler> = {
   [`GET ${EST}/maps`]: () => json(200, { items: [PHASE2_MAP.map, POOL_MAP.map] }),
   [`GET ${EST}/maps/m-2`]: () => json(200, POOL_MAP),
-  [`GET ${EST}/availability`]: (r) => json(200, establishmentAnswer(new URL(r.url))),
-  [`GET ${EST}/zones`]: () =>
-    json(200, {
-      items: [
-        { id: 'z-lawn', map_id: 'm-1', code: 'prato', name: { it: 'Prato' } },
-        { id: 'z-terrace', map_id: 'm-2', code: 'terrazza', name: { it: 'Terrazza' } },
-        { id: 'z-beds', code: 'lettini', name: { it: 'Lettini' } },
-      ],
-    }),
+  [`GET ${EST}/availability`]: (r) => json(200, answerOf(new URL(r.url))),
+  [`GET ${EST}/zones`]: () => json(200, ZONES),
 };
 
 const paramsOf = (r: Request) => Object.fromEntries(new URL(r.url).searchParams);
+const mapRequests = (calls: Request[]) =>
+  requestsTo(calls, 'GET', `${EST}/availability`).filter((r) => paramsOf(r).map_id);
 
 describe('Disponibilità', () => {
   it.each<WindowSize>(['phone', 'tabletPortrait', 'tabletLandscape', 'tabletSplitView'])(
@@ -185,9 +188,13 @@ describe('Disponibilità', () => {
       // Taken spots are not offered.
       expect(screen.queryByRole('button', { name: 'Prenota A2' })).toBeNull();
 
-      // The whole establishment: with map_id the core would drop the zones without a map.
       const [first] = requestsTo(network.calls, 'GET', `${EST}/availability`);
-      expect(paramsOf(first!)).toEqual({ from: '2026-10-25', to: '2026-10-25', slots: 'FULL' });
+      expect(paramsOf(first!)).toEqual({
+        from: '2026-10-25',
+        to: '2026-10-25',
+        slots: 'FULL',
+        map_id: 'm-1',
+      });
     },
   );
 
@@ -201,11 +208,13 @@ describe('Disponibilità', () => {
     expect(await screen.findByText('Fila P')).toBeOnTheScreen();
     expect(screen.queryByText('Fila A')).toBeNull();
     expect(screen.getByRole('button', { name: 'Piscina', selected: true })).toBeOnTheScreen();
-    const [first] = requestsTo(network.calls, 'GET', `${EST}/availability`);
-    expect(paramsOf(first!)).toMatchObject({ from: '2026-10-26' });
+    expect(paramsOf(mapRequests(network.calls)[0]!)).toMatchObject({
+      from: '2026-10-26',
+      map_id: 'm-2',
+    });
   });
 
-  it('chooses among the maps without asking the availability again', async () => {
+  it('chooses among the maps, without the previous map on screen meanwhile', async () => {
     let answerPool: () => void = () => {};
     const poolAnswered = new Promise<void>((resolve) => {
       answerPool = resolve;
@@ -213,9 +222,9 @@ describe('Disponibilità', () => {
     const { screen, network } = await open({
       extra: {
         ...TWO_MAPS,
-        [`GET ${EST}/maps/m-2`]: async () => {
-          await poolAnswered;
-          return json(200, POOL_MAP);
+        [`GET ${EST}/availability`]: async (r) => {
+          if (new URL(r.url).searchParams.get('map_id') === 'm-2') await poolAnswered;
+          return json(200, answerOf(new URL(r.url)));
         },
       },
     });
@@ -223,21 +232,20 @@ describe('Disponibilità', () => {
     await screen.findByText('Fila A');
     await fireEvent.press(screen.getByRole('button', { name: 'Piscina' }));
 
-    // The rows of the beach do not stay under the pool's name while its map loads.
     await waitFor(() => expect(screen.queryByText('Fila A')).toBeNull());
     expect(screen.getByText('Cerco le postazioni libere…')).toBeOnTheScreen();
     await act(async () => answerPool());
     expect(await screen.findByText('Fila P')).toBeOnTheScreen();
-    expect(requestsTo(network.calls, 'GET', `${EST}/availability`)).toHaveLength(1);
+    expect(mapRequests(network.calls).map((r) => paramsOf(r).map_id)).toEqual(['m-1', 'm-2']);
   });
 
   it.each<WindowSize>(['phone', 'tabletPortrait'])(
     'shows the zones of the chosen map and those without a map (%s)',
     async (size) => {
-      const { screen } = await open({ size, extra: TWO_MAPS });
+      const { screen, network } = await open({ size, extra: TWO_MAPS });
       await act(async () => router.push('/availability'));
       expect(await screen.findByTestId('availability-zone-z-lawn')).toBeOnTheScreen();
-      expect(screen.getByTestId('availability-zone-z-beds')).toBeOnTheScreen();
+      expect(await screen.findByTestId('availability-zone-z-beds')).toBeOnTheScreen();
       expect(screen.queryByTestId('availability-zone-z-terrace')).toBeNull();
 
       await fireEvent.press(screen.getByRole('button', { name: 'Piscina' }));
@@ -245,8 +253,104 @@ describe('Disponibilità', () => {
       // The sunbeds by quantity have no map: on both maps.
       expect(screen.getByTestId('availability-zone-z-beds')).toBeOnTheScreen();
       expect(screen.queryByTestId('availability-zone-z-lawn')).toBeNull();
+
+      // Fetched on their own, by zone, for the same stay and slot.
+      const beds = requestsTo(network.calls, 'GET', `${EST}/availability`).filter(
+        (r) => paramsOf(r).zone_id,
+      );
+      expect(beds.map(paramsOf)).toEqual([
+        { from: '2026-10-25', to: '2026-10-25', slots: 'FULL', zone_id: 'z-beds' },
+      ]);
     },
   );
+
+  it('asks no zone without a map while the zones list is unknown, and shows no card', async () => {
+    const { screen, network } = await open({
+      extra: { ...TWO_MAPS, [`GET ${EST}/zones`]: () => problem(503, 'internal_error') },
+    });
+    await act(async () => router.push('/availability'));
+    await screen.findByText('Fila A');
+    expect(screen.queryByTestId('availability-zone-z-lawn')).toBeNull();
+    expect(
+      requestsTo(network.calls, 'GET', `${EST}/availability`).filter((r) => paramsOf(r).zone_id),
+    ).toHaveLength(0);
+  });
+
+  it('follows the pages of the zones list', async () => {
+    const { screen, network } = await open({
+      extra: {
+        ...TWO_MAPS,
+        [`GET ${EST}/zones`]: (r) =>
+          new URL(r.url).searchParams.get('cursor') === 'p2'
+            ? json(200, { items: [ZONES.items[2]] })
+            : json(200, { items: ZONES.items.slice(0, 2), next_cursor: 'p2' }),
+      },
+    });
+    await act(async () => router.push('/availability'));
+    expect(await screen.findByTestId('availability-zone-z-beds')).toBeOnTheScreen();
+    expect(requestsTo(network.calls, 'GET', `${EST}/zones`)).toHaveLength(2);
+  });
+
+  it('does not say "nessuna postazione libera" when a zone has free places', async () => {
+    const { screen } = await open({
+      extra: {
+        ...TWO_MAPS,
+        [`GET ${EST}/availability`]: (r) => {
+          const answer = answerOf(new URL(r.url));
+          // Every numbered spot taken, the lawn still has 6 places.
+          return json(200, {
+            ...answer,
+            zones: answer.zones.map((z) => ({
+              ...z,
+              spots: z.spots?.map((sp) => ({ ...sp, status: 'unavailable', free_days: 0 })),
+            })),
+          });
+        },
+      },
+    });
+    await act(async () => router.push('/availability'));
+    expect(
+      await screen.findByText('Nessuna postazione numerata libera per tutto il soggiorno'),
+    ).toBeOnTheScreen();
+    expect(screen.getByText('6 posti liberi su 20')).toBeOnTheScreen();
+    expect(screen.queryByText('Nessuna postazione libera per tutto il soggiorno')).toBeNull();
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Solo con posti liberi' }));
+    await waitFor(() => expect(screen.queryByText('Fila A')).toBeNull());
+    expect(screen.getByText('6 posti liberi su 20')).toBeOnTheScreen();
+    expect(screen.queryByText('Nessuna fila con postazioni libere.')).toBeNull();
+  });
+
+  it('says that the period is too long when the core refuses it', async () => {
+    const { screen } = await open({
+      extra: { [`GET ${EST}/availability`]: () => problem(400, 'validation') },
+    });
+    await act(async () => router.push('/availability'));
+    expect(
+      await screen.findByText(
+        'Periodo troppo lungo: la disponibilità si chiede per al massimo 199 giorni.',
+      ),
+    ).toBeOnTheScreen();
+  });
+
+  it('keeps the stay under the 200 days the core answers', async () => {
+    const { screen, network } = await open();
+    await act(async () => router.push('/availability'));
+    await screen.findByText('Fila A');
+    await fireEvent.press(screen.getByRole('button', { name: /^Al, / }));
+    const calendar = await screen.findByTestId('availability-to-calendar');
+    // 199 days from 25 October, the first day included.
+    expect(calendar).toHaveProp('maximumDate', new Date(2027, 4, 11, 12));
+
+    // A later date (not offered by the calendar) is not asked.
+    await fireEvent(calendar, 'valueChange', { type: 'set' }, new Date(2027, 4, 12, 12));
+    expect(
+      await screen.findByText(
+        'Periodo troppo lungo: la disponibilità si chiede per al massimo 199 giorni.',
+      ),
+    ).toBeOnTheScreen();
+    expect(requestsTo(network.calls, 'GET', `${EST}/availability`)).toHaveLength(1);
+  });
 
   it('asks again for a week and shows the spots free only on some days', async () => {
     const { screen, network } = await open();
@@ -291,7 +395,7 @@ describe('Disponibilità', () => {
     const { screen } = await open();
     await act(async () => router.push('/availability'));
     await screen.findByText('Fila B');
-    await fireEvent.press(screen.getByRole('button', { name: 'Solo file con posti liberi' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Solo con posti liberi' }));
     await waitFor(() => expect(screen.queryByText('Fila B')).toBeNull());
     expect(screen.getByText('Fila A')).toBeOnTheScreen();
   });
@@ -390,34 +494,25 @@ describe('Disponibilità', () => {
   });
 
   describe('zones sold as a whole or by quantity', () => {
+    // The lawn belongs to the map; the sunbeds by quantity have no map and no name.
     const withZones: Record<string, Handler> = {
       [`GET ${EST}/availability`]: (r) => {
-        const answer = availabilityOf(new URL(r.url));
+        const url = new URL(r.url);
+        const answer = availabilityOf(url);
         return json(200, {
           ...answer,
-          zones: [
-            ...answer.zones,
-            {
-              zone_id: 'z-lawn',
-              code: 'prato',
-              assignment_mode: 'zone',
-              capacity: 20,
-              available: 6,
-              spots: [],
-            },
-            {
-              zone_id: 'z-beds',
-              code: 'lettini',
-              assignment_mode: 'quantity',
-              capacity: 40,
-              available: 0,
-            },
-          ],
+          zones:
+            url.searchParams.get('zone_id') === 'z-beds'
+              ? [zoneOf('z-beds', 'lettini', 'quantity', 40, 0)]
+              : [...answer.zones, zoneOf('z-lawn', 'prato', 'zone', 20, 6)],
         });
       },
       [`GET ${EST}/zones`]: () =>
         json(200, {
-          items: [{ id: 'z-lawn', code: 'prato', name: { it: 'Prato', en: 'Lawn' } }],
+          items: [
+            { id: 'z-lawn', map_id: 'm-1', code: 'prato', name: { it: 'Prato', en: 'Lawn' } },
+            { id: 'z-beds', code: 'lettini', name: { it: '' } },
+          ],
         }),
     };
 
@@ -446,7 +541,7 @@ describe('Disponibilità', () => {
       const { screen } = await open({ extra: withZones });
       await act(async () => router.push('/availability'));
       await screen.findByTestId('availability-zone-z-beds');
-      await fireEvent.press(screen.getByRole('button', { name: 'Solo file con posti liberi' }));
+      await fireEvent.press(screen.getByRole('button', { name: 'Solo con posti liberi' }));
       await waitFor(() => expect(screen.queryByTestId('availability-zone-z-beds')).toBeNull());
       expect(screen.getByTestId('availability-zone-z-lawn')).toBeOnTheScreen();
     });

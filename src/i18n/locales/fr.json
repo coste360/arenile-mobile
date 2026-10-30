@@ -1253,7 +1253,7 @@
     "subtitle": "Les places libres pour tout le séjour, rangée par rangée. Touchez une place libre pour la réserver.",
     "map": "Plan",
     "filters": "Filtrer les rangées",
-    "onlyFree": "Seulement les rangées avec des places libres",
+    "onlyFree": "Seulement avec des places libres",
     "total_one": "{{count}} place libre pour tout le séjour",
     "total_other": "{{count}} places libres pour tout le séjour",
     "none": "Aucune place libre pour tout le séjour",
@@ -1279,7 +1279,9 @@
     "zoneMode": {
       "zone": "Une place dans la zone",
       "quantity": "À la quantité"
-    }
+    },
+    "noneNumbered": "Aucune place numérotée libre pour tout le séjour",
+    "tooLong": "Période trop longue : la disponibilité couvre au plus {{count}} jours."
   },
   "move": {
     "action": "Déplacer vers un autre emplacement",

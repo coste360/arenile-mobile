@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { isForbidden } from '@/api/errors';
+import { isForbidden, ProblemError } from '@/api/errors';
 import type { Slots } from '@/api/types';
 import { DateField } from '@/components/date-field';
 import { ChipRow, FilterChip } from '@/components/filter-chip';
@@ -25,8 +25,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import {
+  askableStay,
   attributeOptions,
   freeCount,
+  freePlaces,
+  MAX_AVAILABILITY_DAYS,
   rowsOf,
   visibleRows,
   wholeStayClosed,
@@ -36,18 +39,18 @@ import {
 } from '@/features/availability/by-row';
 import {
   useAvailability,
+  useMaplessZones,
   useZones,
   type AvailabilityParams,
+  type StayParams,
 } from '@/features/availability/queries';
 import { mapName } from '@/features/day-map/model';
 import { useMapDocument, useMaps } from '@/features/maps/queries';
 import {
   canCreateBooking,
   endFor,
-  MAX_STAY_DAYS,
   STAY_LENGTHS,
   stayLength,
-  validStay,
   withStart,
 } from '@/features/new-booking/new-booking';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
@@ -111,7 +114,28 @@ function AvailabilityForm({
   const mapId =
     chosenMap && mapList.some((m) => m.id === chosenMap) ? chosenMap : (mapList[0]?.id ?? '');
   const doc = useMapDocument(mapId);
-  const options = doc.data ? attributeOptions(doc.data) : [];
+  const zoneInfo = new Map(
+    (zones.data ?? []).map(
+      (z) => [z.id, { name: localizedText(z.name, locale), mapId: z.map_id }] as const,
+    ),
+  );
+
+  // Each input settles on its own; a change of several at once settles together.
+  const from = useDebouncedValue(stay.startsOn, QUERY_DEBOUNCE_MS);
+  const to = useDebouncedValue(stay.endsOn, QUERY_DEBOUNCE_MS);
+  const settledSlots = useDebouncedValue(slots, QUERY_DEBOUNCE_MS);
+  const askable = askableStay(stay.startsOn, stay.endsOn);
+  const stayAsked: StayParams | null =
+    mapId && askableStay(from, to) ? { from, to, slots: settledSlots } : null;
+  const asked: AvailabilityParams | null = stayAsked ? { ...stayAsked, mapId } : null;
+  const availability = useAvailability(asked);
+  // Zones without a map (quantity) belong to every map: asked one by one, once the list says which.
+  const mapless = useMaplessZones(
+    stayAsked,
+    (zones.data ?? []).filter((z) => !z.map_id).map((z) => z.id),
+  );
+  const options =
+    doc.data && availability.data ? attributeOptions(doc.data, availability.data) : [];
   const attributes =
     chosenAttributes.mapId === mapId
       ? chosenAttributes.names.filter((n) => options.includes(n))
@@ -123,29 +147,22 @@ function AvailabilityForm({
         ? attributes.filter((n) => n !== name)
         : [...attributes, name],
     });
-  const zoneInfo = new Map(
-    (zones.data ?? []).map(
-      (z) => [z.id, { name: localizedText(z.name, locale), mapId: z.map_id }] as const,
-    ),
-  );
-
-  // Each input settles on its own; a change of several at once settles together.
-  const from = useDebouncedValue(stay.startsOn, QUERY_DEBOUNCE_MS);
-  const to = useDebouncedValue(stay.endsOn, QUERY_DEBOUNCE_MS);
-  const settledSlots = useDebouncedValue(slots, QUERY_DEBOUNCE_MS);
-  const asked: AvailabilityParams | null =
-    mapId && validStay(from, to) ? { from, to, slots: settledSlots } : null;
-  const availability = useAvailability(asked);
   // The answer on screen is for other inputs: shown dimmed, its spots not bookable.
   const stale =
     availability.isPlaceholderData ||
+    mapless.stale ||
     from !== stay.startsOn ||
     to !== stay.endsOn ||
     settledSlots !== slots;
   const days = stayLength(stay.startsOn, stay.endsOn);
-  const failed = [maps.error, doc.error, availability.data ? null : availability.error].find(
-    (e) => !!e,
-  );
+  const failed = [
+    maps.error,
+    doc.error,
+    availability.data ? null : availability.error,
+    mapless.error,
+  ].find((e) => !!e);
+  // The core refuses 200 days or more (400): the screen keeps below, the server has the last word.
+  const tooLong = !askable || (failed instanceof ProblemError && failed.status === 400);
 
   const form = (
     <View className="gap-3">
@@ -164,7 +181,7 @@ function AvailabilityForm({
           value={stay.endsOn}
           locale={locale}
           minimumDate={stay.startsOn}
-          maximumDate={endFor(stay.startsOn, MAX_STAY_DAYS)}
+          maximumDate={endFor(stay.startsOn, MAX_AVAILABILITY_DAYS)}
           testID="availability-to"
           onChange={(d) => setChosen({ ...stay, endsOn: d < stay.startsOn ? stay.startsOn : d })}
         />
@@ -207,6 +224,14 @@ function AvailabilityForm({
   let results = null;
   if (!online) {
     results = null;
+  } else if (tooLong) {
+    results = (
+      <StateView
+        align="top"
+        icon={CircleAlertIcon}
+        title={t('availability.tooLong', { count: MAX_AVAILABILITY_DAYS })}
+      />
+    );
   } else if (failed && isForbidden(failed)) {
     results = <StateView align="top" icon={LockIcon} title={t('offline.errors.forbidden')} />;
   } else if (failed) {
@@ -224,6 +249,8 @@ function AvailabilityForm({
             if (maps.isError) void maps.refetch();
             if (doc.isError) void doc.refetch();
             if (availability.isError) void availability.refetch();
+            if (zones.isError) void zones.refetch();
+            if (mapless.error) mapless.refetch();
           }}
         >
           <Icon as={RefreshCwIcon} size={16} />
@@ -233,7 +260,7 @@ function AvailabilityForm({
     );
   } else if (maps.data && mapList.length === 0) {
     results = <StateView align="top" icon={MapIcon} title={t('dayMap.states.noMaps.title')} />;
-  } else if (!doc.data || !availability.data) {
+  } else if (!doc.data || !availability.data || mapless.pending) {
     results = <StateView align="top" busy title={t('availability.loading')} />;
   } else if (wholeStayClosed(availability.data)) {
     results = (
@@ -245,10 +272,12 @@ function AvailabilityForm({
     const rows = rowsOf(doc.data, availability.data, { attributes });
     const shown = visibleRows(rows, onlyFree);
     const total = freeCount(rows);
-    // Zones have no spot attributes: with an attribute chosen, only spots answer.
-    const cards = attributes.length
+    // The selected map's zones and the map-less ones; zones have no spot
+    // attributes: with an attribute chosen, only spots answer.
+    const allCards = attributes.length
       ? []
-      : zoneCards(availability.data, mapId, zoneInfo).filter((z) => !onlyFree || z.available > 0);
+      : zoneCards([...availability.data.zones, ...mapless.zones], zoneInfo);
+    const cards = allCards.filter((z) => !onlyFree || z.available > 0);
     const closed = availability.data.closed_dates ?? [];
     const book = (spotId: string) =>
       router.push({
@@ -267,7 +296,11 @@ function AvailabilityForm({
             accessibilityLiveRegion="polite"
             testID="availability-total"
           >
-            {total > 0 ? t('availability.total', { count: total }) : t('availability.none')}
+            {total > 0
+              ? t('availability.total', { count: total })
+              : freePlaces(allCards) > 0
+                ? t('availability.noneNumbered')
+                : t('availability.none')}
           </Text>
         )}
         {closed.length > 0 ? (
@@ -303,7 +336,7 @@ function AvailabilityForm({
             title={
               attributes.length > 0
                 ? t('availability.noMatch')
-                : rows.length === 0 && zoneCards(availability.data, mapId, zoneInfo).length === 0
+                : rows.length === 0 && allCards.length === 0
                   ? t('availability.noSpots')
                   : t('availability.noFreeRows')
             }

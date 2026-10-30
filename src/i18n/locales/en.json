@@ -1253,7 +1253,7 @@
     "subtitle": "Spots free for the whole stay, row by row. Tap a free spot to book it.",
     "map": "Map",
     "filters": "Filter the rows",
-    "onlyFree": "Only rows with free spots",
+    "onlyFree": "Only with free places",
     "total_one": "{{count}} spot free for the whole stay",
     "total_other": "{{count}} spots free for the whole stay",
     "none": "No spot free for the whole stay",
@@ -1279,7 +1279,9 @@
     "zoneMode": {
       "zone": "A place in the area",
       "quantity": "By quantity"
-    }
+    },
+    "noneNumbered": "No numbered spot free for the whole stay",
+    "tooLong": "Period too long: availability covers at most {{count}} days."
   },
   "move": {
     "action": "Move to another spot",

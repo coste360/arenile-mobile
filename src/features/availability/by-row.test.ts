@@ -2,8 +2,10 @@ import type { AvailabilityResult } from '@/api/types';
 import { mapDocument, mapSpot } from '@/test/map-fixtures';
 
 import {
+  askableStay,
   attributeOptions,
   freeCount,
+  freePlaces,
   rowsOf,
   visibleRows,
   wholeStayClosed,
@@ -177,14 +179,23 @@ describe('zones by assignment mode', () => {
     expect(rowsOf(DOC, answer).flatMap((r) => r.spots.map((s) => s.label))).toEqual(['A1']);
   });
 
+  // z-lawn and z-odd known to the zones list, z-beds not (yet).
+  const known = new Map([
+    ['z-lawn', { name: 'Prato', mapId: 'm-1' }],
+    ['z-odd', { name: '' }],
+    ['z-empty', { name: 'Vuota' }],
+  ]);
+  const withEmpty = [
+    ...answer.zones,
+    zone({ zone_id: 'z-empty', code: 'vuota', assignment_mode: 'zone', capacity: 0, available: 0 }),
+  ];
+
   it.each([
     ['z-lawn', 'Prato', 'zone', 20, 6],
-    ['z-beds', 'lettini', 'quantity', 40, 0],
+    // Name missing in the list: the code; more free than capacity: clamped.
     ['z-odd', 'odd', 'quantity', 5, 5],
   ] as const)('%s: %s (%s), %d places, %d free', (zoneId, name, mode, capacity, available) => {
-    const cards = zoneCards(answer, 'm-1', new Map([['z-lawn', { name: 'Prato', mapId: 'm-1' }]]));
-    expect(cards.map((c) => c.zoneId)).toEqual(['z-lawn', 'z-beds', 'z-odd']);
-    expect(cards.find((c) => c.zoneId === zoneId)).toEqual({
+    expect(zoneCards(withEmpty, known).find((c) => c.zoneId === zoneId)).toEqual({
       zoneId,
       name,
       mode,
@@ -193,23 +204,20 @@ describe('zones by assignment mode', () => {
     });
   });
 
-  // z-lawn on map m-1, z-beds without a map (quantity), z-odd on map m-2.
-  const zones = new Map([
-    ['z-lawn', { name: 'Prato', mapId: 'm-1' }],
-    ['z-beds', { name: 'Lettini' }],
-    ['z-odd', { name: 'Terrazza', mapId: 'm-2' }],
-  ]);
-
   it.each([
-    ['m-1', ['z-lawn', 'z-beds']],
-    ['m-2', ['z-beds', 'z-odd']],
-    ['m-3', ['z-beds']],
-  ] as const)('on map %s: the zones of that map and those without a map', (mapId, expected) => {
-    expect(zoneCards(answer, mapId, zones).map((c) => c.zoneId)).toEqual(expected);
+    ['a seat zone', 'z-seat'],
+    ['a zone the zones list does not know', 'z-beds'],
+    ['a zone without places', 'z-empty'],
+  ])('leaves out %s', (_, zoneId) => {
+    expect(zoneCards(withEmpty, known).map((c) => c.zoneId)).not.toContain(zoneId);
   });
 
-  it('shows every zone while the zones list is unknown', () => {
-    expect(zoneCards(answer, 'm-2').map((c) => c.zoneId)).toEqual(['z-lawn', 'z-beds', 'z-odd']);
+  it('shows no card while the zones list is unknown', () => {
+    expect(zoneCards(withEmpty, new Map())).toEqual([]);
+  });
+
+  it('adds up the free places of the cards', () => {
+    expect(freePlaces(zoneCards(withEmpty, known))).toBe(11);
   });
 });
 
@@ -249,12 +257,31 @@ describe('attributes', () => {
     free('b2', 'B2'),
   ]);
 
-  it('lists the attributes of the active spots once, as written, sorted', () => {
-    expect(attributeOptions(doc)).toEqual(['ombra', 'Prima fila', 'vicino al bar']);
+  it.each<[string, AvailabilityResult, string[]]>([
+    [
+      'the offered spots, once each, as written, sorted',
+      answer,
+      ['ombra', 'Prima fila', 'vicino al bar'],
+    ],
+    // B1 is not in a seat zone of the answer (sold as a zone): its attributes do not filter anything.
+    [
+      'only the spots offered row by row',
+      {
+        ...answer,
+        zones: [
+          zone({ zone_id: 'z-1', spots: [free('a1', 'A1'), taken('a2', 'A2'), free('b2', 'B2')] }),
+          zone({ zone_id: 'z-2', assignment_mode: 'zone', capacity: 1, spots: [free('b1', 'B1')] }),
+        ],
+      },
+      ['ombra', 'Prima fila'],
+    ],
+    ['no spot of the answer', availability([]), []],
+  ])('attribute options: %s', (_, a, expected) => {
+    expect(attributeOptions(doc, a)).toEqual(expected);
   });
 
   it('has no options when no spot has attributes', () => {
-    expect(attributeOptions(DOC)).toEqual([]);
+    expect(attributeOptions(DOC, availability([free('a1', 'A1')]))).toEqual([]);
   });
 
   it.each([
@@ -269,5 +296,16 @@ describe('attributes', () => {
       expected,
     );
     expect(freeCount(rows)).toBe(free);
+  });
+});
+
+describe('askableStay', () => {
+  it.each([
+    ['one day', '2026-10-25', '2026-10-25', true],
+    ['199 days', '2026-10-25', '2027-05-11', true],
+    ['200 days (the core refuses)', '2026-10-25', '2027-05-12', false],
+    ['the last day before the first', '2026-10-25', '2026-10-24', false],
+  ] as const)('%s → %s', (_, from, to, expected) => {
+    expect(askableStay(from, to)).toBe(expected);
   });
 });
