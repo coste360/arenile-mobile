@@ -78,20 +78,31 @@ describe('Clienti per fila', () => {
     },
   );
 
-  it("opens a spot's booking when the day knows it, and leaves the others as text", async () => {
-    const day = operationsDay({
-      spots: [
-        spot({ spot_id: 's-A1', label: 'A1', booking: operationalBooking({ booking_id: 'b-1' }) }),
-        spot({ spot_id: 's-A2', label: 'A2' }),
-      ],
-    });
-    const r = { ...routes(), ...dayRoutes({ day }), [`GET ${PATH}`]: routes()[`GET ${PATH}`]! };
-    const { screen, getPathname } = await openList('phone', r);
-    const a1 = await screen.findByRole('link', { name: /^A1, Rossi/ });
-    expect(screen.queryByRole('link', { name: /^A2, Bianchi/ })).toBeNull();
-    await fireEvent.press(a1);
-    await waitFor(() => expect(getPathname()).toBe('/bookings/b-1'));
-  });
+  it.each<WindowSize>(['phone', 'tabletPortrait'])(
+    "opens a spot's booking when the day knows it, and leaves the others as text (%s)",
+    async (size) => {
+      const day = operationsDay({
+        spots: [
+          spot({
+            spot_id: 's-A1',
+            label: 'A1',
+            booking: operationalBooking({ booking_id: 'b-1', occupant_label: 'Rossi' }),
+          }),
+          spot({ spot_id: 's-A2', label: 'A2' }),
+        ],
+      });
+      const r = { ...routes(), ...dayRoutes({ day }), [`GET ${PATH}`]: routes()[`GET ${PATH}`]! };
+      const { screen, getPathname } = await openList(size, r);
+      const a1 = await screen.findByRole('link', { name: /^A1, Rossi/ });
+      expect(screen.queryByRole('link', { name: /^A2, Bianchi/ })).toBeNull();
+      await fireEvent.press(a1);
+      // Phones push the sheet; tablets show it beside the list.
+      await waitFor(() =>
+        expect(getPathname()).toBe(size === 'phone' ? '/bookings/b-1' : '/bookings'),
+      );
+      expect(await screen.findByRole('heading', { name: 'AR-7K3Q9' })).toBeOnTheScreen();
+    },
+  );
 
   it('filters arrivals, departures and balances due', async () => {
     const { screen } = await openList();

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
@@ -30,15 +31,17 @@ import {
   groupByRow,
   LIFEGUARD_FILTERS,
   lifeguardCounts,
+  rowBookings,
   type LifeguardFilter,
   type LifeguardGroup,
 } from '@/features/lifeguard/lifeguard';
 import { useLifeguardList } from '@/features/lifeguard/queries';
 import { useOnlineOnly } from '@/features/offline/offline-provider';
-import { useOperationalDays, useOperationsDay } from '@/features/operations/queries';
-import { cn } from '@/lib/utils';
+import { operationsDayQuery, useOperationalDays } from '@/features/operations/queries';
 import { usePreferences } from '@/features/preferences/preferences-provider';
+import { useApiClient, usePairedSession } from '@/features/session/session-provider';
 import { inOfflineWindow, resolveDay, type DaySelection } from '@/lib/calendar';
+import { cn } from '@/lib/utils';
 
 /**
  * Lifeguard list (core spec 30.10): the occupied spots of a day, row by row,
@@ -53,20 +56,22 @@ export function LifeguardListView() {
   const days = useOperationalDays();
   const { locale } = usePreferences();
   const { available: online } = useOnlineOnly();
+  const client = useApiClient();
+  const { establishmentId } = usePairedSession();
   const [day, setDay] = useState<DaySelection>('today');
   const [filter, setFilter] = useState<LifeguardFilter>('all');
   const date = resolveDay(day, days);
   const query = useLifeguardList(date);
   const rows = query.data?.rows;
-  const operations = useOperationsDay(date);
+  // Only to link rows to their booking: from the cache offline, fetched
+  // online (an extra request for days outside the offline window).
+  const operations = useQuery({
+    ...operationsDayQuery(client, establishmentId, date),
+    enabled: online || inOfflineWindow(date, days),
+  });
   const bookingOf = useMemo(
-    () =>
-      new Map(
-        (operations.data?.spots ?? []).flatMap((s) =>
-          s.booking ? [[s.spot_id, s.booking.booking_id] as const] : [],
-        ),
-      ),
-    [operations.data],
+    () => rowBookings(rows ?? [], operations.data?.spots ?? []),
+    [rows, operations.data],
   );
 
   const counts = useMemo(() => (rows ? lifeguardCounts(rows) : null), [rows]);

@@ -285,7 +285,7 @@ function CustomerCard({ booking, showContacts }: { booking: Booking; showContact
         ) : null}
         {c.email ? <DetailRow label={t('bookings.detail.email')} value={c.email} /> : null}
         {c.phone ? <DetailRow label={t('bookings.detail.phone')} value={c.phone} /> : null}
-        <ContactActions phone={c.phone} email={c.email} name={c.name} />
+        <ContactActions phone={c.phone} email={c.email} name={c.name || t('bookings.anonymous')} />
         {c.notes ? <DetailRow label={t('bookings.detail.customerNotes')} value={c.notes} /> : null}
         {!showContacts && !c.anonymized ? (
           <Text variant="muted">{t('bookings.detail.contactsHidden')}</Text>
