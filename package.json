@@ -84,6 +84,7 @@
     "doctor": "expo-doctor"
   },
   "private": true,
+  "license": "BUSL-1.1",
   "overrides": {
     "openapi-typescript": {
       "typescript": "$typescript"

@@ -132,10 +132,51 @@ def feature_graphic():
     img.convert("RGB").save(OUT / "google-play/feature-graphic.png", optimize=True)
 
 
+def header_art(size, name):
+    """App Store product page header / search results art: a short phrase above the iPad and the
+    iPhone side by side. Key content stays in the middle 21:9 band (the header crops a 16:9 image)."""
+    w, h = size
+    canvas = gradient(w, h).convert("RGBA")
+    d = ImageDraw.Draw(canvas)
+    band_top = (h - w * 9 / 21) / 2 if w / h < 21 / 9 else 0
+    band_h = h - 2 * band_top
+    title_font = ImageFont.truetype(BOLD, round(band_h * 0.085))
+    title = "La spiaggia di oggi, in tasca"
+    y = band_top + band_h * 0.07
+    bar_w = round(w * 0.04)
+    d.rounded_rectangle([(w - bar_w) / 2, y, (w + bar_w) / 2, y + round(band_h * 0.012)], 8, fill=SAND)
+    y += band_h * 0.035
+    d.text(((w - d.textlength(title, font=title_font)) / 2, y), title, font=title_font, fill=(255, 255, 255))
+    top = round(y + title_font.size * 1.75)
+    ipad = clean_ipad(Image.open(RAW / "ipad-02-bookings.png").convert("RGB"))
+    phone = Image.open(RAW / "phone-01-map.png").convert("RGB")
+    # The devices run past the bottom edge of the image, like the screenshots.
+    ih = round((h - top) * 1.12)
+    iw = round(ipad.width * ih / ipad.height)
+    ph = round(ih * 0.92)
+    pw = round(phone.width * ph / phone.height)
+    gap = round(w * 0.025)
+    x = (w - iw - gap - pw) // 2
+    for img, (sw, sh), (sx, sy), radius in (
+        (ipad, (iw, ih), (x, top), 0.035),
+        (phone, (pw, ph), (x + iw + gap, top + round(ih * 0.08)), 0.075),
+    ):
+        shot = rounded(img.resize((sw, sh), Image.LANCZOS), round(sw * radius))
+        shadow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+        ImageDraw.Draw(shadow).rounded_rectangle(
+            [sx, sy + 24, sx + sw, sy + sh + 24], round(sw * radius), fill=(0, 0, 0, 120)
+        )
+        canvas = Image.alpha_composite(canvas, shadow.filter(ImageFilter.GaussianBlur(40)))
+        canvas.alpha_composite(shot, (sx, sy))
+    canvas.convert("RGB").save(OUT / f"app-store/{name}.png", optimize=True)
+
+
 def main():
     # Google Play tablets take the iPad 13" images as they are (4:3, under 3840 px).
     targets = {
         "app-store/iphone-6.9": ((1320, 2868), PHONE, False),
+        # The size App Store Connect requires (Dynamic Island, medium display).
+        "app-store/iphone-6.3": ((1206, 2622), PHONE, False),
         "app-store/ipad-13": ((2064, 2752), IPAD, True),
         "google-play/phone": ((1080, 1920), PHONE, False),
     }
@@ -146,6 +187,8 @@ def main():
             img = compose(name, title, sub, size, tablet)
             img.save(out / f"{i:02d}-{name.split('-', 2)[2]}.png", optimize=True)
     feature_graphic()
+    header_art((5244, 2950), "header-16x9")
+    header_art((3840, 1646), "header-21x9")
     print("ok")
 
 

@@ -128,16 +128,17 @@ Implementata, non ancora pubblicata.
   stesura di questa fase.
 - La mappa disegna le postazioni come forme geometriche: le illustrazioni dei kit della mappa del core e
   l'immagine di sfondo non sono usate (ADR 0008, decisione 7; servono una release del core che pubblichi
-  i kit e una decisione sulla licenza dell'app).
+  i kit; la licenza dell'app, BSL 1.1 come il core, è compatibile: ADR 0017).
 - Da provare su dispositivo: fluidità dei gesti con centinaia di postazioni, fotocamera per i QR,
   avvio a freddo senza rete, coda dopo la riconnessione. `expo-sqlite` è un modulo nativo nuovo: serve
   una nuova build EAS.
-- La pubblicazione (sotto) non è iniziata: mancano gli account e la decisione sulla licenza.
+- Pubblicazione (sotto): account Expo e Apple Developer collegati e prime build di sviluppo fatte;
+  licenza decisa (BSL 1.1, ADR 0017).
 
 ## Pubblicazione
 
 - Build e invio con EAS Build/Submit, account Apple Developer e Google Play di Coste360.
 - Revisione degli store sulla demo pubblica azzerata ogni notte (sezione 26 del core), raggiunta con
   "Prova la demo" dalla schermata "Collega" (ADR 0015).
-- Licenza dell'app decisa da Coste360 prima della pubblicazione.
+- Licenza dell'app: Business Source License 1.1 come il core (ADR 0017).
 - Icone e schermata di avvio con il marchio ufficiale; schede degli store in quattro lingue.

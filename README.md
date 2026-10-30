@@ -135,10 +135,6 @@ docs/adr/           decisioni
 
 ## Da fare prima della pubblicazione
 
-- **Licenza dell'app:** in attesa di una decisione di Coste360. La specifica del core (sezione 29.2)
-  prevede la Business Source License 1.1 come il core, salvo diversa decisione prima della
-  pubblicazione. Fino ad allora il repository non contiene un file `LICENSE`: tutti i diritti sono
-  riservati a Coste360 SRL.
 - **Marchio:** icona, icona adattiva Android, schermata di avvio e simbolo nell'app vengono dal kit
   ufficiale del core (`assets/brand` del core, ADR 0018 del core). Gli asset del marchio non sono coperti
   dalla licenza del codice ([assets/brand/NOTICE.md](assets/brand/NOTICE.md)). Da verificare con il
@@ -153,7 +149,16 @@ docs/adr/           decisioni
   le prove su iPhone, iPad e Android elencate nel [piano dell'app](docs/spec/README.md); il test JUnit del
   modulo Android (`./gradlew :pinned-fetch:testDebugUnitTest` in un progetto generato con prebuild).
 - **Kit della mappa:** le illustrazioni dei kit del core non sono ancora usate (ADR 0008): servono una
-  release del core che le pubblichi come asset versionato e la decisione sulla licenza dell'app.
+  release del core che le pubblichi come asset versionato compatibile con la licenza dell'app.
+
+## Licenza
+
+Codice sotto la **Business Source License 1.1** ([LICENSE](LICENSE)), con gli stessi parametri del core:
+il progetto è _source available_, e ogni versione passa alla GNU AGPL v3.0 o successive tre anni dopo la
+sua prima pubblicazione ([ADR 0017](docs/adr/0017-licenza-bsl.md)). L'uso in produzione è libero per gli
+stabilimenti balneari gestiti direttamente; servizi a terzi e prodotti concorrenti richiedono una licenza
+commerciale (info@coste360.it). Nome, simbolo e icone di Arenile non sono coperti dalla licenza del
+codice ([assets/brand/NOTICE.md](assets/brand/NOTICE.md)).
 
 ## Contatti
 
