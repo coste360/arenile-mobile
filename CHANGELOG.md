@@ -11,6 +11,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- **Immagini per gli store** in `store/` (App Store iPhone 6,9" e iPad 13", Google Play telefono e
+  grafica in evidenza), generate da `scripts/store/compose.py`; il README le mostra.
 - **Contattare il cliente dalla scheda:** "Chiama", "WhatsApp" (solo numeri in formato internazionale,
   come li salva il core) e "Scrivi" aprono le app del telefono, solo per i ruoli che vedono i contatti.
 - **Clienti per fila:** toccare una postazione apre la sua prenotazione.
@@ -210,6 +212,7 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Corretto
 
+- Disponibilità: una postazione libera un solo giorno del soggiorno diceva "1 giorni su 7", ora "1 giorno su 7".
 - In Expo Go la mappa mostrava l'errore "Cannot find native module 'ExpoWidgets'": il widget della
   home non viene più cercato in Expo Go, dove non esiste.
 - Il calendario per scegliere il giorno su iOS si apriva vuoto: il calendario nativo non si disegna

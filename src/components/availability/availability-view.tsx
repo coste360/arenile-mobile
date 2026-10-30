@@ -420,7 +420,7 @@ function RowCard({
                 .map((s) =>
                   t('availability.partlySpot', {
                     label: s.label,
-                    free: s.freeDays,
+                    count: s.freeDays,
                     total: s.totalDays,
                   }),
                 )
