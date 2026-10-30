@@ -38,5 +38,5 @@ BSD, Apache-2.0) e senza telemetria propria.
 
 ## Licenza e CLA
 
-La licenza dell'app è in attesa di una decisione di Coste360 SRL (vedi README). I contributi richiedono
+Il codice è sotto la Business Source License 1.1, come il core ([LICENSE](LICENSE), ADR 0017). I contributi richiedono
 la firma del [CLA di Arenile](https://github.com/coste360/arenile/blob/main/CLA.md), lo stesso del core.

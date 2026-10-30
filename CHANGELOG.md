@@ -11,6 +11,8 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ### Aggiunto
 
+- **Licenza:** il codice è sotto la Business Source License 1.1 con gli stessi parametri del core
+  (`LICENSE`, ADR 0017); il marchio resta escluso.
 - **Immagini per gli store** in `store/` (App Store iPhone 6,9" e iPad 13", Google Play telefono e
   grafica in evidenza), generate da `scripts/store/compose.py`; il README le mostra.
 - **Contattare il cliente dalla scheda:** "Chiama", "WhatsApp" (solo numeri in formato internazionale,

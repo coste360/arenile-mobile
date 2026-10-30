@@ -6,7 +6,7 @@ These files are the **Arenile** trademark assets (name, "A" symbol with sand dun
 logotypes, brand kit **v2.0**). They are **not** covered by the code licence of the repository (Business Source
 License 1.1, later AGPL-3.0-or-later): neither licence grants any right on them. They ship in the repository
 only because the official software displays them (admin panel, public booking page, emails, desktop app,
-documentation). Use them only as described in [TRADEMARK.md](../../../TRADEMARK.md); forks must remove or
+documentation). Use them only as described in [TRADEMARK.md](https://github.com/coste360/arenile/blob/main/TRADEMARK.md) of the core; forks must remove or
 replace them.
 
 The assets were created by Coste360 SRL with the assistance of AI tools (manual vector redraw of an approved,
