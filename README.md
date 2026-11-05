@@ -68,22 +68,11 @@ Le immagini per App Store e Google Play sono in [`store/`](store/README.md).
 Ogni azione segue i permessi del ruolo come nel pannello: ciò che il ruolo non può fare non compare, e
 un rifiuto del server si mostra come "non consentito".
 
-**Da provare su dispositivo prima del rilascio:** rete locale del desktop (modulo nativo mai compilato
-per intero), gesti della mappa con centinaia di postazioni, fotocamera, widget, permessi di sistema,
-stampa su una stampante reale.
-
-**Notifiche push: non in questa edizione.** L'app rilegge i dati dall'istanza quando viene aperta o torna
-in primo piano. Le notifiche push richiederebbero un relay centrale gestito da Coste360 e potranno
-diventare una funzione di una futura edizione a pagamento
-([ADR 0012](docs/adr/0012-niente-notifiche-push-nell-edizione-pubblica.md)).
-
 ## Privacy
 
 L'app parla solo con la tua istanza (o, se lo scegli con **Prova la demo**, con la demo di Coste360,
 [ADR 0015](docs/adr/0015-prova-la-demo.md)): nessuna telemetria, nessun SDK di analisi, pubblicità o crash
 reporting, nessun aggiornamento remoto del codice ([ADR 0005](docs/adr/0005-privacy-niente-telemetria-ne-aggiornamenti-remoti.md)).
-Nessuna notifica push, quindi nessun identificativo del telefono dato ad Apple, Google o Coste360
-([ADR 0012](docs/adr/0012-niente-notifiche-push-nell-edizione-pubblica.md)).
 
 ## Sviluppo
 
@@ -132,24 +121,6 @@ src/i18n/           i18next, lingue it (sorgente), en, de, fr
 docs/spec/          piano dell'app per fasi
 docs/adr/           decisioni
 ```
-
-## Da fare prima della pubblicazione
-
-- **Marchio:** icona, icona adattiva Android, schermata di avvio e simbolo nell'app vengono dal kit
-  ufficiale del core (`assets/brand` del core, ADR 0018 del core). Gli asset del marchio non sono coperti
-  dalla licenza del codice ([assets/brand/NOTICE.md](assets/brand/NOTICE.md)). Da verificare con il
-  marchio: varianti dedicate per l'icona adattiva e per la schermata di avvio (oggi derivate dal simbolo
-  ufficiale con margini) e le schede degli store.
-- **Account:** Expo/EAS (build e invio), Apple Developer Program e Google Play Console di Coste360,
-  identificativo `app.arenile.mobile` (progetto EAS `@coste360/arenile-mobile` collegato; prima build di
-  sviluppo Android avviata, per iOS manca ancora il team Apple Developer); per il widget iOS anche l'estensione
-  `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile` (ADR 0010).
-- **Build e prove su dispositivo:** una build di sviluppo EAS per iOS e Android (servono per
-  `expo-sqlite`, il modulo `modules/pinned-fetch` e l'estensione del widget), poi
-  le prove su iPhone, iPad e Android elencate nel [piano dell'app](docs/spec/README.md); il test JUnit del
-  modulo Android (`./gradlew :pinned-fetch:testDebugUnitTest` in un progetto generato con prebuild).
-- **Kit della mappa:** le illustrazioni dei kit del core non sono ancora usate (ADR 0008): servono una
-  release del core che le pubblichi come asset versionato compatibile con la licenza dell'app.
 
 ## Licenza
 

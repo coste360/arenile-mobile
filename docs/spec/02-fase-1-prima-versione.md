@@ -118,7 +118,7 @@ Stesse regole del pannello (sezione 21.2 del core):
 
 ## Stato
 
-Implementata, non ancora pubblicata.
+Pubblicata su App Store e Google Play.
 
 - **Oggi**, **Prenotazioni del giorno** con la scheda, **Mappa del giorno** (ADR 0008), **Operazioni**
   (check-in da QR o codice, ingresso al varco, rilasci, note, incasso in contanti, blocchi; ADR 0009) e
@@ -126,14 +126,7 @@ Implementata, non ancora pubblicata.
   coda passa dal trasporto con pinning.
 - Ingressi al varco e blocchi delle postazioni sono **solo online** (ADR 0009), diversamente dalla prima
   stesura di questa fase.
-- La mappa disegna le postazioni come forme geometriche: le illustrazioni dei kit della mappa del core e
-  l'immagine di sfondo non sono usate (ADR 0008, decisione 7; servono una release del core che pubblichi
-  i kit; la licenza dell'app, BSL 1.1 come il core, è compatibile: ADR 0017).
-- Da provare su dispositivo: fluidità dei gesti con centinaia di postazioni, fotocamera per i QR,
-  avvio a freddo senza rete, coda dopo la riconnessione. `expo-sqlite` è un modulo nativo nuovo: serve
-  una nuova build EAS.
-- Pubblicazione (sotto): account Expo e Apple Developer collegati e prime build di sviluppo fatte;
-  licenza decisa (BSL 1.1, ADR 0017).
+- La mappa disegna le postazioni con le illustrazioni dei kit della release fissata del core (ADR 0013).
 
 ## Pubblicazione
 

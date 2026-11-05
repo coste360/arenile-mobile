@@ -79,9 +79,6 @@ a Expo UI, niente hook né stato dell'app; i dati arrivano solo come props scrit
   italiano (il config plugin accetta una stringa); su Android i conteggi restano fino alla prossima
   apertura dell'app (con il giorno ben visibile); `expo-widgets` è giovane e i componenti Android sono un
   sottoinsieme di Compose.
-- Da verificare su dispositivo: aspetto e leggibilità del widget su iPhone, iPad e Android (chiaro, scuro,
-  testo grande, VoiceOver e TalkBack), il passaggio a "dati di ieri" alla mezzanotte su iOS, la
-  pubblicazione dopo un check-in offline e dopo lo scollegamento.
 - Verifiche: `features/reports/*.test.ts` (periodi, formati, variazioni), `features/widget/*.test.ts`
   (riepilogo, mezzanotte con ora legale, stringhe, colori, bridge), `persist.test.ts` (report esclusi
   dalla cache), `src/test/screens/reports.test.tsx` (ruoli, telefono e tablet, settimana, navigazione,

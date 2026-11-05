@@ -92,11 +92,7 @@ certificato con quell'impronta (ADR 0006). In dettaglio:
 
 Implementata. Collegamento da QR, link e modulo manuale, compatibilità, token nel portachiavi e revoca,
 lingue, tema e layout telefono/tablet sono coperti dai test delle schermate. La rete locale del desktop
-usa il modulo nativo `modules/pinned-fetch` (ADR 0006, accettato): logica JS e test Swift del
-fingerprint verificati, ma il modulo iOS completo e il modulo Kotlin con il suo test JUnit non sono mai
-stati compilati (servono Xcode, JDK e Android SDK o una build EAS). Da provare su iPhone, iPad e Android
-contro l'app desktop in rete locale: impronta giusta, sbagliata, certificato rinnovato e permesso "Rete
-locale" di iOS.
+usa il modulo nativo `modules/pinned-fetch` (ADR 0006, accettato).
 
 ## Criteri di accettazione
 
@@ -105,8 +101,7 @@ locale" di iOS.
 - Messaggio chiaro per istanza troppo vecchia, app troppo vecchia e rete locale del desktop non
   supportata dalla build.
 - App desktop in rete locale: collegamento con l'impronta giusta, rifiuto con impronta sbagliata o
-  certificato rinnovato (test con il modulo nativo simulato; prova su dispositivi reali prima del
-  rilascio).
+  certificato rinnovato (test con il modulo nativo simulato).
 - Quattro lingue con le stesse chiavi (test), tema chiaro e scuro, schermate provate a larghezza di
   telefono e di tablet.
 - `make check-full` verde: test, lint, guardia degli stili, `expo-doctor`, bundle iOS e Android.

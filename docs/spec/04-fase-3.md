@@ -9,9 +9,8 @@
 
 ## Stato
 
-Implementata. I report sono verificati dai test; il widget no su dispositivo: serve una build EAS con
-l'estensione iOS `app.arenile.mobile.ExpoWidgetsTarget` e l'app group `group.app.arenile.mobile`
-registrati nell'account Apple di Coste360.
+Implementata. Il widget iOS usa l'estensione `app.arenile.mobile.ExpoWidgetsTarget` e l'app group
+`group.app.arenile.mobile`.
 
 - **Report:** schermata _Report_ (scorciatoia nell'intestazione del telefono, voce del pannello di
   navigazione su tablet) solo per i ruoli con `reports.read`. Giorno o settimana (lunedì–domenica), con
@@ -27,5 +26,4 @@ registrati nell'account Apple di Coste360.
 - **Widget:** `DaySummary` per iOS (piccolo e medio) e Android con arrivi, da saldare, presenti e
   postazioni libere di oggi, calcolati dall'app dal giorno operativo già in cache; solo conteggi, nessun
   nome o importo; alla mezzanotte dello stabilimento iOS passa a "dati di ieri", Android mostra sempre il
-  giorno dei dati. Allo scollegamento il widget chiede di collegare il dispositivo. Da provare su
-  dispositivo con una build EAS (ADR 0010).
+  giorno dei dati. Allo scollegamento il widget chiede di collegare il dispositivo (ADR 0010).

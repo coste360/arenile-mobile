@@ -79,7 +79,7 @@ si modifica e la versione fissata del core non si cambia senza una decisione (AD
   l'adattatore si elimina con un solo `make api-bump` e una sostituzione dei tipi.
 - Negative: senza rete la vendita, gli spostamenti, la lista d'attesa e la stampa non ci sono; la stampa
   funziona solo con l'edizione desktop (sull'edizione server il core non raggiunge le stampanti), anche
-  in rete locale grazie al trasporto con pinning (ADR 0006, da provare su dispositivo); le push richiedono il
+  in rete locale grazie al trasporto con pinning (ADR 0006); le push richiedono il
   relay di Coste360, le credenziali APNs/FCM di Coste360 e una build EAS; fino alla release del core la
   card push non compare sulle istanze v1.0.1 (la capacità in `/meta` è falsa).
 - Verifiche: test di unità delle regole (`features/daily-sale`, `move-booking`, `waitlist`, `printing`,

@@ -1,6 +1,6 @@
 # 0006 — Rete locale del desktop: certificato autofirmato e trasporto con pinning
 
-- **Stato:** accettato (implementato in `modules/pinned-fetch`; prova su dispositivi reali da fare)
+- **Stato:** accettato (implementato in `modules/pinned-fetch`)
 - **Data:** 2026-10-25
 - **Sezioni della specifica:** core §29.1 (edizione desktop, modalità rete locale), §29.2, core ADR 0015
 
@@ -73,10 +73,9 @@ Alternative scartate:
 - Positive: stessa garanzia del client desktop del core (pinning esatto), nessuna fiducia generica in
   certificati autofirmati; il resto dell'app non cambia.
 - Negative: codice nativo da mantenere in Swift e Kotlin; non funziona in Expo Go (serve una build di
-  sviluppo); fino al rilascio del modulo i lidi con solo l'edizione desktop non possono usare l'app.
+  sviluppo).
 - Limiti accettati: il trasporto con pinning porta solo corpi di testo (JSON); download binari e upload
   multipart, quando serviranno, richiedono un'estensione del modulo.
 - Verifiche: `transport.test.ts`, `client.test.ts`, `pair.test.ts`, i test delle schermate di
   collegamento e principale (impronta giusta, sbagliata, certificato rinnovato, build senza modulo, avviso
-  di rinnovo); `modules/pinned-fetch/src/*.test.ts`; test nativi sopra. Da fare prima del rilascio:
-  prova su iPhone, iPad e Android contro l'app desktop in rete locale, anche dopo un rinnovo.
+  di rinnovo); `modules/pinned-fetch/src/*.test.ts`; test nativi sopra.
