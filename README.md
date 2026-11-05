@@ -6,6 +6,8 @@ gestito o app desktop in rete locale) con il QR code del pannello: non ha un ser
 invia dati a Coste360. Solo il pulsante **Prova la demo** collega, su richiesta, lo stabilimento di
 esempio di Coste360 (ADR 0015).
 
+Scarica l'app da [App Store](https://apps.apple.com/it/app/arenile/id6828818893).
+
 <p align="center">
   <img src="store/app-store/iphone-6.9/01-map.png" width="200" alt="Mappa del giorno">
   <img src="store/app-store/iphone-6.9/02-availability.png" width="200" alt="Disponibilità fila per fila">

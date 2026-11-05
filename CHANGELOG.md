@@ -9,6 +9,17 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ## [Unreleased]
 
+### Modificato
+
+- Pacchetti Expo allineati alle versioni richieste da SDK 58 (`expo`, `expo-router`, `expo-sqlite`,
+  `expo-widgets`, `@expo/ui`, `react-native-safe-area-context`, `react-native-screens` e altri);
+  `expo-doctor` torna verde.
+
+## [1.0.0] — 2026-10-30
+
+Prima versione pubblicata su App Store. Arenile minimo supportato 1.0.0; contratto API dalla release
+v1.1.3 del core.
+
 ### Aggiunto
 
 - **Licenza:** il codice è sotto la Business Source License 1.1 con gli stessi parametri del core
