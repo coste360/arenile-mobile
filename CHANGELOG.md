@@ -9,6 +9,10 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ## [Unreleased]
 
+### Aggiunto
+
+- L'app è pubblicata anche su Google Play: il README porta ai due store.
+
 ### Modificato
 
 - Pacchetti Expo allineati alle versioni richieste da SDK 58 (`expo`, `expo-router`, `expo-sqlite`,
