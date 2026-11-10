@@ -9,10 +9,6 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ## [Unreleased]
 
-### Aggiunto
-
-- L'app è pubblicata anche su Google Play: il README porta ai due store.
-
 ### Modificato
 
 - Pacchetti Expo allineati alle versioni richieste da SDK 58 (`expo`, `expo-router`, `expo-sqlite`,
@@ -21,8 +17,9 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
 
 ## [1.0.0] — 2026-10-30
 
-Prima versione pubblicata su App Store. Arenile minimo supportato 1.0.0; contratto API dalla release
-v1.1.3 del core.
+Prima versione pubblicata su [App Store](https://apps.apple.com/it/app/arenile/id6828818893) e
+[Google Play](https://play.google.com/store/apps/details?id=app.arenile.mobile). Arenile minimo
+supportato 1.0.0; contratto API dalla release v1.1.3 del core.
 
 ### Aggiunto
 
