@@ -47,4 +47,4 @@ radio-group, separator, text.
 panel theme (`web/shared/src/styles/globals.css` in the core, Coste360 navy/sky, core ADR 0018), with
 the source hex next to each value. `tailwind.config.js` maps them; `src/lib/theme.ts` repeats the few
 colours React Navigation needs (headers, screen backgrounds) and `src/lib/theme.test.ts` keeps both in
-sync. The map status colours (`--status-*`) arrive with the map in Phase 1.
+sync. The map status colours are the `--status-*` tokens.

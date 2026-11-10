@@ -5,7 +5,7 @@ import type { BookingCreate, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { bookingDetail, operationsDay, spot } from '@/test/operations-fixtures';
-import { EST, extra, pack, PHASE2_DAY, phase2Instance, requestsTo } from '@/test/phase-2-routes';
+import { EST, extra, pack, ONLINE_DAY, onlineInstance, requestsTo } from '@/test/online-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const nbsp = (s: string) => s.replace(/ /g, ' ');
@@ -95,7 +95,7 @@ async function openSpotA1(
   }: { role?: Role; extra?: Record<string, Handler> } = {},
   size: WindowSize = 'phone',
 ) {
-  const instance = phase2Instance({ role, extra: bookingRoutes(extraRoutes) });
+  const instance = onlineInstance({ role, extra: bookingRoutes(extraRoutes) });
   const app = await renderApp({ session: SESSION, routes: instance.routes, size });
   await app.screen.findByText(/Anna · /);
   await act(async () => router.push('/map'));
@@ -341,7 +341,7 @@ describe('new booking on the fly', () => {
   it.each<WindowSize>(['phone', 'tablet'])(
     'starts from the bookings list and picks a free spot (%s)',
     async (size) => {
-      const instance = phase2Instance({ extra: bookingRoutes() });
+      const instance = onlineInstance({ extra: bookingRoutes() });
       const { screen } = await renderApp({ session: SESSION, routes: instance.routes, size });
       await screen.findByText(/Anna · /);
       await act(async () => router.push('/bookings'));
@@ -362,7 +362,7 @@ describe('new booking on the fly', () => {
   );
 
   it('opens the form from a row of the free spots list', async () => {
-    const instance = phase2Instance({ extra: bookingRoutes() });
+    const instance = onlineInstance({ extra: bookingRoutes() });
     const { screen } = await renderApp({ session: SESSION, routes: instance.routes });
     await screen.findByText(/Anna · /);
     await act(async () => router.push({ pathname: '/spots', params: { status: 'free' } }));
@@ -487,10 +487,10 @@ describe('new booking on the fly', () => {
       extra: {
         [`GET ${EST}/operations/day`]: (r) => {
           const date = new URL(r.url).searchParams.get('date');
-          if (date === '2026-10-25') return json(200, PHASE2_DAY);
+          if (date === '2026-10-25') return json(200, ONLINE_DAY);
           return failing
             ? problem(500, 'internal_error')
-            : json(200, operationsDay({ date: date ?? '', spots: PHASE2_DAY.spots }));
+            : json(200, operationsDay({ date: date ?? '', spots: ONLINE_DAY.spots }));
         },
       },
     });
@@ -517,10 +517,10 @@ describe('new booking on the fly', () => {
 
   it('books a half-day release for its free half from the released spots list', async () => {
     const quotes: BookingCreate[] = [];
-    const instance = phase2Instance({
+    const instance = onlineInstance({
       day: operationsDay({
         spots: [
-          ...PHASE2_DAY.spots,
+          ...ONLINE_DAY.spots,
           spot({
             spot_id: 's-5',
             label: 'C1',

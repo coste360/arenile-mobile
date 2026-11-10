@@ -1,4 +1,4 @@
-// Bookings of the day (phase 1 "Prenotazioni del giorno"): filters, search
+// Bookings of the day ("Prenotazioni del giorno"): filters, search
 // and sort of the list, pure so that the "Oggi" figures and the filtered
 // lists they open always agree. The counting rules mirror the core's
 // operational totals (internal/store DayMovementsOn, inventory.ActiveStatuses).

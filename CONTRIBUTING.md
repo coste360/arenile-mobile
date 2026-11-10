@@ -9,7 +9,7 @@ qui. Partecipando accetti di rispettarli.
 
 1. Cerca se esiste già una issue; altrimenti aprine una con il modello adatto. Per modifiche non banali
    attendi un riscontro dei maintainer.
-2. Leggi [AGENTS.md](AGENTS.md), il [piano dell'app](docs/spec/README.md) e gli [ADR](docs/adr/README.md).
+2. Leggi [AGENTS.md](AGENTS.md) e gli [ADR](docs/adr/README.md).
    Per cambiare una decisione serve un nuovo ADR.
 3. Se la funzione richiede un endpoint che il contratto non ha, la modifica parte dal
    [repository del core](https://github.com/coste360/arenile) (API-first), poi arriva qui con

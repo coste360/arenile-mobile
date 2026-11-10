@@ -1,4 +1,4 @@
-// Periods of the essential reports (spec 04, phase 3): a day or a week of
+// Periods of the essential reports: a day or a week of
 // the establishment, compared with the previous year. Pure functions on
 // calendar dates in the establishment zone; "today" comes from the caller
 // (useOperationalDays), never from the device clock.

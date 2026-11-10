@@ -31,7 +31,7 @@ import { cn } from '@/lib/utils';
 import { WaitlistStatusBadge } from './waitlist-badges';
 
 /**
- * The waitlist in priority order (spec 03, panel "Lista d'attesa"): queue,
+ * The waitlist in priority order (panel "Lista d'attesa"): queue,
  * open offers or every entry, search by customer. Opened for a freed spot,
  * it first shows the compatible requests. Online only (not cached).
  */

@@ -2,12 +2,12 @@
 
 - **Stato:** accettato
 - **Data:** 2026-10-25
-- **Sezioni della specifica:** `docs/spec/02-fase-1-prima-versione.md` ("Offline"), core §21.2, §16,
-  §17.1 (idempotenza), core ADR 0016 (offline del pannello), core ADR 0019 C (If-Match sul check-in)
+- **Sezioni della specifica:** core §21.2, §16, §17.1 (idempotenza), core ADR 0016 (offline
+  del pannello), core ADR 0019 C (If-Match sul check-in)
 
 ## Contesto
 
-In spiaggia la rete è instabile. La fase 1 chiede le stesse regole del pannello (core §21.2): mappa e
+In spiaggia la rete è instabile. L'app segue le stesse regole del pannello (core §21.2): mappa e
 prenotazioni di oggi e domani consultabili offline, coda delle operazioni a basso rischio inviate in
 ordine con chiavi di idempotenza, conflitti mostrati all'utente, creazione e spostamento solo online,
 indicatore della connessione sempre visibile. Il pannello lo fa con IndexedDB e una coda propria

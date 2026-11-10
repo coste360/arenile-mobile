@@ -17,7 +17,7 @@ export type Problem = Schemas['Problem'];
 export type ProblemType = Schemas['ProblemType'];
 export type Role = Schemas['Role'];
 
-// Phase 1: operations, bookings, maps, roles (data and offline foundation).
+// Operations, bookings, maps, roles (data and offline foundation).
 export type Me = Schemas['Me'];
 export type Membership = Schemas['Membership'];
 export type Permission = Schemas['Permission'];
@@ -35,14 +35,14 @@ export type BeachMap = Schemas['Map'];
 export type MapDocument = Schemas['MapDocument'];
 export type PaymentMethod = Schemas['PaymentMethod'];
 
-// Phase 1 operations: check-in by QR, cash desk, spot blocks.
+// Operations: check-in by QR, cash desk, spot blocks.
 export type Ticket = Schemas['Ticket'];
 export type GateCheckInResult = Schemas['GateCheckInResult'];
 export type CashSessionDetail = Schemas['CashSessionDetail'];
 export type SpotBlockCreate = Schemas['SpotBlockCreate'];
 export type SpotBlockList = Schemas['SpotBlockList'];
 
-// Phase 3: essential reports (core spec 15.3).
+// Essential reports (core spec 15.3).
 export type YearComparisonReport = Schemas['YearComparisonReport'];
 export type ComparisonMetric = Schemas['ComparisonMetric'];
 export type ComparisonMetricKey = Schemas['ComparisonMetricKey'];
@@ -53,7 +53,7 @@ export type ComparisonAlign = Schemas['ComparisonAlign'];
 export type LifeguardList = Schemas['LifeguardList'];
 export type LifeguardRow = Schemas['LifeguardRow'];
 
-// Phase 2: daily quick sale, move, waitlist, ticket printing (spec 03).
+// Online only: daily quick sale, move, waitlist, ticket printing.
 export type DailySaleQuoteRequest = Schemas['DailySaleQuoteRequest'];
 export type DailySaleQuote = Schemas['DailySaleQuote'];
 export type DailySaleCreate = Schemas['DailySaleCreate'];

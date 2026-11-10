@@ -15,6 +15,12 @@ minima di Arenile supportata e la release del core da cui viene il contratto API
   `expo-widgets`, `@expo/ui`, `react-native-safe-area-context`, `react-native-screens` e altri);
   `expo-doctor` torna verde.
 
+### Rimosso
+
+- Il piano di sviluppo per fasi (`docs/spec/`): cosa fa l'app, e cosa non fa per decisione, è nel
+  README; la specifica di riferimento resta quella del core. Tolti anche i riferimenti alle fasi da
+  documenti, ADR (0011 rinominato) e commenti del codice.
+
 ## [1.0.0] — 2026-10-30
 
 Prima versione pubblicata su [App Store](https://apps.apple.com/it/app/arenile/id6828818893) e
@@ -86,7 +92,7 @@ supportato 1.0.0; contratto API dalla release v1.1.3 del core.
   operativo in cache, con le regole di stato della mappa; i cinque numeri in righe piene a ogni
   larghezza (niente più 3 + 2 su tablet).
 
-- Fase 2 (ADR 0011), tutto solo online e mai in coda:
+- Vendita, spostamenti, lista d'attesa e stampa (ADR 0011), tutto solo online e mai in coda:
   - _Vendita giornaliera rapida_ dalla scheda di una postazione libera: fascia, pacchetto, extra, nome
     facoltativo, totale dal server, contanti con il resto o carta, biglietto numerato.
   - _Sposta su un'altra postazione_ dalla mappa e dalla scheda prenotazione, con l'anteprima del server
@@ -98,7 +104,7 @@ supportato 1.0.0; contratto API dalla release v1.1.3 del core.
     richieste compatibili con la postazione liberata.
   - _Stampa il biglietto_ sulla stampante ESC/POS instradata nel pannello: stampa il server, l'app la
     chiede e ne segue l'esito.
-- Fase 1 — **Mappa del giorno** (ADR 0008): vista operativa di oggi o domani con i colori di stato del
+- **Mappa del giorno** (ADR 0008): vista operativa di oggi o domani con i colori di stato del
   pannello, sempre con etichetta e glifo, legenda sempre visibile con i conteggi, fasce giornata /
   mattina / pomeriggio, più mappe dello stabilimento; zoom e spostamento con i gesti (fluidi anche con
   centinaia di postazioni) e con i pulsanti; ricerca per postazione, cliente o codice prenotazione;
@@ -106,11 +112,11 @@ supportato 1.0.0; contratto API dalla release v1.1.3 del core.
   (solo con il permesso di vedere le prenotazioni), saldo e azioni del ruolo: check-in e rilascio del
   giorno anche offline (coda), blocco e sblocco della postazione solo online. Su tablet la scheda si
   apre accanto alla mappa. Funziona sulla cache offline del giorno.
-- Fase 1 — _Oggi_: arrivi, presenti, postazioni libere sul totale, prenotazioni da saldare con
+- _Oggi_: arrivi, presenti, postazioni libere sul totale, prenotazioni da saldare con
   l'importo, giorni rilasciati dagli abbonati, nel fuso dello stabilimento; ogni numero apre il proprio
   elenco filtrato e ne è la lunghezza. Elenco delle postazioni libere e rilasciate (con la mezza
   giornata libera). Avviso di stabilimento chiuso.
-- Fase 1 — _Prenotazioni del giorno_ (oggi e domani): filtri arrivi, presenti, da saldare, abbonati,
+- _Prenotazioni del giorno_ (oggi e domani): filtri arrivi, presenti, da saldare, abbonati,
   online/cassa; ricerca per codice, cliente (senza accenti) o postazione; ordinamento per postazione,
   cliente, arrivo o saldo; cancellate e scadute su richiesta; trascina per aggiornare.
 - _Scheda prenotazione_: postazioni e pacchetti, periodo, fasce, formula, canale, cliente, importi,
@@ -120,23 +126,23 @@ supportato 1.0.0; contratto API dalla release v1.1.3 del core.
 - Su tablet elenco e scheda affiancati; _Oggi_ e _Prenotazioni_ nel pannello di navigazione, scheda
   _Giornata_ nella schermata principale del telefono. Dati salvati sul dispositivo segnalati con l'ora
   dell'ultimo aggiornamento.
-- Fase 1 — operazioni (ADR 0009): check-in con la scansione del QR della prenotazione (anche senza
+- Operazioni (ADR 0009): check-in con la scansione del QR della prenotazione (anche senza
   rete, dai dati del giorno) o del biglietto d'ingresso (ammesso al varco con l'esito: entrato, già
   entrato, annullato, altro giorno), oppure con il codice digitato; schermata delle operazioni di una
   prenotazione con check-in, incasso rapido in contanti (con conferma, mai oltre il saldo, avviso se la
   cassa è chiusa), rilascio del giorno degli abbonati e note interne, tutte nella coda offline;
   postazioni di oggi con ricerca e blocco/sblocco (solo online). Azioni mostrate secondo il ruolo.
-- Fase 3 — report essenziali per titolare, gestore e sola lettura (ADR 0010): incassato, occupazione,
+- Report essenziali per titolare, gestore e sola lettura (ADR 0010): incassato, occupazione,
   prenotazioni e prenotato del giorno o della settimana a confronto con l'anno precedente (stessa data
   o stesso giorno della settimana), con il giorno per giorno della settimana, dal confronto del core
   (`GET reports/comparison`); solo online; le esportazioni restano nel pannello.
-- Fase 3 — widget della schermata principale per iOS e Android con arrivi, da saldare, presenti e
+- Widget della schermata principale per iOS e Android con arrivi, da saldare, presenti e
   postazioni libere di oggi, calcolati dai dati già in cache sul dispositivo, senza nessuna connessione;
   solo conteggi; "dati di ieri" alla mezzanotte su iOS; svuotato allo scollegamento. Richiede una
   nuova build nativa (estensione widget e app group `group.app.arenile.mobile`).
 - Dipendenze: `expo-widgets` e `@expo/ui` (MIT, Expo).
 
-- Fase 1 — fondamenta dei dati e dell'offline (ADR 0007): cache di mappa e prenotazioni di oggi e
+- Fondamenta dei dati e dell'offline (ADR 0007): cache di mappa e prenotazioni di oggi e
   domani (nel fuso dello stabilimento) consultabile senza rete, anche all'avvio, e cancellata a ogni
   scollegamento; coda di check-in, rilasci del giorno, note e incassi in contanti inviata in ordine
   alla riconnessione con chiavi di idempotenza, conflitti e rifiuti mostrati con il motivo finché
@@ -149,7 +155,7 @@ supportato 1.0.0; contratto API dalla release v1.1.3 del core.
 - Dipendenze: `expo-sqlite`, `expo-network`, `expo-crypto`, `@tanstack/react-query-persist-client`,
   `@tanstack/query-async-storage-persister` (MIT, nessuna connessione verso terzi).
 
-- Fase 0 — fondamenta dell'app (Expo SDK 58, React Native 0.88, expo-router, TypeScript strict).
+- Fondamenta dell'app (Expo SDK 58, React Native 0.88, expo-router, TypeScript strict).
 - Collegamento a un'istanza con il QR del pannello (anche dalla fotocamera di sistema con il link
   `arenile://pair?d=…`, che chiede conferma dell'indirizzo dell'istanza) o con indirizzo e codice di
   abbinamento; decodificatore del QR con le stesse regole del core; `http` accettato solo su loopback.
@@ -173,7 +179,7 @@ supportato 1.0.0; contratto API dalla release v1.1.3 del core.
   `make api-bump`).
 - Strumenti: `Makefile`, ESLint, Prettier, guardia degli stili, Jest con test delle schermate a
   larghezza di telefono e di tablet, CI su GitHub Actions (`make check`, `expo-doctor`, bundle iOS e
-  Android), regole e agenti per Claude Code, ADR 0001–0006, piano dell'app per fasi.
+  Android), regole e agenti per Claude Code, ADR 0001–0006.
 
 - Mappa del giorno con le illustrazioni dei kit del pannello (ADR 0013): ombrelloni, lettini,
   gazebo, passerelle, bar e servizi come nel pannello, nel kit scelto dallo stabilimento (_Moderno_ con

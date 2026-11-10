@@ -7,14 +7,14 @@ import type { OfflineOperation } from '@/features/offline/types';
 import { json, networkDown, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { beachMap, mapDocument, mapSpot } from '@/test/map-fixtures';
-import { EST, extra, pack, PHASE2_MAP, phase2Instance, requestsTo } from '@/test/phase-2-routes';
+import { EST, extra, pack, ONLINE_MAP, onlineInstance, requestsTo } from '@/test/online-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 type SpotAvailability = NonNullable<AvailabilityResult['zones'][number]['spots']>[number];
 
 const DAY_MS = 86_400_000;
 
-/** Map of phase 2: A1 free, A2 taken, A3 taken on the last day of the stay, B1 (row B) taken. */
+/** The online test map: A1 free, A2 taken, A3 taken on the last day of the stay, B1 (row B) taken. */
 function availabilityOf(url: URL, overrides: Partial<AvailabilityResult> = {}): AvailabilityResult {
   const from = url.searchParams.get('from')!;
   const to = url.searchParams.get('to')!;
@@ -91,7 +91,7 @@ async function open({
   extra?: Record<string, Handler>;
   offlineData?: Record<string, string>;
 } = {}) {
-  const instance = phase2Instance({ role, extra: availabilityRoutes(extraRoutes) });
+  const instance = onlineInstance({ role, extra: availabilityRoutes(extraRoutes) });
   const app = await renderApp({
     session: SESSION,
     routes: instance.routes,
@@ -158,7 +158,7 @@ const ZONES = {
 };
 
 const TWO_MAPS: Record<string, Handler> = {
-  [`GET ${EST}/maps`]: () => json(200, { items: [PHASE2_MAP.map, POOL_MAP.map] }),
+  [`GET ${EST}/maps`]: () => json(200, { items: [ONLINE_MAP.map, POOL_MAP.map] }),
   [`GET ${EST}/maps/m-2`]: () => json(200, POOL_MAP),
   [`GET ${EST}/availability`]: (r) => json(200, answerOf(new URL(r.url))),
   [`GET ${EST}/zones`]: () => json(200, ZONES),
@@ -561,8 +561,8 @@ describe('Disponibilità', () => {
     const withAttributes: Record<string, Handler> = {
       [`GET ${EST}/maps/m-1`]: () =>
         json(200, {
-          ...PHASE2_MAP,
-          spots: PHASE2_MAP.spots.map((spot) =>
+          ...ONLINE_MAP,
+          spots: ONLINE_MAP.spots.map((spot) =>
             spot.id === 's-1'
               ? { ...spot, attributes: ['Prima fila', 'ombra'] }
               : spot.id === 's-3'
@@ -621,8 +621,8 @@ describe('Disponibilità', () => {
           ...withAttributes,
           [`GET ${EST}/maps/m-1`]: () =>
             json(200, {
-              ...PHASE2_MAP,
-              spots: PHASE2_MAP.spots.map((spot) =>
+              ...ONLINE_MAP,
+              spots: ONLINE_MAP.spots.map((spot) =>
                 spot.id === 's-1'
                   ? { ...spot, attributes: ['prima fila'] }
                   : spot.id === 's-4'

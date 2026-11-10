@@ -2,14 +2,14 @@
 
 - **Stato:** accettato
 - **Data:** 2026-10-25
-- **Sezioni della specifica:** `docs/spec/02-fase-1-prima-versione.md` ("Operazioni", "Offline"), core
-  §11.3 (blocchi), §14.3 e ADR 0020 del core (biglietti e varco), §16.1, §21.2; ADR 0007
+- **Sezioni della specifica:** core §11.3 (blocchi), §14.3 e ADR 0020 del core (biglietti e
+  varco), §16.1, §21.2; ADR 0007
 
 ## Contesto
 
-La fase 1 chiede il check-in con la scansione del QR della prenotazione o del biglietto d'ingresso, il
+L'app deve offrire il check-in con la scansione del QR della prenotazione o del biglietto d'ingresso, il
 rilascio del giorno degli abbonati, il blocco della postazione, le note e l'incasso rapido in contanti,
-"anche con rete instabile". Il core usa due QR diversi:
+anche con rete instabile. Il core usa due QR diversi:
 
 - il QR della prenotazione (email, pagina pubblica, ricevuta) codifica `ARENILE:<codice>`
   (`internal/domain/notify/qr.go`);

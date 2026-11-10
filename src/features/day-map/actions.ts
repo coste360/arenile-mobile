@@ -1,5 +1,5 @@
 // Actions the spot sheet offers (core spec 11.3 "tocco su una postazione",
-// phase 1 "Operazioni"), from the status of the slot, the day shown and the
+// "Operazioni"), from the status of the slot, the day shown and the
 // abilities of the paired user. Mirrors the panel's spotActions
 // (web/admin/src/features/operations/lib/actions.ts) for the actions the app
 // has; the permission of each comes from features/permissions (core matrix).

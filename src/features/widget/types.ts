@@ -1,4 +1,4 @@
-// What the home screen widget shows (spec 04, phase 3: "12 arrivi, 3 da
+// What the home screen widget shows ("12 arrivi, 3 da
 // saldare"). The widget runs in an isolated runtime (expo-widgets): it cannot
 // import modules, read app state, translate or format, so the app hands it
 // every string ready to display. Counts only: no customer names, no amounts,

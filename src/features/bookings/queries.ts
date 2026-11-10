@@ -1,4 +1,4 @@
-// Bookings of the paired establishment (core spec 15, phase 1 "Prenotazioni
+// Bookings of the paired establishment (core spec 15, "Prenotazioni
 // del giorno"): the list of a day and the booking detail.
 import { useQuery } from '@tanstack/react-query';
 
@@ -50,7 +50,7 @@ export const bookingsOfDayQuery = (
   staleTime: DAY_STALE_MS,
 });
 
-/** The bookings of a day (list with filters, phase 1). */
+/** The bookings of a day (list with filters). */
 export function useBookingsOfDay(date: CalendarDate) {
   const client = useApiClient();
   const { establishmentId } = usePairedSession();

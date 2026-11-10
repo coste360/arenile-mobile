@@ -1,6 +1,6 @@
-// Fake instance for the phase 2 screens (spec 03): a paired device in
-// Europe/Rome on 2026-10-25 (the fixed test clock) with the day map, the
-// catalogue, the cash desk and the printing routes. Every route can be
+// Fake instance for the online-only screens (sale, move, waitlist,
+// printing): a paired device in Europe/Rome on 2026-10-25 (the fixed test
+// clock) with the day map, the catalogue, the cash desk and the printing routes. Every route can be
 // replaced through `extra`; `down()` makes the instance unreachable.
 import type {
   MapDocument,
@@ -25,7 +25,7 @@ export const TODAY = '2026-10-25';
 export const TICKET_LABEL = '#' + '037';
 
 /** A1 free, A2 booked, A3 a daily ticket (#037), B1 a released pass day. */
-export const PHASE2_DAY: OperationsDay = operationsDay({
+export const ONLINE_DAY: OperationsDay = operationsDay({
   spots: [
     spot({ spot_id: 's-1', label: 'A1', status: 'free' }),
     spot({
@@ -67,7 +67,7 @@ export const PHASE2_DAY: OperationsDay = operationsDay({
   ],
 });
 
-export const PHASE2_MAP: MapDocument = mapDocument({
+export const ONLINE_MAP: MapDocument = mapDocument({
   spots: [
     mapSpot(),
     mapSpot({ id: 's-2', label: 'A2', number: 2, x: 160 }),
@@ -127,7 +127,7 @@ export const OPEN_SESSION = {
   session: { id: 'cs-1', register_id: 'reg-1', status: 'open' },
 };
 
-export interface Phase2Setup {
+export interface OnlineSetup {
   role?: Role;
   permissions?: Permission[];
   day?: OperationsDay;
@@ -135,13 +135,13 @@ export interface Phase2Setup {
   extra?: Record<string, Handler>;
 }
 
-export function phase2Instance({
+export function onlineInstance({
   role = 'cashier',
   permissions,
-  day = PHASE2_DAY,
+  day = ONLINE_DAY,
   features = ['bookings', 'cash', 'season_passes'],
   extra: overrides = {},
-}: Phase2Setup = {}) {
+}: OnlineSetup = {}) {
   let unreachable = false;
   const up =
     (h: Handler): Handler =>
@@ -170,8 +170,8 @@ export function phase2Instance({
         timezone: 'Europe/Rome',
         organization_id: 'org-1',
       }),
-    [`GET ${EST}/maps`]: () => json(200, { items: [PHASE2_MAP.map] }),
-    [`GET ${EST}/maps/${PHASE2_MAP.map.id}`]: () => json(200, PHASE2_MAP),
+    [`GET ${EST}/maps`]: () => json(200, { items: [ONLINE_MAP.map] }),
+    [`GET ${EST}/maps/${ONLINE_MAP.map.id}`]: () => json(200, ONLINE_MAP),
     [`GET ${EST}/operations/day`]: (r) =>
       new URL(r.url).searchParams.get('date') === TODAY
         ? json(200, day)

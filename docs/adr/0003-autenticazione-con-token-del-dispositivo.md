@@ -20,7 +20,7 @@ sono cookie, quindi nemmeno CSRF né CORS per l'app.
    L'accesso passa da un'interfaccia (`KeyValueStore` → `SessionStore`) con un'implementazione in
    memoria per i test; nessun altro modulo importa `expo-secure-store`.
 2. La sessione salvata contiene istanza, token, dispositivo, stabilimento e data di abbinamento. Un token
-   vale per **un solo stabilimento**: nessun selettore di stabilimento in fase 0.
+   vale per **un solo stabilimento**: nessun selettore di stabilimento.
 3. Un unico punto costruisce i client (`createApiClient`): base URL dell'istanza, bearer, nessuna
    credenziale implicita (`credentials: 'omit'`), timeout.
 4. Un `401` dell'istanza (`application/problem+json` di tipo `unauthorized`: revoca, inattività)

@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native';
 import type { DailySaleQuoteRequest, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
-import { EST, extra, pack, phase2Instance, requestsTo, TICKET_LABEL } from '@/test/phase-2-routes';
+import { EST, extra, pack, onlineInstance, requestsTo, TICKET_LABEL } from '@/test/online-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const nbsp = (s: string) => s.replace(/ /g, ' ');
@@ -122,7 +122,7 @@ async function openSpotA1(
   }: { role?: Role; extra?: Record<string, Handler>; connected?: boolean } = {},
   size: WindowSize = 'phone',
 ) {
-  const instance = phase2Instance({ role, extra: saleRoutes(extraRoutes) });
+  const instance = onlineInstance({ role, extra: saleRoutes(extraRoutes) });
   const app = await renderApp({ session: SESSION, routes: instance.routes, size, connected });
   await app.screen.findByText(/Anna · /);
   await act(async () => router.push('/map'));

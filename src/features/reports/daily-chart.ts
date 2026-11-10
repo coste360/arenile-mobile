@@ -1,4 +1,4 @@
-// Bars of the week chart of the reports (spec 04, "giorno per giorno"):
+// Bars of the week chart of the reports ("giorno per giorno"):
 // takings and occupancy of each day against the previous year, from the
 // daily series of the core's year comparison (ComparisonPoint, one per day
 // with granularity=day). Integers only: heights in thousandths of the chart.

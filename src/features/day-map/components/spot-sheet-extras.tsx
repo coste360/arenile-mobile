@@ -27,8 +27,8 @@ import type { DaySpot } from '../model';
 import { isBookable } from '../status';
 
 /**
- * Phase 2 actions of the spot sheet (spec 03), online only and each hidden
- * from the roles that cannot perform it: the daily quick sale of a free
+ * Sale, move, waitlist and printing actions of the spot sheet, online only
+ * and each hidden from the roles that cannot perform it: the daily quick sale of a free
  * spot, a new booking on it from that day, offering it to the waitlist,
  * moving the booking on it and printing the daily ticket of a sold one.
  */

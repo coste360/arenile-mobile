@@ -4,7 +4,7 @@ import { act, fireEvent, waitFor, within } from 'expo-router/testing-library';
 import type { Role, WaitlistEntry } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
-import { EST, pack, phase2Instance, requestsTo, waitlistEntry } from '@/test/phase-2-routes';
+import { EST, pack, onlineInstance, requestsTo, waitlistEntry } from '@/test/online-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const ENTRIES: WaitlistEntry[] = [
@@ -71,7 +71,7 @@ async function open(
   }: { role?: Role; extra?: Record<string, Handler>; connected?: boolean } = {},
   size: WindowSize = 'phone',
 ) {
-  const instance = phase2Instance({ role, extra: waitlistRoutes(extra) });
+  const instance = onlineInstance({ role, extra: waitlistRoutes(extra) });
   const app = await renderApp({ session: SESSION, routes: instance.routes, size, connected });
   await app.screen.findByText(/Anna · /);
   return app;

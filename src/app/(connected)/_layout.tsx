@@ -138,8 +138,11 @@ function operationsScreens(t: (key: 'nav.operations' | 'operations.hub.scan') =>
   ];
 }
 
-/** Phase 2 screens (spec 03) and the new booking, online only, declared once for both layouts. */
-function phase2Screens(
+/**
+ * Online-only screens (sale, new booking, availability, move, waitlist), declared once for both
+ * layouts.
+ */
+function onlineScreens(
   t: (
     key:
       | 'nav.sale'
@@ -212,7 +215,7 @@ export default function ConnectedLayout() {
             <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
             {dayScreens(t)}
             {operationsScreens(t)}
-            {phase2Screens(t)}
+            {onlineScreens(t)}
             <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
           </Stack>
         </TabletShell>
@@ -270,7 +273,7 @@ export default function ConnectedLayout() {
       <Stack.Screen name="pending" options={{ title: t('nav.pending') }} />
       {dayScreens(t)}
       {operationsScreens(t)}
-      {phase2Screens(t)}
+      {onlineScreens(t)}
       <Stack.Screen name="reports" options={{ title: t('nav.reports') }} />
     </Stack>
   );

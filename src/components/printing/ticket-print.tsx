@@ -27,7 +27,7 @@ import {
 } from '@/features/printing/printing';
 
 /**
- * "Stampa il biglietto" (spec 03): asks the instance to print the ticket on
+ * "Stampa il biglietto": asks the instance to print the ticket on
  * the ESC/POS printer routed in the panel and follows the job. Shown only to
  * roles with cash.operate; when no printer is ready it says why instead of
  * offering the button (the panel prints from the browser).

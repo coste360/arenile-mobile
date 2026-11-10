@@ -53,9 +53,8 @@ export function daySelectionParam(value: unknown): DaySelection {
 
 /**
  * Bookings of a day (today and tomorrow also offline, other days online
- * only; ADR 0014) with the filters of
- * phase 1, search and sort. Selecting a row is up to the screen: the phone
- * opens the sheet, the tablet shows it beside the list.
+ * only; ADR 0014) with filters, search and sort. Selecting a row is up to
+ * the screen: the phone opens the sheet, the tablet shows it beside the list.
  */
 export function BookingsList({
   initialFilter = 'all',

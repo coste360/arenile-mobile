@@ -44,4 +44,4 @@ parte di terzi e rendono più delicati i contributi esterni.
   bisogno di una licenza commerciale; la parte della _Additional Use Grant_ sulla pagina di prenotazione
   pubblica e sul widget del core non riguarda l'app ma resta per tenere il testo identico al core.
 - Verifiche: `LICENSE` nella radice, `"license": "BUSL-1.1"` in `package.json`; la PR della decisione
-  aggiorna README, CONTRIBUTING, `AGENTS.md` e il piano dell'app.
+  aggiorna README, CONTRIBUTING e `AGENTS.md`.

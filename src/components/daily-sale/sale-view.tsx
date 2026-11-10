@@ -68,7 +68,7 @@ import { ExtraStepper } from './extra-stepper';
 const SLOTS: readonly Slots[] = ['FULL', 'AM', 'PM'];
 
 /**
- * Daily quick sale of a spot (spec 03 "Vendita giornaliera rapida"): slot,
+ * Daily quick sale of a spot ("Vendita giornaliera rapida"): slot,
  * pack, extras, optional name, payment in cash (with the change) or by card,
  * then the numbered ticket. Online only, for roles with bookings.write and
  * cash.operate; the server checks availability and numbers the ticket.

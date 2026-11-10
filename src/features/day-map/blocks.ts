@@ -1,4 +1,4 @@
-// Manual block of a spot from the map (phase 1 "blocco della postazione",
+// Manual block of a spot from the map ("blocco della postazione",
 // core ADR 0019 C, permission operations.run). Online only: a block takes a
 // spot out of availability, which the server alone guarantees (spec 21.2),
 // so it is never queued.

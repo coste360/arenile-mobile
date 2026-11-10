@@ -6,7 +6,7 @@ import type { BookingDetail, OperationsDay, Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
 import { bookingDetail, operationalBooking, operationsDay, spot } from '@/test/operations-fixtures';
-import { EST, PHASE2_DAY, phase2Instance, requestsTo, TICKET_LABEL } from '@/test/phase-2-routes';
+import { EST, ONLINE_DAY, onlineInstance, requestsTo, TICKET_LABEL } from '@/test/online-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const nbsp = (s: string) => s.replace(/ /g, ' ');
@@ -63,7 +63,7 @@ async function openSpot(
   { role = 'cashier', extra = {} }: { role?: Role; extra?: Record<string, Handler> } = {},
   size: WindowSize = 'phone',
 ) {
-  const instance = phase2Instance({ role, extra: moveRoutes(extra) });
+  const instance = onlineInstance({ role, extra: moveRoutes(extra) });
   const app = await renderApp({ session: SESSION, routes: instance.routes, size });
   await app.screen.findByText(/Anna · /);
   await act(async () => router.push('/map'));
@@ -235,7 +235,7 @@ describe('move a booking', () => {
   );
 
   it('is offered in the booking sheet too', async () => {
-    const instance = phase2Instance({ extra: moveRoutes() });
+    const instance = onlineInstance({ extra: moveRoutes() });
     const { screen } = await renderApp({ session: SESSION, routes: instance.routes });
     await screen.findByText(/Anna · /);
     await act(async () => router.push('/bookings/b-2'));
@@ -265,10 +265,10 @@ const UNDO = {
 /** A2 (b-2) under way from yesterday to the 28th, so it can move from today or tomorrow. */
 const UNDER_WAY: BookingDetail = { ...B2, starts_on: '2026-10-24', ends_on: '2026-10-28' };
 
-/** The phase 2 day plus A4, taken by another booking (AR-SWAP4, Verdi) to swap with. */
+/** The day plus A4, taken by another booking (AR-SWAP4, Verdi) to swap with. */
 const SWAP_DAY: OperationsDay = operationsDay({
   spots: [
-    ...PHASE2_DAY.spots,
+    ...ONLINE_DAY.spots,
     spot({
       spot_id: 's-5',
       label: 'A4',
@@ -321,7 +321,7 @@ describe('move from today or tomorrow', () => {
         {
           extra: {
             [`GET ${EST}/bookings/b-2`]: () => json(200, UNDER_WAY),
-            [`GET ${EST}/operations/day`]: () => json(200, PHASE2_DAY),
+            [`GET ${EST}/operations/day`]: () => json(200, ONLINE_DAY),
           },
         },
         size,

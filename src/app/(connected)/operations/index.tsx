@@ -31,7 +31,7 @@ import { useAbilities } from '@/features/permissions/use-abilities';
 import { cn } from '@/lib/utils';
 
 /**
- * Operations hub (spec 02 "Operazioni"): check-in by scanning or typing a
+ * Operations hub ("Operazioni"): check-in by scanning or typing a
  * code, and today's spots for the spot operations (block, pass release).
  * Phones stack the sections and a spot opens its screen; tablets with room
  * for both keep check-in and spots in the list pane and show the code result

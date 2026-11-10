@@ -18,7 +18,7 @@ import { useAbilities } from '@/features/permissions/use-abilities';
 import { canViewWaitlist, freedSpotOf } from '@/features/waitlist/waitlist';
 
 /**
- * "Lista d'attesa" (spec 03). Phone: the list, a row opens the entry.
+ * "Lista d'attesa". Phone: the list, a row opens the entry.
  * Tablet with room for both: list and entry side by side, the selection in `selected`. Opened
  * from the map with `spotId`, `zoneId`, `label` and `date`, it offers that
  * freed spot to the compatible requests. Online only.

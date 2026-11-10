@@ -9,7 +9,7 @@ import { isCalendarDate } from '@/lib/calendar';
 
 const SLOTS: readonly string[] = ['FULL', 'AM', 'PM'];
 
-/** Daily quick sale of the spot tapped on the map (spec 03), online only. */
+/** Daily quick sale of the spot tapped on the map, online only. */
 export default function SaleScreen() {
   const { t } = useTranslation();
   const { today } = useOperationalDays();

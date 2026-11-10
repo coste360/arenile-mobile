@@ -2,8 +2,8 @@
 
 - **Stato:** proposto
 - **Data:** 2026-10-26
-- **Sezioni della specifica:** `docs/spec/02-fase-1-prima-versione.md` (mappa del giorno, prenotazioni
-  del giorno); core §11.3, §21.2; ADR 0004, 0007, 0008 (modifica la decisione 5 sui giorni)
+- **Sezioni della specifica:** core §11.3, §21.2; ADR 0004, 0007, 0008 (modifica la
+  decisione 5 sui giorni)
 
 ## Contesto
 

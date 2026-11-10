@@ -16,7 +16,7 @@ import { isDayFilter } from '@/features/bookings/day-list';
 import { useBooking } from '@/features/bookings/queries';
 
 /**
- * "Prenotazioni del giorno" (phase 1). Phone: the list, a row opens the
+ * "Prenotazioni del giorno". Phone: the list, a row opens the
  * sheet. Tablet with room for both: the list and the sheet side by side, the
  * selection kept in the `selected` parameter. `filter` and `day` come from
  * the figures of "Oggi".

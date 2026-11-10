@@ -69,13 +69,13 @@ export const estKeys = {
   /** GET cash-sessions/current: the open session of the main register (never persisted). */
   cashSession: (establishmentId: string) => ['est', establishmentId, 'cash', 'current'] as const,
 
-  /** GET reports/comparison: a period against the previous year (phase 3, online only). */
+  /** GET reports/comparison: a period against the previous year (online only). */
   reportComparison: (
     establishmentId: string,
     params: { from: CalendarDate; to: CalendarDate; align: ComparisonAlign },
   ) => ['est', establishmentId, 'reports', 'comparison', params] as const,
 
-  // Phase 2 (spec 03): online only, none of these keys is persisted.
+  // Sale, move, waitlist, printing: online only, none of these keys is persisted.
   /** GET packs and extras: the sellable catalogue (daily sale). */
   packs: (establishmentId: string) => ['est', establishmentId, 'catalog', 'packs'] as const,
   extras: (establishmentId: string) => ['est', establishmentId, 'catalog', 'extras'] as const,

@@ -1,5 +1,5 @@
 // Key-value storage abstraction. The app uses the device keychain/keystore
-// (expo-secure-store) for everything it persists in Phase 0: the device token
+// (expo-secure-store) for its session and preferences: the device token
 // must never land in plain storage, and the few preferences are tiny. Tests
 // use the in-memory implementation; nothing else imports expo-secure-store.
 import * as SecureStore from 'expo-secure-store';

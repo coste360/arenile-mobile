@@ -42,7 +42,7 @@ export function BookingStatusBadge({ status }: { status: BookingStatus }) {
 }
 
 /**
- * Who, where and how much of a booking (spec 02 "Scheda prenotazione"):
+ * Who, where and how much of a booking ("Scheda prenotazione"):
  * code, status, spots, customer (bookings.read, never contact details),
  * period and amounts in cents formatted in Italian.
  */

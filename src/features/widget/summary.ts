@@ -1,6 +1,6 @@
 // Day summary of the home screen widget, computed in the app from the
 // operational day already in the query cache (the persisted offline cache
-// included): the widget itself never fetches anything (spec 04, phase 3).
+// included): the widget itself never fetches anything.
 // Pure functions: the instant, the zone, the language and `t` come in.
 import type { TFunction } from 'i18next';
 

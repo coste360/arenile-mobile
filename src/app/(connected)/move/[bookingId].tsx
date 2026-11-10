@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Screen } from '@/components/layout/screen';
 import { MoveView } from '@/components/move-booking/move-view';
 
-/** Move a booking to another spot (spec 03), online only. */
+/** Move a booking to another spot, online only. */
 export default function MoveScreen() {
   const { t } = useTranslation();
   const { bookingId, lineId } = useLocalSearchParams<{ bookingId: string; lineId?: string }>();

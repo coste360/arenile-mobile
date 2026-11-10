@@ -2,8 +2,8 @@
 
 - **Stato:** accettato
 - **Data:** 2026-10-25
-- **Sezioni della specifica:** `docs/spec/03-fase-2.md`, `docs/spec/05-esclusi.md`; core §29.2 (app
-  mobile), §19 (notifiche); sostituisce i punti 7, 8 e 9 dell'[ADR 0011](0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md)
+- **Sezioni della specifica:** core §29.2 (app mobile), §19 (notifiche); sostituisce i punti
+  7, 8 e 9 dell'[ADR 0011](0011-vendita-spostamenti-lista-attesa-stampa-push.md)
 
 ## Contesto
 

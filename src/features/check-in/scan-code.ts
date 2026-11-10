@@ -1,5 +1,4 @@
-// What a scanned QR or a typed code means for the check-in (phase 1
-// "Operazioni"). Mirrors the core:
+// What a scanned QR or a typed code means for the check-in. Mirrors the core:
 //
 // - the QR of a booking (confirmation email, public page, printed receipt)
 //   encodes "ARENILE:<booking code>" (internal/domain/notify/qr.go QRPayload);

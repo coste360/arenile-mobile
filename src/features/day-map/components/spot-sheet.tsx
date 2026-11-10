@@ -63,7 +63,7 @@ export interface SpotSheetProps {
 }
 
 /**
- * Card of a spot (core spec 11.3 "tocco su una postazione", phase 1 "Scheda
+ * Card of a spot (core spec 11.3 "tocco su una postazione", "Scheda
  * postazione"): status with glyph and label, booking or season pass,
  * customer (only with bookings.read), balance, and the actions the role
  * may perform. Check-in and the release of a pass day go through the offline

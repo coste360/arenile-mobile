@@ -1,10 +1,9 @@
-// Daily quick sale from the map (core spec 14.3, ADR 0020 of the core;
-// spec 03 of this app): a confirmed desk booking, its manual payment and the
-// numbered ticket, created by the server in one transaction. Online only:
-// the server guarantees the spot is free (409 spot_unavailable) and numbers
-// the ticket. The app sells spot-first only (the spot tapped on the map);
-// zone-first sales stay in the panel. Mirrors the panel's
-// web/admin/src/features/daily-sale/lib.ts.
+// Daily quick sale from the map (core spec 14.3, ADR 0020 of the core): a
+// confirmed desk booking, its manual payment and the numbered ticket, created
+// by the server in one transaction. Online only: the server guarantees the spot
+// is free (409 spot_unavailable) and numbers the ticket. The app sells
+// spot-first only (the spot tapped on the map); zone-first sales stay in the
+// panel. Mirrors the panel's web/admin/src/features/daily-sale/lib.ts.
 import { z } from 'zod';
 
 import { isForbidden, NetworkError, ProblemError } from '@/api/errors';

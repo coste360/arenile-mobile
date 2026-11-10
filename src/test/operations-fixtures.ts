@@ -1,4 +1,4 @@
-// Fixtures of the operational day and the booking lists (phase 1 data).
+// Fixtures of the operational day and the booking lists.
 import type {
   BookingDetail,
   BookingSummary,

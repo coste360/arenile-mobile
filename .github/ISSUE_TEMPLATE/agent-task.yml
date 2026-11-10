@@ -20,9 +20,8 @@ body:
     id: contesto
     attributes:
       label: Contesto
-      description: Sezioni del piano dell'app, della specifica del core e ADR da leggere.
+      description: Sezioni della specifica del core e ADR da leggere.
       placeholder: |
-        - docs/spec/02-fase-1-prima-versione.md
         - core docs/spec/29-edizione-desktop-e-app-mobile.md §29.2
         - docs/adr/0002-repository-separato-e-contratto-api.md
     validations:

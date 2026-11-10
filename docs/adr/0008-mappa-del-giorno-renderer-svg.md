@@ -2,12 +2,12 @@
 
 - **Stato:** proposto; decisione 7 (kit) sostituita da [0013](0013-illustrazioni-dei-kit-della-mappa.md); decisione 5 (giorni) modificata da [0014](0014-giorni-oltre-la-finestra-offline.md)
 - **Data:** 2026-10-25
-- **Sezioni della specifica:** `docs/spec/02-fase-1-prima-versione.md` ("Mappa del giorno"), core §11.3
+- **Sezioni della specifica:** core §11.3
   (vista operativa), §16.1, §21.2; core ADR 0012 e 0024 (kit della mappa); ADR 0004 e 0007
 
 ## Contesto
 
-La fase 1 chiede la vista operativa del pannello sul telefono e sul tablet: colori di stato sempre con
+L'app porta la vista operativa del pannello sul telefono e sul tablet: colori di stato sempre con
 etichetta e simbolo, zoom e spostamento con i gesti, ricerca, scheda della postazione, mappa visibile
 accanto alla scheda su tablet. Un lido ha centinaia di postazioni e la mappa deve restare fluida anche
 su telefoni modesti, senza rete (cache di ADR 0007).

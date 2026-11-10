@@ -66,7 +66,7 @@ export function grantedPermissions(
 }
 
 /**
- * What the staff app may offer (phase 1 operations), each with the
+ * What the staff app may offer, each with the
  * permission the core checks in its domain service:
  *
  * | Action                         | Permission       | Core check                       |
@@ -79,7 +79,7 @@ export function grantedPermissions(
  * | Quick cash collection          | cash.operate     | payment.Service.RecordManual     |
  * | Create / move a booking        | bookings.write   | booking.Service.Create/Move      |
  * | See takings and reports        | cash.operate or reports.read |                      |
- * | Essential reports (phase 3)    | reports.read     | report endpoints (spec 15.3)     |
+ * | Essential reports              | reports.read     | report endpoints (spec 15.3)     |
  */
 export interface Abilities {
   /** Permissions are known (from /auth/me or the device role). */

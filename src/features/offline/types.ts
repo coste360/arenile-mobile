@@ -1,11 +1,11 @@
-// Contract of the offline mode (phase 1 spec "Offline", core spec 21.2),
+// Contract of the offline mode (core spec 21.2),
 // shared by the cache, the operation queue and the features that enqueue.
 // The rules and their reasons are in docs/data-and-offline.md.
 import type { ProblemType, Slots } from '@/api/types';
 import type { CalendarDate } from '@/lib/calendar';
 import type { Cents } from '@/lib/money';
 
-/** Low-risk operations that may be queued offline (spec 21.2 + phase 1 "rilasci"). */
+/** Low-risk operations that may be queued offline (core spec 21.2, plus day releases). */
 export type OfflineOperationKind = 'check_in' | 'day_release' | 'note' | 'cash_payment';
 
 export const OFFLINE_OPERATION_KINDS: readonly OfflineOperationKind[] = [

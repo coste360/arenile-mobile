@@ -34,7 +34,7 @@ import { SpotStatusLabel } from './spot-status';
 const SLOTS: readonly Slots[] = ['FULL', 'AM', 'PM'];
 
 /**
- * The spot sheet's operations (spec 02): its status today, the booking on
+ * The spot sheet's operations: its status today, the booking on
  * it, and block / unblock (operations.run). Blocks are online-only (ADR
  * 0009): offline the form is replaced by the reason.
  */

@@ -1,6 +1,6 @@
 import { NetworkError, ProblemError } from '@/api/errors';
 import { abilitiesFrom, ROLE_PERMISSIONS } from '@/features/permissions/permissions';
-import { waitlistEntry } from '@/test/phase-2-routes';
+import { waitlistEntry } from '@/test/online-routes';
 
 import {
   canOfferWaitlist,

@@ -24,7 +24,7 @@ Le immagini per App Store e Google Play sono in [`store/`](store/README.md).
 
 ## Cosa fa oggi
 
-**Collegamento (fase 0)**
+**Collegamento**
 
 - **Collega a un'istanza** inquadrando il QR di _Configurazione → Dispositivi → Abbina un dispositivo_
   (anche con la fotocamera di sistema: il link `arenile://pair?d=…` apre l'app) oppure digitando indirizzo
@@ -41,7 +41,7 @@ Le immagini per App Store e Google Play sono in [`store/`](store/README.md).
 - Impostazioni: lingua (italiano, inglese, tedesco, francese), tema chiaro/scuro, _Scollega questo
   dispositivo_. Layout per telefono e per tablet/iPad (pannello di navigazione laterale).
 
-**Il lavoro del giorno (fase 1)**
+**Il lavoro del giorno**
 
 - **Oggi:** arrivi, presenti, postazioni libere, da saldare e giorni rilasciati, ognuno apre l'elenco
   filtrato.
@@ -57,12 +57,12 @@ Le immagini per App Store e Google Play sono in [`store/`](store/README.md).
   incassi in contanti vanno in coda con chiavi di idempotenza e partono alla riconnessione; indicatore
   della connessione sempre visibile ([ADR 0007](docs/adr/0007-offline-cache-e-coda-delle-operazioni.md)).
 
-**Fase 2** ([ADR 0011](docs/adr/0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md), tutto solo online)
+**Vendita, spostamenti, lista d'attesa e stampa** ([ADR 0011](docs/adr/0011-vendita-spostamenti-lista-attesa-stampa-push.md), tutto solo online)
 
 - Vendita giornaliera rapida dalla mappa, spostamento di una prenotazione, lista d'attesa con l'offerta
   di un posto, stampa del biglietto sulla stampante ESC/POS del pannello (edizione desktop).
 
-**Fase 3** ([ADR 0010](docs/adr/0010-report-essenziali-e-widget.md))
+**Report e widget** ([ADR 0010](docs/adr/0010-report-essenziali-e-widget.md))
 
 - Report essenziali (incassato, occupazione, prenotazioni e prenotato rispetto all'anno precedente) per
   titolare, gestore e sola lettura.
@@ -70,6 +70,19 @@ Le immagini per App Store e Google Play sono in [`store/`](store/README.md).
 
 Ogni azione segue i permessi del ruolo come nel pannello: ciò che il ruolo non può fare non compare, e
 un rifiuto del server si mostra come "non consentito".
+
+## Cosa l'app non fa
+
+- **Server dentro l'app** (modalità "tablet cassa"): un'istanza in un'app mobile avrebbe problemi di
+  backup, aggiornamenti e funzionamento in background; per una cassa senza server online c'è l'edizione
+  desktop di Arenile (sezione 29.1 del core), a cui l'app si collega in rete locale.
+- **Notifiche push** ([ADR 0012](docs/adr/0012-niente-notifiche-push-nell-edizione-pubblica.md)):
+  richiedono un relay centrale gestito da Coste360. L'app aggiorna i dati quando viene aperta o torna in
+  primo piano.
+- **Pagamento con carta dal telefono** (tap to pay, lettori collegati): i pagamenti con carta restano
+  quelli dei provider configurati nel pannello e della cassa.
+- **Funzioni del pannello web:** configurazione dello stabilimento, prezzi e listini, policy, mappe ed
+  editor, utenti e ruoli, rimborsi, esportazioni e importazioni restano nel pannello.
 
 ## Privacy
 
@@ -116,12 +129,11 @@ e [CONTRIBUTING.md](CONTRIBUTING.md).
 ```
 src/app/            rotte expo-router (collega, scansione, manuale, collegamento, area collegata)
 src/api/            client API unico, trasporto, errori tipizzati; generated/ = tipi dal contratto
-src/features/       abbinamento, sessione, dati, offline, mappa, operazioni, fase 2, report, widget
+src/features/       abbinamento, sessione, dati, offline, mappa, operazioni, vendita, spostamenti, lista d'attesa, report, widget
 modules/pinned-fetch/ modulo nativo locale: trasporto con pinning per il desktop in rete locale
 src/widgets/        layout del widget della schermata principale (expo-widgets)
 src/components/     componenti dell'app; ui/ = React Native Reusables
 src/i18n/           i18next, lingue it (sorgente), en, de, fr
-docs/spec/          piano dell'app per fasi
 docs/adr/           decisioni
 ```
 

@@ -1,4 +1,4 @@
-// Waitlist (core spec 10.5; spec 03 of this app): the requests without
+// Waitlist (core spec 10.5): the requests without
 // availability in priority order and the manual offer of a freed spot, as
 // in the panel. Reading needs bookings.read, offering bookings.write. An
 // offer is a timed hold created by the server under the database

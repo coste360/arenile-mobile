@@ -79,7 +79,7 @@ import { cn } from '@/lib/utils';
 import { useDependencies } from '@/providers/dependencies';
 
 /**
- * "Sposta prenotazione" (spec 03): choose the line and a free spot, see the
+ * "Sposta prenotazione": choose the line and a free spot, see the
  * server's preview (conflicts on other days, new price), confirm. Online
  * only, for roles with bookings.write. Core 1.1 (spec 30.7): from today or
  * tomorrow, swap with another booking, undo within 5 minutes.

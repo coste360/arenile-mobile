@@ -30,7 +30,7 @@ import { useYearComparison } from '@/features/reports/queries';
 import { cn } from '@/lib/utils';
 
 /**
- * Essential reports (spec 04, phase 3) for owner, manager and viewer: takings
+ * Essential reports for owner, manager and viewer: takings
  * and occupancy of a day or a week against the previous year, from the
  * core's year comparison. Online only; exports stay in the panel.
  */

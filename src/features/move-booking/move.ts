@@ -1,12 +1,11 @@
-// Moving a booking to another spot (core spec 11.3 "sposta"; spec 03 of this
-// app). Online only, never queued (core spec 21.2): the release and the new
-// allocation happen in one server transaction, guarded by the database
-// constraints. The app previews the move with dry_run (conflicts, new price)
-// and then applies it with If-Match on the booking version. A booking owned
-// by a daily ticket moves through the ticket (its price does not change),
-// as in the panel. Core 1.1 (spec 30.7): a move can start today or
-// tomorrow, two bookings can swap their spots, and the user's last move or
-// swap can be undone within 5 minutes.
+// Moving a booking to another spot (core spec 11.3 "sposta"). Online only,
+// never queued (core spec 21.2): the release and the new allocation happen in
+// one server transaction, guarded by the database constraints. The app previews
+// the move with dry_run (conflicts, new price) and then applies it with
+// If-Match on the booking version. A booking owned by a daily ticket moves
+// through the ticket (its price does not change), as in the panel. Core 1.1
+// (spec 30.7): a move can start today or tomorrow, two bookings can swap their
+// spots, and the user's last move or swap can be undone within 5 minutes.
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
 import { request, type ApiClient } from '@/api/client';

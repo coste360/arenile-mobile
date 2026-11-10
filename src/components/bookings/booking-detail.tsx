@@ -55,7 +55,7 @@ import { RequirementCheck } from './requirement-check';
 const HISTORY_PREVIEW = 5;
 
 /**
- * Booking sheet (phase 1 "Scheda prenotazione"): spot, period and slots,
+ * Booking sheet ("Scheda prenotazione"): spot, period and slots,
  * customer (only what the role may see), amounts, payments, notes and the
  * essential history. Content only: the phone screen and the tablet detail
  * pane provide the scrolling. Reads from the offline cache when the

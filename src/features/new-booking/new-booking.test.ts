@@ -2,7 +2,7 @@ import { NetworkError, ProblemError } from '@/api/errors';
 import type { BookingCreate, Formula, Slots } from '@/api/types';
 import { abilitiesFrom, ROLE_PERMISSIONS } from '@/features/permissions/permissions';
 import { spot } from '@/test/operations-fixtures';
-import { pack } from '@/test/phase-2-routes';
+import { pack } from '@/test/online-routes';
 
 import {
   canCreateBooking,

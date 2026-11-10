@@ -53,7 +53,7 @@ import { StatusLegend } from './status-legend';
 /** Zoom (relative to the fit) at which a spot chosen from a list is shown. */
 const FOCUS_ZOOM = 3;
 /**
- * Day map (phase 1 "Mappa del giorno", core spec 11.3): the operational map
+ * Day map ("Mappa del giorno", core spec 11.3): the operational map
  * of today or tomorrow with the panel's status colours, glyphs and labels,
  * pan and pinch zoom, search, and the spot sheet. On tablets the sheet opens
  * beside the map, which stays visible. `spotId` opens with that spot of

@@ -16,7 +16,7 @@ import { NoteForm } from './note-form';
 import { ReleaseForm } from './release-form';
 
 /**
- * The operations of a booking (spec 02 "Operazioni"): check-in, pass day
+ * The operations of a booking ("Operazioni"): check-in, pass day
  * release, notes, quick cash. Each is shown only to the roles that may do
  * it (useAbilities, core spec 16.1) and when the instance has the feature
  * (/meta `cash`, `season_passes`). Embeddable in the booking sheet and the

@@ -2,8 +2,7 @@
 
 - **Stato:** proposto
 - **Data:** 2026-10-27
-- **Sezioni della specifica:** `docs/spec/01-fase-0-fondamenta.md` (layout); ADR 0001 (decisione 5,
-  modificata), ADR 0004
+- **Sezioni della specifica:** ADR 0001 (decisione 5, modificata), ADR 0004
 
 ## Contesto
 

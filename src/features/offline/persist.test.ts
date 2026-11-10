@@ -67,7 +67,7 @@ describe('isPersistable', () => {
       undefined,
       false,
     ],
-    // Phase 2 (spec 03): online only, never saved on the device.
+    // Sale, move, waitlist, printing: online only, never saved on the device.
     ['the catalogue', estKeys.packs(EST_ID), [], false],
     ['a sale quote', estKeys.dailySaleQuote(EST_ID, { date: '2026-10-25' }), undefined, false],
     ['a ticket', estKeys.ticketByCode(EST_ID, 'AR-7K3Q9'), undefined, false],

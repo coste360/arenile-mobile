@@ -4,7 +4,7 @@ import { act, fireEvent, waitFor } from 'expo-router/testing-library';
 import type { Role } from '@/api/types';
 import { json, problem, type Handler } from '@/test/fake-fetch';
 import { SESSION } from '@/test/fixtures';
-import { EST, phase2Instance, READY_ROUTE, requestsTo } from '@/test/phase-2-routes';
+import { EST, onlineInstance, READY_ROUTE, requestsTo } from '@/test/online-routes';
 import { renderApp, type WindowSize } from '@/test/render-app';
 
 const JOB = {
@@ -23,7 +23,7 @@ async function openTicketSpot(
   { role = 'cashier', extra = {} }: { role?: Role; extra?: Record<string, Handler> } = {},
   size: WindowSize = 'phone',
 ) {
-  const instance = phase2Instance({ role, extra });
+  const instance = onlineInstance({ role, extra });
   const app = await renderApp({ session: SESSION, routes: instance.routes, size });
   await app.screen.findByText(/Anna · /);
   await act(async () => router.push('/map'));

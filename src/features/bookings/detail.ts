@@ -1,4 +1,4 @@
-// Booking detail (phase 1 "Scheda prenotazione"): what the sheet shows of
+// Booking detail ("Scheda prenotazione"): what the sheet shows of
 // the spot, the stay, the customer, the payments and the history. Pure.
 import type { BookingDetail } from '@/api/types';
 import type { OfflineOperation } from '@/features/offline/types';

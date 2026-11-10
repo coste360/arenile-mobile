@@ -1,5 +1,5 @@
 // Ticket printing on the establishment's ESC/POS network printers (core ADR
-// 0021, spec 03 of this app): the server composes the ticket and sends it to
+// 0021): the server composes the ticket and sends it to
 // the printer configured in the panel; the app only asks for it. Printing
 // needs cash.operate and a printer reachable by the server, which only the
 // desktop edition has: on the server edition the route is never ready and

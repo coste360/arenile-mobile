@@ -1,4 +1,4 @@
-// Fixtures of the year comparison report (phase 3).
+// Fixtures of the year comparison report.
 import type { ComparisonMetric, ComparisonPoint, YearComparisonReport } from '@/api/types';
 import { addDays, daysBetween } from '@/lib/calendar';
 

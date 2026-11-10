@@ -2,7 +2,7 @@
 
 - **Stato:** proposto | accettato | sostituito da NNNN | deprecato
 - **Data:** AAAA-MM-GG
-- **Sezioni della specifica:** es. `docs/spec/01-fase-0-fondamenta.md`, core `docs/spec/29-edizione-desktop-e-app-mobile.md` §29.2
+- **Sezioni della specifica:** es. core `docs/spec/29-edizione-desktop-e-app-mobile.md` §29.2
 
 ## Contesto
 

@@ -28,7 +28,7 @@ import { useAbilities } from '@/features/permissions/use-abilities';
 import { useBookingTicket } from '@/features/tickets/queries';
 
 /**
- * Online actions of the booking sheet (spec 03, core 1.1), hidden from the
+ * Online actions of the booking sheet (core 1.1), hidden from the
  * roles that cannot perform them: move the booking to another spot, send
  * the summary to the customer, print its daily ticket.
  */

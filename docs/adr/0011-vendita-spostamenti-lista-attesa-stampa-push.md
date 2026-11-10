@@ -1,9 +1,9 @@
-# 0011 — Fase 2: vendita, spostamenti, lista d'attesa e stampa solo online; push tramite l'istanza
+# 0011 — Vendita, spostamenti, lista d'attesa e stampa solo online; push tramite l'istanza
 
 - **Stato:** proposto; punti 7, 8 e 9 (notifiche push) sostituiti da
   [0012](0012-niente-notifiche-push-nell-edizione-pubblica.md): l'app pubblica non ha notifiche push
 - **Data:** 2026-10-25
-- **Sezioni della specifica:** `docs/spec/03-fase-2.md`; core §10.5 (lista d'attesa), §11.3 (vista
+- **Sezioni della specifica:** core §10.5 (lista d'attesa), §11.3 (vista
   operativa), §14.3 (vendita giornaliera), §21.2 (offline), §29.2 (app mobile); core ADR 0020 (vendita
   giornaliera), ADR 0021 (stampa ESC/POS), ADR 0027 (notifiche push tramite relay)
 
@@ -14,7 +14,7 @@
 
 ## Contesto
 
-La fase 2 porta nell'app cinque funzioni del pannello: la vendita giornaliera rapida, lo spostamento di
+L'app porta dal pannello cinque funzioni: la vendita giornaliera rapida, lo spostamento di
 una prenotazione, la lista d'attesa, la stampa del biglietto e le notifiche push facoltative. Le prime
 quattro creano o spostano occupazioni (o le chiedono al server); la quinta passa da un servizio esterno
 all'istanza e richiede endpoint che il core ha scritto dopo la release fissata dall'app (v1.0.1).

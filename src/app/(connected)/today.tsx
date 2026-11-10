@@ -34,7 +34,7 @@ import { formatCents } from '@/lib/money';
 const UNKNOWN = '–';
 
 /**
- * "Oggi" (phase 1): the day in the establishment time zone at a glance —
+ * "Oggi": the day in the establishment time zone at a glance —
  * arrivals, present, free spots, bookings to settle, days released by pass
  * holders. Every figure opens its filtered list. Works offline from the
  * cached day.

@@ -32,7 +32,7 @@ function formatter(locale: string, currency: string): Intl.NumberFormat {
 
 /**
  * Formats integer cents for display: 1250 → "12,50 €" in Italian (the
- * source language of the amounts, spec 02 "Scheda prenotazione").
+ * source language of the amounts).
  * Throws on a non-integer amount: a float in money logic is a bug.
  */
 export function formatCents(

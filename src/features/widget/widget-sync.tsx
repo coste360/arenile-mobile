@@ -2,7 +2,7 @@
 // operational day changes in the query cache (fetch, offline restore,
 // optimistic check-in from the queue), the language changes or the device is
 // unpaired, the widget gets a new snapshot. It reads today's day from the
-// cache only, never fetching it for the widget (spec 04, phase 3); the
+// cache only, never fetching it for the widget; the
 // session queries it shares (device, establishment, /auth/me) are the ones
 // the app runs anyway.
 import { useQuery } from '@tanstack/react-query';

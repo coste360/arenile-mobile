@@ -1,4 +1,4 @@
-// Essential reports (spec 04, phase 3): the core's year comparison for a day
+// Essential reports: the core's year comparison for a day
 // or a week. One request gives takings, occupancy and bookings of the period
 // and of the previous year, with the same date bases as the panel's summary
 // (stay for occupancy and bookings, business date for takings).

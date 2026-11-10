@@ -2,12 +2,12 @@
 
 - **Stato:** proposto
 - **Data:** 2026-10-25
-- **Sezioni della specifica:** `docs/spec/04-fase-3.md`, core §15.3 (report), §16.1 (permessi), §21.2
+- **Sezioni della specifica:** core §15.3 (report), §16.1 (permessi), §21.2
   (offline), ADR 0004 (UI kit), ADR 0005 (privacy), ADR 0007 (cache offline)
 
 ## Contesto
 
-La fase 3 chiede due cose. **Report essenziali** per titolare, gestore e sola lettura: incassi e
+L'app offre due cose al gestore. **Report essenziali** per titolare, gestore e sola lettura: incassi e
 occupazione del giorno e della settimana, confronto con l'anno precedente; le esportazioni restano nel
 pannello. **Widget** nella schermata principale di iOS e Android con il riepilogo del giorno ("12 arrivi,
 3 da saldare") che legge solo dati già in cache sul dispositivo e non contatta servizi diversi dall'istanza.

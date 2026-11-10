@@ -2,8 +2,7 @@
 
 - **Stato:** accettato; orientazione in [0016](0016-telefono-in-verticale.md)
 - **Data:** 2026-10-25
-- **Sezioni della specifica:** core `docs/spec/29-edizione-desktop-e-app-mobile.md` §29.2,
-  `docs/spec/01-fase-0-fondamenta.md`
+- **Sezioni della specifica:** core `docs/spec/29-edizione-desktop-e-app-mobile.md` §29.2
 
 ## Contesto
 

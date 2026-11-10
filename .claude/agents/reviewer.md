@@ -22,8 +22,8 @@ Check, in this order:
 2. Tests: new behaviour covered; bug fixes have a failing-before test; table-driven `it.each` cases;
    no network in unit tests (`fakeFetch`); new or changed screens tested at phone and tablet widths;
    pairing rules still mirror the core Go tests.
-3. Behaviour not covered by the task or diverging from `docs/spec/` (functional plan) and the core
-   specification (section 29.2, roles in section 16, offline rules in section 21.2).
+3. Behaviour not covered by the task or diverging from the core specification (section 29.2, roles
+   in section 16, offline rules in section 21.2).
 4. Accessibility and layout: roles, labels, 44 pt targets, light and dark, phone and tablet.
 5. Unnecessary changes (unrelated refactors, formatting churn, dead code).
 6. Missing docs (`docs/`, `CHANGELOG.md`, ADR for changed decisions, README when commands change).

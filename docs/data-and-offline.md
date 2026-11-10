@@ -1,6 +1,6 @@
 # Data and offline: the APIs features build on
 
-Developer guide to the data layer of phase 1 (decisions in [ADR 0007](adr/0007-offline-cache-e-coda-delle-operazioni.md)).
+Developer guide to the data layer (decisions in [ADR 0007](adr/0007-offline-cache-e-coda-delle-operazioni.md)).
 Every feature screen (Oggi, map, bookings, check-in, cash) uses these building blocks instead of
 writing its own fetching, caching or permission logic.
 
@@ -81,7 +81,7 @@ await enqueue({ kind: 'day_release', bookingId: passBookingId, date, slots, labe
   (with `Idempotency-Key`), its optimistic effect in `optimistic.ts`, i18n labels
   (`offline.pending.kinds`), tests; and it must be low-risk per core spec 21.2.
 
-## Reports and widget (phase 3)
+## Reports and widget
 
 - **Reports** — `features/reports`: `useYearComparison({ from, to, align })` (GET reports/comparison,
   daily series), periods in `period.ts` (`periodOf`, `shiftAnchor`, `canGoForward`), presentation in
@@ -134,9 +134,9 @@ Other screens reuse them instead of rewriting the actions:
   every page, under `maps`, same permission as the maps), without the zones without places. While
   the zones list is unknown there are no zone cards and no map-less requests.
 
-## Phase 2: sale, move, waitlist, printing (online only)
+## Sale, move, waitlist, printing (online only)
 
-Decisions in [ADR 0011](adr/0011-fase-2-vendita-spostamenti-lista-attesa-stampa-push.md). None of these
+Decisions in [ADR 0011](adr/0011-vendita-spostamenti-lista-attesa-stampa-push.md). None of these
 is queued or persisted (their keys under the areas `catalog`, `tickets`, `waitlist`, `printing` are not
 allowlisted); gate the actions on `useOnlineOnly().available` and say why when offline.
 
